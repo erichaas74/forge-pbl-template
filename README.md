@@ -1,6 +1,22 @@
-# ForgePblTemplate
+# Forge PBL Template
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.11.
+Angular 22 foundation for a secure, tenant-aware PBL LMS with a portable,
+configuration-driven project runtime.
+
+The current implementation includes:
+
+- strict domain contracts and capability registries
+- tenant-scoped project packages and runtime state
+- event, rule, condition, action, and command engines
+- atomic mutations, optimistic versioning, and idempotency
+- the reusable Investigation template runtime
+- a version-aware project template registry and manifest resolver
+- mock persistence, realtime, and asset-storage adapters
+- architecture, package, validation, scale, and authoring specifications
+
+Investigation project packages are declarative JSON, Markdown, and referenced
+assets. They do not contain executable project code. The staging location for
+the next uploaded package is `projects/investigation-project/`.
 
 ## Development server
 

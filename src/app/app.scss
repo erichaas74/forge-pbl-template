@@ -1,0 +1,29 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+main {
+  box-sizing: border-box;
+  margin: 0 auto;
+  max-width: 72rem;
+  padding: 3rem 1.5rem;
+}
+
+header {
+  border-inline-start: 0.25rem solid #3157a4;
+  padding-inline-start: 1rem;
+}
+
+.eyebrow {
+  color: #3157a4;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+h1,
+p {
+  margin-block: 0 0.5rem;
+}
