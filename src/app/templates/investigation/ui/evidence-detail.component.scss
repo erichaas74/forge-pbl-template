@@ -1,0 +1,249 @@
+:host {
+  display: block;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+textarea,
+input,
+a {
+  font: inherit;
+}
+
+.evidence-detail {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h2 {
+  margin-top: 0.18rem;
+  color: #f5fbff;
+  font-size: clamp(1.15rem, 2vw, 1.55rem);
+}
+
+header p,
+.guided-step p {
+  margin-top: 0.28rem;
+  color: #9fb8c8;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.eyebrow {
+  color: #7fd9d7;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.icon-button {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid #31566d;
+  border-radius: 0.5rem;
+  color: #cfe3ef;
+  background: #0c2232;
+  cursor: pointer;
+}
+
+.evidence-content {
+  overflow: hidden;
+  border: 1px solid #31566d;
+  border-radius: 0.8rem;
+  background: #071a28;
+}
+
+.evidence-content img {
+  display: block;
+  width: 100%;
+  max-height: 18rem;
+  object-fit: cover;
+}
+
+.evidence-content p {
+  padding: 0.85rem 0.9rem 0.35rem;
+  color: #dceaf2;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.evidence-content a {
+  display: inline-flex;
+  margin: 0.25rem 0.9rem 0.9rem;
+  color: #8be3df;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.data-visual {
+  display: flex;
+  height: 8rem;
+  align-items: end;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 1rem;
+  background:
+    linear-gradient(rgba(89, 143, 169, 0.12) 1px, transparent 1px) 0 0 / 100% 1.5rem,
+    linear-gradient(135deg, #0a2638, #102f3a);
+}
+
+.data-visual span {
+  width: 9%;
+  border-radius: 0.25rem 0.25rem 0 0;
+  background: linear-gradient(#78dfd9, #318d9a);
+}
+
+.data-visual span:nth-child(1) {
+  height: 38%;
+}
+.data-visual span:nth-child(2) {
+  height: 62%;
+}
+.data-visual span:nth-child(3) {
+  height: 47%;
+}
+.data-visual span:nth-child(4) {
+  height: 82%;
+}
+.data-visual span:nth-child(5) {
+  height: 69%;
+}
+
+.guided-step {
+  display: grid;
+  grid-template-columns: 1.8rem minmax(0, 1fr);
+  gap: 0.65rem;
+  border-top: 1px solid rgba(130, 172, 195, 0.18);
+  padding-top: 1rem;
+}
+
+.step-number {
+  display: grid;
+  width: 1.65rem;
+  height: 1.65rem;
+  place-items: center;
+  border: 1px solid #4a9ca3;
+  border-radius: 50%;
+  color: #b9fffb;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+h3,
+legend {
+  color: #edf7fb;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+label {
+  display: grid;
+  gap: 0.38rem;
+  margin-top: 0.7rem;
+  color: #b9cfdb;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+textarea,
+input {
+  width: 100%;
+  border: 1px solid #31566d;
+  border-radius: 0.55rem;
+  padding: 0.65rem 0.7rem;
+  color: #eff9fc;
+  outline: none;
+  background: #071824;
+  resize: vertical;
+}
+
+textarea:focus,
+input:focus,
+button:focus-visible,
+a:focus-visible {
+  border-color: #8ae7e1;
+  outline: 2px solid rgba(138, 231, 225, 0.32);
+  outline-offset: 2px;
+}
+
+fieldset {
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+.classification-actions,
+.evidence-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.42rem;
+  margin-top: 0.72rem;
+}
+
+.classification-actions button,
+.evidence-actions button,
+.quiet-action {
+  min-height: 2.3rem;
+  border: 1px solid #31566d;
+  border-radius: 0.5rem;
+  padding: 0.45rem 0.68rem;
+  color: #cce0e9;
+  background: #0c2332;
+  cursor: pointer;
+}
+
+.classification-actions button.selected {
+  border-color: #72d7d2;
+  color: #efffff;
+  background: #154650;
+}
+
+.quiet-action {
+  margin-top: 0.5rem;
+  color: #9ee7e3;
+  background: transparent;
+  font-size: 0.75rem;
+}
+
+.locked-state {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  border: 1px dashed #526779;
+  border-radius: 0.75rem;
+  padding: 1.15rem;
+  color: #dce8ef;
+  background: rgba(21, 37, 50, 0.72);
+}
+
+@media (max-width: 700px) {
+  .evidence-detail {
+    padding: 0.8rem;
+  }
+
+  .evidence-content img {
+    max-height: 14rem;
+  }
+}

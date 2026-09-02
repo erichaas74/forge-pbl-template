@@ -1,0 +1,257 @@
+<section class="journey-page">
+  @if (event(); as event) {
+    <header class="decision-banner">
+      <span aria-hidden="true">!</span><strong>Decision required</strong>
+      <p>Trading and route changes are temporarily locked until this event is resolved.</p>
+    </header>
+    <div class="event-layout page-card">
+      <section class="event-story">
+        <div class="event-art" aria-hidden="true">
+          <span>{{ event.icon }}</span
+          ><i></i><b>TRAIL EVENT</b>
+        </div>
+        <div>
+          <span class="eyebrow">{{ event.type }} event · Day {{ runtime.state().currentDay }}</span>
+          <h1>{{ event.title }}</h1>
+          <p>{{ event.story }}</p>
+          <section class="fact-box">
+            <strong>What changed?</strong>
+            @for (fact of event.facts; track fact) {
+              <span>✓ {{ fact }}</span>
+            }
+          </section>
+        </div>
+      </section>
+      <section class="decision-workspace">
+        <header>
+          <div>
+            <span class="eyebrow">Review known effects</span>
+            <h2>Choose your action</h2>
+          </div>
+          <span>{{ event.choices.length }} choices</span>
+        </header>
+        @if (event.mathChallenge; as challenge) {
+          <section
+            class="math-check"
+            [class.correct]="mathAnswer() !== undefined && mathCorrect()"
+            [class.incorrect]="mathAnswer() !== undefined && !mathCorrect()"
+          >
+            <div>
+              <strong>Math checkpoint</strong>
+              <p>{{ challenge.prompt }}</p>
+            </div>
+            <label
+              >Answer in {{ challenge.unit
+              }}<input
+                type="number"
+                step="0.01"
+                [ngModel]="mathAnswer()"
+                (ngModelChange)="mathAnswer.set(+$event)" /></label
+            ><button type="button" (click)="showHint.set(!showHint())">
+              {{ showHint() ? 'Hide hint' : 'Show hint' }}
+            </button>
+            @if (showHint()) {
+              <p class="hint">{{ challenge.hint }}</p>
+            }
+            @if (mathAnswer() !== undefined) {
+              <strong class="feedback">{{
+                mathCorrect()
+                  ? 'Your calculation matches the check.'
+                  : 'Check the operation and try again. You may still review the decision.'
+              }}</strong>
+            }
+          </section>
+        }
+        <div class="choice-grid">
+          @for (choice of event.choices; track choice.id) {
+            <button
+              type="button"
+              [class.selected]="choice.id === selectedChoiceId()"
+              [disabled]="!choiceAffordable(choice.cashChangeCents)"
+              (click)="selectChoice(choice.id)"
+            >
+              <span>{{ choice.riskLabel }}</span
+              ><strong>{{ choice.label }}</strong>
+              <p>{{ choice.description }}</p>
+              <dl>
+                <div>
+                  <dt>Cash</dt>
+                  <dd
+                    [class.signed-positive]="choice.cashChangeCents > 0"
+                    [class.signed-negative]="choice.cashChangeCents < 0"
+                  >
+                    {{ runtime.money(choice.cashChangeCents, true) }}
+                  </dd>
+                </div>
+                <div>
+                  <dt>Travel time</dt>
+                  <dd>{{ choice.dayChange > 0 ? '+' + choice.dayChange + ' day' : 'No delay' }}</dd>
+                </div>
+                <div>
+                  <dt>Cargo</dt>
+                  <dd>
+                    {{
+                      choice.inventoryLossQuantity
+                        ? 'Risk ' + choice.inventoryLossQuantity + ' unit'
+                        : 'No known loss'
+                    }}
+                  </dd>
+                </div>
+              </dl>
+              @if (!choiceAffordable(choice.cashChangeCents)) {
+                <em>Unavailable: insufficient cash</em>
+              }
+            </button>
+          }
+        </div>
+        <label class="field"
+          >Why does this choice fit your strategy?<textarea
+            rows="3"
+            [ngModel]="reasoning()"
+            (ngModelChange)="reasoning.set($event)"
+            placeholder="I chose this because…"
+          ></textarea>
+        </label>
+        @if (selectedChoice(); as selected) {
+          <section class="outcome-preview">
+            <strong>Known outcome preview</strong
+            ><span>Cash after: {{ runtime.money(runtime.cash() + selected.cashChangeCents) }}</span
+            ><span
+              >Day change: {{ selected.dayChange > 0 ? '+' + selected.dayChange : 'none' }}</span
+            ><span>Risk: {{ selected.riskLabel }}</span>
+          </section>
+        }
+        <button
+          class="primary review-choice"
+          type="button"
+          [disabled]="selectedChoice() === undefined"
+          (click)="openReview()"
+        >
+          Review official choice
+        </button>
+      </section>
+    </div>
+  } @else {
+    <section class="travel-console page-card">
+      @if (travel(); as travel) {
+        <header>
+          <div>
+            <span class="eyebrow">Journey workspace</span>
+            <h1>{{ route()?.name }}</h1>
+            <p>{{ runtime.currentLocation()?.name }} → {{ destinationName() }}</p>
+          </div>
+          <span class="status-chip"
+            >Travel day {{ travel.progressDays }} of {{ route()?.estimatedDays }}</span
+          >
+        </header>
+        <div class="trail-progress">
+          <i
+            ><span
+              [style.width.%]="(travel.progressDays / (route()?.estimatedDays ?? 1)) * 100"
+            ></span
+          ></i>
+          <div>
+            <span>Departure</span><strong aria-hidden="true">▣</strong><span>Destination</span>
+          </div>
+        </div>
+        @if (lastDecision(); as decision) {
+          <section class="outcome">
+            <span aria-hidden="true">✓</span>
+            <div>
+              <small>Last event resolved · {{ lastEvent()?.title }}</small
+              ><strong>{{ decision.outcome }}</strong>
+              <p>
+                Cash: {{ runtime.money(decision.cashBeforeCents) }} →
+                {{ runtime.money(decision.cashAfterCents) }} · Cargo: {{ decision.cargoBefore }} →
+                {{ decision.cargoAfter }}
+              </p>
+              @if (decision.mathCorrect !== undefined) {
+                <p>Math check: {{ decision.mathCorrect ? 'matched' : 'needs another look' }}</p>
+              }
+            </div>
+            <button type="button" (click)="pinLastDecision()">Use as evidence</button>
+          </section>
+        }
+        <section class="travel-controls">
+          <div>
+            <strong>Travel controls</strong>
+            <p>
+              Advance one or two safe days. A scheduled event always stops progress for a decision.
+            </p>
+          </div>
+          <button
+            type="button"
+            [attr.aria-pressed]="journeyPaused()"
+            (click)="journeyPaused.set(!journeyPaused())"
+          >
+            {{ journeyPaused() ? 'Resume journey' : 'Pause journey' }}
+          </button>
+          <div class="speed">
+            <button type="button" [class.active]="speed() === 1" (click)="speed.set(1)">
+              1× speed</button
+            ><button type="button" [class.active]="speed() === 2" (click)="speed.set(2)">
+              2× speed
+            </button>
+          </div>
+          <button class="primary" type="button" [disabled]="journeyPaused()" (click)="advance()">
+            Advance travel
+          </button>
+        </section>
+        <ol class="event-log">
+          <li>Route committed and supply cost recorded.</li>
+          @for (decision of runtime.state().eventHistory; track decision.id) {
+            <li>
+              Day {{ decision.day }} · {{ eventTitle(decision.eventId) }} · {{ decision.outcome }}
+            </li>
+          }
+        </ol>
+      } @else {
+        <div class="journey-empty">
+          <span aria-hidden="true">✥</span>
+          <h1>No journey is active</h1>
+          <p>Compare reachable routes, commit travel, and return here for day-by-day progress.</p>
+          <div>
+            <button class="primary" type="button" (click)="runtime.navigate('route')">
+              Choose a route
+            </button>
+            @if (runtime.state().routeHistory.length > 0) {
+              <button class="secondary" type="button" (click)="runtime.navigate('market')">
+                Open destination market</button
+              ><button class="secondary" type="button" (click)="runtime.completeSeason()">
+                Close trading season
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </section>
+  }
+
+  @if (reviewOpen() && selectedChoice(); as choice) {
+    <div class="review-backdrop">
+      <section role="alertdialog" aria-modal="true" aria-labelledby="event-review-title">
+        <span class="eyebrow">Official event decision</span>
+        <h2 id="event-review-title">Confirm: {{ choice.label }}?</h2>
+        <p>{{ choice.description }}</p>
+        <dl>
+          <div>
+            <dt>Cash change</dt>
+            <dd>{{ runtime.money(choice.cashChangeCents, true) }}</dd>
+          </div>
+          <div>
+            <dt>Travel time</dt>
+            <dd>{{ choice.dayChange > 0 ? '+' + choice.dayChange + ' day' : 'No delay' }}</dd>
+          </div>
+          <div>
+            <dt>Cannot be undone</dt>
+            <dd>This attempt records one decision</dd>
+          </div>
+        </dl>
+        <div>
+          <button class="secondary" type="button" (click)="reviewOpen.set(false)">Go back</button
+          ><button class="primary" type="button" (click)="resolve()">Confirm decision</button>
+        </div>
+      </section>
+    </div>
+  }
+</section>

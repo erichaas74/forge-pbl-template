@@ -1,0 +1,226 @@
+@use '../simulation-page';
+
+.teacher-page {
+  display: grid;
+  gap: 0.75rem;
+}
+.teacher-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+}
+.teacher-heading h1,
+h2 {
+  font-family: Georgia, serif;
+}
+.teacher-heading p {
+  max-width: 48rem;
+  color: #655844;
+}
+.teacher-metrics {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+.teacher-metrics article {
+  display: grid;
+  gap: 0.25rem;
+  min-height: 6rem;
+  padding: 0.75rem;
+}
+.teacher-metrics span {
+  color: #7b5b33;
+  font-size: 0.7rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+.teacher-metrics strong {
+  font:
+    800 1.1rem Georgia,
+    serif;
+  text-transform: capitalize;
+}
+.teacher-metrics small {
+  color: #75664f;
+}
+.teacher-metrics i {
+  height: 0.45rem;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #ddd1b9;
+}
+.teacher-metrics i b {
+  display: block;
+  height: 100%;
+  background: #557e43;
+}
+.warning {
+  color: #a43a27 !important;
+}
+.teacher-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 21rem;
+  gap: 0.75rem;
+  align-items: start;
+}
+.teacher-layout main,
+.teacher-layout aside {
+  display: grid;
+  gap: 0.75rem;
+}
+.overview,
+.configuration,
+.config-audit,
+.controls,
+.data-actions {
+  padding: 1rem;
+}
+.overview > header,
+.configuration > header,
+.config-audit > header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.7rem;
+}
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid #d0c09f;
+}
+.overview-grid article {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.8rem;
+  border-right: 1px solid #d0c09f;
+}
+.overview-grid article:last-child {
+  border-right: 0;
+}
+.overview-grid small {
+  color: #75664d;
+}
+.configuration > p {
+  color: #675a46;
+}
+.configuration > div {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  align-items: end;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}
+.config-audit dl {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid #d4c4a5;
+}
+.config-audit dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.65rem;
+  border: 1px solid #eadfc9;
+}
+.config-audit dd {
+  margin: 0;
+  font-weight: 850;
+}
+.config-audit p {
+  margin-top: 0.7rem;
+  color: #5d513e;
+}
+.controls,
+.data-actions {
+  display: grid;
+  gap: 0.65rem;
+}
+.controls header,
+.data-actions header {
+  margin-bottom: 0.2rem;
+}
+.controls > button,
+.data-actions > button {
+  width: 100%;
+}
+.launch {
+  min-height: 3rem;
+  border: 1px solid #41652f;
+  border-radius: 0.35rem;
+  color: #fff;
+  background: linear-gradient(#638f49, #3f6b32);
+  font-weight: 850;
+}
+.danger {
+  color: #812d20;
+  border-color: #b56d5f;
+}
+.data-actions p {
+  color: #7b6b53;
+  font-size: 0.72rem;
+}
+.review-backdrop {
+  position: fixed;
+  z-index: 60;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(25, 17, 10, 0.72);
+}
+.review-backdrop section {
+  width: min(31rem, 100%);
+  border: 3px double #91734b;
+  border-radius: 0.5rem;
+  padding: 1.2rem;
+  background: #fffaf0;
+}
+.review-backdrop h2 {
+  margin: 0.25rem 0;
+}
+.review-backdrop div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+@media (max-width: 1000px) {
+  .teacher-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .teacher-layout {
+    grid-template-columns: 1fr;
+  }
+  .teacher-layout aside {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 700px) {
+  .teacher-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .teacher-metrics,
+  .overview-grid,
+  .config-audit dl,
+  .teacher-layout aside,
+  .configuration > div {
+    grid-template-columns: 1fr;
+  }
+  .overview-grid article {
+    border-right: 0;
+    border-bottom: 1px solid #d0c09f;
+  }
+}
+@media print {
+  .controls,
+  .data-actions,
+  .teacher-heading button {
+    display: none;
+  }
+  .teacher-layout {
+    grid-template-columns: 1fr;
+  }
+}

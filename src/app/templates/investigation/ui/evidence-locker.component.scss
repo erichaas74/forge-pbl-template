@@ -1,0 +1,230 @@
+:host,
+.panel-shell {
+  display: block;
+  min-height: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.panel-shell {
+  padding: 1rem;
+}
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+h2,
+h3,
+p {
+  margin: 0;
+}
+h2 {
+  margin-top: 0.12rem;
+  color: #f4fbff;
+  font-size: 1.25rem;
+}
+.eyebrow {
+  color: #7fd9d7;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.count {
+  border: 1px solid #31566d;
+  border-radius: 999px;
+  padding: 0.3rem 0.55rem;
+  color: #a9c5d3;
+  font-size: 0.68rem;
+}
+.panel-guidance {
+  margin-top: 0.45rem;
+  color: #9fb8c8;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
+  gap: 0.65rem;
+  margin-top: 0.9rem;
+}
+.evidence-card {
+  overflow: hidden;
+  border: 1px solid #284a5f;
+  border-radius: 0.7rem;
+  background: rgba(8, 27, 40, 0.9);
+  transition:
+    border-color 150ms ease,
+    transform 150ms ease;
+}
+.evidence-card:hover,
+.evidence-card:focus-within {
+  border-color: #5daeb1;
+  transform: translateY(-1px);
+}
+.evidence-card.new {
+  border-inline-start: 3px solid #e3b959;
+}
+.evidence-card.important {
+  box-shadow: inset 0 0 0 1px rgba(239, 202, 93, 0.3);
+}
+.evidence-card.locked {
+  opacity: 0.75;
+}
+.card-open {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 3.2rem minmax(0, 1fr);
+  gap: 0.65rem;
+  border: 0;
+  padding: 0.65rem;
+  color: inherit;
+  text-align: left;
+  background: transparent;
+  cursor: pointer;
+}
+.card-open img,
+.type-icon {
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 0.45rem;
+  object-fit: cover;
+}
+.type-icon {
+  display: grid;
+  place-items: center;
+  color: #8ddedb;
+  background: #123646;
+  font-size: 1.2rem;
+}
+.card-copy {
+  display: grid;
+  align-content: start;
+  gap: 0.18rem;
+  min-width: 0;
+}
+.card-copy small {
+  color: #79c9c8;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.card-copy strong {
+  overflow: hidden;
+  color: #eef7fb;
+  font-size: 0.79rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.card-copy > span {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #92aebb;
+  font-size: 0.66rem;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.card-open em {
+  grid-column: 1 / -1;
+  color: #acc4cf;
+  font-size: 0.62rem;
+  font-style: normal;
+  font-weight: 700;
+}
+.evidence-card > label {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.45rem;
+  border-top: 1px solid rgba(100, 149, 173, 0.18);
+  padding: 0.45rem 0.65rem;
+  color: #8da9b7;
+  font-size: 0.61rem;
+}
+select,
+input,
+textarea {
+  min-width: 0;
+  border: 1px solid #31566d;
+  border-radius: 0.45rem;
+  padding: 0.45rem;
+  color: #eaf5f8;
+  background: #071824;
+}
+
+.student-evidence {
+  margin-top: 0.8rem;
+  border: 1px dashed #385d70;
+  border-radius: 0.7rem;
+  padding: 0.75rem;
+}
+.add-evidence {
+  width: 100%;
+  border: 0;
+  color: #9fe5e1;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 750;
+}
+.student-evidence h3 {
+  color: #edf7fb;
+  font-size: 0.88rem;
+}
+.student-evidence label {
+  display: grid;
+  gap: 0.3rem;
+  margin-top: 0.6rem;
+  color: #aec4cf;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.student-evidence textarea {
+  resize: vertical;
+}
+.student-evidence > div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  margin-top: 0.65rem;
+}
+.student-evidence button:not(.add-evidence) {
+  border: 1px solid #31566d;
+  border-radius: 0.45rem;
+  padding: 0.48rem 0.7rem;
+  color: #c7dae3;
+  background: #0b2231;
+  cursor: pointer;
+}
+.student-evidence button.primary {
+  border-color: #4fb5b4;
+  color: #071d24;
+  background: #75d8d3;
+}
+
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #8ae7e1;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .evidence-card {
+    transition: none;
+  }
+}

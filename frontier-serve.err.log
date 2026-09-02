@@ -1,0 +1,1573 @@
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:42:57:
+      42 │ ...n><strong>{{ mostSpace()?.good?.name ?? 'None yet' }}</strong><...
+         ╵                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:42:70:
+      42 │ .../span><strong>{{ mostSpace()?.good?.name ?? 'None yet' }}</stro...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:42:76:
+      42 │ ...<strong>{{ mostSpace()?.good?.name ?? 'None yet' }}</strong><sm...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:42:116:
+      42 │ .../strong><small>{{ mostSpace()?.totalCargo ?? 0 }} spaces</small...
+         ╵                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:42:129:
+      42 │ ...ong><small>{{ mostSpace()?.totalCargo ?? 0 }} spaces</small></a...
+         ╵                               ~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:43:60:
+      43 │ ...><strong>{{ mostInvested()?.good?.name ?? 'None yet' }}</strong...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:43:76:
+      43 │ ...an><strong>{{ mostInvested()?.good?.name ?? 'None yet' }}</stro...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:43:82:
+      43 │ ...rong>{{ mostInvested()?.good?.name ?? 'None yet' }}</strong><sm...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:43:136:
+      43 │ ...untime.money(mostInvested()?.investedCostCents ?? 0) }}</small>...
+         ╵                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:43:152:
+      43 │ ....money(mostInvested()?.investedCostCents ?? 0) }}</small></arti...
+         ╵                           ~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:44:59:
+      44 │ ...><strong>{{ highestGain()?.good?.name ?? 'None yet' }}</strong>...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:44:74:
+      44 │ ...pan><strong>{{ highestGain()?.good?.name ?? 'None yet' }}</stro...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:44:80:
+      44 │ ...trong>{{ highestGain()?.good?.name ?? 'None yet' }}</strong><sm...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:44:134:
+      44 │ ...{{ runtime.money(highestGain()?.gainCents ?? 0, true) }}</small...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:44:149:
+      44 │ ...ntime.money(highestGain()?.gainCents ?? 0, true) }}</small></ar...
+         ╵                               ~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:45:60:
+      45 │ ...span><strong>{{ (highestLoss()?.gainCents ?? 0) < 0 ? highestLo...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:45:75:
+      45 │ ...<strong>{{ (highestLoss()?.gainCents ?? 0) < 0 ? highestLoss()?...
+         ╵                               ~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:45:112:
+      45 │ ...ts ?? 0) < 0 ? highestLoss()?.good?.name : 'None' }}</strong><s...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:45:118:
+      45 │ ...0) < 0 ? highestLoss()?.good?.name : 'None' }}</strong><small>{...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:136:
+      28 │ ...riceCents && entry.details?.quantity) { <p>{{ runtime.money(ent...
+         ╵                                ~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:168:
+      28 │ ... runtime.money(entry.details?.unitPriceCents ?? 0) }} × {{ ent...
+         ╵                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:183:
+      28 │ ...ime.money(entry.details?.unitPriceCents ?? 0) }} × {{ entry.de...
+         ╵                             ~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:212:
+      28 │ ...nts ?? 0) }} × {{ entry.details?.quantity ?? 0 }} = {{ absolut...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:227:
+      28 │ ...? 0) }} × {{ entry.details?.quantity ?? 0 }} = {{ absoluteCash...
+         ╵                               ~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:420:
+      28 │ ...{ runtime.money(entry.details?.costBasisCents ?? 0) }}</p> }</d...
+         ╵                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:435:
+      28 │ ...time.money(entry.details?.costBasisCents ?? 0) }}</p> }</div><l...
+         ╵                             ~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:539:
+      28 │ ...[ngModel]="runtime.state().ledgerAnnotations[entry.id] ?? ''" (...
+         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:35:538:
+      35 │ ..." [ngModel]="runtime.state().ledgerAnnotations[entry.id] ?? ''"...
+         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:42:57:
+      42 │ ...n><strong>{{ mostSpace()?.good?.name ?? 'None yet' }}</strong><...
+         ╵                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:42:70:
+      42 │ .../span><strong>{{ mostSpace()?.good?.name ?? 'None yet' }}</stro...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:42:76:
+      42 │ ...<strong>{{ mostSpace()?.good?.name ?? 'None yet' }}</strong><sm...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:42:116:
+      42 │ .../strong><small>{{ mostSpace()?.totalCargo ?? 0 }} spaces</small...
+         ╵                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:42:129:
+      42 │ ...ong><small>{{ mostSpace()?.totalCargo ?? 0 }} spaces</small></a...
+         ╵                               ~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:43:60:
+      43 │ ...><strong>{{ mostInvested()?.good?.name ?? 'None yet' }}</strong...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:43:76:
+      43 │ ...an><strong>{{ mostInvested()?.good?.name ?? 'None yet' }}</stro...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:43:82:
+      43 │ ...rong>{{ mostInvested()?.good?.name ?? 'None yet' }}</strong><sm...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:43:136:
+      43 │ ...untime.money(mostInvested()?.investedCostCents ?? 0) }}</small>...
+         ╵                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:43:152:
+      43 │ ....money(mostInvested()?.investedCostCents ?? 0) }}</small></arti...
+         ╵                           ~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:44:59:
+      44 │ ...><strong>{{ highestGain()?.good?.name ?? 'None yet' }}</strong>...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:44:74:
+      44 │ ...pan><strong>{{ highestGain()?.good?.name ?? 'None yet' }}</stro...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:44:80:
+      44 │ ...trong>{{ highestGain()?.good?.name ?? 'None yet' }}</strong><sm...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:44:134:
+      44 │ ...{{ runtime.money(highestGain()?.gainCents ?? 0, true) }}</small...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:44:149:
+      44 │ ...ntime.money(highestGain()?.gainCents ?? 0, true) }}</small></ar...
+         ╵                               ~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:45:60:
+      45 │ ...span><strong>{{ (highestLoss()?.gainCents ?? 0) < 0 ? highestLo...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:45:75:
+      45 │ ...<strong>{{ (highestLoss()?.gainCents ?? 0) < 0 ? highestLoss()?...
+         ╵                               ~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:45:112:
+      45 │ ...ts ?? 0) < 0 ? highestLoss()?.good?.name : 'None' }}</strong><s...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:45:118:
+      45 │ ...0) < 0 ? highestLoss()?.good?.name : 'None' }}</strong><small>{...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:136:
+      28 │ ...riceCents && entry.details?.quantity) { <p>{{ runtime.money(ent...
+         ╵                                ~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:168:
+      28 │ ... runtime.money(entry.details?.unitPriceCents ?? 0) }} × {{ ent...
+         ╵                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:183:
+      28 │ ...ime.money(entry.details?.unitPriceCents ?? 0) }} × {{ entry.de...
+         ╵                             ~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:212:
+      28 │ ...nts ?? 0) }} × {{ entry.details?.quantity ?? 0 }} = {{ absolut...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:227:
+      28 │ ...? 0) }} × {{ entry.details?.quantity ?? 0 }} = {{ absoluteCash...
+         ╵                               ~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:420:
+      28 │ ...{ runtime.money(entry.details?.costBasisCents ?? 0) }}</p> }</d...
+         ╵                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:435:
+      28 │ ...time.money(entry.details?.costBasisCents ?? 0) }}</p> }</div><l...
+         ╵                             ~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:539:
+      28 │ ...[ngModel]="runtime.state().ledgerAnnotations[entry.id] ?? ''" (...
+         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:35:538:
+      35 │ ..." [ngModel]="runtime.state().ledgerAnnotations[entry.id] ?? ''"...
+         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:42:57:
+      42 │ ...n><strong>{{ mostSpace()?.good?.name ?? 'None yet' }}</strong><...
+         ╵                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:42:70:
+      42 │ .../span><strong>{{ mostSpace()?.good?.name ?? 'None yet' }}</stro...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:42:76:
+      42 │ ...<strong>{{ mostSpace()?.good?.name ?? 'None yet' }}</strong><sm...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:42:116:
+      42 │ .../strong><small>{{ mostSpace()?.totalCargo ?? 0 }} spaces</small...
+         ╵                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:42:129:
+      42 │ ...ong><small>{{ mostSpace()?.totalCargo ?? 0 }} spaces</small></a...
+         ╵                               ~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:43:60:
+      43 │ ...><strong>{{ mostInvested()?.good?.name ?? 'None yet' }}</strong...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:43:76:
+      43 │ ...an><strong>{{ mostInvested()?.good?.name ?? 'None yet' }}</stro...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:43:82:
+      43 │ ...rong>{{ mostInvested()?.good?.name ?? 'None yet' }}</strong><sm...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:43:136:
+      43 │ ...untime.money(mostInvested()?.investedCostCents ?? 0) }}</small>...
+         ╵                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:43:152:
+      43 │ ....money(mostInvested()?.investedCostCents ?? 0) }}</small></arti...
+         ╵                           ~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:44:59:
+      44 │ ...><strong>{{ highestGain()?.good?.name ?? 'None yet' }}</strong>...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:44:74:
+      44 │ ...pan><strong>{{ highestGain()?.good?.name ?? 'None yet' }}</stro...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:44:80:
+      44 │ ...trong>{{ highestGain()?.good?.name ?? 'None yet' }}</strong><sm...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:44:134:
+      44 │ ...{{ runtime.money(highestGain()?.gainCents ?? 0, true) }}</small...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:44:149:
+      44 │ ...ntime.money(highestGain()?.gainCents ?? 0, true) }}</small></ar...
+         ╵                               ~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:45:60:
+      45 │ ...span><strong>{{ (highestLoss()?.gainCents ?? 0) < 0 ? highestLo...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:45:75:
+      45 │ ...<strong>{{ (highestLoss()?.gainCents ?? 0) < 0 ? highestLoss()?...
+         ╵                               ~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:45:112:
+      45 │ ...ts ?? 0) < 0 ? highestLoss()?.good?.name : 'None' }}</strong><s...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:45:118:
+      45 │ ...0) < 0 ? highestLoss()?.good?.name : 'None' }}</strong><small>{...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:136:
+      28 │ ...riceCents && entry.details?.quantity) { <p>{{ runtime.money(ent...
+         ╵                                ~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:168:
+      28 │ ... runtime.money(entry.details?.unitPriceCents ?? 0) }} × {{ ent...
+         ╵                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:183:
+      28 │ ...ime.money(entry.details?.unitPriceCents ?? 0) }} × {{ entry.de...
+         ╵                             ~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:212:
+      28 │ ...nts ?? 0) }} × {{ entry.details?.quantity ?? 0 }} = {{ absolut...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:227:
+      28 │ ...? 0) }} × {{ entry.details?.quantity ?? 0 }} = {{ absoluteCash...
+         ╵                               ~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:420:
+      28 │ ...{ runtime.money(entry.details?.costBasisCents ?? 0) }}</p> }</d...
+         ╵                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:435:
+      28 │ ...time.money(entry.details?.costBasisCents ?? 0) }}</p> }</div><l...
+         ╵                             ~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:539:
+      28 │ ...[ngModel]="runtime.state().ledgerAnnotations[entry.id] ?? ''" (...
+         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:35:538:
+      35 │ ..." [ngModel]="runtime.state().ledgerAnnotations[entry.id] ?? ''"...
+         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:42:57:
+      42 │ ...n><strong>{{ mostSpace()?.good?.name ?? 'None yet' }}</strong><...
+         ╵                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:42:70:
+      42 │ .../span><strong>{{ mostSpace()?.good?.name ?? 'None yet' }}</stro...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:42:76:
+      42 │ ...<strong>{{ mostSpace()?.good?.name ?? 'None yet' }}</strong><sm...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:42:116:
+      42 │ .../strong><small>{{ mostSpace()?.totalCargo ?? 0 }} spaces</small...
+         ╵                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:42:129:
+      42 │ ...ong><small>{{ mostSpace()?.totalCargo ?? 0 }} spaces</small></a...
+         ╵                               ~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:43:60:
+      43 │ ...><strong>{{ mostInvested()?.good?.name ?? 'None yet' }}</strong...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:43:76:
+      43 │ ...an><strong>{{ mostInvested()?.good?.name ?? 'None yet' }}</stro...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:43:82:
+      43 │ ...rong>{{ mostInvested()?.good?.name ?? 'None yet' }}</strong><sm...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:43:136:
+      43 │ ...untime.money(mostInvested()?.investedCostCents ?? 0) }}</small>...
+         ╵                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:43:152:
+      43 │ ....money(mostInvested()?.investedCostCents ?? 0) }}</small></arti...
+         ╵                           ~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:44:59:
+      44 │ ...><strong>{{ highestGain()?.good?.name ?? 'None yet' }}</strong>...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:44:74:
+      44 │ ...pan><strong>{{ highestGain()?.good?.name ?? 'None yet' }}</stro...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:44:80:
+      44 │ ...trong>{{ highestGain()?.good?.name ?? 'None yet' }}</strong><sm...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:44:134:
+      44 │ ...{{ runtime.money(highestGain()?.gainCents ?? 0, true) }}</small...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:44:149:
+      44 │ ...ntime.money(highestGain()?.gainCents ?? 0, true) }}</small></ar...
+         ╵                               ~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:45:60:
+      45 │ ...span><strong>{{ (highestLoss()?.gainCents ?? 0) < 0 ? highestLo...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:45:75:
+      45 │ ...<strong>{{ (highestLoss()?.gainCents ?? 0) < 0 ? highestLoss()?...
+         ╵                               ~~~~~~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:45:112:
+      45 │ ...ts ?? 0) < 0 ? highestLoss()?.good?.name : 'None' }}</strong><s...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.html:45:118:
+      45 │ ...0) < 0 ? highestLoss()?.good?.name : 'None' }}</strong><small>{...
+         ╵                                  ~~~~
+
+  Warning occurs in the template of component SimulationCargoViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/cargo-view.component.ts:10:15:
+      10 │   templateUrl: './cargo-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:136:
+      28 │ ...riceCents && entry.details?.quantity) { <p>{{ runtime.money(ent...
+         ╵                                ~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:168:
+      28 │ ... runtime.money(entry.details?.unitPriceCents ?? 0) }} × {{ ent...
+         ╵                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:183:
+      28 │ ...ime.money(entry.details?.unitPriceCents ?? 0) }} × {{ entry.de...
+         ╵                             ~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:212:
+      28 │ ...nts ?? 0) }} × {{ entry.details?.quantity ?? 0 }} = {{ absolut...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:227:
+      28 │ ...? 0) }} × {{ entry.details?.quantity ?? 0 }} = {{ absoluteCash...
+         ╵                               ~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:420:
+      28 │ ...{ runtime.money(entry.details?.costBasisCents ?? 0) }}</p> }</d...
+         ╵                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:435:
+      28 │ ...time.money(entry.details?.costBasisCents ?? 0) }}</p> }</div><l...
+         ╵                             ~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:539:
+      28 │ ...[ngModel]="runtime.state().ledgerAnnotations[entry.id] ?? ''" (...
+         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:35:538:
+      35 │ ..." [ngModel]="runtime.state().ledgerAnnotations[entry.id] ?? ''"...
+         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:136:
+      28 │ ...riceCents && entry.details?.quantity) { <p>{{ runtime.money(ent...
+         ╵                                ~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:168:
+      28 │ ... runtime.money(entry.details?.unitPriceCents ?? 0) }} × {{ ent...
+         ╵                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:183:
+      28 │ ...ime.money(entry.details?.unitPriceCents ?? 0) }} × {{ entry.de...
+         ╵                             ~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:212:
+      28 │ ...nts ?? 0) }} × {{ entry.details?.quantity ?? 0 }} = {{ absolut...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:227:
+      28 │ ...? 0) }} × {{ entry.details?.quantity ?? 0 }} = {{ absoluteCash...
+         ╵                               ~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:420:
+      28 │ ...{ runtime.money(entry.details?.costBasisCents ?? 0) }}</p> }</d...
+         ╵                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:435:
+      28 │ ...time.money(entry.details?.costBasisCents ?? 0) }}</p> }</div><l...
+         ╵                             ~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:28:539:
+      28 │ ...[ngModel]="runtime.state().ledgerAnnotations[entry.id] ?? ''" (...
+         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.html:35:538:
+      35 │ ..." [ngModel]="runtime.state().ledgerAnnotations[entry.id] ?? ''"...
+         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component SimulationTradeLedgerComponent.
+
+    src/app/templates/simulation-decision/ui/pages/trade-ledger.component.ts:12:15:
+      12 │   templateUrl: './trade-ledger.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+

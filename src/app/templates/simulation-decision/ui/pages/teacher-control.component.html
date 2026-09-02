@@ -1,0 +1,261 @@
+<section class="teacher-page">
+  <header class="teacher-heading page-card">
+    <div>
+      <span class="eyebrow">Local teacher tools</span>
+      <h1>Simulation Control</h1>
+      <p>
+        Configure and inspect this device’s current attempt. This prototype does not claim to show a
+        live class roster.
+      </p>
+    </div>
+    <button
+      class="secondary"
+      type="button"
+      (click)="runtime.navigate(runtime.state().pendingEventId ? 'events' : 'market')"
+    >
+      Preview student workspace
+    </button>
+  </header>
+
+  <section class="teacher-metrics">
+    <article class="page-card">
+      <span>Attempt status</span><strong>{{ runtime.state().status }}</strong
+      ><small>Version {{ runtime.state().version }}</small>
+    </article>
+    <article class="page-card">
+      <span>Season progress</span
+      ><strong>Day {{ runtime.state().currentDay }} / {{ runtime.config.maxSeasonDays }}</strong
+      ><i><b [style.width.%]="progressPercent()"></b></i>
+    </article>
+    <article class="page-card">
+      <span>Current cash</span><strong>{{ runtime.money(runtime.cash()) }}</strong
+      ><small>{{ runtime.money(ledgerExpenses()) }} spent</small>
+    </article>
+    <article class="page-card">
+      <span>Student evidence</span><strong>{{ runtime.state().evidence.length }}</strong
+      ><small>{{ runtime.state().eventHistory.length }} event decision(s)</small>
+    </article>
+    <article class="page-card">
+      <span>Data integrity</span
+      ><strong [class.warning]="!runtime.reconciled()">{{
+        runtime.reconciled() ? 'Verified' : 'Check ledger'
+      }}</strong
+      ><small>Cash balances reconcile</small>
+    </article>
+  </section>
+
+  <div class="teacher-layout">
+    <main>
+      <section class="overview page-card">
+        <header>
+          <div>
+            <span class="eyebrow">Current attempt</span>
+            <h2>Overview</h2>
+          </div>
+          <span class="status-chip">{{ runtime.state().companyName || 'Not started' }}</span>
+        </header>
+        <div class="overview-grid">
+          <article>
+            <strong>Location</strong><span>{{ runtime.currentLocation()?.name }}</span
+            ><small>{{ runtime.currentLocation()?.context }}</small>
+          </article>
+          <article>
+            <strong>Transport</strong><span>{{ runtime.transport()?.name ?? 'Not selected' }}</span
+            ><small>{{ runtime.usedCargo() }} / {{ runtime.capacity() }} cargo used</small>
+          </article>
+          <article>
+            <strong>Routes</strong><span>{{ runtime.state().routeHistory.length }} committed</span
+            ><small>{{ runtime.results().distanceTraveled }} miles traveled</small>
+          </article>
+          <article>
+            <strong>Report</strong><span>{{ runtime.state().report.status }}</span
+            ><small>{{ runtime.reportMissing().length }} requirement(s) remaining</small>
+          </article>
+        </div>
+      </section>
+
+      <section class="configuration page-card">
+        <header>
+          <div>
+            <span class="eyebrow">Deterministic scenario controls</span>
+            <h2>Seed and difficulty</h2>
+          </div>
+        </header>
+        <p>
+          The same seed and choices produce the same event schedule. Seed changes lock after the
+          first route is committed.
+        </p>
+        <div>
+          <label class="field"
+            >Scenario seed<input
+              type="number"
+              min="1"
+              step="1"
+              [disabled]="runtime.state().routeHistory.length > 0"
+              [ngModel]="seedInput()"
+              (ngModelChange)="seedInput.set(+$event)"
+          /></label>
+          <label class="field"
+            >Support level<select
+              [ngModel]="difficultyInput()"
+              (ngModelChange)="difficultyInput.set($event)"
+            >
+              <option value="support">Support</option>
+              <option value="standard">Standard</option>
+              <option value="challenge">Challenge</option>
+            </select></label
+          >
+          <button
+            class="primary"
+            type="button"
+            [disabled]="runtime.state().routeHistory.length > 0"
+            (click)="applyScenarioSettings()"
+          >
+            Apply settings
+          </button>
+        </div>
+      </section>
+
+      <section class="config-audit page-card">
+        <header>
+          <div>
+            <span class="eyebrow">Project configuration</span>
+            <h2>Content inventory</h2>
+          </div>
+          <span>{{ runtime.config.projectVersion }}</span>
+        </header>
+        <dl>
+          <div>
+            <dt>Transport options</dt>
+            <dd>{{ runtime.config.transports.length }}</dd>
+          </div>
+          <div>
+            <dt>Trade goods</dt>
+            <dd>{{ runtime.config.goods.length }}</dd>
+          </div>
+          <div>
+            <dt>Markets</dt>
+            <dd>{{ runtime.config.markets.length }}</dd>
+          </div>
+          <div>
+            <dt>Routes</dt>
+            <dd>{{ runtime.config.routes.length }}</dd>
+          </div>
+          <div>
+            <dt>Event cards</dt>
+            <dd>{{ runtime.config.events.length }}</dd>
+          </div>
+          <div>
+            <dt>Report sections</dt>
+            <dd>{{ runtime.config.reportSections.length }}</dd>
+          </div>
+        </dl>
+        <p>
+          All official cash and inventory changes pass through the shared reducer and append to the
+          canonical ledger.
+        </p>
+      </section>
+    </main>
+
+    <aside>
+      <section class="controls page-card">
+        <header>
+          <span class="eyebrow">Season controls</span>
+          <h2>Manage attempt</h2>
+        </header>
+        <button class="launch" type="button" (click)="runtime.teacherPauseToggle()">
+          {{
+            runtime.state().status === 'paused_by_teacher'
+              ? 'Resume simulation'
+              : 'Pause simulation'
+          }}
+        </button>
+        <label class="field"
+          >Inject configured event<select
+            [disabled]="eventInjectionLocked()"
+            [ngModel]="eventId()"
+            (ngModelChange)="eventId.set($event)"
+          >
+            @for (event of runtime.config.events; track event.id) {
+              <option [value]="event.id">{{ event.title }}</option>
+            }
+          </select></label
+        >
+        <button
+          class="secondary"
+          type="button"
+          [disabled]="eventInjectionLocked()"
+          (click)="confirmation.set('inject')"
+        >
+          Review event injection
+        </button>
+        <button
+          class="secondary danger"
+          type="button"
+          [disabled]="runtime.state().pendingEventId === undefined"
+          (click)="confirmation.set('skip')"
+        >
+          Skip pending event
+        </button>
+      </section>
+
+      <section class="data-actions page-card">
+        <header>
+          <span class="eyebrow">Attempt data</span>
+          <h2>Restart and export</h2>
+        </header>
+        <button class="secondary" type="button" (click)="print()">Print current view</button>
+        <button class="secondary danger" type="button" (click)="confirmation.set('restart')">
+          Restart attempt
+        </button>
+        <button class="secondary danger" type="button" (click)="confirmation.set('clear')">
+          Clear saved data
+        </button>
+        <p>
+          Restart preserves the scenario seed and difficulty. Clear saved data returns all local
+          settings to defaults.
+        </p>
+      </section>
+    </aside>
+  </div>
+
+  @if (confirmation(); as action) {
+    <div class="review-backdrop">
+      <section role="alertdialog" aria-modal="true" aria-labelledby="teacher-confirm-title">
+        <span class="eyebrow">Teacher confirmation</span>
+        <h2 id="teacher-confirm-title">Confirm {{ action }}?</h2>
+        @switch (action) {
+          @case ('inject') {
+            <p>
+              Students must resolve “{{ eventTitle(eventId()) }}” before trading or route changes
+              continue.
+            </p>
+          }
+          @case ('skip') {
+            <p>
+              The pending event will be recorded as teacher-skipped with no financial or cargo
+              effect.
+            </p>
+          }
+          @case ('restart') {
+            <p>
+              The current ledger, cargo, routes, evidence, and report draft will be replaced with a
+              new attempt.
+            </p>
+          }
+          @case ('clear') {
+            <p>
+              All locally saved simulation data for this project version will be removed from this
+              device.
+            </p>
+          }
+        }
+        <div>
+          <button class="secondary" type="button" (click)="confirmation.set(undefined)">
+            Cancel</button
+          ><button class="primary" type="button" (click)="confirmAction()">Confirm action</button>
+        </div>
+      </section>
+    </div>
+  }
+</section>

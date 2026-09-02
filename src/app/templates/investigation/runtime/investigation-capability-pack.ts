@@ -13,11 +13,10 @@ export const investigationCapabilityIds = [
   'scriptedNPCs',
   'teams',
   'finalSubmission',
+  'performanceArtifacts',
 ] as const;
 
-export function registerInvestigationCapabilities(
-  registry: CapabilityRegistry,
-): void {
+export function registerInvestigationCapabilities(registry: CapabilityRegistry): void {
   for (const id of investigationCapabilityIds) {
     registry.register({
       id,
@@ -26,4 +25,3 @@ export function registerInvestigationCapabilities(
     });
   }
 }
-

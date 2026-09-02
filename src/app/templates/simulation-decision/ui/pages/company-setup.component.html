@@ -1,0 +1,100 @@
+<section class="setup page-card" aria-labelledby="setup-title">
+  <header>
+    <div class="mission-art" aria-hidden="true">
+      <span>✥</span>
+      <i></i>
+      <b>TRAIL 1870</b>
+    </div>
+    <div>
+      <span class="eyebrow">Company charter · {{ runtime.config.gradeLabel }}</span>
+      <h1 id="setup-title">Start your trading company</h1>
+      <p>{{ runtime.config.mission }}</p>
+    </div>
+  </header>
+
+  <div class="setup-grid">
+    <section>
+      <h2>1. Name and mark your company</h2>
+      <label class="field">
+        Company name
+        <input
+          type="text"
+          maxlength="36"
+          [ngModel]="companyName()"
+          (ngModelChange)="companyName.set($event)"
+          placeholder="Example: Pine Ridge Traders"
+        />
+      </label>
+      <fieldset>
+        <legend>Choose an accessible emblem</legend>
+        <div class="emblems">
+          @for (emblem of runtime.config.emblems; track emblem.id) {
+            <button
+              type="button"
+              [class.selected]="emblemId() === emblem.id"
+              [attr.aria-pressed]="emblemId() === emblem.id"
+              (click)="emblemId.set(emblem.id)"
+            >
+              <span aria-hidden="true">{{ emblem.symbol }}</span
+              ><strong>{{ emblem.label }}</strong>
+            </button>
+          }
+        </div>
+      </fieldset>
+    </section>
+
+    <section>
+      <h2>2. Choose transportation</h2>
+      <div class="transport-list">
+        @for (transport of runtime.config.transports; track transport.id) {
+          <button
+            type="button"
+            [class.selected]="transportId() === transport.id"
+            [attr.aria-pressed]="transportId() === transport.id"
+            (click)="transportId.set(transport.id)"
+          >
+            <span aria-hidden="true">{{ transport.icon }}</span>
+            <div>
+              <strong>{{ transport.name }}</strong>
+              <small>{{ transport.description }}</small>
+              <dl>
+                <div>
+                  <dt>Cost</dt>
+                  <dd>{{ runtime.money(transport.costCents) }}</dd>
+                </div>
+                <div>
+                  <dt>Capacity</dt>
+                  <dd>{{ transport.cargoCapacity }} spaces</dd>
+                </div>
+                <div>
+                  <dt>Tradeoff</dt>
+                  <dd>{{ transport.vulnerability }}</dd>
+                </div>
+              </dl>
+            </div>
+          </button>
+        }
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <dl>
+      <div>
+        <dt>Starting cash</dt>
+        <dd>{{ runtime.money(runtime.config.startingCashCents) }}</dd>
+      </div>
+      <div>
+        <dt>Transportation</dt>
+        <dd>− {{ runtime.money(selectedTransport()?.costCents ?? 0) }}</dd>
+      </div>
+      <div>
+        <dt>Cash for goods and travel</dt>
+        <dd>{{ runtime.money(remainingBudget()) }}</dd>
+      </div>
+    </dl>
+    <button class="primary" type="button" (click)="start()">
+      Sign charter and open the market
+    </button>
+  </footer>
+</section>

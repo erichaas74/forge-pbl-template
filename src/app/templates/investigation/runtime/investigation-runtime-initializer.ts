@@ -15,10 +15,7 @@ export interface RuntimeInitializationResult {
 export class InvestigationRuntimeInitializer {
   constructor(private readonly clock: Clock = new SystemClock()) {}
 
-  create(
-    graph: ProjectDefinitionGraph,
-    scope: RuntimeScope,
-  ): RuntimeInitializationResult {
+  create(graph: ProjectDefinitionGraph, scope: RuntimeScope): RuntimeInitializationResult {
     const assignedAt = this.clock.now();
     const stateValues = Object.fromEntries(
       [...graph.stateById.values()].map((definition) => [
@@ -78,6 +75,7 @@ export class InvestigationRuntimeInitializer {
       ),
       studentEvidence: {},
       evidenceRelationships: [],
+      artifacts: {},
       activities: Object.fromEntries(
         [...graph.activitiesById.keys()].map((id) => [
           id,
@@ -103,10 +101,7 @@ export class InvestigationRuntimeInitializer {
         phases.map((phase, index) => [
           phase.id,
           {
-            status:
-              index === 0 && (phase.entryRuleIds?.length ?? 0) === 0
-                ? 'available'
-                : 'locked',
+            status: index === 0 && (phase.entryRuleIds?.length ?? 0) === 0 ? 'available' : 'locked',
           },
         ]),
       ),
@@ -214,10 +209,7 @@ export class InvestigationRuntimeInitializer {
     return { seed, value: structuredClone(selected?.value) };
   }
 
-  private seed(
-    definition: Readonly<RandomizationDefinition>,
-    scope: RuntimeScope,
-  ): string {
+  private seed(definition: Readonly<RandomizationDefinition>, scope: RuntimeScope): string {
     if (definition.seedStrategy === 'fixed' && definition.fixedSeed !== undefined) {
       return definition.fixedSeed;
     }

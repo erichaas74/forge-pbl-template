@@ -18,6 +18,7 @@ export interface EvidenceRuntimeState {
   status: EvidenceRuntimeStatus;
   classification?: string;
   notes?: string[];
+  important?: boolean;
   relationshipIds?: string[];
   updatedAt?: string;
 }
@@ -51,6 +52,8 @@ export interface HypothesisRevision {
   confidence?: number;
   evidenceIds?: string[];
   reasonForChange?: string;
+  reasoning?: string;
+  remainingQuestion?: string;
 }
 
 export interface HypothesisRuntimeState {
@@ -63,6 +66,8 @@ export interface HypothesisRuntimeState {
   confidence?: number;
   revisions: HypothesisRevision[];
   evidenceIds?: string[];
+  reasoning?: string;
+  remainingQuestion?: string;
 }
 
 export interface BoardNote {
@@ -76,6 +81,9 @@ export interface BoardQuestion {
   id: string;
   text: string;
   status?: 'open' | 'answered' | 'archived';
+  sourceEvidenceId?: string;
+  createdAt?: string;
+  authorId?: string;
 }
 
 export interface BoardRuntimeState {
@@ -119,6 +127,21 @@ export interface RuntimeEvidenceRelationship {
   createdAt: string;
 }
 
+export interface ArtifactVersionRuntimeRecord {
+  version: number;
+  savedAt: string;
+  actor: RuntimeActor;
+  content: unknown;
+  evidenceIds?: string[];
+  sourceActivityId?: string;
+}
+
+export interface VersionedArtifactRuntimeState {
+  artifactId: string;
+  latestVersion: number;
+  versions: ArtifactVersionRuntimeRecord[];
+}
+
 export interface StudentEvidenceRuntimeRecord {
   id: string;
   evidenceType: string;
@@ -128,6 +151,10 @@ export interface StudentEvidenceRuntimeRecord {
   actor: RuntimeActor;
   sourceActivityId?: string;
   metadata?: Record<string, unknown>;
+  classification?: string;
+  notes?: string[];
+  important?: boolean;
+  usedInFinalClaim?: boolean;
 }
 
 export interface RuntimeMessage {
@@ -177,6 +204,7 @@ export interface RuntimeStateSnapshot extends CoreRuntimeState {
   evidence: Record<string, EvidenceRuntimeState>;
   studentEvidence: Record<string, StudentEvidenceRuntimeRecord>;
   evidenceRelationships: RuntimeEvidenceRelationship[];
+  artifacts: Record<string, VersionedArtifactRuntimeState>;
   activities: Record<string, ActivityRuntimeState>;
   hypotheses: HypothesisRuntimeState[];
   resources: Record<string, number>;

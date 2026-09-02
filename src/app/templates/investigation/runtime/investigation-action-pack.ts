@@ -42,6 +42,8 @@ export const investigationInternalCommandTypes = [
   'evidence.disconnect',
   'evidence.studentCreate',
   'evidence.useInClaim',
+  'evidence.setImportance',
+  'board.createQuestion',
   'hypothesis.create',
   'hypothesis.revise',
   'hypothesis.select',
@@ -51,7 +53,9 @@ export const investigationInternalCommandTypes = [
   'confidence.set',
   'npc.completeDialogue',
   'finalSubmission.submit',
+  'finalSubmission.updateDraft',
   'teacher.release',
+  'artifact.saveVersion',
 ] as const;
 
 export function registerInvestigationActionPack(
@@ -67,10 +71,7 @@ export function registerInvestigationActionPack(
     });
   }
 
-  for (const type of [
-    ...investigationActionTypes,
-    ...investigationInternalCommandTypes,
-  ]) {
+  for (const type of [...investigationActionTypes, ...investigationInternalCommandTypes]) {
     commands.register({
       id: type,
       version: '1.0.0',
@@ -87,4 +88,3 @@ const authoritativeCommandTypes = new Set<string>([
   'solution.reveal',
   'teacher.release',
 ]);
-

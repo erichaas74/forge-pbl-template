@@ -1,0 +1,223 @@
+<section class="ledger-page">
+  <header class="ledger-summary">
+    <article class="page-card">
+      <span>Starting cash</span
+      ><strong>{{ runtime.money(runtime.config.startingCashCents) }}</strong>
+    </article>
+    <article class="page-card">
+      <span>Current cash</span><strong>{{ runtime.money(runtime.cash()) }}</strong>
+    </article>
+    <article class="page-card">
+      <span>Total spent</span><strong>{{ runtime.money(totalSpent()) }}</strong>
+    </article>
+    <article class="page-card">
+      <span>Total revenue</span><strong>{{ runtime.money(totalRevenue()) }}</strong>
+    </article>
+    <article class="page-card">
+      <span>Net profit / loss</span
+      ><strong
+        [class.signed-positive]="runtime.profit() >= 0"
+        [class.signed-negative]="runtime.profit() < 0"
+        >{{ runtime.money(runtime.profit(), true) }}</strong
+      >
+    </article>
+    <article class="page-card">
+      <span>Inventory value now</span><strong>{{ runtime.money(runtime.cargoValue()) }}</strong>
+    </article>
+    <article class="page-card">
+      <span>Trades</span><strong>{{ tradeCount() }}</strong>
+    </article>
+    <article class="page-card">
+      <span>Distance</span><strong>{{ runtime.results().distanceTraveled }} miles</strong>
+    </article>
+  </header>
+
+  <div class="ledger-layout">
+    <section class="ledger-book page-card">
+      <header>
+        <div>
+          <span class="eyebrow">Immutable financial and decision history</span>
+          <h1>Trade Ledger</h1>
+        </div>
+        <span class="reconcile" [class.warning]="!runtime.reconciled()">{{
+          runtime.reconciled() ? '✓ Ledger verified' : '! Reconciliation warning'
+        }}</span>
+      </header>
+      <nav aria-label="Filter ledger entries">
+        @for (
+          option of [
+            { id: 'all', label: 'All entries' },
+            { id: 'trades', label: 'Trades' },
+            { id: 'travel', label: 'Travel' },
+            { id: 'events', label: 'Events' },
+            { id: 'pinned', label: 'Evidence pinned' },
+          ];
+          track option.id
+        ) {
+          <button
+            type="button"
+            [class.active]="filter() === option.id"
+            (click)="filter.set($any(option.id))"
+          >
+            {{ option.label }}
+          </button>
+        }
+        <label
+          >Location<select
+            [ngModel]="locationFilter()"
+            (ngModelChange)="locationFilter.set($event)"
+          >
+            <option value="all">All locations</option>
+            @for (location of runtime.config.locations; track location.id) {
+              <option [value]="location.id">{{ location.shortName }}</option>
+            }
+          </select></label
+        >
+      </nav>
+
+      <div class="ledger-table desktop-table" role="table" aria-label="Chronological trade ledger">
+        <div class="table-head" role="row">
+          <span role="columnheader">Day</span><span role="columnheader">Location</span
+          ><span role="columnheader">Type</span><span role="columnheader">Description</span
+          ><span role="columnheader">Cash change</span><span role="columnheader">Balance</span
+          ><span role="columnheader">Cargo</span><span role="columnheader">Evidence</span>
+        </div>
+        @for (entry of entries(); track entry.id) {
+          <button
+            class="ledger-row"
+            type="button"
+            role="row"
+            [class.expanded]="expandedId() === entry.id"
+            (click)="expandedId.set(expandedId() === entry.id ? undefined : entry.id)"
+          >
+            <span role="cell">{{ entry.day }}</span
+            ><span role="cell">{{ locationName(entry.locationId) }}</span
+            ><strong role="cell">{{ typeLabel(entry.type) }}</strong
+            ><span role="cell">{{ entry.description }}</span
+            ><span
+              role="cell"
+              [class.signed-positive]="entry.cashChangeCents > 0"
+              [class.signed-negative]="entry.cashChangeCents < 0"
+              >{{
+                entry.cashChangeCents === 0 ? '—' : runtime.money(entry.cashChangeCents, true)
+              }}</span
+            ><span role="cell">{{ runtime.money(entry.cashBalanceCents) }}</span
+            ><span role="cell">{{
+              entry.cargoDelta === 0 ? '—' : (entry.cargoDelta > 0 ? '+' : '') + entry.cargoDelta
+            }}</span
+            ><span role="cell">{{ isPinned(entry.id) ? '● Pinned' : '○ Available' }}</span>
+          </button>
+          @if (expandedId() === entry.id) {
+            <section class="entry-detail">
+              <div>
+                <strong>Calculation details</strong>
+                @if (calculation(entry); as math) {
+                  <p>{{ math }}</p>
+                } @else {
+                  <p>{{ entry.description }}</p>
+                }
+                @if (costBasis(entry); as basis) {
+                  <p>Cost basis for sold goods: {{ basis }}</p>
+                }
+              </div>
+              <label
+                >Why did this entry matter?<textarea
+                  #note
+                  rows="2"
+                  [ngModel]="annotation(entry.id)"
+                  (blur)="saveNote(entry.id, note.value)"
+                ></textarea></label
+              ><button
+                type="button"
+                (click)="
+                  $event.stopPropagation(); isPinned(entry.id) ? unpin(entry.id) : pin(entry.id)
+                "
+              >
+                {{ isPinned(entry.id) ? 'Remove evidence pin' : 'Pin as report evidence' }}
+              </button>
+            </section>
+          }
+        } @empty {
+          <p class="empty">No ledger entries match this filter.</p>
+        }
+      </div>
+
+      <div class="ledger-cards">
+        @for (entry of entries(); track entry.id) {
+          <article>
+            <button
+              type="button"
+              (click)="expandedId.set(expandedId() === entry.id ? undefined : entry.id)"
+            >
+              <span>Day {{ entry.day }} · {{ locationName(entry.locationId) }}</span
+              ><strong>{{ typeLabel(entry.type) }} · {{ entry.description }}</strong
+              ><span
+                >{{
+                  entry.cashChangeCents === 0
+                    ? 'No cash change'
+                    : runtime.money(entry.cashChangeCents, true)
+                }}
+                · Balance {{ runtime.money(entry.cashBalanceCents) }}</span
+              >
+            </button>
+            @if (expandedId() === entry.id) {
+              <div>
+                <label
+                  >Why did this matter?<textarea
+                    #mobileNote
+                    rows="2"
+                    [ngModel]="annotation(entry.id)"
+                    (blur)="saveNote(entry.id, mobileNote.value)"
+                  ></textarea></label
+                ><button
+                  type="button"
+                  (click)="isPinned(entry.id) ? unpin(entry.id) : pin(entry.id)"
+                >
+                  {{ isPinned(entry.id) ? 'Unpin evidence' : 'Pin as evidence' }}
+                </button>
+              </div>
+            }
+          </article>
+        }
+      </div>
+    </section>
+
+    <aside class="evidence-tray page-card">
+      <header>
+        <div>
+          <span class="eyebrow">Final report sources</span>
+          <h2>Evidence Tray</h2>
+        </div>
+        <span>{{ runtime.state().evidence.length }} pinned</span>
+      </header>
+      <p>Pin strong records that show what you decided, what the math showed, and what happened.</p>
+      <ol>
+        @for (evidence of runtime.state().evidence; track evidence.id) {
+          <li>
+            <span>{{ $index + 1 }}</span>
+            <div>
+              <strong>{{ evidence.title }}</strong
+              ><small>{{ evidence.summary }}</small>
+            </div>
+            <button
+              type="button"
+              aria-label="Remove evidence pin"
+              (click)="runtime.unpinEvidence(evidence.id)"
+            >
+              ×
+            </button>
+          </li>
+        } @empty {
+          <li class="tray-empty">No evidence pinned yet. Expand a ledger row to begin.</li>
+        }
+      </ol>
+      <section>
+        <strong>Reconciliation rule</strong>
+        <p>
+          Current cash always equals starting capital plus every signed ledger change. Inventory
+          losses never create a second cash charge.
+        </p>
+      </section>
+    </aside>
+  </div>
+</section>

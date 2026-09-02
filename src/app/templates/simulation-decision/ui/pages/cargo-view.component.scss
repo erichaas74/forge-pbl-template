@@ -1,0 +1,227 @@
+@use '../simulation-page';
+
+.cargo-page {
+  display: grid;
+  gap: 0.7rem;
+}
+.capacity {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.35rem 1rem;
+  align-items: end;
+  padding: 0.75rem;
+}
+h1,
+h2 {
+  font-family: Georgia, serif;
+}
+h1 {
+  margin-top: 0.1rem;
+  font-size: 1.45rem;
+}
+.capacity-number {
+  display: grid;
+  text-align: right;
+}
+.capacity-number strong {
+  color: #174e65;
+  font-size: 1.55rem;
+}
+.capacity-number span,
+.capacity p {
+  color: #6c5c47;
+  font-size: 0.7rem;
+}
+.capacity-bar {
+  grid-column: 1 / -1;
+  height: 1.2rem;
+  overflow: hidden;
+  border: 1px solid #9b8666;
+  border-radius: 0.2rem;
+  background: repeating-linear-gradient(
+    90deg,
+    #e6dbc4 0 calc(10% - 1px),
+    #aa9675 calc(10% - 1px) 10%
+  );
+}
+.capacity-bar span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #1d6785, #3483a3);
+}
+.capacity p {
+  grid-column: 1 / -1;
+}
+.cargo-main {
+  display: grid;
+  grid-template-columns: minmax(18rem, 0.75fr) minmax(0, 1.35fr);
+  gap: 0.7rem;
+}
+.wagon,
+.inventory,
+.insights {
+  min-width: 0;
+  overflow: hidden;
+}
+.wagon > header,
+.inventory > header,
+.insights > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  border-bottom: 1px solid #c6b493;
+  padding: 0.65rem 0.75rem;
+}
+.wagon header > span,
+.inventory label {
+  color: #6e5e48;
+  font-size: 0.68rem;
+}
+.inventory label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.inventory select {
+  border: 1px solid #a9916e;
+  padding: 0.3rem;
+  background: #fffaf0;
+}
+.wagon-bed {
+  display: grid;
+  min-height: 24rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+  align-content: center;
+  border: 1rem solid #58381f;
+  border-radius: 45% 45% 0.5rem 0.5rem;
+  margin: 1rem;
+  padding: 1rem;
+  background: repeating-linear-gradient(90deg, #8a5d31 0 2rem, #76502c 2rem 2.15rem);
+  box-shadow: inset 0 0 2rem #3b2515;
+}
+.wagon-bed button {
+  display: grid;
+  min-width: 0;
+  gap: 0.1rem;
+  place-items: center;
+  border: 2px solid #d2aa65;
+  border-radius: 0.25rem;
+  padding: 0.55rem;
+  color: #fff0ce;
+  background: rgba(58, 36, 18, 0.88);
+}
+.wagon-bed button.selected {
+  border-color: #73d4dd;
+  box-shadow: 0 0 0 3px #14576b;
+}
+.wagon-bed strong,
+.wagon-bed small {
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.wagon-bed small {
+  color: #dbc8a7;
+  font-size: 0.6rem;
+}
+.wagon > footer {
+  padding: 0 0.75rem 0.65rem;
+  color: #725f47;
+  font-size: 0.66rem;
+}
+.empty-wagon {
+  display: grid;
+  min-height: 24rem;
+  gap: 0.5rem;
+  place-items: center;
+  align-content: center;
+  color: #6c5942;
+}
+.empty-wagon > span {
+  font-size: 4rem;
+}
+.inventory-scroll {
+  overflow: auto;
+}
+table {
+  width: 100%;
+  min-width: 48rem;
+  border-collapse: collapse;
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+}
+th,
+td {
+  border-bottom: 1px solid #ddceb4;
+  padding: 0.5rem 0.4rem;
+  text-align: right;
+}
+thead th {
+  position: sticky;
+  top: 0;
+  color: #5b4933;
+  background: #eadbc1;
+}
+th:first-child,
+td:first-child {
+  text-align: left;
+}
+tbody tr.selected {
+  background: #e8efdf;
+}
+.insights > div {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr) minmax(12rem, 1.25fr);
+  gap: 0.45rem;
+  padding: 0.65rem;
+}
+.insights article,
+.insights aside {
+  display: grid;
+  gap: 0.15rem;
+  border: 1px solid #c9b796;
+  border-radius: 0.4rem;
+  padding: 0.55rem;
+  background: #fffaf0;
+}
+.insights article span {
+  color: #66543e;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.insights article small {
+  color: #6d5c47;
+}
+.insights aside {
+  gap: 0.35rem;
+}
+@media (max-width: 1050px) {
+  .cargo-main {
+    grid-template-columns: 1fr;
+  }
+  .wagon-bed {
+    min-height: 17rem;
+  }
+  .insights > div {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .insights aside {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 560px) {
+  .capacity,
+  .insights > div {
+    grid-template-columns: 1fr;
+  }
+  .capacity-number {
+    text-align: left;
+  }
+  .wagon-bed {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

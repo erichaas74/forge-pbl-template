@@ -23,6 +23,7 @@ import type { RuntimeEngineDefinitionAdapter } from '../core/runtime/runtime-eng
 import { DeterministicRuleEngine } from '../core/rules/deterministic-rule-engine';
 import type { RuleDefinition } from '../core/rules/rule-contracts';
 import type { StateVariableConstraint } from '../core/state/core-runtime-state';
+import type { InitializableRuntimePersistenceAdapter } from '../core/state/persistence-contracts';
 import { RuntimeStateService } from '../core/state/runtime-state.service';
 import type { EventResult, RuntimeScope } from '../core/state/runtime-state-contracts';
 import type { Clock } from '../core/time/clock';
@@ -58,24 +59,15 @@ const definitionAdapter: RuntimeEngineDefinitionAdapter<ProjectDefinitionGraph> 
 export class LocalInvestigationRuntime {
   readonly capabilities = new CapabilityRegistry();
   readonly events = new EventRegistry();
-  readonly conditions = new ConditionRegistry<
-    RuntimeStateSnapshot,
-    ProjectDefinitionGraph
-  >();
+  readonly conditions = new ConditionRegistry<RuntimeStateSnapshot, ProjectDefinitionGraph>();
   readonly actions = new ActionRegistry<RuntimeStateSnapshot>();
   readonly commandHandlers = new CommandHandlerRegistry<
     RuntimeStateSnapshot,
     ProjectDefinitionGraph
   >();
-  readonly eventCommands = new EventCommandRegistry<
-    RuntimeStateSnapshot,
-    ProjectDefinitionGraph
-  >();
-  readonly validation = new ValidationService<
-    ProjectDefinitionGraph,
-    typeof this.capabilities
-  >();
-  readonly persistence: InMemoryRuntimePersistenceAdapter<RuntimeStateSnapshot>;
+  readonly eventCommands = new EventCommandRegistry<RuntimeStateSnapshot, ProjectDefinitionGraph>();
+  readonly validation = new ValidationService<ProjectDefinitionGraph, typeof this.capabilities>();
+  readonly persistence: InitializableRuntimePersistenceAdapter<RuntimeStateSnapshot>;
   readonly realtime = new InMemoryRealtimeAdapter<RuntimeStateSnapshot>();
   readonly assets = new InMemoryAssetStorageAdapter();
   readonly state: RuntimeStateService<RuntimeStateSnapshot>;
@@ -84,13 +76,14 @@ export class LocalInvestigationRuntime {
   readonly idempotency = new InMemoryIdempotencyStore<RuntimeStateSnapshot>();
   readonly eventLog = new RuntimeEventLog();
   readonly initializer: InvestigationRuntimeInitializer;
-  readonly loader: ProjectPackageLoaderService<
-    ProjectDefinitionGraph,
-    typeof this.capabilities
-  >;
+  readonly loader: ProjectPackageLoaderService<ProjectDefinitionGraph, typeof this.capabilities>;
   readonly engine: RuntimeEngine<RuntimeStateSnapshot, ProjectDefinitionGraph>;
 
-  constructor(source: ProjectPackageSource, clock: Clock = new SystemClock()) {
+  constructor(
+    source: ProjectPackageSource,
+    clock: Clock = new SystemClock(),
+    persistence?: InitializableRuntimePersistenceAdapter<RuntimeStateSnapshot>,
+  ) {
     registerInvestigationCapabilities(this.capabilities);
     registerInvestigationEventPack(this.events, this.eventCommands);
     registerInvestigationConditionPack(this.conditions);
@@ -99,7 +92,7 @@ export class LocalInvestigationRuntime {
     this.validation.register(new RegisteredProjectCapabilityValidator());
     this.validation.register(new InvestigationCoreReferenceValidator());
 
-    this.persistence = new InMemoryRuntimePersistenceAdapter(clock);
+    this.persistence = persistence ?? new InMemoryRuntimePersistenceAdapter(clock);
     this.state = new RuntimeStateService(this.persistence, this.realtime);
     this.eventBus = new RuntimeEventBus(this.events);
     this.initializer = new InvestigationRuntimeInitializer(clock);
@@ -133,9 +126,14 @@ export class LocalInvestigationRuntime {
     graph: ProjectDefinitionGraph,
     scope: RuntimeScope,
     overwrite = false,
-  ): Promise<{ snapshot: RuntimeStateSnapshot; errors?: import('../core/errors/runtime-error').RuntimeError[] }> {
+  ): Promise<{
+    snapshot: RuntimeStateSnapshot;
+    errors?: import('../core/errors/runtime-error').RuntimeError[];
+  }> {
     const initialized = this.initializer.create(graph, scope);
-    if (initialized.errors?.some((error) => error.severity === 'error' || error.severity === 'fatal')) {
+    if (
+      initialized.errors?.some((error) => error.severity === 'error' || error.severity === 'fatal')
+    ) {
       return initialized;
     }
     const persisted = await this.state.initialize(scope, initialized.snapshot, overwrite);

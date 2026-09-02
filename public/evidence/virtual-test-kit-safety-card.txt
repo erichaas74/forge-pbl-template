@@ -1,0 +1,18 @@
+THE UNLABELED SHELF
+EVIDENCE FILE E-06: VIRTUAL TEST KIT SAFETY CARD
+
+Available simulation tools:
+- Water solubility station
+- Conductivity probe
+- Test Solution A reaction screen
+- Indicator B color-change screen
+- Digital temperature sensor
+
+Fair-test controls:
+- Use the same virtual amount of each material.
+- Use the same amount of test solution.
+- Use the same container and starting temperature.
+- Change only the vial being tested.
+
+This is a simulation, not a real-world mixing guide. Never open, touch, smell,
+taste, or mix unknown real substances.

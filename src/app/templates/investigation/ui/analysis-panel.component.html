@@ -1,0 +1,82 @@
+<section class="analysis-panel" aria-labelledby="analysis-title">
+  <header>
+    <div>
+      <span class="eyebrow">What does the evidence mean?</span>
+      <h2 id="analysis-title">Analysis Board</h2>
+    </div>
+    <span class="connection-label">Select a card to trace its role</span>
+  </header>
+
+  @if (selectedEvidence(); as selected) {
+    <article class="evidence-trace" aria-live="polite">
+      <div>
+        <small>Selected evidence · {{ selected.type }}</small>
+        <strong>{{ selected.title }}</strong>
+        <p>{{ selected.summary }}</p>
+      </div>
+      <span>{{ selected.classification ?? 'Not analyzed yet' }}</span>
+      <button type="button" aria-label="Clear selected evidence" (click)="selectionCleared.emit()">
+        ×
+      </button>
+    </article>
+  }
+
+  <div class="analysis-zones">
+    @for (zone of zones; track zone.id) {
+      <section class="analysis-zone" [class.highlighted]="hasSelectedInZone(zone.id)">
+        <header>
+          <span aria-hidden="true">{{ zone.symbol }}</span>
+          <div>
+            <h3>{{ zone.label }}</h3>
+            <p>{{ zone.prompt }}</p>
+          </div>
+          <em>{{ inZone(zone.id).length }}</em>
+        </header>
+        <div class="zone-cards">
+          @for (item of inZone(zone.id); track item.id) {
+            <button
+              type="button"
+              [class.selected]="item.id === selectedEvidenceId()"
+              (click)="evidenceSelected.emit(item.id)"
+            >
+              <span>{{ item.type }}</span>
+              <strong>{{ item.title }}</strong>
+              @if (item.important) {
+                <em aria-label="Important evidence">★</em>
+              }
+            </button>
+          } @empty {
+            <p class="empty-zone">Move evidence here when it {{ zone.prompt.toLowerCase() }}.</p>
+          }
+        </div>
+      </section>
+    }
+  </div>
+
+  <section class="questions">
+    <header>
+      <h3>Questions to investigate</h3>
+      <span>{{ questions().length }} open</span>
+    </header>
+    @for (question of questions(); track question.id) {
+      <button type="button" class="question-chip">
+        <span aria-hidden="true">?</span>{{ question.text }}
+      </button>
+    } @empty {
+      <p>No questions yet. Add one when a clue leaves something unexplained.</p>
+    }
+    <label>
+      Add a question
+      <span>
+        <input
+          type="text"
+          [ngModel]="newQuestion()"
+          (ngModelChange)="newQuestion.set($event)"
+          (keyup.enter)="addQuestion()"
+          placeholder="What do I still need to know?"
+        />
+        <button type="button" (click)="addQuestion()">Add</button>
+      </span>
+    </label>
+  </section>
+</section>

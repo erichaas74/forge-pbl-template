@@ -1,0 +1,226 @@
+<section class="report-page">
+  <header class="report-heading page-card">
+    <div>
+      <span class="eyebrow">Final product</span>
+      <h1>Strategy Report</h1>
+      <p>Build a claim with your own decisions, calculations, evidence, and reasoning.</p>
+    </div>
+    <div class="save-indicator" aria-live="polite">
+      <strong>{{ autosaveLabel() }}</strong
+      ><span
+        >{{ completedSections() }} of {{ runtime.config.reportSections.length }} sections
+        complete</span
+      >
+    </div>
+  </header>
+
+  @if (runtime.state().status === 'submitted') {
+    <section class="submitted page-card" aria-live="polite">
+      <span aria-hidden="true">✓</span>
+      <div>
+        <h2>Report submitted</h2>
+        <p>
+          This attempt is read-only. Your ledger, evidence, and final responses remain available for
+          review.
+        </p>
+      </div>
+    </section>
+  }
+
+  <div class="report-layout">
+    <nav class="sections page-card" aria-label="Report sections">
+      <header><span class="eyebrow">Report sections</span><strong>Complete all ten</strong></header>
+      @for (section of runtime.config.reportSections; track section.id) {
+        <button
+          type="button"
+          [class.active]="selectedSectionId() === section.id"
+          (click)="selectSection(section.id)"
+        >
+          <span>{{ $index + 1 }}</span
+          ><strong>{{ section.title }}</strong
+          ><i [class.complete]="sectionComplete(section)">{{
+            sectionComplete(section) ? '✓' : '○'
+          }}</i>
+        </button>
+      }
+    </nav>
+
+    <main class="editor page-card">
+      @if (selectedDefinition(); as definition) {
+        <header>
+          <div>
+            <span class="section-number">{{
+              runtime.config.reportSections.indexOf(definition) + 1
+            }}</span>
+            <div>
+              <span class="eyebrow">Current section</span>
+              <h2>{{ definition.title }}</h2>
+            </div>
+          </div>
+          <span class="status-chip">{{
+            sectionComplete(definition) ? 'Complete' : 'In progress'
+          }}</span>
+        </header>
+        <section class="prompt">
+          <strong>Prompt</strong>
+          <p>{{ definition.prompt }}</p>
+        </section>
+        <label class="field response-field"
+          >Your response<textarea
+            rows="10"
+            [disabled]="runtime.state().status === 'submitted'"
+            [ngModel]="response()"
+            (ngModelChange)="updateResponse($event)"
+            placeholder="State your claim, cite specific evidence, and explain what the numbers mean."
+          ></textarea
+          ><small>{{ response().trim().length }} characters · at least 12 needed</small></label
+        >
+
+        @if (definition.calculationRequired) {
+          <label class="field calculation-field"
+            >Show your calculation<textarea
+              rows="4"
+              [disabled]="runtime.state().status === 'submitted'"
+              [ngModel]="calculation()"
+              (ngModelChange)="updateCalculation($event)"
+              placeholder="Example: sale revenue − cost basis = profit"
+            ></textarea
+            ><small>Label each number and include the unit.</small></label
+          >
+        }
+
+        <section class="attached-evidence">
+          <header>
+            <strong
+              >Attached evidence ({{ evidenceIds().length }} of
+              {{ definition.evidenceMinimum }} required)</strong
+            ><span>Evidence proves the claim; it does not replace your explanation.</span>
+          </header>
+          <div>
+            @for (evidenceId of evidenceIds(); track evidenceId) {
+              <button
+                type="button"
+                [disabled]="runtime.state().status === 'submitted'"
+                (click)="toggleEvidence(evidenceId)"
+              >
+                <span>{{ evidenceTitle(evidenceId) }}</span
+                ><b aria-label="Remove evidence">×</b>
+              </button>
+            } @empty {
+              <p>No evidence attached to this section yet.</p>
+            }
+          </div>
+        </section>
+      }
+    </main>
+
+    <aside class="evidence-library page-card">
+      <header>
+        <div>
+          <span class="eyebrow">Pinned during the simulation</span>
+          <h2>Evidence Library</h2>
+        </div>
+        <span>{{ runtime.state().evidence.length }} items</span>
+      </header>
+      <div class="evidence-filters" aria-label="Filter evidence">
+        @for (filter of ['all', 'ledger', 'route', 'event', 'result', 'notebook']; track filter) {
+          <button
+            type="button"
+            [class.active]="evidenceFilter() === filter"
+            (click)="evidenceFilter.set($any(filter))"
+          >
+            {{ filter }}
+          </button>
+        }
+      </div>
+      <div class="evidence-list">
+        @for (evidence of filteredEvidence(); track evidence.id) {
+          <article [class.selected]="attached(evidence.id)">
+            <span>{{ evidence.sourceType }}</span
+            ><strong>{{ evidence.title }}</strong>
+            <p>{{ evidence.summary }}</p>
+            <button
+              type="button"
+              [disabled]="runtime.state().status === 'submitted'"
+              (click)="toggleEvidence(evidence.id)"
+            >
+              {{ attached(evidence.id) ? 'Remove' : 'Add to section' }}
+            </button>
+          </article>
+        } @empty {
+          <section class="empty-evidence">
+            <strong>No evidence matches this filter.</strong>
+            <p>Return to the ledger, route map, cargo page, or results to pin records.</p>
+            <button class="secondary" type="button" (click)="runtime.navigate('ledger')">
+              Open ledger
+            </button>
+          </section>
+        }
+      </div>
+      <section class="rubric">
+        <h3>Submission readiness</h3>
+        <ul>
+          <li [class.complete]="runtime.reportMissing().length === 0">
+            Every section answers its prompt
+          </li>
+          <li [class.complete]="runtime.state().evidence.length > 0">
+            Claims use simulation evidence
+          </li>
+          <li
+            [class.complete]="
+              runtime.state().status === 'season_complete' || runtime.state().status === 'submitted'
+            "
+          >
+            Season is complete
+          </li>
+          <li [class.complete]="runtime.reconciled()">Ledger reconciles</li>
+        </ul>
+        @if (runtime.reportMissing().length > 0) {
+          <details>
+            <summary>{{ runtime.reportMissing().length }} requirement(s) remaining</summary>
+            <ul>
+              @for (missing of runtime.reportMissing(); track missing) {
+                <li>{{ missing }}</li>
+              }
+            </ul>
+          </details>
+        }
+        <button
+          class="primary"
+          type="button"
+          [disabled]="
+            runtime.state().status === 'submitted' ||
+            runtime.state().status !== 'season_complete' ||
+            runtime.reportMissing().length > 0
+          "
+          (click)="confirmSubmit.set(true)"
+        >
+          Submit final report
+        </button>
+        @if (
+          runtime.state().status !== 'season_complete' && runtime.state().status !== 'submitted'
+        ) {
+          <p>Finish the trading season before submitting. Drafting is available now.</p>
+        }
+      </section>
+    </aside>
+  </div>
+
+  @if (confirmSubmit()) {
+    <div class="review-backdrop">
+      <section role="alertdialog" aria-modal="true" aria-labelledby="submit-title">
+        <span class="eyebrow">Official submission</span>
+        <h2 id="submit-title">Submit this report?</h2>
+        <p>
+          Submitting locks the official attempt for student editing. Review all ten sections before
+          continuing.
+        </p>
+        <div>
+          <button class="secondary" type="button" (click)="confirmSubmit.set(false)">
+            Keep editing</button
+          ><button class="primary" type="button" (click)="submit()">Submit report</button>
+        </div>
+      </section>
+    </div>
+  }
+</section>

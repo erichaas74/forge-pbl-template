@@ -1,0 +1,108 @@
+<section class="panel-shell" aria-labelledby="evidence-locker-title">
+  @if (selectedEvidence(); as selected) {
+    <app-investigation-evidence-detail
+      [evidence]="selected"
+      (closed)="evidenceSelected.emit(undefined)"
+      (classificationChanged)="
+        classificationChanged.emit({ evidenceId: selected.id, classification: $event })
+      "
+      (noteSaved)="noteSaved.emit({ evidenceId: selected.id, note: $event })"
+      (importanceChanged)="importanceChanged.emit({ evidenceId: selected.id, important: $event })"
+      (finalEvidenceSelected)="finalEvidenceSelected.emit(selected.id)"
+      (questionCreated)="questionCreated.emit({ evidenceId: selected.id, text: $event })"
+    />
+  } @else {
+    <header class="panel-heading">
+      <div>
+        <span class="eyebrow">What have I discovered?</span>
+        <h2 id="evidence-locker-title">Evidence Locker</h2>
+      </div>
+      <span class="count">{{ evidence().length }} records</span>
+    </header>
+    <p class="panel-guidance">
+      Open one clue, record what you notice, then decide where it belongs.
+    </p>
+
+    <div class="evidence-grid">
+      @for (item of evidence(); track item.id) {
+        <article
+          class="evidence-card"
+          [class.locked]="item.status === 'locked'"
+          [class.new]="item.status === 'available' || item.status === 'unopened'"
+          [class.important]="item.important"
+        >
+          <button class="card-open" type="button" (click)="evidenceSelected.emit(item.id)">
+            @if (item.asset; as asset) {
+              <img [src]="asset" alt="" />
+            } @else {
+              <span class="type-icon" aria-hidden="true">{{
+                item.studentCreated ? '✎' : '▥'
+              }}</span>
+            }
+            <span class="card-copy">
+              <small>{{ item.type }}</small>
+              <strong>{{ item.title }}</strong>
+              <span>{{ item.summary }}</span>
+            </span>
+            <em>
+              @if (item.status === 'locked') {
+                <span aria-hidden="true">🔒</span>
+              }
+              @if (item.important) {
+                <span aria-hidden="true">★</span>
+              }
+              {{ visibleStatus(item) }}
+            </em>
+          </button>
+          @if (item.status !== 'locked') {
+            <label>
+              Move evidence
+              <select
+                [ngModel]="item.classification ?? ''"
+                (ngModelChange)="classify(item.id, $event)"
+              >
+                <option value="" disabled>Choose a zone…</option>
+                <option value="supports">Supports</option>
+                <option value="uncertain">Uncertain</option>
+                <option value="contradicts">Contradicts</option>
+              </select>
+            </label>
+          }
+        </article>
+      }
+    </div>
+
+    <section class="student-evidence">
+      @if (creatingEvidence()) {
+        <h3>Add my evidence</h3>
+        <label>
+          Evidence title
+          <input
+            type="text"
+            [ngModel]="studentEvidenceTitle()"
+            (ngModelChange)="studentEvidenceTitle.set($event)"
+            placeholder="My observation"
+          />
+        </label>
+        <label>
+          What did you observe?
+          <textarea
+            rows="3"
+            [ngModel]="studentEvidenceObservation()"
+            (ngModelChange)="studentEvidenceObservation.set($event)"
+          ></textarea>
+        </label>
+        <div>
+          <button type="button" (click)="creatingEvidence.set(false)">Cancel</button>
+          <button class="primary" type="button" (click)="createStudentEvidence()">
+            Add evidence
+          </button>
+        </div>
+      } @else {
+        <button class="add-evidence" type="button" (click)="creatingEvidence.set(true)">
+          <span aria-hidden="true">＋</span> Add my evidence
+        </button>
+      }
+    </section>
+  }
+</section>

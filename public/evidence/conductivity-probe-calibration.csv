@@ -1,0 +1,5 @@
+control_sample,expected_result,probe_light,reading_quality,technician_note
+Distilled water,Does not conduct,Off,Pass,No false positive observed
+Salt solution,Conducts,Strong on,Pass,Probe responds immediately
+Sugar solution,Does not conduct,Off,Pass,Control remains dark
+Repeat salt solution,Conducts,Strong on,Pass,Response repeated under same conditions

@@ -1,0 +1,127 @@
+<article class="evidence-detail" aria-labelledby="evidence-detail-title">
+  <header>
+    <div>
+      <span class="eyebrow">{{ evidence().type }}</span>
+      <h2 id="evidence-detail-title">{{ evidence().title }}</h2>
+      <p>{{ evidence().source }}</p>
+    </div>
+    <button
+      class="icon-button"
+      type="button"
+      aria-label="Close evidence detail"
+      (click)="closed.emit()"
+    >
+      ×
+    </button>
+  </header>
+
+  @if (evidence().status === 'locked') {
+    <section class="locked-state" aria-live="polite">
+      <span aria-hidden="true">🔒</span>
+      <div>
+        <strong>Locked evidence</strong>
+        <p>Complete its connected investigation before examining this result.</p>
+      </div>
+    </section>
+  } @else {
+    <section class="evidence-content" aria-label="Evidence content">
+      @if (evidence().asset; as asset) {
+        <img [src]="asset" [alt]="evidence().title" />
+      } @else {
+        <div class="data-visual" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+      }
+      <p>{{ evidence().summary }}</p>
+      @if (evidence().file; as file) {
+        <a [href]="file" target="_blank" rel="noopener"
+          >Open source record <span aria-hidden="true">↗</span></a
+        >
+      }
+    </section>
+
+    <section class="guided-step">
+      <span class="step-number">1</span>
+      <div>
+        <h3>Look closely</h3>
+        <p>What do you notice before deciding what this clue means?</p>
+        <label>
+          Evidence note
+          <textarea
+            rows="3"
+            [ngModel]="note()"
+            (ngModelChange)="note.set($event)"
+            (blur)="saveNote()"
+            placeholder="I notice…"
+          ></textarea>
+        </label>
+        <button class="quiet-action" type="button" (click)="saveNote()">Save observation</button>
+      </div>
+    </section>
+
+    <section class="guided-step">
+      <span class="step-number">2</span>
+      <fieldset>
+        <legend>Decide what this clue does</legend>
+        <p>Your classification records your interpretation; it is not graded as right or wrong.</p>
+        <div class="classification-actions">
+          <button
+            type="button"
+            [class.selected]="evidence().classification === 'supports'"
+            [attr.aria-pressed]="evidence().classification === 'supports'"
+            (click)="classificationChanged.emit('supports')"
+          >
+            <span aria-hidden="true">+</span> Supports
+          </button>
+          <button
+            type="button"
+            [class.selected]="evidence().classification === 'uncertain'"
+            [attr.aria-pressed]="evidence().classification === 'uncertain'"
+            (click)="classificationChanged.emit('uncertain')"
+          >
+            <span aria-hidden="true">?</span> Uncertain
+          </button>
+          <button
+            type="button"
+            [class.selected]="evidence().classification === 'contradicts'"
+            [attr.aria-pressed]="evidence().classification === 'contradicts'"
+            (click)="classificationChanged.emit('contradicts')"
+          >
+            <span aria-hidden="true">−</span> Contradicts
+          </button>
+        </div>
+      </fieldset>
+    </section>
+
+    <section class="guided-step">
+      <span class="step-number">3</span>
+      <div>
+        <h3>Use the evidence</h3>
+        <div class="evidence-actions">
+          <button
+            type="button"
+            [attr.aria-pressed]="evidence().important"
+            (click)="importanceChanged.emit(!evidence().important)"
+          >
+            <span aria-hidden="true">{{ evidence().important ? '★' : '☆' }}</span>
+            {{ evidence().important ? 'Marked important' : 'Mark important' }}
+          </button>
+          <button type="button" (click)="finalEvidenceSelected.emit()">
+            <span aria-hidden="true">＋</span> Add to final evidence set
+          </button>
+        </div>
+        <label>
+          Ask a question about this evidence
+          <input
+            type="text"
+            [ngModel]="question()"
+            (ngModelChange)="question.set($event)"
+            (keyup.enter)="addQuestion()"
+            placeholder="Why did this happen?"
+          />
+        </label>
+        <button class="quiet-action" type="button" (click)="addQuestion()">Add question</button>
+      </div>
+    </section>
+  }
+</article>

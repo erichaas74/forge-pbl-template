@@ -1,0 +1,157 @@
+<section class="cargo-page">
+  <header class="capacity page-card">
+    <div>
+      <span class="eyebrow">Wagon / cargo</span>
+      <h1>Capacity is part of every trade</h1>
+    </div>
+    <div class="capacity-number">
+      <strong>{{ runtime.usedCargo() }} / {{ runtime.capacity() }}</strong
+      ><span>{{ runtime.capacity() - runtime.usedCargo() }} spaces remaining</span>
+    </div>
+    <div
+      class="capacity-bar"
+      role="meter"
+      aria-label="Cargo capacity used"
+      aria-valuemin="0"
+      [attr.aria-valuemax]="runtime.capacity()"
+      [attr.aria-valuenow]="runtime.usedCargo()"
+    >
+      <span [style.width.%]="cargoPercent()"></span>
+    </div>
+    <p>
+      Each good uses a fixed number of cargo spaces per unit. The wagon illustration is a guide; the
+      table contains the official totals.
+    </p>
+  </header>
+
+  <div class="cargo-main">
+    <section class="wagon page-card" aria-labelledby="wagon-title">
+      <header>
+        <div>
+          <span class="eyebrow">Illustrative packing view</span>
+          <h2 id="wagon-title">Your {{ runtime.transport()?.name }}</h2>
+        </div>
+        <span>{{ items().length }} different goods</span>
+      </header>
+      @if (items().length === 0) {
+        <div class="empty-wagon">
+          <span aria-hidden="true">▱</span><strong>The cargo bed is empty.</strong
+          ><button class="primary" type="button" (click)="runtime.navigate('market')">
+            Open the market
+          </button>
+        </div>
+      } @else {
+        <div class="wagon-bed">
+          @for (item of items(); track item.goodId) {
+            <button
+              type="button"
+              [class.selected]="selectedGoodId() === item.goodId"
+              (click)="selectedGoodId.set(item.goodId)"
+            >
+              <span aria-hidden="true">{{ item.good.icon }}</span
+              ><strong>{{ item.good.name }}</strong
+              ><small>{{ item.quantity }} units · {{ item.totalCargo }} spaces</small>
+            </button>
+          }
+        </div>
+      }
+      <footer>
+        Selection highlights the matching inventory record. Packing positions are not a puzzle.
+      </footer>
+    </section>
+
+    <section class="inventory page-card">
+      <header>
+        <div>
+          <span class="eyebrow">Canonical inventory</span>
+          <h2>Cargo inventory</h2>
+        </div>
+        <label
+          >Sort by<select [ngModel]="sortBy()" (ngModelChange)="sortBy.set($event)">
+            <option value="cargo">Cargo used</option>
+            <option value="name">Good name</option>
+            <option value="quantity">Quantity</option>
+            <option value="invested">Cash invested</option>
+            <option value="gain">Current gain / loss</option>
+          </select></label
+        >
+      </header>
+      <div class="inventory-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Good</th>
+              <th scope="col">Qty</th>
+              <th scope="col">Cargo / unit</th>
+              <th scope="col">Total cargo</th>
+              <th scope="col">Avg. cost</th>
+              <th scope="col">Invested</th>
+              <th scope="col">Current sell value</th>
+              <th scope="col">Gain / loss</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of items(); track item.goodId) {
+              <tr
+                [class.selected]="selectedGoodId() === item.goodId"
+                (click)="selectedGoodId.set(item.goodId)"
+              >
+                <th scope="row">
+                  <span aria-hidden="true">{{ item.good.icon }}</span> {{ item.good.name }}
+                </th>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.good.unitCargo }}</td>
+                <td>{{ item.totalCargo }}</td>
+                <td>{{ runtime.money(item.averageCostCents) }}</td>
+                <td>{{ runtime.money(item.investedCostCents) }}</td>
+                <td>{{ runtime.money(item.currentValueCents) }}</td>
+                <td
+                  [class.signed-positive]="item.gainCents >= 0"
+                  [class.signed-negative]="item.gainCents < 0"
+                >
+                  {{ runtime.money(item.gainCents, true) }}
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="8">No inventory yet. Buy goods in the current market.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <section class="insights page-card">
+    <header>
+      <span class="eyebrow">Descriptive calculations · not recommendations</span>
+      <h2>Cargo insights</h2>
+    </header>
+    <div>
+      <article>
+        <span>Most space used by</span><strong>{{ mostSpaceName() }}</strong
+        ><small>{{ mostSpaceCargo() }} spaces</small>
+      </article>
+      <article>
+        <span>Most cash invested in</span><strong>{{ mostInvestedName() }}</strong
+        ><small>{{ runtime.money(mostInvestedValue()) }}</small>
+      </article>
+      <article>
+        <span>Highest current gain</span><strong>{{ highestGainName() }}</strong
+        ><small>{{ runtime.money(highestGainValue(), true) }}</small>
+      </article>
+      <article>
+        <span>Highest current loss</span><strong>{{ highestLossName() }}</strong
+        ><small>{{ runtime.money(lossValue(), true) }}</small>
+      </article>
+      <aside>
+        <button class="secondary" type="button" (click)="runtime.navigate('market')">
+          What if I sold? Open market</button
+        ><button class="primary" type="button" (click)="pinSnapshot()">
+          Save inventory snapshot as evidence
+        </button>
+      </aside>
+    </div>
+  </section>
+</section>

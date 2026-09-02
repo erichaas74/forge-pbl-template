@@ -1,0 +1,13 @@
+INDICATOR B COLOR KEY
+Case: SHELF-4
+
+AMBER OR TAN
+No starch response observed. Salt, sugar, and baking soda reference samples remain
+in this color range during the virtual test.
+
+DARK BLUE-BLACK
+Starch response observed. The cornstarch reference sample changes to this color.
+
+FAIR-TEST REMINDER
+Use equal virtual sample amounts, equal drops, equal timing, and the same display
+conditions. Describe the visible color before naming a material.

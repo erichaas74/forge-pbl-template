@@ -38,6 +38,7 @@ describe('Investigation domain contracts', () => {
       evidence: {},
       studentEvidence: {},
       evidenceRelationships: [],
+      artifacts: {},
       activities: {},
       hypotheses: [],
       resources: {},

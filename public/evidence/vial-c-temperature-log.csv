@@ -1,0 +1,7 @@
+case_id,vial_id,time_minutes,temperature_celsius,observer_note
+SHELF-4,C,0,22,"Starting temperature"
+SHELF-4,C,1,21,"Small bubbles begin"
+SHELF-4,C,2,20,"Steady bubbles"
+SHELF-4,C,3,19,"Strong bubbling; temperature lower"
+SHELF-4,C,4,19,"Bubbling slows"
+SHELF-4,C,5,19,"Final temperature"

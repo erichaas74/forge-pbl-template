@@ -1,0 +1,12 @@
+THE UNLABELED SHELF
+EVIDENCE FILE E-05: SHELF MONITOR STATEMENT
+
+"I remember two vials having crystals and two looking like powders. During an
+earlier virtual test, only one vial bubbled strongly with Solution A. Another
+powder made Indicator B turn dark blue-black. I do not remember the vial
+letters, so the tests should be repeated."
+
+Reliability questions:
+1. Which claims can be checked with the test matrix?
+2. Which details are incomplete?
+3. Why should repeatable measurements outweigh memory alone?

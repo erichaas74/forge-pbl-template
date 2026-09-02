@@ -1,0 +1,157 @@
+<section class="results-page">
+  <header class="season-complete page-card">
+    <div class="seal" aria-hidden="true">★</div>
+    <div>
+      <span class="eyebrow">Trading season complete</span>
+      <h1>{{ runtime.results().performanceLabel }}</h1>
+      <p>
+        Your score combines financial choices with evidence and decision reasoning. Unsold cargo is
+        reported separately and is not treated as cash.
+      </p>
+    </div>
+    <strong class="score">{{ runtime.results().score }}<small>/100</small></strong>
+  </header>
+
+  <section class="result-metrics" aria-label="Season results">
+    <article class="page-card">
+      <span>Final cash</span><strong>{{ runtime.money(runtime.results().endingCashCents) }}</strong
+      ><small>Spendable at season close</small>
+    </article>
+    <article class="page-card">
+      <span>Net profit / loss</span
+      ><strong
+        [class.signed-positive]="runtime.results().netProfitCents >= 0"
+        [class.signed-negative]="runtime.results().netProfitCents < 0"
+        >{{ runtime.money(runtime.results().netProfitCents, true) }}</strong
+      ><small>Ending cash minus starting cash</small>
+    </article>
+    <article class="page-card">
+      <span>Unsold cargo value</span
+      ><strong>{{ runtime.money(runtime.results().unsoldInventoryValueCents) }}</strong
+      ><small>Estimated market value, not cash or score</small>
+    </article>
+    <article class="page-card">
+      <span>Distance traveled</span><strong>{{ runtime.results().distanceTraveled }} miles</strong
+      ><small>{{ runtime.state().routeHistory.length }} route decision(s)</small>
+    </article>
+    <article class="page-card">
+      <span>Trade decisions</span><strong>{{ runtime.results().tradeCount }}</strong
+      ><small>{{ profitableTrades() }} profitable sale(s)</small>
+    </article>
+  </section>
+
+  <div class="results-grid">
+    <section class="performance page-card">
+      <header>
+        <div>
+          <span class="eyebrow">Transparent calculation</span>
+          <h2>Where the cash went</h2>
+        </div>
+        <span class="status-chip">Ledger derived</span>
+      </header>
+      <div class="equation" aria-label="Ending cash equation">
+        <div>
+          <span>Starting capital</span
+          ><strong>{{ runtime.money(runtime.results().startingCashCents) }}</strong>
+        </div>
+        <div>
+          <span>Transport</span
+          ><strong>−{{ runtime.money(runtime.results().transportCostCents) }}</strong>
+        </div>
+        <div>
+          <span>Goods purchased</span
+          ><strong>−{{ runtime.money(runtime.results().goodsPurchasedCents) }}</strong>
+        </div>
+        <div>
+          <span>Travel supplies</span
+          ><strong>−{{ runtime.money(runtime.results().supplyCostsCents) }}</strong>
+        </div>
+        <div>
+          <span>Event expenses</span
+          ><strong>−{{ runtime.money(runtime.results().eventExpensesCents) }}</strong>
+        </div>
+        <div>
+          <span>Sales revenue</span
+          ><strong>+{{ runtime.money(runtime.results().salesRevenueCents) }}</strong>
+        </div>
+        <div>
+          <span>Event income</span
+          ><strong>+{{ runtime.money(runtime.results().eventIncomeCents) }}</strong>
+        </div>
+        <div class="total">
+          <span>Ending cash</span
+          ><strong>{{ runtime.money(runtime.results().endingCashCents) }}</strong>
+        </div>
+      </div>
+
+      <section class="cash-chart">
+        <h3>Cash after each official entry</h3>
+        <ol>
+          @for (point of cashTimeline(); track point.entry.id) {
+            <li>
+              <span>Day {{ point.entry.day }}</span>
+              <i><b [style.width.%]="point.width"></b></i>
+              <strong>{{ runtime.money(point.entry.cashBalanceCents) }}</strong>
+            </li>
+          }
+        </ol>
+      </section>
+    </section>
+
+    <aside class="decision-review">
+      <article class="page-card decision-card best">
+        <span class="eyebrow">Strongest sale</span>
+        @if (strongestSale(); as sale) {
+          <h2>{{ goodName(sale.entry) }}</h2>
+          <strong>{{ runtime.money(sale.profitCents, true) }}</strong>
+          <p>{{ locationName(sale.entry.locationId) }} · Day {{ sale.entry.day }}</p>
+          <small
+            >Revenue {{ runtime.money(sale.entry.cashChangeCents) }} − cost basis
+            {{ runtime.money(sale.entry.details?.costBasisCents ?? 0) }}</small
+          >
+        } @else {
+          <h2>No sales recorded</h2>
+          <p>Use the report to explain why you kept the remaining cargo.</p>
+        }
+      </article>
+      <article class="page-card decision-card learn">
+        <span class="eyebrow">Most to learn from</span>
+        @if (weakestSale(); as sale) {
+          <h2>{{ goodName(sale.entry) }}</h2>
+          <strong
+            [class.signed-positive]="sale.profitCents >= 0"
+            [class.signed-negative]="sale.profitCents < 0"
+            >{{ runtime.money(sale.profitCents, true) }}</strong
+          >
+          <p>What price, route, or cargo choice would improve this result?</p>
+        } @else {
+          <h2>Plan the next attempt</h2>
+          <p>Which evidence would help you make a confident sale?</p>
+        }
+      </article>
+      <article class="page-card next-actions">
+        <span class="eyebrow">Next actions</span>
+        <h2>Turn results into an argument</h2>
+        <button class="primary" type="button" (click)="runtime.navigate('report')">
+          Build final strategy report
+        </button>
+        <button class="secondary" type="button" (click)="runtime.navigate('ledger')">
+          Review the ledger
+        </button>
+        <button class="secondary" type="button" (click)="print()">Print results</button>
+      </article>
+    </aside>
+  </div>
+
+  <section class="reflection page-card">
+    <div aria-hidden="true">✒</div>
+    <div>
+      <span class="eyebrow">End-of-season reflection</span>
+      <h2>Explain the strategy behind the score</h2>
+      <p>What worked, what trade-off mattered most, and what would you change next time?</p>
+    </div>
+    <button class="primary" type="button" (click)="runtime.navigate('report')">
+      Write reflection
+    </button>
+  </section>
+</section>

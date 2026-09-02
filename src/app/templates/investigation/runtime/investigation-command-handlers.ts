@@ -1,4 +1,7 @@
-import type { CommandHandler, CommandHandlingResult } from '../../../core/commands/command-handler-contracts';
+import type {
+  CommandHandler,
+  CommandHandlingResult,
+} from '../../../core/commands/command-handler-contracts';
 import type {
   CommandExecutionContext,
   RuntimeCommand,
@@ -49,7 +52,9 @@ function execute(
         'viewed',
       ]);
     case 'evidence.useInClaim':
-      return setEvidenceStatus(command, state, graph, 'usedInClaim');
+      return useEvidenceInFinal(command, state, graph);
+    case 'evidence.setImportance':
+      return setEvidenceImportance(command, state, graph);
     case 'evidence.classify':
       return classifyEvidence(command, state, graph);
     case 'evidence.annotate':
@@ -61,6 +66,8 @@ function execute(
     case 'evidence.create':
     case 'evidence.studentCreate':
       return createEvidence(command, state, graph, context);
+    case 'board.createQuestion':
+      return createQuestion(command, state, context);
     case 'activity.unlock':
       return setActivityStatus(command, state, graph, 'notStarted');
     case 'activity.lock':
@@ -94,6 +101,8 @@ function execute(
       return setFinalStatus('closed');
     case 'finalSubmission.submit':
       return submitFinal(state, context);
+    case 'finalSubmission.updateDraft':
+      return updateFinalDraft(command, state);
     case 'solution.reveal':
       return { mutations: [{ operation: 'set', path: '/solutionRevealed', value: true }] };
     case 'npc.unlockDialogue':
@@ -126,9 +135,55 @@ function execute(
               },
             ],
           };
+    case 'artifact.saveVersion':
+      return saveArtifactVersion(command, state, context);
     default:
       return failure('INVALID_COMMAND', `Unsupported command "${command.commandType}".`);
   }
+}
+
+function saveArtifactVersion(
+  command: RuntimeCommand,
+  state: Readonly<RuntimeStateSnapshot>,
+  context: CommandExecutionContext<ProjectDefinitionGraph>,
+): CommandHandlingResult {
+  const artifactId = command.targetId;
+  if (artifactId === undefined || !isRecord(command.value)) {
+    return failure(
+      'INVALID_COMMAND_VALUE',
+      'artifact.saveVersion requires an artifact ID and content payload.',
+      artifactId,
+    );
+  }
+
+  const current = state.artifacts[artifactId];
+  const version = (current?.latestVersion ?? 0) + 1;
+  const evidenceIds = stringArray(command.value['evidenceIds']);
+  const sourceActivityId = command.value['sourceActivityId'];
+
+  return {
+    mutations: [
+      {
+        operation: 'set',
+        path: pointer('artifacts', artifactId),
+        value: {
+          artifactId,
+          latestVersion: version,
+          versions: [
+            ...(current?.versions ?? []),
+            {
+              version,
+              savedAt: context.eventTimestamp ?? state.lastUpdated,
+              actor: context.actor ?? { type: 'system' as const },
+              content: structuredClone(command.value['content'] ?? command.value),
+              evidenceIds,
+              sourceActivityId: typeof sourceActivityId === 'string' ? sourceActivityId : undefined,
+            },
+          ],
+        },
+      },
+    ],
+  };
 }
 
 function setEvidenceStatus(
@@ -160,18 +215,35 @@ function classifyEvidence(
   graph: ProjectDefinitionGraph,
 ): CommandHandlingResult {
   const id = command.targetId;
-  if (id === undefined || !graph.evidenceById.has(id) || state.evidence[id] === undefined) {
+  if (
+    id === undefined ||
+    (!graph.evidenceById.has(id) && state.studentEvidence[id] === undefined)
+  ) {
     return missing('evidence', id);
   }
   if (typeof command.value !== 'string' || command.value.length === 0) {
     return failure('INVALID_COMMAND_VALUE', 'evidence.classify requires a classification.', id);
   }
-  return {
-    mutations: [
-      { operation: 'set', path: pointer('evidence', id, 'classification'), value: command.value },
-      { operation: 'set', path: pointer('evidence', id, 'status'), value: 'classified' },
-    ],
-  };
+  return state.studentEvidence[id] === undefined
+    ? {
+        mutations: [
+          {
+            operation: 'set',
+            path: pointer('evidence', id, 'classification'),
+            value: command.value,
+          },
+          { operation: 'set', path: pointer('evidence', id, 'status'), value: 'classified' },
+        ],
+      }
+    : {
+        mutations: [
+          {
+            operation: 'set',
+            path: pointer('studentEvidence', id, 'classification'),
+            value: command.value,
+          },
+        ],
+      };
 }
 
 function annotateEvidence(
@@ -180,16 +252,123 @@ function annotateEvidence(
   graph: ProjectDefinitionGraph,
 ): CommandHandlingResult {
   const id = command.targetId;
-  if (id === undefined || !graph.evidenceById.has(id) || state.evidence[id] === undefined) {
+  if (
+    id === undefined ||
+    (!graph.evidenceById.has(id) && state.studentEvidence[id] === undefined)
+  ) {
     return missing('evidence', id);
   }
   if (typeof command.value !== 'string' || command.value.length === 0) {
     return failure('INVALID_COMMAND_VALUE', 'evidence.annotate requires note text.', id);
   }
+  return state.studentEvidence[id] === undefined
+    ? {
+        mutations: [
+          { operation: 'append', path: pointer('evidence', id, 'notes'), value: command.value },
+          { operation: 'set', path: pointer('evidence', id, 'status'), value: 'annotated' },
+        ],
+      }
+    : {
+        mutations: [
+          {
+            operation: 'append',
+            path: pointer('studentEvidence', id, 'notes'),
+            value: command.value,
+          },
+        ],
+      };
+}
+
+function useEvidenceInFinal(
+  command: RuntimeCommand,
+  state: Readonly<RuntimeStateSnapshot>,
+  graph: ProjectDefinitionGraph,
+): CommandHandlingResult {
+  const id = command.targetId;
+  if (
+    id === undefined ||
+    (!graph.evidenceById.has(id) && state.studentEvidence[id] === undefined)
+  ) {
+    return missing('evidence', id);
+  }
+  return state.studentEvidence[id] === undefined
+    ? setEvidenceStatus(command, state, graph, 'usedInClaim')
+    : {
+        mutations: [
+          {
+            operation: 'set',
+            path: pointer('studentEvidence', id, 'usedInFinalClaim'),
+            value: true,
+          },
+        ],
+      };
+}
+
+function setEvidenceImportance(
+  command: RuntimeCommand,
+  state: Readonly<RuntimeStateSnapshot>,
+  graph: ProjectDefinitionGraph,
+): CommandHandlingResult {
+  const id = command.targetId;
+  if (
+    id === undefined ||
+    typeof command.value !== 'boolean' ||
+    (!graph.evidenceById.has(id) && state.studentEvidence[id] === undefined)
+  ) {
+    return failure(
+      'INVALID_COMMAND_VALUE',
+      'evidence.setImportance requires an evidence ID and boolean value.',
+      id,
+    );
+  }
+  const collection = state.studentEvidence[id] === undefined ? 'evidence' : 'studentEvidence';
   return {
     mutations: [
-      { operation: 'append', path: pointer('evidence', id, 'notes'), value: command.value },
-      { operation: 'set', path: pointer('evidence', id, 'status'), value: 'annotated' },
+      {
+        operation: 'set',
+        path: pointer(collection, id, 'important'),
+        value: command.value,
+      },
+    ],
+  };
+}
+
+function createQuestion(
+  command: RuntimeCommand,
+  state: Readonly<RuntimeStateSnapshot>,
+  context: CommandExecutionContext<ProjectDefinitionGraph>,
+): CommandHandlingResult {
+  if (
+    command.targetId === undefined ||
+    typeof command.value !== 'string' ||
+    command.value.trim().length === 0
+  ) {
+    return failure(
+      'INVALID_COMMAND_VALUE',
+      'board.createQuestion requires a question ID and text.',
+      command.targetId,
+    );
+  }
+  if (state.board.questions?.some((question) => question.id === command.targetId)) {
+    return failure('DUPLICATE_QUESTION', `Question "${command.targetId}" already exists.`);
+  }
+  return {
+    mutations: [
+      {
+        operation: 'append',
+        path: '/board/questions',
+        value: {
+          id: command.targetId,
+          text: command.value.trim(),
+          status: 'open',
+          sourceEvidenceId:
+            typeof command.params?.['sourceEvidenceId'] === 'string'
+              ? command.params['sourceEvidenceId']
+              : undefined,
+          createdAt: context.eventTimestamp ?? state.lastUpdated,
+          authorId: context.actor?.id,
+        },
+      },
     ],
   };
 }
@@ -231,9 +410,7 @@ function connectEvidence(
     createdAt: context.eventTimestamp ?? state.lastUpdated,
   };
   return {
-    mutations: [
-      { operation: 'append', path: '/evidenceRelationships', value: relationship },
-    ],
+    mutations: [{ operation: 'append', path: '/evidenceRelationships', value: relationship }],
   };
 }
 
@@ -306,11 +483,12 @@ function createEvidence(
     metadata: isRecord(command.value['metadata'])
       ? structuredClone(command.value['metadata'])
       : undefined,
+    notes: [],
+    important: false,
+    usedInFinalClaim: false,
   };
   return {
-    mutations: [
-      { operation: 'set', path: pointer('studentEvidence', id), value: record },
-    ],
+    mutations: [{ operation: 'set', path: pointer('studentEvidence', id), value: record }],
   };
 }
 
@@ -417,9 +595,7 @@ function changeResource(
     return failure('INVALID_RESOURCE_AMOUNT', 'Resource amount must be non-negative.', id);
   }
   const next =
-    command.commandType === 'resource.spend'
-      ? current - command.value
-      : current + command.value;
+    command.commandType === 'resource.spend' ? current - command.value : current + command.value;
   if (definition.min !== undefined && next < definition.min) {
     return failure('INSUFFICIENT_RESOURCE', `Resource "${id}" is below its minimum.`, id);
   }
@@ -504,6 +680,55 @@ function submitFinal(
         operation: 'set',
         path: '/finalSubmission/submittedAt',
         value: context.eventTimestamp ?? state.lastUpdated,
+      },
+    ],
+  };
+}
+
+function updateFinalDraft(
+  command: RuntimeCommand,
+  state: Readonly<RuntimeStateSnapshot>,
+): CommandHandlingResult {
+  if (!isRecord(command.value)) {
+    return failure('INVALID_COMMAND_VALUE', 'finalSubmission.updateDraft requires a draft object.');
+  }
+
+  const next = structuredClone(state.finalSubmission.argumentDraft);
+  const stringFields = [
+    'claim',
+    'identification',
+    'diagnosis',
+    'cause',
+    'recommendation',
+    'reasoning',
+    'counterevidence',
+    'alternativeExplanation',
+    'uncertainty',
+    'nextTest',
+    'safetyRecommendation',
+    'reflection',
+    'individualContribution',
+  ] as const;
+  for (const field of stringFields) {
+    const value = command.value[field];
+    if (typeof value === 'string') {
+      next[field] = value;
+    }
+  }
+  const evidenceIds = stringArray(command.value['evidenceIds']);
+  if (evidenceIds !== undefined) {
+    next.evidenceIds = evidenceIds;
+  }
+  const confidence = command.value['confidence'];
+  if (typeof confidence === 'number' && Number.isFinite(confidence)) {
+    next.confidence = Math.max(0, Math.min(100, confidence));
+  }
+  return {
+    mutations: [
+      {
+        operation: 'set',
+        path: '/finalSubmission/argumentDraft',
+        value: next,
       },
     ],
   };
@@ -600,14 +825,28 @@ function createHypothesis(
             ? command.params['confidence']
             : undefined,
         evidenceIds: stringArray(command.params?.['evidenceIds']),
+        reasoning:
+          typeof command.params?.['reasoning'] === 'string'
+            ? command.params['reasoning']
+            : undefined,
+        remainingQuestion:
+          typeof command.params?.['remainingQuestion'] === 'string'
+            ? command.params['remainingQuestion']
+            : undefined,
       },
     ],
     confidence:
-      typeof command.params?.['confidence'] === 'number'
-        ? command.params['confidence']
-        : undefined,
+      typeof command.params?.['confidence'] === 'number' ? command.params['confidence'] : undefined,
     evidenceIds: stringArray(command.params?.['evidenceIds']) ?? [],
-    selected: context.definitions?.investigation.hypotheses?.allowMultiple === false,
+    reasoning:
+      typeof command.params?.['reasoning'] === 'string' ? command.params['reasoning'] : undefined,
+    remainingQuestion:
+      typeof command.params?.['remainingQuestion'] === 'string'
+        ? command.params['remainingQuestion']
+        : undefined,
+    selected:
+      context.definitions?.investigation.hypotheses?.allowMultiple === false ||
+      !state.hypotheses.some((hypothesis) => hypothesis.selected),
   };
   return { mutations: [{ operation: 'append', path: '/hypotheses', value: hypothesis }] };
 }
@@ -648,12 +887,49 @@ function reviseHypothesis(
             typeof command.params?.['reasonForChange'] === 'string'
               ? command.params['reasonForChange']
               : undefined,
+          reasoning:
+            typeof command.params?.['reasoning'] === 'string'
+              ? command.params['reasoning']
+              : undefined,
+          remainingQuestion:
+            typeof command.params?.['remainingQuestion'] === 'string'
+              ? command.params['remainingQuestion']
+              : undefined,
         },
       },
       {
         operation: 'set',
         path: pointer('hypotheses', String(index), 'statement'),
         value: command.value,
+      },
+      {
+        operation: 'set',
+        path: pointer('hypotheses', String(index), 'confidence'),
+        value:
+          typeof command.params?.['confidence'] === 'number'
+            ? command.params['confidence']
+            : state.hypotheses[index]?.confidence,
+      },
+      {
+        operation: 'set',
+        path: pointer('hypotheses', String(index), 'reasoning'),
+        value:
+          typeof command.params?.['reasoning'] === 'string'
+            ? command.params['reasoning']
+            : state.hypotheses[index]?.reasoning,
+      },
+      {
+        operation: 'set',
+        path: pointer('hypotheses', String(index), 'remainingQuestion'),
+        value:
+          typeof command.params?.['remainingQuestion'] === 'string'
+            ? command.params['remainingQuestion']
+            : state.hypotheses[index]?.remainingQuestion,
+      },
+      {
+        operation: 'set',
+        path: pointer('hypotheses', String(index), 'evidenceIds'),
+        value: stringArray(command.params?.['evidenceIds']) ?? state.hypotheses[index]?.evidenceIds,
       },
     ],
   };

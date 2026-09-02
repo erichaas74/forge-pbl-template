@@ -1,0 +1,224 @@
+<section class="theory-panel" [class.compact]="compact()" aria-labelledby="working-theory-title">
+  <header>
+    <div>
+      <span class="eyebrow">What do you think right now?</span>
+      <h2 id="working-theory-title">Working Theory</h2>
+    </div>
+    <span class="draft-status" aria-live="polite">
+      {{
+        saveState() === 'saving' ? 'Saving…' : saveState() === 'pending' ? 'Pending sync' : 'Saved'
+      }}
+    </span>
+  </header>
+
+  @if (theory() === undefined || editing() || creatingAlternative()) {
+    <form class="theory-form" (submit)="$event.preventDefault(); saveTheory()">
+      @if (theory() === undefined || creatingAlternative()) {
+        <section class="empty-state">
+          <span aria-hidden="true">◇</span>
+          <div>
+            <strong>{{ creatingAlternative() ? 'Build an alternative theory' : 'Build your first theory' }}</strong>
+            <p>
+              {{
+                creatingAlternative()
+                  ? 'Use a different explanation for the same evidence, then compare which idea accounts for more.'
+                  : 'Use the evidence you have now. You can revise this explanation when new clues arrive.'
+              }}
+            </p>
+          </div>
+        </section>
+      } @else {
+        <section class="revision-callout">
+          <strong>Revision is part of investigating.</strong>
+          <p>Explain what changed rather than erasing your earlier thinking.</p>
+        </section>
+      }
+
+      <label>
+        Current identification or explanation
+        <textarea
+          rows="3"
+          [ngModel]="statement()"
+          (ngModelChange)="statement.set($event)"
+          name="statement"
+          placeholder="I think the four vials are…"
+        ></textarea>
+      </label>
+
+      <label class="confidence-control">
+        <span
+          >How confident are you right now? <strong>{{ confidence() }}%</strong></span
+        >
+        <input
+          type="range"
+          min="0"
+          max="100"
+          step="5"
+          [ngModel]="confidence()"
+          (ngModelChange)="confidence.set(+$event)"
+          name="confidence"
+        />
+      </label>
+
+      <label>
+        Why does your evidence support this idea?
+        <textarea
+          rows="3"
+          [ngModel]="reasoning()"
+          (ngModelChange)="reasoning.set($event)"
+          name="reasoning"
+          placeholder="This evidence matters because…"
+        ></textarea>
+      </label>
+
+      <label>
+        What are you still unsure about?
+        <input
+          type="text"
+          [ngModel]="remainingQuestion()"
+          (ngModelChange)="remainingQuestion.set($event)"
+          name="remainingQuestion"
+          placeholder="I still need to know…"
+        />
+      </label>
+
+      @if (theory() !== undefined && !creatingAlternative()) {
+        <label>
+          Why did your thinking change?
+          <input
+            type="text"
+            [ngModel]="reasonForChange()"
+            (ngModelChange)="reasonForChange.set($event)"
+            name="reasonForChange"
+            placeholder="New evidence showed…"
+          />
+        </label>
+      }
+
+      @if (!compact()) {
+        <fieldset>
+          <legend>Evidence used in this theory</legend>
+          <div class="evidence-picker">
+            @for (item of availableEvidence(); track item.id) {
+              <label>
+                <input
+                  #evidenceCheckbox
+                  type="checkbox"
+                  [checked]="evidenceIds().includes(item.id)"
+                  (change)="toggleEvidence(item.id, evidenceCheckbox.checked)"
+                />
+                <span
+                  ><strong>{{ item.title }}</strong
+                  ><small>{{ item.classification ?? 'not analyzed' }}</small></span
+                >
+              </label>
+            }
+          </div>
+        </fieldset>
+      }
+
+      <div class="form-actions">
+        @if (theory() !== undefined) {
+          <button type="button" (click)="cancelEditing()">Keep current theory</button>
+        }
+        <button class="primary" type="submit">
+          {{
+            theory() === undefined
+              ? 'Save working theory'
+              : creatingAlternative()
+                ? 'Save alternative'
+                : 'Save revision'
+          }}
+        </button>
+      </div>
+    </form>
+  } @else if (theory(); as current) {
+    @if (theories().length > 1 && !compact()) {
+      <nav class="theory-tabs" aria-label="Possible explanations">
+        @for (item of theories(); track item.id) {
+          <button
+            type="button"
+            [class.active]="item.id === current.id"
+            (click)="theorySelected.emit(item.id)"
+          >
+            Theory {{ $index + 1 }} · {{ item.confidence ?? 0 }}%
+          </button>
+        }
+      </nav>
+    }
+
+    <section class="current-theory">
+      <span>Current identification</span>
+      <h3>{{ current.statement }}</h3>
+      <div class="confidence-readout">
+        <span>Confidence</span><strong>{{ current.confidence ?? 0 }}%</strong>
+        <i><span [style.width.%]="current.confidence ?? 0"></span></i>
+      </div>
+    </section>
+
+    <div class="reasoning-grid">
+      <section>
+        <span class="section-label">Strongest support</span>
+        @for (item of supportingEvidence().slice(0, 2); track item.id) {
+          <button type="button" (click)="evidenceSelected.emit(item.id)">+ {{ item.title }}</button>
+        } @empty {
+          <p>Attach supporting evidence to strengthen this theory.</p>
+        }
+      </section>
+      <section>
+        <span class="section-label">Biggest challenge</span>
+        @for (item of challengingEvidence().slice(0, 2); track item.id) {
+          <button type="button" (click)="evidenceSelected.emit(item.id)">− {{ item.title }}</button>
+        } @empty {
+          <p>Look for evidence that may not fit.</p>
+        }
+      </section>
+    </div>
+
+    <section class="reasoning-copy">
+      <span class="section-label">Why this fits</span>
+      <p>
+        {{ current.reasoning || 'Add reasoning that connects the evidence to your explanation.' }}
+      </p>
+    </section>
+
+    <section class="remaining-question">
+      <span class="section-label">Remaining question</span>
+      <p>{{ current.remainingQuestion || 'What evidence would make you more confident?' }}</p>
+      <button type="button" (click)="investigateRequested.emit()">
+        Find an investigation <span aria-hidden="true">→</span>
+      </button>
+    </section>
+
+    @if (!compact()) {
+      <details>
+        <summary>
+          Theory history · {{ current.revisions.length }} version{{
+            current.revisions.length === 1 ? '' : 's'
+          }}
+        </summary>
+        <ol>
+          @for (revision of current.revisions; track revision.revisionId) {
+            <li>
+              <span>Version {{ $index + 1 }}</span
+              ><strong>{{ revision.statement }}</strong
+              ><small>{{ revision.reasonForChange || 'Initial theory' }}</small>
+            </li>
+          }
+        </ol>
+      </details>
+    }
+
+    <div class="panel-actions">
+      @if (!compact()) {
+        <button type="button" (click)="beginAlternative()">Add alternative theory</button>
+      }
+      <button type="button" (click)="beginEditing()">Revise theory</button>
+      @if (!compact()) {
+        <button class="primary" type="button" (click)="finalRequested.emit()">
+          Check final readiness
+        </button>
+      }
+    </div>
+  }
+</section>

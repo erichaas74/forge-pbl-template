@@ -21,6 +21,8 @@ export const investigationEventTypes = [
   'evidence.disconnected',
   'evidence.studentCreated',
   'evidence.usedInClaim',
+  'evidence.importanceChanged',
+  'board.questionCreated',
   'hypothesis.created',
   'hypothesis.revised',
   'hypothesis.selected',
@@ -37,7 +39,9 @@ export const investigationEventTypes = [
   'teacher.commandRequested',
   'teacher.releaseTriggered',
   'finalSubmission.openRequested',
+  'finalSubmission.draftUpdated',
   'finalSubmission.submitted',
+  'artifact.versionSaved',
 ] as const;
 
 export const futureEventTypes = [
@@ -59,9 +63,7 @@ export function registerInvestigationEventPack(
     events.register({ id, version: '1.0.0', status: 'future' });
   }
 
-  const mappings: Array<
-    readonly [string, (event: RuntimeEvent) => RuntimeCommand | undefined]
-  > = [
+  const mappings: Array<readonly [string, (event: RuntimeEvent) => RuntimeCommand | undefined]> = [
     ['activity.started', (event) => targetCommand(event, 'activity.start')],
     ['activity.completed', (event) => targetCommand(event, 'activity.complete')],
     [
@@ -89,14 +91,22 @@ export function registerInvestigationEventPack(
     ],
     [
       'evidence.disconnected',
-      (event) =>
-        targetCommand(event, 'evidence.disconnect', event.payload?.['relationshipId']),
+      (event) => targetCommand(event, 'evidence.disconnect', event.payload?.['relationshipId']),
     ],
     [
       'evidence.studentCreated',
       (event) => targetCommand(event, 'evidence.studentCreate', event.payload),
     ],
     ['evidence.usedInClaim', (event) => targetCommand(event, 'evidence.useInClaim')],
+    [
+      'evidence.importanceChanged',
+      (event) => targetCommand(event, 'evidence.setImportance', event.payload?.['important']),
+    ],
+    [
+      'board.questionCreated',
+      (event) =>
+        targetCommand(event, 'board.createQuestion', event.payload?.['text'], event.payload),
+    ],
     [
       'hypothesis.created',
       (event) =>
@@ -114,7 +124,8 @@ export function registerInvestigationEventPack(
     ],
     [
       'hypothesis.eliminated',
-      (event) => targetCommand(event, 'hypothesis.eliminate', event.payload?.['eliminated'] ?? true),
+      (event) =>
+        targetCommand(event, 'hypothesis.eliminate', event.payload?.['eliminated'] ?? true),
     ],
     [
       'hypothesis.evidenceAttached',
@@ -137,11 +148,18 @@ export function registerInvestigationEventPack(
       (event) => targetCommand(event, 'npc.completeDialogue', event.payload?.['dialogueId']),
     ],
     ['phase.completed', (event) => targetCommand(event, 'phase.complete')],
+    ['phase.openRequested', (event) => targetCommand(event, 'phase.unlock')],
+    ['teacher.releaseTriggered', (event) => targetCommand(event, 'teacher.release')],
+    ['finalSubmission.openRequested', () => ({ commandType: 'finalSubmission.open' })],
     [
-      'teacher.releaseTriggered',
-      (event) => targetCommand(event, 'teacher.release'),
+      'finalSubmission.draftUpdated',
+      (event) => ({ commandType: 'finalSubmission.updateDraft', value: event.payload?.['draft'] }),
     ],
     ['finalSubmission.submitted', (event) => ({ commandType: 'finalSubmission.submit' })],
+    [
+      'artifact.versionSaved',
+      (event) => targetCommand(event, 'artifact.saveVersion', event.payload),
+    ],
   ];
 
   for (const [eventType, map] of mappings) {
@@ -246,4 +264,3 @@ function isRuntimeCommand(value: unknown): value is RuntimeCommand {
     typeof value.commandType === 'string'
   );
 }
-

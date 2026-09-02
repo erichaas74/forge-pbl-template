@@ -1,0 +1,301 @@
+<section class="final-workspace" aria-labelledby="final-case-title">
+  @if (runtime().finalSubmission.status === 'submitted') {
+    <section class="submission-success" aria-live="polite">
+      <span aria-hidden="true">✓</span>
+      <div>
+        <small>Final investigation submitted</small>
+        <h2>Your case has been recorded.</h2>
+        <p>The official case reveal will be released by your teacher.</p>
+        <button type="button" (click)="caseBoardRequested.emit()">Review Case Board</button>
+      </div>
+    </section>
+  } @else {
+    <header class="final-header">
+      <div>
+        <span class="eyebrow">Build from the work you already created</span>
+        <h2 id="final-case-title">Final Investigation</h2>
+      </div>
+      <div class="final-progress">
+        <span>{{ completedSections() }} of 5 required sections complete</span>
+        <i><span [style.width.%]="completedSections() * 20"></span></i>
+      </div>
+    </header>
+
+    <section class="readiness" [class.ready]="ready()">
+      <div>
+        <span aria-hidden="true">{{ ready() ? '✓' : '◇' }}</span>
+        <div>
+          <strong>{{ ready() ? 'Final case is ready to build' : 'Final readiness check' }}</strong>
+          <p>
+            {{
+              ready()
+                ? 'You can still return to the Case Board before submitting.'
+                : 'You may draft now, but finish the investigation record before submitting.'
+            }}
+          </p>
+        </div>
+      </div>
+      @if (!ready()) {
+        <ul>
+          @for (item of missingReadiness(); track item) {
+            <li>{{ item }}</li>
+          }
+        </ul>
+      }
+    </section>
+
+    <div class="final-pair">
+      <aside class="investigation-record" aria-label="Investigation record">
+        <header>
+          <span>Your investigation</span
+          ><button type="button" (click)="caseBoardRequested.emit()">Review Case Board</button>
+        </header>
+        <section>
+          <small>Current theory</small>
+          <strong>{{ currentTheory()?.statement || 'No working theory saved yet' }}</strong>
+          <span>Confidence {{ currentTheory()?.confidence ?? 0 }}%</span>
+        </section>
+        <section>
+          <small>Evidence collected</small>
+          <strong>{{ eligibleEvidence().length }}</strong>
+          <span>{{ selectedEvidence().length }} selected for the final case</span>
+        </section>
+        <section>
+          <small>Strongest support</small>
+          @for (item of strongestSupport(); track item.id) {
+            <button type="button" (click)="previewEvidenceId.set(item.id)">
+              {{ item.title }}
+            </button>
+          }
+        </section>
+        <section>
+          <small>Biggest challenge</small>
+          @for (item of biggestChallenges(); track item.id) {
+            <button type="button" (click)="previewEvidenceId.set(item.id)">
+              {{ item.title }}
+            </button>
+          }
+        </section>
+
+        @if (previewEvidence(); as preview) {
+          <article class="evidence-preview">
+            <button
+              type="button"
+              aria-label="Close evidence preview"
+              (click)="previewEvidenceId.set(undefined)"
+            >
+              ×
+            </button>
+            <small>{{ preview.type }}</small>
+            <strong>{{ preview.title }}</strong>
+            <p>{{ preview.summary }}</p>
+            <span>Your analysis: {{ preview.classification ?? 'not classified' }}</span>
+          </article>
+        }
+      </aside>
+
+      <form class="final-case" (submit)="$event.preventDefault(); requestSubmit()">
+        <header>
+          <div>
+            <span>Laboratory case report</span>
+            <h3>Restored Shelf Case File</h3>
+          </div>
+          <span class="save-state" aria-live="polite">{{
+            saveState() === 'saving'
+              ? 'Saving…'
+              : saveState() === 'pending'
+                ? 'Pending sync'
+                : 'Saved on this device'
+          }}</span>
+        </header>
+
+        <label class="numbered-section">
+          <span>1</span>
+          <div>
+            <strong>Final identification</strong
+            ><small>Identify the four vials and explain the shelf arrangement.</small>
+          </div>
+          <textarea
+            rows="3"
+            [ngModel]="identification()"
+            (ngModelChange)="updateText('identification', $event)"
+            name="identification"
+          ></textarea>
+        </label>
+
+        <fieldset class="numbered-section">
+          <span>2</span>
+          <div>
+            <legend>Show your best clues</legend>
+            <small>Select at least four existing evidence records.</small>
+          </div>
+          <nav class="evidence-filters" aria-label="Filter evidence for the final case">
+            <button type="button" [class.active]="evidenceFilter() === 'all'" (click)="evidenceFilter.set('all')">All</button>
+            <button type="button" [class.active]="evidenceFilter() === 'supports'" (click)="evidenceFilter.set('supports')">Supports</button>
+            <button type="button" [class.active]="evidenceFilter() === 'contradicts'" (click)="evidenceFilter.set('contradicts')">Challenges</button>
+            <button type="button" [class.active]="evidenceFilter() === 'uncertain'" (click)="evidenceFilter.set('uncertain')">Uncertain</button>
+            <button type="button" [class.active]="evidenceFilter() === 'important'" (click)="evidenceFilter.set('important')">Important</button>
+            <button type="button" [class.active]="evidenceFilter() === 'studentCreated'" (click)="evidenceFilter.set('studentCreated')">Created by me</button>
+          </nav>
+          <div class="final-evidence-picker">
+            @for (item of filteredEvidence(); track item.id) {
+              <label>
+                <input
+                  #finalEvidence
+                  type="checkbox"
+                  [checked]="selectedEvidenceIds().includes(item.id)"
+                  (change)="toggleEvidence(item.id, finalEvidence.checked)"
+                />
+                <span
+                  ><strong>{{ item.title }}</strong
+                  ><small>{{ item.classification ?? item.type }}</small></span
+                >
+                <button type="button" (click)="$event.stopPropagation(); previewEvidenceId.set(item.id)">Preview</button>
+              </label>
+            } @empty {
+              <p>No collected evidence matches this filter.</p>
+            }
+          </div>
+        </fieldset>
+
+        <label class="numbered-section">
+          <span>3</span>
+          <div>
+            <strong>Scientific reasoning</strong
+            ><small>Why do these clues support your identification?</small>
+          </div>
+          <textarea
+            rows="5"
+            [ngModel]="reasoning()"
+            (ngModelChange)="updateText('reasoning', $event)"
+            name="reasoning"
+          ></textarea>
+        </label>
+
+        <label class="numbered-section">
+          <span>4</span>
+          <div>
+            <strong>Counterevidence</strong
+            ><small
+              >Which clue is hardest to explain, and why is your conclusion still strongest?</small
+            >
+          </div>
+          <textarea
+            rows="4"
+            [ngModel]="counterevidence()"
+            (ngModelChange)="updateText('counterevidence', $event)"
+            name="counterevidence"
+          ></textarea>
+        </label>
+
+        <label class="numbered-section">
+          <span>5</span>
+          <div>
+            <strong>Shelf restoration recommendation</strong
+            ><small>What should the lab do next, including safe handling?</small>
+          </div>
+          <textarea
+            rows="4"
+            [ngModel]="recommendation()"
+            (ngModelChange)="updateText('recommendation', $event)"
+            name="recommendation"
+          ></textarea>
+        </label>
+
+        <div class="optional-grid">
+          <label
+            ><strong>What remains uncertain?</strong
+            ><textarea
+              rows="3"
+              [ngModel]="uncertainty()"
+              (ngModelChange)="updateText('uncertainty', $event)"
+              name="uncertainty"
+            ></textarea>
+          </label>
+          <label
+            ><strong>How did your confidence change?</strong
+            ><span class="range-label">Final confidence {{ confidence() }}%</span
+            ><input
+              type="range"
+              min="0"
+              max="100"
+              step="5"
+              [ngModel]="confidence()"
+              (ngModelChange)="updateConfidence(+$event)"
+              name="finalConfidence"
+          /></label>
+          <label
+            ><strong>Individual reflection</strong
+            ><textarea
+              rows="3"
+              [ngModel]="reflection()"
+              (ngModelChange)="updateText('reflection', $event)"
+              name="reflection"
+            ></textarea>
+          </label>
+          <label
+            ><strong>Your contribution</strong
+            ><textarea
+              rows="3"
+              [ngModel]="individualContribution()"
+              (ngModelChange)="updateText('individualContribution', $event)"
+              name="contribution"
+            ></textarea>
+          </label>
+        </div>
+
+        <section class="final-check" [class.complete]="missingSections().length === 0">
+          <div>
+            <strong>Final check</strong
+            ><span>{{
+              missingSections().length === 0
+                ? 'All required sections complete'
+                : missingSections().length + ' items remaining'
+            }}</span>
+          </div>
+          @if (missingSections().length > 0) {
+            <ul>
+              @for (item of missingSections(); track item) {
+                <li>{{ item }}</li>
+              }
+            </ul>
+          }
+        </section>
+
+        <footer>
+          @if (!connectionAvailable()) {
+            <p role="status">Connection required to submit. Your draft remains saved on this device.</p>
+          }
+          <button type="button" (click)="saveDraft()">Save draft</button>
+          <button
+            class="submit"
+            type="submit"
+            [disabled]="missingSections().length > 0 || !connectionAvailable()"
+          >
+            Submit final investigation
+          </button>
+        </footer>
+      </form>
+    </div>
+
+    @if (confirmSubmit()) {
+      <div class="confirmation-backdrop">
+        <section role="alertdialog" aria-modal="true" aria-labelledby="submit-confirm-title">
+          <span class="eyebrow">Authoritative submission</span>
+          <h3 id="submit-confirm-title">Submit final investigation?</h3>
+          <p>Your official case will be recorded. A teacher can return it for revision later.</p>
+          <div>
+            <button type="button" (click)="confirmSubmit.set(false)">Keep editing</button
+            ><button
+              class="submit"
+              type="button"
+              (click)="confirmSubmit.set(false); submitRequested.emit()"
+            >
+              Submit investigation
+            </button>
+          </div>
+        </section>
+      </div>
+    }
+  }
+</section>

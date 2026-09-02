@@ -1,8 +1,4 @@
-import {
-  createSimpleRuntime,
-  runtimeEvent,
-  studentScope,
-} from '../testing/runtime-test-helpers';
+import { createSimpleRuntime, runtimeEvent, studentScope } from '../testing/runtime-test-helpers';
 
 describe('event -> rule -> command -> state integration', () => {
   it('runs the configured investigation behavior without project-specific runtime code', async () => {
@@ -10,16 +6,10 @@ describe('event -> rule -> command -> state integration', () => {
     const versions: number[] = [];
     platform.state.subscribe(studentScope, (snapshot) => versions.push(snapshot.version));
 
-    const activity = runtimeEvent(
-      'event-activity-complete',
-      'activity.completed',
-      'act-test',
-    );
+    const activity = runtimeEvent('event-activity-complete', 'activity.completed', 'act-test');
     const activityResult = await platform.dispatch(studentScope, activity, graph);
 
-    expect(activityResult.matchedRuleIds).toEqual([
-      'rule-activity-unlocks-evidence',
-    ]);
+    expect(activityResult.matchedRuleIds).toEqual(['rule-activity-unlocks-evidence']);
     expect(activityResult.snapshot?.activities['act-test']?.status).toBe('complete');
     expect(activityResult.snapshot?.activities['act-test']).toMatchObject({
       completionStatus: 'complete',
@@ -30,9 +20,7 @@ describe('event -> rule -> command -> state integration', () => {
     });
     expect(activityResult.snapshot?.evidence['ev-result']?.status).toBe('available');
     expect(activityResult.snapshot?.resources['resource-credits']).toBe(3);
-    expect(activityResult.snapshot?.firedRuleIds).toContain(
-      'rule-activity-unlocks-evidence',
-    );
+    expect(activityResult.snapshot?.firedRuleIds).toContain('rule-activity-unlocks-evidence');
     expect(activityResult.snapshot?.version).toBe(1);
 
     const duplicate = await platform.dispatch(studentScope, activity, graph);
@@ -53,9 +41,7 @@ describe('event -> rule -> command -> state integration', () => {
       runtimeEvent('event-collect-result', 'evidence.collected', 'ev-result'),
       graph,
     );
-    expect(secondCollection.matchedRuleIds).toEqual([
-      'rule-evidence-opens-phase',
-    ]);
+    expect(secondCollection.matchedRuleIds).toEqual(['rule-evidence-opens-phase']);
     expect(secondCollection.snapshot?.phases['phase-final']?.status).toBe('available');
 
     const classification = await platform.dispatch(
@@ -165,10 +151,40 @@ describe('event -> rule -> command -> state integration', () => {
       graph,
     );
 
-    expect(result.errors).toContainEqual(
-      expect.objectContaining({ code: 'UNKNOWN_EVENT_TYPE' }),
-    );
+    expect(result.errors).toContainEqual(expect.objectContaining({ code: 'UNKNOWN_EVENT_TYPE' }));
     expect(platform.state.getSnapshot(studentScope)?.version).toBe(0);
+  });
+
+  it('stores immutable versions of performance artifacts through runtime events', async () => {
+    const { platform, graph } = await createSimpleRuntime();
+
+    await platform.dispatch(
+      studentScope,
+      runtimeEvent('event-artifact-v1', 'artifact.versionSaved', 'artifact-case-file', {
+        sourceActivityId: 'act-test',
+        evidenceIds: ['ev-intro'],
+        content: { claim: 'First explanation' },
+      }),
+      graph,
+    );
+    const second = await platform.dispatch(
+      studentScope,
+      runtimeEvent('event-artifact-v2', 'artifact.versionSaved', 'artifact-case-file', {
+        sourceActivityId: 'act-test',
+        evidenceIds: ['ev-intro', 'ev-result'],
+        content: { claim: 'Revised explanation' },
+      }),
+      graph,
+    );
+
+    expect(second.snapshot?.artifacts['artifact-case-file']).toMatchObject({
+      artifactId: 'artifact-case-file',
+      latestVersion: 2,
+      versions: [
+        { version: 1, content: { claim: 'First explanation' } },
+        { version: 2, content: { claim: 'Revised explanation' } },
+      ],
+    });
   });
 
   it('denies teacher command events from a student actor', async () => {
@@ -182,9 +198,7 @@ describe('event -> rule -> command -> state integration', () => {
       graph,
     );
 
-    expect(result.errors).toContainEqual(
-      expect.objectContaining({ code: 'PERMISSION_DENIED' }),
-    );
+    expect(result.errors).toContainEqual(expect.objectContaining({ code: 'PERMISSION_DENIED' }));
     expect(result.snapshot?.stateValues['case.path']).toBe('default');
   });
 

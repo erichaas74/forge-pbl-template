@@ -1,0 +1,238 @@
+<section class="route-page">
+  <div class="map-card page-card">
+    <header>
+      <div>
+        <span class="eyebrow">Compare distance, time, cost, and risk</span>
+        <h1>Route Map</h1>
+      </div>
+      <div class="legend" aria-label="Map legend">
+        <span><i class="available"></i> Available</span
+        ><span><i class="selected"></i> Selected</span
+        ><span><i class="blocked"></i> Incompatible</span>
+      </div>
+    </header>
+
+    @if (runtime.state().activeTravel; as travel) {
+      <section class="travel-active" aria-live="polite">
+        <strong>Journey in progress</strong
+        ><span
+          >{{ routeName(travel.routeId) }} · Day {{ travel.progressDays }} of
+          {{ routeDays(travel.routeId) }}</span
+        ><button class="primary" type="button" (click)="runtime.navigate('events')">
+          Return to travel
+        </button>
+      </section>
+    }
+
+    <svg
+      class="route-map"
+      viewBox="0 0 100 80"
+      role="img"
+      aria-labelledby="map-title map-description"
+    >
+      <title id="map-title">Reachable frontier trading routes</title>
+      <desc id="map-description">
+        A visual map of routes. The structured route cards below provide the same information and
+        controls.
+      </desc>
+      <defs>
+        <pattern id="map-grid" width="5" height="5" patternUnits="userSpaceOnUse">
+          <path d="M5 0H0V5" fill="none" stroke="#856d49" stroke-width=".12" opacity=".22" />
+        </pattern>
+      </defs>
+      <rect width="100" height="80" fill="#ead9b7" />
+      <rect width="100" height="80" fill="url(#map-grid)" />
+      <path class="river" d="M5 70 C22 58 29 77 48 63 S70 48 96 60" />
+      <path class="mountains" d="M50 26 l6 -10 6 10 5 -8 7 12 6 -11 8 13" />
+      @for (route of runtime.config.routes; track route.id) {
+        <path
+          class="route-line"
+          [class.reachable]="route.fromLocationId === runtime.state().currentLocationId"
+          [class.incompatible]="
+            route.fromLocationId === runtime.state().currentLocationId && !compatible(route)
+          "
+          [class.chosen]="route.id === selectedRouteId()"
+          [attr.d]="route.path"
+          role="button"
+          tabindex="0"
+          [attr.aria-label]="
+            route.name + ', ' + route.distanceMiles + ' miles, ' + route.risk + ' risk'
+          "
+          (click)="selectRoute(route.id)"
+          (keydown.enter)="selectRoute(route.id)"
+          (keydown.space)="$event.preventDefault(); selectRoute(route.id)"
+        />
+      }
+      @for (location of runtime.config.locations; track location.id) {
+        <g [attr.transform]="'translate(' + location.mapX + ' ' + location.mapY + ')'">
+          <circle r="2" [class.current-node]="location.id === runtime.state().currentLocationId" />
+          <text y="-3">{{ location.shortName }}</text>
+        </g>
+      }
+      <g class="compass" transform="translate(91 10)">
+        <circle r="6" />
+        <path d="M0-5L1 0 0 5-1 0Z" />
+        <text y="-7">N</text>
+      </g>
+    </svg>
+    <footer>
+      <section>
+        <strong>Route reasoning prompts</strong
+        ><span>Which route balances travel days, supply cost, and risk?</span
+        ><span>Which destination demand clue fits your cargo plan?</span>
+      </section>
+      <section>
+        <strong>Map scale</strong
+        ><span
+          >Each route card gives the official distance. The drawing is a decision aid, not a
+          measuring tool.</span
+        >
+      </section>
+    </footer>
+  </div>
+
+  <aside class="route-panel page-card">
+    <header>
+      <span class="eyebrow">Reachable routes list</span>
+      <h2>Route comparison</h2>
+      <p>Select a route on the map or from this equivalent keyboard-accessible list.</p>
+    </header>
+    @if (reachableRoutes().length === 0) {
+      <section class="no-routes">
+        <strong>You reached a destination market.</strong>
+        <p>Sell cargo, review your ledger, and close the season when your trading is complete.</p>
+        <button class="primary" type="button" (click)="runtime.navigate('market')">
+          Open destination market
+        </button>
+      </section>
+    }
+    <div class="route-list">
+      @for (route of reachableRoutes(); track route.id) {
+        <article
+          [class.selected]="route.id === selectedRouteId()"
+          [class.blocked]="!compatible(route)"
+        >
+          <button class="route-select" type="button" (click)="selectRoute(route.id)">
+            <span>{{ route.risk }} risk</span><strong>{{ route.name }}</strong
+            ><small>To {{ locationName(route.toLocationId) }}</small>
+            <dl>
+              <div>
+                <dt>Distance</dt>
+                <dd>{{ route.distanceMiles }} miles</dd>
+              </div>
+              <div>
+                <dt>Travel</dt>
+                <dd>{{ route.estimatedDays }} days</dd>
+              </div>
+              <div>
+                <dt>Supplies</dt>
+                <dd>{{ runtime.money(route.supplyCostCents) }}</dd>
+              </div>
+              <div>
+                <dt>Terrain</dt>
+                <dd>{{ route.terrain.join(', ') }}</dd>
+              </div>
+            </dl>
+            @if (!compatible(route)) {
+              <em
+                >Unavailable: {{ runtime.transport()?.name }} cannot safely use all terrain on this
+                route.</em
+              >
+            }
+          </button>
+          <label
+            ><input
+              #compare
+              type="checkbox"
+              [checked]="compareIds().includes(route.id)"
+              [disabled]="!compareIds().includes(route.id) && compareIds().length >= 3"
+              (change)="toggleCompare(route.id)"
+            />
+            Compare</label
+          >
+        </article>
+      }
+    </div>
+
+    @if (comparedRoutes().length > 1) {
+      <section class="comparison">
+        <h3>Side-by-side comparison</h3>
+        <div>
+          @for (route of comparedRoutes(); track route.id) {
+            <article>
+              <strong>{{ route.name }}</strong
+              ><span>{{ route.distanceMiles }} miles</span
+              ><span>{{ route.estimatedDays }} days</span><span>{{ route.risk }} risk</span
+              ><span>{{ runtime.money(route.supplyCostCents) }} supplies</span>
+            </article>
+          }
+        </div>
+      </section>
+    }
+
+    @if (selectedRoute(); as route) {
+      <section class="selected-summary">
+        <span class="eyebrow">Decision evidence</span>
+        <h3>{{ route.name }}</h3>
+        <p>{{ route.demandClue }}</p>
+        <label class="field"
+          >Why are you taking this route?<textarea
+            rows="3"
+            [ngModel]="rationale()"
+            (ngModelChange)="rationale.set($event)"
+            placeholder="I chose this route because…"
+          ></textarea>
+        </label>
+        <div>
+          <button class="secondary" type="button" (click)="pinSelected()">Pin route evidence</button
+          ><button
+            class="primary"
+            type="button"
+            [disabled]="!compatible(route) || runtime.state().activeTravel !== undefined"
+            (click)="openReview()"
+          >
+            Review travel
+          </button>
+        </div>
+      </section>
+    }
+  </aside>
+
+  @if (reviewOpen() && selectedRoute(); as route) {
+    <div class="review-backdrop">
+      <section role="alertdialog" aria-modal="true" aria-labelledby="travel-review-title">
+        <span class="eyebrow">Commit travel review</span>
+        <h2 id="travel-review-title">
+          {{ runtime.currentLocation()?.name }} → {{ selectedDestination()?.name }}
+        </h2>
+        <dl>
+          <div>
+            <dt>Distance</dt>
+            <dd>{{ route.distanceMiles }} miles</dd>
+          </div>
+          <div>
+            <dt>Estimated travel</dt>
+            <dd>{{ route.estimatedDays }} days</dd>
+          </div>
+          <div>
+            <dt>Known supply cost</dt>
+            <dd>−{{ runtime.money(route.supplyCostCents) }}</dd>
+          </div>
+          <div>
+            <dt>Known risk</dt>
+            <dd>{{ route.risk }}</dd>
+          </div>
+          <div>
+            <dt>Uncertain</dt>
+            <dd>Which seeded trail events will occur</dd>
+          </div>
+        </dl>
+        <p>This action creates an immutable route record and immediately pays for supplies.</p>
+        <div>
+          <button class="secondary" type="button" (click)="reviewOpen.set(false)">Go back</button
+          ><button class="primary" type="button" (click)="commit()">Commit travel</button>
+        </div>
+      </section>
+    </div>
+  }
+</section>

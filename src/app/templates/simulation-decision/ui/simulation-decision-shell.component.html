@@ -1,0 +1,249 @@
+@if (runtime.state().status === 'not_started') {
+  <div class="setup-shell">
+    <a class="project-link" routerLink="/mystery-substance">← Mystery investigation</a>
+    <app-simulation-company-setup />
+  </div>
+} @else {
+  <div class="simulation-shell">
+    <header class="mission-bar">
+      <div class="brand">
+        <span class="compass" aria-hidden="true">✥</span>
+        <div>
+          <strong>{{ runtime.config.title }}</strong
+          ><small>{{ runtime.state().companyName }} · {{ runtime.config.gradeLabel }}</small>
+        </div>
+      </div>
+      <dl>
+        <div>
+          <dt>Season phase</dt>
+          <dd>{{ phase() }}</dd>
+        </div>
+        <div>
+          <dt>Current location</dt>
+          <dd>{{ runtime.currentLocation()?.shortName }}</dd>
+        </div>
+        <div>
+          <dt>Day / travel step</dt>
+          <dd>Day {{ runtime.state().currentDay }} of {{ runtime.config.maxSeasonDays }}</dd>
+        </div>
+        <div>
+          <dt>Save status</dt>
+          <dd>{{ saveLabel() }}</dd>
+        </div>
+      </dl>
+      <div class="mission-actions">
+        <a routerLink="/mystery-substance">← Mystery project</a
+        ><button type="button" (click)="helpOpen.set(true)">? Help / Rules</button>
+      </div>
+    </header>
+
+    <aside class="navigation-rail">
+      <div class="rail-emblem" aria-hidden="true">{{ runtime.config.emblems[0]?.symbol }}</div>
+      <nav aria-label="Simulation workspaces">
+        @for (item of navigation; track item.view) {
+          <button
+            type="button"
+            [class.active]="runtime.state().lastView === item.view"
+            [class.attention]="item.view === 'events' && runtime.state().pendingEventId"
+            [disabled]="locked(item.view)"
+            (click)="navigate(item.view)"
+          >
+            <span aria-hidden="true">{{ item.icon }}</span
+            ><strong>{{ item.label }}</strong>
+            @if (locked(item.view)) {
+              <small>Locked</small>
+            }
+            @if (item.view === 'events' && runtime.state().pendingEventId) {
+              <small>Decision</small>
+            }
+          </button>
+        }
+      </nav>
+      <button class="teacher-link" type="button" (click)="teacherTools()">
+        <span aria-hidden="true">⚙</span
+        ><strong>{{
+          runtime.state().lastView === 'teacher' ? 'Student view' : 'Teacher tools'
+        }}</strong>
+      </button>
+      <div class="rail-sign"><span>Frontier</span><strong>Trading Co.</strong></div>
+    </aside>
+
+    <main class="simulation-main">
+      <section class="hud" aria-label="Live company status">
+        <article>
+          <span aria-hidden="true">$</span>
+          <div>
+            <small>Cash on hand</small><strong>{{ runtime.money(runtime.cash()) }}</strong>
+          </div>
+        </article>
+        <article>
+          <span aria-hidden="true">▣</span>
+          <div>
+            <small>Cargo used / capacity</small
+            ><strong>{{ runtime.usedCargo() }} / {{ runtime.capacity() }}</strong
+            ><i><b [style.width.%]="cargoPercent()"></b></i>
+          </div>
+        </article>
+        <article>
+          <span aria-hidden="true">◇</span>
+          <div>
+            <small>Current cargo value</small
+            ><strong>{{ runtime.money(runtime.cargoValue()) }}</strong>
+          </div>
+        </article>
+        <article>
+          <span aria-hidden="true">±</span>
+          <div>
+            <small>Profit / loss</small
+            ><strong
+              [class.signed-positive]="runtime.profit() >= 0"
+              [class.signed-negative]="runtime.profit() < 0"
+              >{{ runtime.money(runtime.profit(), true) }}</strong
+            >
+          </div>
+        </article>
+        <article>
+          <span aria-hidden="true">★</span>
+          <div>
+            <small>Mission target</small
+            ><strong>{{ runtime.money(runtime.config.profitTargetCents) }}</strong
+            ><em>Reserve {{ runtime.money(runtime.config.reserveTargetCents) }}</em>
+          </div>
+        </article>
+      </section>
+
+      @if (runtime.state().status === 'paused_by_teacher') {
+        <section class="paused-banner" role="status">
+          <strong>Simulation paused by teacher controls.</strong
+          ><span>Student actions are temporarily read-only.</span
+          ><button type="button" (click)="teacherTools()">Open teacher tools</button>
+        </section>
+      }
+      @if (runtime.errors().length > 0) {
+        <section class="error-banner" role="alert">
+          <div>
+            <strong>Check this decision</strong>
+            <ul>
+              @for (error of runtime.errors(); track error) {
+                <li>{{ error }}</li>
+              }
+            </ul>
+          </div>
+          <button type="button" aria-label="Dismiss messages" (click)="runtime.dismissErrors()">
+            ×
+          </button>
+        </section>
+      }
+
+      <div class="workspace" [attr.aria-busy]="runtime.saveState() === 'saving'">
+        @switch (runtime.state().lastView) {
+          @case ('market') {
+            <app-simulation-market-view />
+          }
+          @case ('route') {
+            <app-simulation-route-map />
+          }
+          @case ('cargo') {
+            <app-simulation-cargo-view />
+          }
+          @case ('events') {
+            <app-simulation-event-decision />
+          }
+          @case ('ledger') {
+            <app-simulation-trade-ledger />
+          }
+          @case ('results') {
+            <app-simulation-season-results />
+          }
+          @case ('report') {
+            <app-simulation-strategy-report />
+          }
+          @case ('teacher') {
+            <app-simulation-teacher-control />
+          }
+          @default {
+            <app-simulation-market-view />
+          }
+        }
+      </div>
+    </main>
+
+    <nav class="mobile-nav" aria-label="Mobile simulation navigation">
+      @for (item of navigation; track item.view) {
+        <button
+          type="button"
+          [class.active]="runtime.state().lastView === item.view"
+          [disabled]="locked(item.view)"
+          (click)="navigate(item.view)"
+        >
+          <span aria-hidden="true">{{ item.icon }}</span
+          ><small>{{ item.label }}</small>
+        </button>
+      }
+    </nav>
+  </div>
+}
+
+@if (helpOpen()) {
+  <div class="drawer-backdrop" (click)="helpOpen.set(false)"></div>
+  <aside class="help-drawer" role="dialog" aria-modal="true" aria-labelledby="help-title">
+    <header>
+      <div>
+        <span class="eyebrow">Simulation guide</span>
+        <h2 id="help-title">Help and Rules</h2>
+      </div>
+      <button type="button" aria-label="Close help" (click)="helpOpen.set(false)">×</button>
+    </header>
+    <section>
+      <h3>Your mission</h3>
+      <p>{{ runtime.config.mission }}</p>
+    </section>
+    <section>
+      <h3>Decision cycle</h3>
+      <ol>
+        <li>Compare market prices and cargo space.</li>
+        <li>Draft and review trades before committing.</li>
+        <li>Compare route cost, time, terrain, and risk.</li>
+        <li>Resolve events using the known effects and math.</li>
+        <li>Pin ledger records and decisions as evidence.</li>
+      </ol>
+    </section>
+    <section>
+      <h3>Scoring</h3>
+      <p>
+        Financial results matter, but evidence and written reasoning also contribute. Unsold
+        inventory value is shown separately from cash.
+      </p>
+    </section>
+    <section>
+      <h3>Saving</h3>
+      <p>
+        Meaningful actions save automatically on this device. The same project version resumes after
+        a refresh.
+      </p>
+    </section>
+    <button class="primary" type="button" (click)="helpOpen.set(false)">
+      Return to simulation
+    </button>
+  </aside>
+}
+
+@if (teacherConfirmOpen()) {
+  <div class="teacher-gate">
+    <section role="alertdialog" aria-modal="true" aria-labelledby="teacher-gate-title">
+      <span class="eyebrow">Adult controls</span>
+      <h2 id="teacher-gate-title">Open local teacher tools?</h2>
+      <p>
+        These controls can pause, restart, or alter this device’s attempt. They are provided for
+        classroom facilitation and are not an authentication system.
+      </p>
+      <div>
+        <button class="secondary" type="button" (click)="teacherConfirmOpen.set(false)">
+          Cancel</button
+        ><button class="primary" type="button" (click)="enterTeacherTools()">
+          Open teacher tools
+        </button>
+      </div>
+    </section>
+  </div>
+}
