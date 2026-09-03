@@ -41,6 +41,7 @@ export function createSimulationState(
     eventHistory: [],
     evidence: [],
     ledgerAnnotations: {},
+    marketDiscoveries: {},
     report: {
       status: 'draft',
       revisionNumber: 1,
@@ -84,6 +85,8 @@ export function reduceSimulationDecision(
       return startCompany(config, state, action);
     case 'trade.committed':
       return commitTrade(config, state, action.lines);
+    case 'market.stallInspected':
+      return inspectMarketStall(config, state, action.stallId);
     case 'route.committed':
       return commitRoute(config, state, action.routeId, action.rationale);
     case 'travel.advanced':
@@ -510,6 +513,45 @@ function commitTrade(
     inventory,
     ledger,
     status: state.status === 'planning' ? 'active' : state.status,
+  });
+}
+
+function inspectMarketStall(
+  config: SimulationDecisionConfig,
+  state: Readonly<SimulationDecisionState>,
+  stallId: string,
+): SimulationDecisionResult {
+  const scene = config.world.locations.find(
+    (location) => location.locationId === state.currentLocationId,
+  );
+  const stall = scene?.stalls.find((item) => item.id === stallId);
+  if (stall === undefined) {
+    return failure(state, 'That market stop is not available at this location.');
+  }
+  const current = state.marketDiscoveries[state.currentLocationId] ?? [];
+  if (current.includes(stall.id)) {
+    return success(state, {});
+  }
+  const evidenceId = `evidence-market-${state.currentLocationId}-${stall.id}`;
+  const evidence = state.evidence.some((item) => item.id === evidenceId)
+    ? state.evidence
+    : [
+        ...state.evidence,
+        {
+          id: evidenceId,
+          sourceType: 'notebook' as const,
+          sourceId: stall.id,
+          title: `${stall.name} intelligence · Day ${state.currentDay}`,
+          summary: `${stall.merchantName}: ${stall.rumor} Reliability cue: ${stall.trustCue}`,
+          pinnedAt: new Date().toISOString(),
+        },
+      ];
+  return success(state, {
+    marketDiscoveries: {
+      ...state.marketDiscoveries,
+      [state.currentLocationId]: [...current, stall.id],
+    },
+    evidence,
   });
 }
 

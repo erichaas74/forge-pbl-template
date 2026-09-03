@@ -155,6 +155,31 @@ describe('event -> rule -> command -> state integration', () => {
     expect(platform.state.getSnapshot(studentScope)?.version).toBe(0);
   });
 
+  it('keeps repeatable activity results together in submission order', async () => {
+    const { platform, graph } = await createSimpleRuntime();
+
+    await platform.dispatch(
+      studentScope,
+      runtimeEvent('event-result-a', 'activity.resultSubmitted', 'act-test', {
+        result: { activityId: 'act-test', completed: true, outputs: { vial: 'A' } },
+      }),
+      graph,
+    );
+    const second = await platform.dispatch(
+      studentScope,
+      runtimeEvent('event-result-b', 'activity.resultSubmitted', 'act-test', {
+        result: { activityId: 'act-test', completed: true, outputs: { vial: 'B' } },
+      }),
+      graph,
+    );
+
+    expect(second.snapshot?.activities['act-test']?.resultHistory).toEqual([
+      { activityId: 'act-test', completed: true, outputs: { vial: 'A' } },
+      { activityId: 'act-test', completed: true, outputs: { vial: 'B' } },
+    ]);
+    expect(second.snapshot?.activities['act-test']?.lastResult?.outputs).toEqual({ vial: 'B' });
+  });
+
   it('stores immutable versions of performance artifacts through runtime events', async () => {
     const { platform, graph } = await createSimpleRuntime();
 

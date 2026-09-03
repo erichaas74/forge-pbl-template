@@ -81,6 +81,7 @@ export class InvestigationRuntimeInitializer {
           id,
           {
             status: 'notStarted',
+            resultHistory: [],
             completionStatus: 'notStarted',
             submissionStatus: 'notRequired',
             masteryStatus: 'notMeasured',

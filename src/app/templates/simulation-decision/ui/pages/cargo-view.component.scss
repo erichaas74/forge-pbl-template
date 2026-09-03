@@ -101,6 +101,156 @@ h1 {
   background: repeating-linear-gradient(90deg, #8a5d31 0 2rem, #76502c 2rem 2.15rem);
   box-shadow: inset 0 0 2rem #3b2515;
 }
+.wagon-stage {
+  position: relative;
+  min-height: 27rem;
+  overflow: hidden;
+  background: linear-gradient(#aec4c2 0 42%, #cdb47d 43% 100%);
+}
+.wagon-stage::before {
+  content: '';
+  position: absolute;
+  right: -10%;
+  bottom: 17%;
+  left: -10%;
+  height: 2rem;
+  background: #9b7c48;
+  transform: rotate(-2deg);
+}
+.wagon-stage .wagon-bed {
+  position: relative;
+  z-index: 2;
+  min-height: 18rem;
+  grid-template-columns: repeat(5, 1fr);
+  margin: 2rem 1rem 4rem;
+  border-radius: 42% 42% 0.5rem 0.5rem;
+  transform-origin: bottom;
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.wagon-stage.near-capacity .wagon-bed {
+  animation: loaded-creak 2.8s ease-in-out infinite;
+}
+.wagon-stage .wagon-bed button {
+  min-height: 3.3rem;
+  padding: 0.25rem;
+  cursor: grab;
+  animation: package-settle 0.35s both;
+}
+.wagon-stage .wagon-bed button:active {
+  cursor: grabbing;
+}
+.wagon-stage .wagon-bed button span {
+  font-size: 1.25rem;
+}
+.wagon-axle {
+  position: absolute;
+  z-index: 3;
+  right: 2rem;
+  bottom: 2.3rem;
+  left: 2rem;
+  height: 0.65rem;
+  background: #4d321d;
+}
+.wagon-axle i {
+  position: absolute;
+  top: -1rem;
+  width: 3.8rem;
+  height: 3.8rem;
+  border: 0.65rem double #49301c;
+  border-radius: 50%;
+  background: #9e7544;
+  animation: wheel-idle 5s linear infinite;
+}
+.wagon-axle i:first-child {
+  left: 1rem;
+}
+.wagon-axle i:last-child {
+  right: 1rem;
+}
+.cargo-tooltip {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 0.65rem;
+  align-items: center;
+  margin: 0 0.75rem 0.6rem;
+  border: 1px solid #9e865f;
+  border-radius: 0.4rem;
+  padding: 0.55rem;
+  background: #fff6df;
+  box-shadow: 0 0.3rem 0.7rem rgba(61, 39, 18, 0.13);
+  animation: cargo-card-in 0.25s both;
+}
+.cargo-tooltip > span {
+  font-size: 2rem;
+}
+.cargo-tooltip > div {
+  display: grid;
+}
+.cargo-tooltip small {
+  color: #6f5a40;
+  font-size: 0.62rem;
+}
+.cargo-tooltip dl {
+  display: flex;
+  gap: 0.8rem;
+}
+.cargo-tooltip dl div {
+  display: grid;
+}
+.cargo-tooltip dt {
+  color: #6d5a40;
+  font-size: 0.58rem;
+}
+.cargo-tooltip dd {
+  margin: 0;
+  font-weight: 850;
+}
+.sell-drop {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.1rem 0.5rem;
+  align-items: center;
+  margin: 0 0.75rem 0.55rem;
+  border: 2px dashed #226479;
+  border-radius: 0.4rem;
+  padding: 0.55rem;
+  color: #174f63;
+  background: #e7f1ef;
+}
+.sell-drop > span {
+  grid-row: 1 / 3;
+  font-size: 1.7rem;
+}
+.sell-drop small {
+  color: #55716e;
+}
+
+@keyframes package-settle {
+  from {
+    opacity: 0;
+    transform: translateY(-1rem) rotate(3deg);
+  }
+}
+@keyframes loaded-creak {
+  0%,
+  100% {
+    transform: rotate(-0.2deg);
+  }
+  50% {
+    transform: rotate(0.2deg) translateY(0.12rem);
+  }
+}
+@keyframes wheel-idle {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes cargo-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.4rem);
+  }
+}
 .wagon-bed button {
   display: grid;
   min-width: 0;

@@ -4,7 +4,15 @@ export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'mystery-substance',
+    redirectTo: 'projects',
+  },
+  {
+    path: 'projects',
+    title: 'Projects | Forge PBL',
+    loadComponent: () =>
+      import('./features/project-home/project-home.component').then(
+        (module) => module.ProjectHomeComponent,
+      ),
   },
   {
     path: 'mystery-substance',
@@ -24,6 +32,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'mystery-substance',
+    redirectTo: 'projects',
   },
 ];

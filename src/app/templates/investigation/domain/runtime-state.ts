@@ -35,6 +35,7 @@ export interface ActivityRuntimeState {
     | 'excused';
   attempts?: number;
   lastResult?: InvestigationActivityResult;
+  resultHistory?: InvestigationActivityResult[];
   completionStatus: 'notStarted' | 'inProgress' | 'complete';
   submissionStatus: 'notRequired' | 'draft' | 'submitted' | 'returned';
   masteryStatus: 'notMeasured' | 'notMet' | 'met';

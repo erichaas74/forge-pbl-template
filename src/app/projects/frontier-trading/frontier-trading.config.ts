@@ -2,6 +2,7 @@ import type {
   GoodDefinition,
   MarketDefinition,
   MarketGoodDefinition,
+  LocationSceneDefinition,
   SimulationDecisionConfig,
   SimulationEventDefinition,
 } from '../../templates/simulation-decision/domain/simulation-decision.models';
@@ -498,8 +499,8 @@ const events: readonly SimulationEventDefinition[] = [
 ];
 
 export const frontierTradingConfig: SimulationDecisionConfig = {
-  schemaVersion: '1.0',
-  template: { id: 'simulation-decision', version: '1.0' },
+  schemaVersion: '1.1',
+  template: { id: 'simulation-decision', version: '1.1' },
   projectId: 'frontier-trading-company',
   projectVersion: '1.0.0',
   title: 'Frontier Trading Company',
@@ -665,6 +666,89 @@ export const frontierTradingConfig: SimulationDecisionConfig = {
       [16_000, 15_000, 16_500, 18_000, 14_000, 15_500, 17_000, 17_500, 16_000, 15_200],
     ),
   ],
+  world: {
+    travelAnimationMs: 5_200,
+    locations: [
+      scene(
+        'independence-post',
+        'plains',
+        'Bright morning with a steady west wind',
+        'Mara Bell',
+        'Jonas Pike',
+        'Nell Avery',
+        [
+          'Flour shipments are plentiful this week.',
+          'Remote camps may pay more for tools.',
+          'Fur buyers at the northern fort are asking questions.',
+        ],
+      ),
+      scene(
+        'fort-bridger',
+        'fort',
+        'Cool air and flags snapping above the gate',
+        'Ada Rowe',
+        'Caleb Stone',
+        'June Hale',
+        [
+          'Food stores are running lower than expected.',
+          'Cloth deliveries have been delayed.',
+          'A freight crew says coffee demand may soften.',
+        ],
+      ),
+      scene(
+        'river-crossing',
+        'river',
+        'Fast water, drifting clouds, and damp roads',
+        'Tessa Green',
+        'Micah Ford',
+        'Ruth Cole',
+        [
+          'Repair crews need rope and iron tools.',
+          'Travelers are buying dried beans.',
+          'River delays could make lantern oil scarce.',
+        ],
+      ),
+      scene(
+        'south-pass',
+        'mountain',
+        'Thin clouds with snow moving over the ridge',
+        'Ivy North',
+        'Eli Grant',
+        'May Chen',
+        [
+          'Heavy tools are difficult to find here.',
+          'Cold nights have raised demand for supplies.',
+          'Another trader thinks sugar prices are uncertain.',
+        ],
+      ),
+      scene(
+        'fort-laramie',
+        'fort',
+        'Warm afternoon with wagon traffic at the gate',
+        'Clara West',
+        'Owen Reed',
+        'Sam Ortiz',
+        [
+          'Households are asking for cloth and flour.',
+          'Salt stock looks steady.',
+          'A notice claims sugar demand is rising.',
+        ],
+      ),
+      scene(
+        'miners-camp',
+        'camp',
+        'Mountain haze, cook-fire smoke, and busy foot traffic',
+        'Rosa Hill',
+        'Ben Shaw',
+        'Lee Morgan',
+        [
+          'Tools and lantern oil are visibly scarce.',
+          'Freight arrivals have been unreliable.',
+          'Luxury prices are high, but the rumor may be exaggerated.',
+        ],
+      ),
+    ],
+  },
   routes: [
     {
       id: 'route-northern',
@@ -857,4 +941,89 @@ function market(
     };
   });
   return { id, locationId, name, statusText: 'Open for trading', goods: marketGoods };
+}
+
+function scene(
+  locationId: string,
+  environment: LocationSceneDefinition['environment'],
+  weather: string,
+  generalMerchant: string,
+  smith: string,
+  freightMerchant: string,
+  rumors: readonly string[],
+): LocationSceneDefinition {
+  const stall = (
+    suffix: string,
+    name: string,
+    merchantName: string,
+    merchantRole: string,
+    icon: string,
+    categories: readonly string[],
+    greeting: string,
+    rumor: string,
+    trustCue: string,
+  ) => ({
+    id: `${locationId}-${suffix}`,
+    name,
+    merchantName,
+    merchantRole,
+    icon,
+    categories,
+    greeting,
+    rumor,
+    trustCue,
+  });
+
+  return {
+    locationId,
+    environment,
+    weather,
+    arrivalText: `Your wagon rolls into a ${environment} trading stop. Inspect the stalls before committing company money.`,
+    stalls: [
+      stall(
+        'general-store',
+        'General Store',
+        generalMerchant,
+        'Store owner',
+        '▤',
+        ['Food', 'Textiles', 'Supplies'],
+        'Welcome, trader. Check the posted prices and leave room in that wagon.',
+        rumors[0] ?? 'Travelers report changing demand farther west.',
+        'Posted prices and visible shelf stock are verified here.',
+      ),
+      stall(
+        'blacksmith',
+        'Blacksmith',
+        smith,
+        'Blacksmith',
+        '⚒',
+        ['Equipment'],
+        'Tools cost coin, but a well-chosen load can earn it back on the trail.',
+        rumors[1] ?? 'Freight crews have been asking about repair tools.',
+        'Current workshop orders support part of this claim.',
+      ),
+      stall(
+        'freight-depot',
+        'Freight Depot',
+        freightMerchant,
+        'Freight agent',
+        '▰',
+        ['Raw materials'],
+        'Space is money. Compare profit per cargo space before loading up.',
+        rumors[2] ?? 'A wagon master expects raw materials to move soon.',
+        'This is a traveler report and may be uncertain.',
+      ),
+      stall(
+        'notice-board',
+        'Notice Board',
+        'Town notices',
+        'Posted intelligence',
+        '✦',
+        [],
+        'Read the notices, then decide which claims deserve your trust.',
+        rumors.join(' '),
+        'Notices mix verified prices with unconfirmed market rumors.',
+      ),
+    ],
+  };
 }

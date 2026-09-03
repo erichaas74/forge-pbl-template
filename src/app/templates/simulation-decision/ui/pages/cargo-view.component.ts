@@ -14,6 +14,7 @@ export class SimulationCargoViewComponent {
   readonly runtime = inject(SimulationDecisionRuntimeService);
   readonly sortBy = signal<'name' | 'quantity' | 'cargo' | 'invested' | 'gain'>('cargo');
   readonly selectedGoodId = signal<string | undefined>(undefined);
+  readonly draggedGoodId = signal<string | undefined>(undefined);
 
   readonly cargoPercent = computed(() =>
     this.runtime.capacity() === 0
@@ -65,6 +66,19 @@ export class SimulationCargoViewComponent {
   readonly mostSpace = computed(
     () => [...this.items()].sort((a, b) => b.totalCargo - a.totalCargo)[0],
   );
+  readonly selectedItem = computed(() =>
+    this.items().find((item) => item.goodId === this.selectedGoodId()),
+  );
+  readonly packedUnits = computed(() =>
+    this.items().flatMap((item) =>
+      Array.from({ length: item.quantity }, (_, index) => ({
+        key: `${item.goodId}-${index}`,
+        goodId: item.goodId,
+        name: item.good.name,
+        icon: item.good.icon,
+      })),
+    ),
+  );
   readonly mostInvested = computed(
     () => [...this.items()].sort((a, b) => b.investedCostCents - a.investedCostCents)[0],
   );
@@ -86,6 +100,26 @@ export class SimulationCargoViewComponent {
 
   lossValue(): number {
     return Math.min(0, this.highestLoss()?.gainCents ?? 0);
+  }
+
+  beginCargoDrag(goodId: string): void {
+    this.draggedGoodId.set(goodId);
+  }
+
+  allowDrop(event: DragEvent): void {
+    event.preventDefault();
+  }
+
+  dropToSell(event: DragEvent): void {
+    event.preventDefault();
+    const goodId = this.draggedGoodId();
+    if (goodId !== undefined) {
+      this.runtime.planMarketTrade(goodId, 'sell');
+    }
+  }
+
+  planSale(goodId: string): void {
+    this.runtime.planMarketTrade(goodId, 'sell');
   }
 
   pinSnapshot(): void {

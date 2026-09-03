@@ -32,6 +32,9 @@ export class SimulationDecisionRuntimeService {
   readonly state = signal(createSimulationState(this.config));
   readonly errors = signal<readonly string[]>([]);
   readonly saveState = signal<'saved' | 'saving' | 'offline_local' | 'save_failed'>('saved');
+  readonly marketIntent = signal<{ goodId: string; direction: 'buy' | 'sell' } | undefined>(
+    undefined,
+  );
 
   readonly cash = computed(() => cashOnHand(this.state()));
   readonly capacity = computed(() => cargoCapacity(this.config, this.state()));
@@ -52,7 +55,7 @@ export class SimulationDecisionRuntimeService {
   constructor() {
     const saved = this.persistence.load(this.config.projectId, this.config.projectVersion);
     if (saved !== undefined) {
-      this.state.set(saved);
+      this.state.set({ ...saved, marketDiscoveries: saved.marketDiscoveries ?? {} });
     }
   }
 
@@ -89,12 +92,23 @@ export class SimulationDecisionRuntimeService {
     return this.apply({ type: 'trade.committed', lines });
   }
 
+  inspectMarketStall(stallId: string): boolean {
+    return this.apply({ type: 'market.stallInspected', stallId });
+  }
+
   commitRoute(routeId: string, rationale: string): boolean {
-    const changed = this.apply({ type: 'route.committed', routeId, rationale });
-    if (changed) {
-      this.navigate('events');
-    }
-    return changed;
+    return this.apply({ type: 'route.committed', routeId, rationale });
+  }
+
+  planMarketTrade(goodId: string, direction: 'buy' | 'sell'): void {
+    this.marketIntent.set({ goodId, direction });
+    this.navigate('market');
+  }
+
+  takeMarketIntent(): { goodId: string; direction: 'buy' | 'sell' } | undefined {
+    const intent = this.marketIntent();
+    this.marketIntent.set(undefined);
+    return intent;
   }
 
   advanceTravel(): boolean {

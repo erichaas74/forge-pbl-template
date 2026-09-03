@@ -3,7 +3,7 @@
 ## Automated verification
 
 - Production Angular build: passing.
-- Full repository unit suite: 19 files and 88 tests passing.
+- Full repository unit suite: 21 files and 91 tests passing.
 - Local route smoke check: `/frontier-trading` returns HTTP 200.
 
 New domain coverage verifies:
@@ -19,6 +19,7 @@ New domain coverage verifies:
 - ledger reconciliation and result evidence;
 - report requirements and submission gating;
 - restart semantics and persistence round trips.
+- location-scene coverage and idempotent merchant-discovery evidence.
 
 ## Accessibility and interaction review
 
@@ -27,6 +28,8 @@ New domain coverage verifies:
 - Focus-visible styling and reduced-motion behavior are included.
 - Desktop tables switch to structured mobile cards where density would become unreadable.
 - Official actions use preview/review/confirm patterns and expose validation messages.
+- Drag-to-buy and drag-to-sell interactions retain equivalent labeled buttons and keyboard paths.
+- Animation communicates state changes and follows the operating system reduced-motion preference.
 
 ## Known environment limitation
 

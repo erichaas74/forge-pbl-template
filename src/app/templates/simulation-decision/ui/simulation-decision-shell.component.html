@@ -1,6 +1,6 @@
 @if (runtime.state().status === 'not_started') {
   <div class="setup-shell">
-    <a class="project-link" routerLink="/mystery-substance">← Mystery investigation</a>
+    <a class="project-link" routerLink="/projects">← Project homepage</a>
     <app-simulation-company-setup />
   </div>
 } @else {
@@ -32,7 +32,7 @@
         </div>
       </dl>
       <div class="mission-actions">
-        <a routerLink="/mystery-substance">← Mystery project</a
+        <a routerLink="/projects">← Projects</a
         ><button type="button" (click)="helpOpen.set(true)">? Help / Rules</button>
       </div>
     </header>

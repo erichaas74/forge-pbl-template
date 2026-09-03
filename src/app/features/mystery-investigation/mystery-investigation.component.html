@@ -1,13 +1,18 @@
 <div class="investigation-shell">
   <header class="mission-strip">
-    <button class="project-identity" type="button" (click)="drawer.set('mission')">
-      <span class="project-seal" aria-hidden="true">US</span>
-      <span>
-        <small>Grade 5 investigation</small>
-        <strong>The Unlabeled Shelf</strong>
-        <em>View mission brief</em>
-      </span>
-    </button>
+    <div class="project-brand">
+      <a class="home-link" routerLink="/projects" aria-label="Back to project homepage"
+        >← Projects</a
+      >
+      <button class="project-identity" type="button" (click)="drawer.set('mission')">
+        <span class="project-seal" aria-hidden="true">US</span>
+        <span>
+          <small>Grade 5 investigation</small>
+          <strong>The Unlabeled Shelf</strong>
+          <em>View mission brief</em>
+        </span>
+      </button>
+    </div>
     <div class="mission-question">
       <small>Mission</small>
       <strong>How can evidence restore every label and safe shelf position?</strong>
@@ -77,7 +82,7 @@
       [attr.aria-pressed]="workspacePair() === 'theory-investigate'"
       (click)="selectWorkspace('theory-investigate')"
     >
-      <span>3</span><strong>Theory → Investigate</strong><small>Question + Next Move</small>
+      <span>3</span><strong>Investigate → Theory</strong><small>Next Move + Working Theory</small>
     </button>
     <button
       class="final-button"
@@ -284,7 +289,7 @@
                 ? 'Evidence'
                 : workspacePair() === 'analysis-theory'
                   ? 'Analysis'
-                  : 'Theory'
+                  : 'Investigate'
             }}
           </button>
           <button
@@ -297,7 +302,7 @@
                 ? 'Analysis'
                 : workspacePair() === 'analysis-theory'
                   ? 'Theory'
-                  : 'Investigate'
+                  : 'Theory'
             }}
           </button>
         </nav>
@@ -329,18 +334,10 @@
                 (questionCreated)="createQuestion($event)"
               />
             } @else {
-              <app-investigation-working-theory
-                [theory]="currentTheory()"
-                [theories]="runtime.hypotheses"
-                [evidence]="evidence()"
-                [compact]="true"
-                [saveState]="investigation.saveState()"
-                (theorySaved)="saveTheory($event)"
-                (theorySelected)="investigation.selectTheory($event)"
-                (evidenceSelected)="
-                  selectedEvidenceId.set($event); selectWorkspace('analysis-theory')
-                "
-                (investigateRequested)="selectWorkspace('theory-investigate')"
+              <app-investigation-options-panel
+                [activities]="activityViews()"
+                [currentQuestion]="currentQuestion()"
+                (activityLaunched)="launchActivity($event)"
               />
             }
           </section>
@@ -373,10 +370,19 @@
                 (finalRequested)="openFinalInvestigation()"
               />
             } @else {
-              <app-investigation-options-panel
-                [activities]="activityViews()"
-                [currentQuestion]="currentQuestion()"
-                (activityLaunched)="launchActivity($event)"
+              <app-investigation-working-theory
+                [theory]="currentTheory()"
+                [theories]="runtime.hypotheses"
+                [evidence]="evidence()"
+                [compact]="true"
+                [saveState]="investigation.saveState()"
+                (theorySaved)="saveTheory($event)"
+                (theorySelected)="investigation.selectTheory($event)"
+                (evidenceSelected)="
+                  selectedEvidenceId.set($event); selectWorkspace('analysis-theory')
+                "
+                (investigateRequested)="mobilePanel.set('left')"
+                (finalRequested)="openFinalInvestigation()"
               />
             }
           </section>

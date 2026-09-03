@@ -5,6 +5,16 @@ export type InvestigationWorkspacePair =
 
 export type AnalysisClassification = 'supports' | 'uncertain' | 'contradicts';
 
+export interface InvestigationEvidenceResultMatrix {
+  title: string;
+  columnLabels: readonly string[];
+  rows: readonly {
+    id: string;
+    label: string;
+    cells: readonly (string | undefined)[];
+  }[];
+}
+
 export interface InvestigationEvidenceItem {
   id: string;
   title: string;
@@ -18,6 +28,7 @@ export interface InvestigationEvidenceItem {
   notes: readonly string[];
   important: boolean;
   studentCreated: boolean;
+  resultMatrix?: InvestigationEvidenceResultMatrix;
 }
 
 export interface EvidenceClassificationChange {

@@ -102,8 +102,93 @@ h2 {
 }
 .route-line.chosen {
   stroke: #175f79;
-  stroke-dasharray: none;
+  stroke-dasharray: 3 1;
   stroke-width: 2.2;
+  animation: trail-glow 1.3s linear infinite;
+}
+.journey-wagon circle {
+  fill: #f6ca57;
+  stroke: #4a2d18;
+  stroke-width: 1.2;
+  filter: drop-shadow(0 0 2px #fff3b0);
+}
+.journey-wagon text {
+  fill: #3e2817;
+  font-size: 2.3px;
+}
+.journey-launch {
+  position: absolute;
+  z-index: 20;
+  top: 5.5rem;
+  right: 1.4rem;
+  left: 1.4rem;
+  display: grid;
+  grid-template-columns: minmax(14rem, 1.2fr) 1fr;
+  overflow: hidden;
+  border: 4px solid #55381e;
+  border-radius: 0.55rem;
+  color: #fff2d0;
+  background: #49321f;
+  box-shadow: 0 1rem 2.5rem rgba(39, 24, 11, 0.5);
+  animation: journey-card 0.4s both;
+}
+.map-card {
+  position: relative;
+}
+.journey-launch > div:last-child {
+  display: grid;
+  align-content: center;
+  gap: 0.25rem;
+  padding: 1rem;
+}
+.journey-launch .eyebrow {
+  color: #eacb78;
+}
+.journey-launch p {
+  color: #ddcba7;
+  font-size: 0.7rem;
+}
+.travel-sky {
+  position: relative;
+  min-height: 9rem;
+  overflow: hidden;
+  background: linear-gradient(#6f99a6 0 55%, #88704a 56%);
+}
+.travel-sky::after {
+  content: '';
+  position: absolute;
+  right: -10%;
+  bottom: 22%;
+  left: -10%;
+  height: 1.1rem;
+  background: #b89a61;
+  transform: rotate(-2deg);
+}
+.travel-sky i {
+  position: absolute;
+  top: 1rem;
+  left: -6rem;
+  width: 5rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.65);
+  animation: launch-cloud 4s linear infinite;
+}
+.travel-sky b {
+  position: absolute;
+  right: 8%;
+  bottom: 2.5rem;
+  width: 5rem;
+  height: 5rem;
+  background: linear-gradient(135deg, transparent 48%, #46543d 49% 62%, transparent 63%);
+}
+.travel-sky span {
+  position: absolute;
+  z-index: 2;
+  bottom: 2.1rem;
+  left: 28%;
+  font-size: 2.5rem;
+  animation: wagon-cross var(--travel-duration, 5.2s) linear both;
 }
 .route-line:focus-visible {
   outline: none;
@@ -174,6 +259,9 @@ h2 {
   border-color: #276b78;
   box-shadow: inset 0 0 0 2px #276b78;
 }
+.route-list > article.selected .terrain-preview i {
+  animation: terrain-pulse 1.1s ease-in-out infinite alternate;
+}
 .route-list > article.blocked {
   background: #eee5d5;
 }
@@ -219,6 +307,71 @@ h2 {
   color: #8d3022;
   font-size: 0.65rem;
   font-style: normal;
+}
+.terrain-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.4rem;
+}
+.terrain-preview i {
+  border-radius: 999px;
+  padding: 0.16rem 0.34rem;
+  color: #4d4935;
+  background: #e6dcc3;
+  font-size: 0.56rem;
+  font-style: normal;
+  text-transform: capitalize;
+}
+.terrain-preview.moderate i {
+  color: #6d471c;
+  background: #f1dfac;
+}
+.terrain-preview.high i {
+  color: #7d2d22;
+  background: #f2d0be;
+}
+.route-rumor {
+  margin-top: 0.35rem;
+  border-left: 3px solid #aa8650;
+  padding-left: 0.4rem;
+  color: #65523d;
+  font-size: 0.62rem;
+  line-height: 1.35;
+}
+
+@keyframes trail-glow {
+  to {
+    stroke-dashoffset: -8;
+  }
+}
+@keyframes journey-card {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(1rem);
+  }
+}
+@keyframes launch-cloud {
+  to {
+    transform: translateX(32rem);
+  }
+}
+@keyframes wagon-cross {
+  from {
+    transform: translateX(-8rem) translateY(0);
+  }
+  45% {
+    transform: translateX(8rem) translateY(-0.2rem);
+  }
+  100% {
+    transform: translateX(22rem) translateY(0.1rem);
+  }
+}
+@keyframes terrain-pulse {
+  to {
+    transform: translateY(-0.12rem);
+    box-shadow: 0 0.15rem 0.2rem rgba(62, 45, 25, 0.2);
+  }
 }
 .route-list > article > label {
   display: flex;

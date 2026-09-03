@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
 import { MysteryInvestigationService } from '../../projects/mystery-substance/mystery-investigation.service';
 import {
@@ -17,6 +18,10 @@ import {
   RestorationWorkspaceComponent,
   type StationCapture,
 } from '../../projects/mystery-substance/station-workspaces';
+import {
+  physicalTests,
+  reactionTests,
+} from '../../projects/mystery-substance/mystery-science.config';
 import { InvestigationAnalysisPanelComponent } from '../../templates/investigation/ui/analysis-panel.component';
 import { InvestigationEvidenceLockerComponent } from '../../templates/investigation/ui/evidence-locker.component';
 import { InvestigationFinalCaseComponent } from '../../templates/investigation/ui/final-investigation.component';
@@ -27,6 +32,7 @@ import type {
   FinalCaseDraft,
   InvestigationActivityView,
   InvestigationEvidenceItem,
+  InvestigationEvidenceResultMatrix,
   InvestigationPhaseView,
   InvestigationQuestionItem,
   InvestigationWorkspacePair,
@@ -59,6 +65,7 @@ const requiredFinalActivityIds = [
   selector: 'app-mystery-investigation',
   imports: [
     FormsModule,
+    RouterLink,
     InvestigationAnalysisPanelComponent,
     InvestigationEvidenceLockerComponent,
     InvestigationFinalCaseComponent,
@@ -117,6 +124,7 @@ export class MysteryInvestigationComponent {
           notes: state.notes ?? [],
           important: state.important ?? false,
           studentCreated: false,
+          resultMatrix: evidenceResultMatrix(definition.id, runtime.activities),
         };
       })
       .filter((item): item is InvestigationEvidenceItem => item !== undefined);
@@ -246,7 +254,7 @@ export class MysteryInvestigationComponent {
       case 'analysis-theory':
         return 'Use evidence from every zone. Strong theories explain support and address evidence that does not fit.';
       case 'theory-investigate':
-        return 'Start with what your theory cannot explain. Choose a test that may provide useful evidence about that uncertainty.';
+        return 'Choose a test that can answer an important question, then use the new evidence to strengthen or revise your working theory.';
       case 'final-investigation':
         return 'Build the final case from evidence and theory already in your Investigation Record.';
     }
@@ -465,4 +473,97 @@ function evidenceTitle(evidenceId: string): string {
     mysteryEvidenceCatalog.find((evidence) => evidence.id === evidenceId)?.title ??
     'Investigation result'
   );
+}
+
+function evidenceResultMatrix(
+  evidenceId: string,
+  activities: Readonly<
+    Record<
+      string,
+      {
+        lastResult?: { outputs?: Record<string, unknown> };
+        resultHistory?: readonly { outputs?: Record<string, unknown> }[];
+      }
+    >
+  >,
+): InvestigationEvidenceResultMatrix | undefined {
+  if (evidenceId === 'evidence-property-trials') {
+    const activity = activities['activity-property-comparison'];
+    const results = activity?.resultHistory ?? (activity?.lastResult ? [activity.lastResult] : []);
+    const cells = new Map<string, string>();
+    for (const result of results) {
+      const trial = asRecord(result.outputs);
+      const inputs = asRecord(trial?.['inputs']);
+      const outputs = asRecord(trial?.['outputs']);
+      const vialId = stringValue(inputs?.['specimen']);
+      const testId = stringValue(inputs?.['test']);
+      if (vialId !== undefined && testId !== undefined && outputs !== undefined) {
+        cells.set(`${testId}::${vialId}`, summarizeResult(outputs));
+      }
+    }
+    return resultMatrix('Four-vial physical-property record', physicalTests, cells);
+  }
+
+  if (evidenceId === 'evidence-reaction-trials') {
+    const activity = activities['activity-reaction-comparison'];
+    const results = activity?.resultHistory ?? (activity?.lastResult ? [activity.lastResult] : []);
+    const cells = new Map<string, string>();
+    for (const result of results) {
+      const trial = asRecord(result.outputs);
+      const testId = stringValue(trial?.['reagent']);
+      const comparisons = trial?.['comparisons'];
+      if (testId === undefined || !Array.isArray(comparisons)) {
+        continue;
+      }
+      for (const comparison of comparisons) {
+        const record = asRecord(comparison);
+        const vialId = stringValue(record?.['vialId']);
+        const output = asRecord(record?.['output']);
+        if (vialId !== undefined && output !== undefined) {
+          cells.set(`${testId}::${vialId}`, summarizeResult(output));
+        }
+      }
+    }
+    return resultMatrix('Four-vial chemical-screening record', reactionTests, cells);
+  }
+
+  return undefined;
+}
+
+function resultMatrix(
+  title: string,
+  tests: readonly { id: string; title: string }[],
+  values: ReadonlyMap<string, string>,
+): InvestigationEvidenceResultMatrix {
+  const vialIds = mysteryVials.map((vial) => vial.vialId);
+  return {
+    title,
+    columnLabels: mysteryVials.map((vial) => `Vial ${vial.code}`),
+    rows: tests.map((test) => ({
+      id: test.id,
+      label: test.title,
+      cells: vialIds.map((vialId) => values.get(`${test.id}::${vialId}`)),
+    })),
+  };
+}
+
+function summarizeResult(result: Readonly<Record<string, unknown>>): string {
+  return Object.entries(result)
+    .map(([key, value]) => `${readableResultLabel(key)}: ${String(value)}`)
+    .join(' · ');
+}
+
+function readableResultLabel(value: string): string {
+  const spaced = value.replace(/([a-z])([A-Z])/g, '$1 $2');
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+}
+
+function asRecord(value: unknown): Record<string, unknown> | undefined {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : undefined;
+}
+
+function stringValue(value: unknown): string | undefined {
+  return typeof value === 'string' ? value : undefined;
 }

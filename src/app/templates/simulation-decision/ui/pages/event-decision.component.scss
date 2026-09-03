@@ -53,8 +53,60 @@
   background: linear-gradient(#6b8590, #acc0bd 48%, #826338 49%);
 }
 .event-art span {
+  position: relative;
+  z-index: 3;
   font-size: 5rem;
   text-shadow: 0 0.2rem 0.5rem #243b3a;
+}
+.storm-cloud {
+  position: absolute;
+  z-index: 1;
+  top: 1rem;
+  left: -7rem;
+  width: 7rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: rgba(43, 55, 58, 0.72);
+  box-shadow:
+    2rem -0.6rem 0 rgba(43, 55, 58, 0.62),
+    4rem 0.1rem 0 rgba(43, 55, 58, 0.72);
+  animation: storm-roll 7s linear infinite;
+}
+.storm-cloud.cloud-two {
+  top: 3.2rem;
+  animation-delay: -3.5s;
+  animation-duration: 10s;
+}
+.rain {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  opacity: 0.4;
+  background: repeating-linear-gradient(
+    105deg,
+    transparent 0 13px,
+    rgba(225, 243, 246, 0.8) 14px 15px,
+    transparent 16px 28px
+  );
+  animation: rain-fall 0.45s linear infinite;
+}
+.lightning {
+  position: absolute;
+  z-index: 3;
+  top: 1rem;
+  right: 18%;
+  color: #fff4a6;
+  font-size: 4rem;
+  opacity: 0;
+  animation: lightning-flash 4.5s infinite;
+}
+.event-wagon {
+  position: absolute;
+  z-index: 4;
+  right: 1rem;
+  bottom: 2.1rem;
+  font-size: 2.2rem;
+  animation: wagon-shudder 2s ease-in-out infinite;
 }
 .event-art i {
   position: absolute;
@@ -156,6 +208,115 @@ h1 {
   color: #35291b;
   text-align: left;
   background: #fffaf0;
+  animation: choice-arrive 0.4s both;
+  animation-delay: calc(var(--choice-index) * 100ms);
+}
+.consequence-backdrop {
+  position: fixed;
+  z-index: 150;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: radial-gradient(circle, rgba(83, 58, 28, 0.55), rgba(24, 15, 8, 0.9));
+}
+.consequence-backdrop section {
+  display: grid;
+  width: min(38rem, 100%);
+  place-items: center;
+  gap: 0.55rem;
+  border: 0.45rem double #725027;
+  border-radius: 0.8rem;
+  padding: 1.4rem;
+  color: #3d2a18;
+  text-align: center;
+  background: #fff2d3;
+  box-shadow:
+    0 0 0 0.25rem #25170d,
+    0 1rem 3rem #130b06;
+  animation: consequence-impact 1.15s both;
+}
+.impact-icon {
+  display: grid;
+  width: 5rem;
+  height: 5rem;
+  place-items: center;
+  border: 0.3rem double #6c4925;
+  border-radius: 50%;
+  color: #fff1bf;
+  background: #87512c;
+  font-size: 2.7rem;
+  animation: impact-spin 0.55s ease-out both;
+}
+.impact-numbers {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.impact-numbers strong {
+  border: 1px solid #b2986d;
+  border-radius: 999px;
+  padding: 0.3rem 0.55rem;
+  background: #f4dfb8;
+}
+
+@keyframes storm-roll {
+  to {
+    transform: translateX(35rem);
+  }
+}
+@keyframes rain-fall {
+  to {
+    background-position: 1.5rem 3rem;
+  }
+}
+@keyframes lightning-flash {
+  0%,
+  86%,
+  90%,
+  100% {
+    opacity: 0;
+  }
+  87%,
+  89% {
+    opacity: 1;
+  }
+}
+@keyframes wagon-shudder {
+  0%,
+  100% {
+    transform: rotate(-2deg) translateY(0);
+  }
+  50% {
+    transform: rotate(2deg) translateY(-0.15rem);
+  }
+}
+@keyframes choice-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+}
+@keyframes consequence-impact {
+  0% {
+    opacity: 0;
+    transform: scale(0.75);
+  }
+  22%,
+  82% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+}
+@keyframes impact-spin {
+  from {
+    transform: rotate(-45deg) scale(0.5);
+  }
 }
 .choice-grid > button.selected {
   border-color: #166176;

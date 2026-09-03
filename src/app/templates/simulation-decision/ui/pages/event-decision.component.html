@@ -9,6 +9,11 @@
         <div class="event-art" aria-hidden="true">
           <span>{{ event.icon }}</span
           ><i></i><b>TRAIL EVENT</b>
+          <div class="storm-cloud cloud-one"></div>
+          <div class="storm-cloud cloud-two"></div>
+          <div class="rain"></div>
+          <div class="lightning">ϟ</div>
+          <div class="event-wagon">▣</div>
         </div>
         <div>
           <span class="eyebrow">{{ event.type }} event · Day {{ runtime.state().currentDay }}</span>
@@ -63,9 +68,10 @@
           </section>
         }
         <div class="choice-grid">
-          @for (choice of event.choices; track choice.id) {
+          @for (choice of event.choices; track choice.id; let index = $index) {
             <button
               type="button"
+              [style.--choice-index]="index"
               [class.selected]="choice.id === selectedChoiceId()"
               [disabled]="!choiceAffordable(choice.cashChangeCents)"
               (click)="selectChoice(choice.id)"
@@ -225,6 +231,30 @@
         </div>
       }
     </section>
+  }
+
+  @if (resolvingChoice(); as resolving) {
+    <div class="consequence-backdrop" role="status" aria-live="assertive">
+      <section>
+        <span class="impact-icon" aria-hidden="true">{{
+          resolving.cashChangeCents < 0 ? '¤' : '✦'
+        }}</span>
+        <span class="eyebrow">Decision in motion</span>
+        <h2>{{ resolving.label }}</h2>
+        <div class="impact-numbers">
+          <strong [class.signed-negative]="resolving.cashChangeCents < 0">{{
+            runtime.money(resolving.cashChangeCents, true)
+          }}</strong>
+          <strong>{{
+            resolving.dayChange > 0
+              ? '+' + resolving.dayChange + ' travel day'
+              : 'Schedule protected'
+          }}</strong>
+          <strong>{{ resolving.riskLabel }} risk</strong>
+        </div>
+        <p>{{ resolving.outcome }}</p>
+      </section>
+    </div>
   }
 
   @if (reviewOpen() && selectedChoice(); as choice) {

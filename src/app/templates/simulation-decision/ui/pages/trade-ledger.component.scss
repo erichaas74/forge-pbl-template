@@ -33,8 +33,25 @@
 }
 .ledger-book,
 .evidence-tray {
+  position: relative;
   min-width: 0;
   overflow: hidden;
+}
+.ledger-book::before {
+  content: '';
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  bottom: 0;
+  left: 0.25rem;
+  width: 0.45rem;
+  background: repeating-linear-gradient(
+    #4f331d 0 0.7rem,
+    #b58c4e 0.7rem 0.82rem,
+    #4f331d 0.82rem 1.5rem
+  );
+  box-shadow: 0.25rem 0 0.35rem rgba(50, 31, 14, 0.25);
+  pointer-events: none;
 }
 .ledger-book > header,
 .evidence-tray > header {
@@ -116,6 +133,11 @@ h2 {
   background: #fffdf7;
   font-size: 0.69rem;
   font-variant-numeric: tabular-nums;
+  animation: ink-write 0.35s both;
+  animation-delay: calc(min(var(--entry-index), 8) * 35ms);
+}
+.ledger-row > :nth-child(4) {
+  font-family: Georgia, serif;
 }
 .ledger-row:hover,
 .ledger-row.expanded {
@@ -131,6 +153,7 @@ h2 {
   padding: 0.7rem;
   background: #f1eadb;
   font-size: 0.68rem;
+  animation: journal-open 0.3s both;
 }
 .entry-detail div,
 .entry-detail label {
@@ -184,6 +207,23 @@ h2 {
   border-radius: 0.35rem;
   padding: 0.45rem;
   background: #fffaf0;
+  transform-origin: top right;
+  animation: pin-stamp 0.38s both;
+  animation-delay: calc(min(var(--pin-index), 8) * 45ms);
+}
+.evidence-tray li::after {
+  content: 'PINNED';
+  position: absolute;
+  right: 1.7rem;
+  bottom: 0.15rem;
+  color: rgba(128, 45, 29, 0.18);
+  font-size: 0.55rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  transform: rotate(-7deg);
+}
+.evidence-tray li {
+  position: relative;
 }
 .evidence-tray li > span {
   display: grid;
@@ -226,6 +266,32 @@ h2 {
 .evidence-tray section p {
   margin-top: 0.25rem;
   line-height: 1.4;
+}
+@keyframes ink-write {
+  from {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0);
+  }
+}
+@keyframes journal-open {
+  from {
+    opacity: 0;
+    transform: rotateX(-10deg);
+    transform-origin: top;
+  }
+}
+@keyframes pin-stamp {
+  0% {
+    opacity: 0;
+    transform: translateY(-0.5rem) rotate(3deg) scale(0.92);
+  }
+  70% {
+    transform: translateY(0.08rem) rotate(-1deg) scale(1.02);
+  }
 }
 @media (max-width: 1050px) {
   .ledger-layout {

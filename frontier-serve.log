@@ -189,3 +189,530 @@ chunk-GGKLOI4B.js   | frontier-trading-routes             |  25.24 kB |
 Application bundle generation complete. [1.606 seconds] - 2026-09-02T20:44:12.770Z
 
 Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                  | Raw size
+main.js             | main                   |  3.11 kB | 
+
+Lazy chunk files    | Names                  | Raw size
+chunk-UIX3DJSU.js   | project-home-component | 27.79 kB | 
+
+Application bundle generation complete. [5.466 seconds] - 2026-09-02T21:55:05.866Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-P5HJVLVI.js   | index                               | 758.01 kB | 
+chunk-RXZXAHXT.js   | simulation-decision-shell-component | 552.11 kB | 
+chunk-6PFLMR66.js   | frontier-trading-routes             |  25.24 kB | 
+
+Application bundle generation complete. [1.501 seconds] - 2026-09-02T21:55:07.386Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                  |  Raw size
+main.js             | main                   |   3.11 kB | 
+
+Lazy chunk files    | Names                  |  Raw size
+chunk-FEPXFFCU.js   | index                  | 758.03 kB | 
+chunk-MUGCG5TN.js   | project-home-component |  27.94 kB | 
+
+Application bundle generation complete. [1.524 seconds] - 2026-09-02T21:55:27.086Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names |  Raw size
+main.js             | main  |   3.11 kB | 
+
+Lazy chunk files    | Names |  Raw size
+chunk-2CX4Z4FY.js   | index | 758.44 kB | 
+
+Application bundle generation complete. [2.680 seconds] - 2026-09-02T23:09:31.238Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names |  Raw size
+main.js             | main  |   3.11 kB | 
+
+Lazy chunk files    | Names |  Raw size
+chunk-NWZMMMV6.js   | index | 758.45 kB | 
+
+Application bundle generation complete. [1.626 seconds] - 2026-09-02T23:09:32.873Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [1.073 seconds] - 2026-09-02T23:14:24.389Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [0.835 seconds] - 2026-09-02T23:14:25.233Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [0.724 seconds] - 2026-09-02T23:14:25.969Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [0.426 seconds] - 2026-09-02T23:14:26.404Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+chunk-VUJOFXKG.js   | -                                   | 987 bytes | 
+styles.css          | styles                              |  96 bytes | 
+
+                    | Initial total                       |   4.19 kB
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-NWZMMMV6.js   | index                               | 758.45 kB | 
+chunk-BXTGTUMK.js   | simulation-decision-shell-component | 552.11 kB | 
+chunk-YJMPH6HH.js   | -                                   |  40.21 kB | 
+chunk-6QVJNIX3.js   | frontier-trading-routes             |  28.93 kB | 
+chunk-MUGCG5TN.js   | project-home-component              |  27.94 kB | 
+
+Application bundle generation complete. [0.444 seconds] - 2026-09-02T23:16:13.806Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-ATYHDPSA.js   | simulation-decision-shell-component | 552.11 kB | 
+chunk-JKBCOFEE.js   | -                                   |  40.52 kB | 
+chunk-LYQ6EHZ4.js   | frontier-trading-routes             |  28.93 kB | 
+
+Application bundle generation complete. [0.501 seconds] - 2026-09-02T23:16:44.600Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [0.593 seconds] - 2026-09-02T23:17:24.215Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+chunk-VUJOFXKG.js   | -                                   | 987 bytes | 
+styles.css          | styles                              |  96 bytes | 
+
+                    | Initial total                       |   4.19 kB
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-NWZMMMV6.js   | index                               | 758.45 kB | 
+chunk-HUGJVVKL.js   | simulation-decision-shell-component | 557.66 kB | 
+chunk-JKBCOFEE.js   | -                                   |  40.52 kB | 
+chunk-2FGKSDWZ.js   | frontier-trading-routes             |  28.93 kB | 
+chunk-MUGCG5TN.js   | project-home-component              |  27.94 kB | 
+
+Application bundle generation complete. [0.731 seconds] - 2026-09-02T23:17:43.981Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [0.281 seconds] - 2026-09-02T23:19:00.644Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [0.343 seconds] - 2026-09-02T23:19:19.329Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+chunk-VUJOFXKG.js   | -                                   | 987 bytes | 
+styles.css          | styles                              |  96 bytes | 
+
+                    | Initial total                       |   4.19 kB
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-NWZMMMV6.js   | index                               | 758.45 kB | 
+chunk-UM7UOJA2.js   | simulation-decision-shell-component | 575.51 kB | 
+chunk-JKBCOFEE.js   | -                                   |  40.52 kB | 
+chunk-SLMC4IGZ.js   | frontier-trading-routes             |  28.93 kB | 
+chunk-MUGCG5TN.js   | project-home-component              |  27.94 kB | 
+
+Application bundle generation complete. [0.782 seconds] - 2026-09-02T23:19:28.138Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-CHL2JF5E.js   | simulation-decision-shell-component | 593.88 kB | 
+chunk-FXTJILME.js   | frontier-trading-routes             |  28.93 kB | 
+
+Application bundle generation complete. [1.139 seconds] - 2026-09-02T23:20:28.368Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-FAIN5HCU.js   | simulation-decision-shell-component | 595.01 kB | 
+chunk-3Z7KK5F3.js   | frontier-trading-routes             |  28.93 kB | 
+
+Application bundle generation complete. [0.770 seconds] - 2026-09-02T23:20:36.791Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-AJLSLG4P.js   | simulation-decision-shell-component | 596.58 kB | 
+chunk-UO6QDKKU.js   | frontier-trading-routes             |  28.93 kB | 
+
+Application bundle generation complete. [0.623 seconds] - 2026-09-02T23:20:55.584Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-WTISPSMF.js   | simulation-decision-shell-component | 601.49 kB | 
+chunk-HKZRZVSY.js   | frontier-trading-routes             |  28.93 kB | 
+
+Application bundle generation complete. [0.483 seconds] - 2026-09-02T23:21:12.511Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-YWVW45RD.js   | simulation-decision-shell-component | 608.77 kB | 
+chunk-D4T52JTI.js   | frontier-trading-routes             |  28.93 kB | 
+
+Application bundle generation complete. [0.811 seconds] - 2026-09-02T23:21:42.999Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-7XAPAOHY.js   | simulation-decision-shell-component | 609.86 kB | 
+chunk-EWCWS35P.js   | frontier-trading-routes             |  28.93 kB | 
+
+Application bundle generation complete. [0.533 seconds] - 2026-09-02T23:21:56.516Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-QRNRIEOR.js   | simulation-decision-shell-component | 610.89 kB | 
+chunk-562237R5.js   | frontier-trading-routes             |  28.93 kB | 
+
+Application bundle generation complete. [0.384 seconds] - 2026-09-02T23:23:00.531Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-OIWPHKB3.js   | simulation-decision-shell-component | 616.23 kB | 
+chunk-2FJSQKOM.js   | frontier-trading-routes             |  28.93 kB | 
+
+Application bundle generation complete. [2.593 seconds] - 2026-09-02T23:23:29.277Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-HUKFE7FX.js   | simulation-decision-shell-component | 623.27 kB | 
+chunk-QUWEW2FM.js   | frontier-trading-routes             |  28.93 kB | 
+
+Application bundle generation complete. [0.708 seconds] - 2026-09-02T23:23:55.257Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-XJZTAKHM.js   | simulation-decision-shell-component | 623.96 kB | 
+chunk-VLDIGCWT.js   | frontier-trading-routes             |  28.93 kB | 
+
+Application bundle generation complete. [0.700 seconds] - 2026-09-02T23:24:27.459Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-RTZZLGZR.js   | simulation-decision-shell-component | 627.87 kB | 
+chunk-H4KKL2PH.js   | frontier-trading-routes             |  28.93 kB | 
+
+Application bundle generation complete. [0.449 seconds] - 2026-09-02T23:24:43.420Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-Q4TSPKTA.js   | simulation-decision-shell-component | 634.66 kB | 
+chunk-HLJEMAIF.js   | frontier-trading-routes             |  28.93 kB | 
+
+Application bundle generation complete. [0.763 seconds] - 2026-09-02T23:25:10.190Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-CZPXA5HR.js   | simulation-decision-shell-component | 635.03 kB | 
+chunk-4RCMMRDR.js   | frontier-trading-routes             |  28.93 kB | 
+
+Application bundle generation complete. [0.612 seconds] - 2026-09-02T23:25:59.480Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-PHRGK74N.js   | simulation-decision-shell-component | 638.24 kB | 
+chunk-ZOMXEVMS.js   | frontier-trading-routes             |  28.93 kB | 
+
+Application bundle generation complete. [0.808 seconds] - 2026-09-02T23:26:56.238Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                   | Raw size
+main.js             | main                    |  3.11 kB | 
+
+Lazy chunk files    | Names                   | Raw size
+chunk-LUSURHFL.js   | frontier-trading-routes | 29.55 kB | 
+
+Application bundle generation complete. [0.365 seconds] - 2026-09-02T23:29:13.822Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-465GUNWQ.js   | simulation-decision-shell-component | 639.00 kB | 
+chunk-LLY6HKDV.js   | frontier-trading-routes             |  29.55 kB | 
+
+Application bundle generation complete. [1.433 seconds] - 2026-09-02T23:29:15.261Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [1.289 seconds] - 2026-09-02T23:29:16.554Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-JIGUFG56.js   | simulation-decision-shell-component | 639.51 kB | 
+chunk-DXQGWTFX.js   | frontier-trading-routes             |  29.55 kB | 
+
+Application bundle generation complete. [1.770 seconds] - 2026-09-02T23:29:18.327Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [1.394 seconds] - 2026-09-02T23:30:03.198Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [1.051 seconds] - 2026-09-02T23:30:04.256Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+chunk-VUJOFXKG.js   | -                                   | 987 bytes | 
+styles.css          | styles                              |  96 bytes | 
+
+                    | Initial total                       |   4.19 kB
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-NWZMMMV6.js   | index                               | 758.45 kB | 
+chunk-7VFMXC7K.js   | simulation-decision-shell-component | 641.42 kB | 
+chunk-JKBCOFEE.js   | -                                   |  40.52 kB | 
+chunk-G2DS27QO.js   | frontier-trading-routes             |  29.55 kB | 
+chunk-MUGCG5TN.js   | project-home-component              |  27.94 kB | 
+
+Application bundle generation complete. [0.730 seconds] - 2026-09-02T23:30:26.925Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-7RFNISVH.js   | simulation-decision-shell-component | 641.42 kB | 
+chunk-AJ6VICDC.js   | frontier-trading-routes             |  29.55 kB | 
+
+Application bundle generation complete. [0.632 seconds] - 2026-09-02T23:30:41.991Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-XWN2PSVY.js   | simulation-decision-shell-component | 641.49 kB | 
+chunk-7EI2EJBE.js   | frontier-trading-routes             |  29.55 kB | 
+
+Application bundle generation complete. [1.040 seconds] - 2026-09-02T23:31:36.120Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-QZPSBCR7.js   | simulation-decision-shell-component | 641.51 kB | 
+chunk-THHT3RIF.js   | frontier-trading-routes             |  29.55 kB | 
+
+Application bundle generation complete. [0.618 seconds] - 2026-09-02T23:31:55.029Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-ZKK4FLUO.js   | simulation-decision-shell-component | 641.48 kB | 
+chunk-NXIU5HZ7.js   | frontier-trading-routes             |  29.55 kB | 
+
+Application bundle generation complete. [1.067 seconds] - 2026-09-02T23:32:29.494Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-7YBDRKL4.js   | simulation-decision-shell-component | 641.45 kB | 
+chunk-POBGZZ3F.js   | frontier-trading-routes             |  29.55 kB | 
+
+Application bundle generation complete. [0.923 seconds] - 2026-09-02T23:32:52.259Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+main.js             | main                                |   3.11 kB | 
+chunk-VUJOFXKG.js   | -                                   | 987 bytes | 
+styles.css          | styles                              |  96 bytes | 
+
+                    | Initial total                       |   4.19 kB
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-NWZMMMV6.js   | index                               | 758.45 kB | 
+chunk-7YBDRKL4.js   | simulation-decision-shell-component | 641.45 kB | 
+chunk-JKBCOFEE.js   | -                                   |  40.52 kB | 
+chunk-POBGZZ3F.js   | frontier-trading-routes             |  29.55 kB | 
+chunk-MUGCG5TN.js   | project-home-component              |  27.94 kB | 
+
+Application bundle generation complete. [1.590 seconds] - 2026-09-02T23:45:53.024Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names |  Raw size
+main.js             | main  |   3.11 kB | 
+
+Lazy chunk files    | Names |  Raw size
+chunk-2N5MYOPG.js   | index | 758.87 kB | 
+
+Application bundle generation complete. [1.521 seconds] - 2026-09-02T23:45:54.548Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names |  Raw size
+main.js             | main  |   3.11 kB | 
+
+Lazy chunk files    | Names |  Raw size
+chunk-R3ULKQBN.js   | index | 763.09 kB | 
+
+Application bundle generation complete. [0.838 seconds] - 2026-09-02T23:45:55.391Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names |  Raw size
+main.js             | main  |   3.11 kB | 
+
+Lazy chunk files    | Names |  Raw size
+chunk-IBWX5FLQ.js   | index | 765.11 kB | 
+
+Application bundle generation complete. [0.564 seconds] - 2026-09-02T23:46:09.530Z
+
+Component update sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names |  Raw size
+main.js             | main  |   3.11 kB | 
+
+Lazy chunk files    | Names |  Raw size
+chunk-X5NVBREA.js   | index | 767.92 kB | 
+
+Application bundle generation complete. [0.809 seconds] - 2026-09-02T23:46:35.656Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names |  Raw size
+main.js             | main  |   3.11 kB | 
+
+Lazy chunk files    | Names |  Raw size
+chunk-JJZNLWLU.js   | index | 767.92 kB | 
+
+Application bundle generation complete. [0.379 seconds] - 2026-09-02T23:47:08.584Z
+
+Page reload sent to client(s).

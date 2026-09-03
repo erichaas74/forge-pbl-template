@@ -33,6 +33,35 @@
         </div>
       }
       <p>{{ evidence().summary }}</p>
+      @if (evidence().resultMatrix; as matrix) {
+        <section class="result-matrix" aria-labelledby="result-matrix-title">
+          <h3 id="result-matrix-title">{{ matrix.title }}</h3>
+          <div class="result-table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Test</th>
+                  @for (column of matrix.columnLabels; track column) {
+                    <th scope="col">{{ column }}</th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of matrix.rows; track row.id) {
+                  <tr>
+                    <th scope="row">{{ row.label }}</th>
+                    @for (cell of row.cells; track $index) {
+                      <td [class.empty-result]="cell === undefined">
+                        {{ cell ?? 'Not tested' }}
+                      </td>
+                    }
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+      }
       @if (evidence().file; as file) {
         <a [href]="file" target="_blank" rel="noopener"
           >Open source record <span aria-hidden="true">↗</span></a

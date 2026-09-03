@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { routeIsCompatible } from '../../domain/simulation-decision.engine';
@@ -11,7 +11,7 @@ import { SimulationDecisionRuntimeService } from '../../runtime/simulation-decis
   templateUrl: './route-map.component.html',
   styleUrl: './route-map.component.scss',
 })
-export class SimulationRouteMapComponent {
+export class SimulationRouteMapComponent implements OnDestroy {
   readonly runtime = inject(SimulationDecisionRuntimeService);
   readonly reachableRoutes = computed(() =>
     this.runtime.config.routes.filter(
@@ -22,6 +22,10 @@ export class SimulationRouteMapComponent {
   readonly compareIds = signal<string[]>([]);
   readonly rationale = signal('');
   readonly reviewOpen = signal(false);
+  readonly journeyLaunching = signal(false);
+  readonly journeyDay = signal(this.runtime.state().currentDay);
+  private launchTimer?: ReturnType<typeof setTimeout>;
+  private dayTimer?: ReturnType<typeof setInterval>;
   readonly selectedRoute = computed(() =>
     this.reachableRoutes().find((route) => route.id === this.selectedRouteId()),
   );
@@ -30,6 +34,11 @@ export class SimulationRouteMapComponent {
       (location) => location.id === this.selectedRoute()?.toLocationId,
     ),
   );
+
+  ngOnDestroy(): void {
+    clearTimeout(this.launchTimer);
+    clearInterval(this.dayTimer);
+  }
 
   locationName(id: string): string {
     return this.runtime.config.locations.find((location) => location.id === id)?.name ?? id;
@@ -41,6 +50,24 @@ export class SimulationRouteMapComponent {
 
   routeDays(id: string): number {
     return this.runtime.config.routes.find((route) => route.id === id)?.estimatedDays ?? 0;
+  }
+
+  routeWeather(route: RouteDefinition): string {
+    return (
+      this.runtime.config.world.locations.find((scene) => scene.locationId === route.toLocationId)
+        ?.weather ?? 'Weather uncertain'
+    );
+  }
+
+  routeRumor(route: RouteDefinition): string {
+    return (
+      this.runtime.config.world.locations.find((scene) => scene.locationId === route.toLocationId)
+        ?.stalls[0]?.rumor ?? 'No recent merchant reports.'
+    );
+  }
+
+  journeyDuration(): string {
+    return `${this.runtime.config.world.travelAnimationMs / 1000}s`;
   }
 
   compatible(route: RouteDefinition): boolean {
@@ -81,6 +108,21 @@ export class SimulationRouteMapComponent {
     const route = this.selectedRoute();
     if (route !== undefined && this.runtime.commitRoute(route.id, this.rationale())) {
       this.reviewOpen.set(false);
+      this.journeyLaunching.set(true);
+      const reducedMotion =
+        typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const duration = reducedMotion ? 350 : this.runtime.config.world.travelAnimationMs;
+      const startDay = this.runtime.state().currentDay;
+      const stepMs = Math.max(250, duration / route.estimatedDays);
+      this.dayTimer = setInterval(
+        () => this.journeyDay.update((day) => Math.min(startDay + route.estimatedDays, day + 1)),
+        stepMs,
+      );
+      this.launchTimer = setTimeout(() => {
+        clearInterval(this.dayTimer);
+        this.journeyLaunching.set(false);
+        this.runtime.navigate('events');
+      }, duration);
     }
   }
 

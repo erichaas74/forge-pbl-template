@@ -50,7 +50,30 @@ button {
   box-shadow: 0 0.6rem 2rem rgba(0, 0, 0, 0.2);
 }
 
+.project-brand {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.home-link {
+  display: inline-flex;
+  min-height: 2.35rem;
+  flex: 0 0 auto;
+  align-items: center;
+  border: 1px solid #315362;
+  border-radius: 0.4rem;
+  padding: 0.45rem 0.6rem;
+  color: #bcd7df;
+  background: #0b2430;
+  font-size: 0.66rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
 .project-identity {
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 0.65rem;
@@ -337,7 +360,7 @@ button {
   grid-template-columns: minmax(0, 1fr) 2.2rem minmax(0, 1fr);
 }
 .workspace-pair[data-pair='theory-investigate'] {
-  grid-template-columns: minmax(0, 0.8fr) 2.2rem minmax(0, 1.2fr);
+  grid-template-columns: minmax(0, 1.2fr) 2.2rem minmax(0, 0.8fr);
 }
 .reasoning-panel {
   min-width: 0;
@@ -1074,6 +1097,10 @@ a:focus-visible {
   .project-seal {
     width: 2.2rem;
     height: 2.2rem;
+  }
+  .home-link {
+    min-height: 2.2rem;
+    padding-inline: 0.45rem;
   }
   .mission-status div {
     padding-left: 0.5rem;

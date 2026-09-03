@@ -538,6 +538,12 @@ function submitActivityResult(
   if (status.errors !== undefined) {
     return status;
   }
+  const activity = state.activities[command.targetId ?? ''];
+  const resultHistory = [
+    ...(activity?.resultHistory ??
+      (activity?.lastResult === undefined ? [] : [activity.lastResult])),
+    structuredClone(command.value),
+  ].slice(-100);
   return {
     mutations: [
       ...status.mutations,
@@ -545,6 +551,11 @@ function submitActivityResult(
         operation: 'set',
         path: pointer('activities', command.targetId ?? '', 'lastResult'),
         value: command.value,
+      },
+      {
+        operation: 'set',
+        path: pointer('activities', command.targetId ?? '', 'resultHistory'),
+        value: resultHistory,
       },
     ],
   };

@@ -71,6 +71,31 @@ export interface MarketDefinition {
   goods: readonly MarketGoodDefinition[];
 }
 
+export interface MarketStallDefinition {
+  id: string;
+  name: string;
+  merchantName: string;
+  merchantRole: string;
+  icon: string;
+  categories: readonly string[];
+  greeting: string;
+  rumor: string;
+  trustCue: string;
+}
+
+export interface LocationSceneDefinition {
+  locationId: string;
+  environment: 'plains' | 'river' | 'mountain' | 'fort' | 'camp';
+  weather: string;
+  arrivalText: string;
+  stalls: readonly MarketStallDefinition[];
+}
+
+export interface SimulationWorldDefinition {
+  travelAnimationMs: number;
+  locations: readonly LocationSceneDefinition[];
+}
+
 export interface RouteDefinition {
   id: string;
   fromLocationId: string;
@@ -141,6 +166,7 @@ export interface SimulationDecisionConfig {
   goods: readonly GoodDefinition[];
   locations: readonly LocationDefinition[];
   markets: readonly MarketDefinition[];
+  world: SimulationWorldDefinition;
   routes: readonly RouteDefinition[];
   events: readonly SimulationEventDefinition[];
   reportSections: readonly ReportSectionDefinition[];
@@ -259,6 +285,7 @@ export interface SimulationDecisionState {
   eventHistory: readonly EventHistoryEntry[];
   evidence: readonly EvidenceReference[];
   ledgerAnnotations: Readonly<Record<string, string>>;
+  marketDiscoveries: Readonly<Record<string, readonly string[]>>;
   report: FinalStrategyReportState;
   lastSavedAt: string;
   completedAt?: string;
@@ -303,6 +330,7 @@ export type SimulationDecisionAction =
   | { type: 'view.changed'; view: SimulationView }
   | { type: 'company.started'; companyName: string; emblemId: string; transportId: string }
   | { type: 'trade.committed'; lines: readonly TradeLineInput[] }
+  | { type: 'market.stallInspected'; stallId: string }
   | { type: 'route.committed'; routeId: string; rationale: string }
   | { type: 'travel.advanced' }
   | {

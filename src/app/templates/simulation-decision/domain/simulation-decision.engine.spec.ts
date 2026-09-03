@@ -32,6 +32,26 @@ describe('simulation decision domain', () => {
     expect(state.ledger).toEqual([]);
     expect(frontierTradingConfig.goods).toHaveLength(10);
     expect(frontierTradingConfig.events).toHaveLength(12);
+    expect(frontierTradingConfig.world.locations).toHaveLength(
+      frontierTradingConfig.locations.length,
+    );
+    expect(frontierTradingConfig.world.locations.every((scene) => scene.stalls.length >= 3)).toBe(
+      true,
+    );
+  });
+
+  it('records market exploration once and turns a merchant rumor into evidence', () => {
+    const initial = started('prairie-wagon');
+    const stall = frontierTradingConfig.world.locations.find(
+      (scene) => scene.locationId === initial.currentLocationId,
+    )!.stalls[0];
+
+    const discovered = act(initial, { type: 'market.stallInspected', stallId: stall.id });
+    const revisited = act(discovered, { type: 'market.stallInspected', stallId: stall.id });
+
+    expect(discovered.marketDiscoveries[initial.currentLocationId]).toEqual([stall.id]);
+    expect(discovered.evidence.at(-1)?.summary).toContain(stall.rumor);
+    expect(revisited.evidence).toHaveLength(discovered.evidence.length);
   });
 
   it('records starting capital and transport as reconciling ledger entries', () => {

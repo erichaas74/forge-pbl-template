@@ -1,0 +1,66 @@
+<main class="project-home">
+  <header class="home-hero">
+    <div class="forge-mark" aria-hidden="true"><span>F</span></div>
+    <div>
+      <span class="eyebrow">Forge PBL Learning Studio</span>
+      <h1>Choose your next project</h1>
+      <p>
+        Enter an investigation or decision simulation. Each project saves its own progress on this
+        device.
+      </p>
+    </div>
+    <aside>
+      <strong>{{ projects.length }}</strong
+      ><span>projects available</span>
+    </aside>
+  </header>
+
+  <section class="project-section" aria-labelledby="available-projects-title">
+    <header>
+      <div>
+        <span class="eyebrow">Student project library</span>
+        <h2 id="available-projects-title">Available projects</h2>
+      </div>
+      <p>Select a project card to open or continue your work.</p>
+    </header>
+
+    <div class="project-grid">
+      @for (project of projects; track project.id) {
+        <article class="project-card" [class]="'project-card ' + project.theme">
+          <div class="project-art">
+            <span aria-hidden="true">{{ project.symbol }}</span>
+            <i></i>
+            <small>{{ project.projectType }}</small>
+          </div>
+          <div class="project-content">
+            <header>
+              <div>
+                <span>{{ project.grade }} · {{ project.subject }}</span>
+                <h3>{{ project.title }}</h3>
+                <p>{{ project.subtitle }}</p>
+              </div>
+              <strong>{{ project.status }}</strong>
+            </header>
+            <p class="description">{{ project.description }}</p>
+            <ul aria-label="Learning goals">
+              @for (goal of project.learningGoals; track goal) {
+                <li>{{ goal }}</li>
+              }
+            </ul>
+            <footer>
+              <span>{{ project.projectType }}</span>
+              <a [routerLink]="project.route" [attr.aria-label]="'Open ' + project.title"
+                >Open project <b aria-hidden="true">→</b></a
+              >
+            </footer>
+          </div>
+        </article>
+      }
+    </div>
+  </section>
+
+  <footer class="home-footer">
+    <span>Forge PBL</span>
+    <p>Learn by investigating, deciding, building, and explaining.</p>
+  </footer>
+</main>

@@ -16,19 +16,21 @@ The project emphasizes:
 
 ## Page alignment
 
-| Guide | Implemented workspace                                                                                          |
-| ----- | -------------------------------------------------------------------------------------------------------------- |
-| UI 01 | Persistent mission bar, five live HUD metrics, desktop rail, mobile navigation, save and lock states           |
-| UI 02 | Searchable market, responsive goods cards/table, trade builder, draft, validation, review, receipt evidence    |
-| UI 03 | Accessible SVG route map plus equivalent route cards, three-route comparison, compatibility, rationale, review |
-| UI 04 | Cargo meter, illustrative wagon, canonical inventory table, current-value calculations, evidence snapshot      |
-| UI 05 | Priority event decision, known effects, math check, rationale, confirmation, travel controls, outcome evidence |
-| UI 06 | Immutable derived ledger, filters, expansion, calculations, annotations, reconciliation, evidence tray         |
-| UI 07 | Transparent cash equation, results metrics, trade analysis, cash timeline, reflection/report actions           |
-| UI 08 | Ten report sections, debounced autosave, evidence library, calculations, rubric readiness, final submission    |
-| UI 09 | Local teacher overview, seed/difficulty, pause, inject/skip, restart/clear confirmations, print support        |
+| Guide | Implemented workspace                                                                                                 |
+| ----- | --------------------------------------------------------------------------------------------------------------------- |
+| UI 01 | Persistent mission bar, five live HUD metrics, desktop rail, mobile navigation, save and lock states                  |
+| UI 02 | Living location scenes, explorable NPC stalls, rumor evidence, drag-to-load/sell, trade feedback, accessible controls |
+| UI 03 | Glowing SVG trails, terrain/weather previews, uncertain rumors, route comparison, rationale, animated wagon departure |
+| UI 04 | Unit-by-unit physical cargo, weighted suspension, drag-to-sell handoff, profit tooltips, canonical inventory table    |
+| UI 05 | Weather-driven event scenes, staggered choices, math check, rationale, confirmation, animated consequence reveal      |
+| UI 06 | Animated journal entries, expandable calculations, annotations, reconciliation, stamped evidence tray                 |
+| UI 07 | Transparent cash equation, results metrics, trade analysis, cash timeline, reflection/report actions                  |
+| UI 08 | Ten report sections, debounced autosave, evidence library, calculations, rubric readiness, final submission           |
+| UI 09 | Local teacher overview, seed/difficulty, pause, inject/skip, restart/clear confirmations, print support               |
 
 The reference screenshots guided visual hierarchy, parchment reading surfaces, dark wood framing, teal actions, serif headings, dense data cards, and review dialogs. The UI is implemented with semantic HTML, CSS, and inline SVG so the reusable template does not depend on project-specific screenshot assets.
+
+The interaction layer makes each animation explain state rather than decorate it: cargo visibly enters or leaves the wagon, an overloaded draft makes the wagon reject the load, route motion represents committed travel, price tags reflect trends, and event effects reveal the recorded cost, delay, and risk. All drag interactions retain equivalent buttons, review dialogs, and structured data views. Reduced-motion preferences collapse the journey and suppress repeated animation.
 
 ## Deliberate guide adaptations
 

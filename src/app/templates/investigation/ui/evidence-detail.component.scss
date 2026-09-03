@@ -96,6 +96,55 @@ header p,
   font-weight: 700;
 }
 
+.result-matrix {
+  margin: 0.75rem 0.9rem 0.9rem;
+  border-top: 1px solid rgba(130, 172, 195, 0.22);
+  padding-top: 0.75rem;
+}
+
+.result-table-scroll {
+  overflow-x: auto;
+  margin-top: 0.55rem;
+}
+
+.result-matrix table {
+  width: 100%;
+  min-width: 38rem;
+  border-collapse: collapse;
+  color: #dceaf2;
+  font-size: 0.7rem;
+  line-height: 1.35;
+}
+
+.result-matrix th,
+.result-matrix td {
+  border: 1px solid #284a5f;
+  padding: 0.55rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.result-matrix thead th {
+  color: #aef2ed;
+  background: #103242;
+}
+
+.result-matrix tbody th {
+  width: 7.5rem;
+  color: #eef8fb;
+  background: #0c2938;
+}
+
+.result-matrix td {
+  min-width: 7rem;
+  background: rgba(8, 31, 44, 0.72);
+}
+
+.result-matrix td.empty-result {
+  color: #6f8b99;
+  font-style: italic;
+}
+
 .data-visual {
   display: flex;
   height: 8rem;

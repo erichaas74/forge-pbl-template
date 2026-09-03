@@ -1,7 +1,8 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { SimulationDecisionRuntimeService } from '../../runtime/simulation-decision-runtime.service';
+import type { EventChoiceDefinition } from '../../domain/simulation-decision.models';
 
 @Component({
   selector: 'app-simulation-event-decision',
@@ -9,7 +10,7 @@ import { SimulationDecisionRuntimeService } from '../../runtime/simulation-decis
   templateUrl: './event-decision.component.html',
   styleUrl: './event-decision.component.scss',
 })
-export class SimulationEventDecisionComponent {
+export class SimulationEventDecisionComponent implements OnDestroy {
   readonly runtime = inject(SimulationDecisionRuntimeService);
   readonly selectedChoiceId = signal('');
   readonly reasoning = signal('');
@@ -18,6 +19,8 @@ export class SimulationEventDecisionComponent {
   readonly reviewOpen = signal(false);
   readonly journeyPaused = signal(false);
   readonly speed = signal<1 | 2>(1);
+  readonly resolvingChoice = signal<EventChoiceDefinition | undefined>(undefined);
+  private resolutionTimer?: ReturnType<typeof setTimeout>;
 
   readonly event = computed(() =>
     this.runtime.config.events.find((event) => event.id === this.runtime.state().pendingEventId),
@@ -37,6 +40,10 @@ export class SimulationEventDecisionComponent {
     const challenge = this.event()?.mathChallenge;
     return challenge === undefined || this.mathAnswer() === challenge.answer;
   });
+
+  ngOnDestroy(): void {
+    clearTimeout(this.resolutionTimer);
+  }
 
   choiceAffordable(cashChangeCents: number): boolean {
     return this.runtime.cash() + cashChangeCents >= 0;
@@ -73,13 +80,32 @@ export class SimulationEventDecisionComponent {
   }
 
   resolve(): void {
-    if (this.runtime.resolveEvent(this.selectedChoiceId(), this.reasoning(), this.mathAnswer())) {
-      this.reviewOpen.set(false);
-      this.selectedChoiceId.set('');
-      this.reasoning.set('');
-      this.mathAnswer.set(undefined);
-      this.showHint.set(false);
+    const choice = this.selectedChoice();
+    if (choice === undefined || this.resolvingChoice() !== undefined) {
+      return;
     }
+    this.reviewOpen.set(false);
+    this.resolvingChoice.set(choice);
+    const reducedMotion =
+      typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    this.resolutionTimer = setTimeout(
+      () => {
+        const changed = this.runtime.resolveEvent(
+          this.selectedChoiceId(),
+          this.reasoning(),
+          this.mathAnswer(),
+        );
+        this.resolvingChoice.set(undefined);
+        if (changed) {
+          this.reviewOpen.set(false);
+          this.selectedChoiceId.set('');
+          this.reasoning.set('');
+          this.mathAnswer.set(undefined);
+          this.showHint.set(false);
+        }
+      },
+      reducedMotion ? 150 : 1150,
+    );
   }
 
   advance(): void {

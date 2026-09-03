@@ -82,12 +82,13 @@
           ><span role="columnheader">Cash change</span><span role="columnheader">Balance</span
           ><span role="columnheader">Cargo</span><span role="columnheader">Evidence</span>
         </div>
-        @for (entry of entries(); track entry.id) {
+        @for (entry of entries(); track entry.id; let index = $index) {
           <button
             class="ledger-row"
             type="button"
             role="row"
             [class.expanded]="expandedId() === entry.id"
+            [style.--entry-index]="index"
             (click)="expandedId.set(expandedId() === entry.id ? undefined : entry.id)"
           >
             <span role="cell">{{ entry.day }}</span
@@ -192,8 +193,8 @@
       </header>
       <p>Pin strong records that show what you decided, what the math showed, and what happened.</p>
       <ol>
-        @for (evidence of runtime.state().evidence; track evidence.id) {
-          <li>
+        @for (evidence of runtime.state().evidence; track evidence.id; let index = $index) {
+          <li [style.--pin-index]="index">
             <span>{{ $index + 1 }}</span>
             <div>
               <strong>{{ evidence.title }}</strong

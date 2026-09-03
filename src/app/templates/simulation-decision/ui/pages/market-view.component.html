@@ -1,248 +1,379 @@
-<section class="market-layout">
-  <div class="market-board page-card">
-    <header>
-      <div class="post-mark" aria-hidden="true">▥</div>
-      <div>
-        <span class="eyebrow">Local market · Day {{ runtime.state().currentDay }}</span>
-        <h1>{{ runtime.currentMarket()?.name }}</h1>
-        <p>{{ runtime.currentLocation()?.context }}</p>
-      </div>
-      <aside>
-        <strong>Market tip</strong>
-        <span
-          >Compare the price and cargo space for every unit. A higher selling price does not always
-          mean a better use of space.</span
+<section class="market-page">
+  @if (scene(); as locationScene) {
+    <section
+      class="market-world page-card"
+      [class]="'market-world page-card ' + locationScene.environment"
+      aria-labelledby="market-world-title"
+    >
+      <header>
+        <div>
+          <span class="eyebrow">Arriving now · {{ locationScene.weather }}</span>
+          <h1 id="market-world-title">{{ runtime.currentLocation()?.name }} trading district</h1>
+          <p>{{ locationScene.arrivalText }}</p>
+        </div>
+        <strong
+          >{{ discoveredStallIds().length }} / {{ locationScene.stalls.length }} places
+          explored</strong
         >
-      </aside>
-    </header>
-
-    <div class="market-tools">
-      <label>
-        <span>Find a good</span>
-        <input
-          type="search"
-          [ngModel]="filter()"
-          (ngModelChange)="filter.set($event)"
-          placeholder="Search goods or categories"
-        />
-      </label>
-      <span class="status-chip">● {{ runtime.currentMarket()?.statusText }}</span>
-    </div>
-
-    <div class="goods-table desktop-table" role="table" aria-label="Goods and local prices">
-      <div class="table-head" role="row">
-        <span role="columnheader">Good</span><span role="columnheader">Buy price</span
-        ><span role="columnheader">Sell price</span><span role="columnheader">Stock</span
-        ><span role="columnheader">Cargo / unit</span><span role="columnheader">Trend</span
-        ><span role="columnheader">Actions</span>
-      </div>
-      @for (good of visibleGoods(); track good.id) {
-        <div class="good-row" role="row" [class.active]="selectedGoodId() === good.id">
-          <button
-            class="good-name"
-            type="button"
-            role="cell"
-            (click)="select(good.id, direction())"
-          >
-            <span aria-hidden="true">{{ good.icon }}</span
-            ><span
-              ><strong>{{ good.name }}</strong
-              ><small>{{ good.category }} · Owned {{ owned(good.id) }}</small></span
-            >
-          </button>
-          <strong role="cell">{{ runtime.money(buyPrice(good.id)) }}</strong>
-          <strong role="cell">{{ runtime.money(sellPrice(good.id)) }}</strong>
-          <span role="cell">{{ stockRemaining(good.id) }}</span>
-          <span role="cell">{{ good.unitCargo }} spaces</span>
-          <span role="cell"
-            >{{ marketGood(good.id)?.trend }} · {{ marketGood(good.id)?.note }}</span
-          >
-          <span class="row-actions" role="cell">
-            <button type="button" (click)="select(good.id, 'buy')">Buy</button>
+      </header>
+      <div class="living-market">
+        <div class="sky" aria-hidden="true"><i></i><i></i><b>⌁</b><b>⌁</b></div>
+        <div class="distant-hills" aria-hidden="true"></div>
+        <div class="storefronts" aria-label="Market storefronts">
+          @for (stall of locationScene.stalls; track stall.id; let index = $index) {
             <button
               type="button"
-              [disabled]="owned(good.id) === 0"
-              (click)="select(good.id, 'sell')"
+              class="stall"
+              [class.selected]="stall.id === selectedStallId()"
+              [class.discovered]="stallDiscovered(stall.id)"
+              [style.--stall-index]="index"
+              (click)="inspectStall(stall)"
+              (dragover)="allowDrop($event)"
+              (drop)="dropAtMerchant($event)"
             >
-              Sell
+              <i aria-hidden="true">{{ stall.icon }}</i>
+              <strong>{{ stall.name }}</strong>
+              <small>{{ stall.merchantName }}</small>
+              @if (stallDiscovered(stall.id)) {
+                <span>✓ explored</span>
+              }
             </button>
-          </span>
-        </div>
-      }
-    </div>
-
-    <div class="goods-cards">
-      @for (good of visibleGoods(); track good.id) {
-        <article>
-          <header>
-            <span aria-hidden="true">{{ good.icon }}</span>
-            <div>
-              <strong>{{ good.name }}</strong
-              ><small>{{ marketGood(good.id)?.note }}</small>
-            </div>
-          </header>
-          <dl>
-            <div>
-              <dt>Buy</dt>
-              <dd>{{ runtime.money(buyPrice(good.id)) }}</dd>
-            </div>
-            <div>
-              <dt>Sell</dt>
-              <dd>{{ runtime.money(sellPrice(good.id)) }}</dd>
-            </div>
-            <div>
-              <dt>Cargo</dt>
-              <dd>{{ good.unitCargo }} / unit</dd>
-            </div>
-            <div>
-              <dt>Owned</dt>
-              <dd>{{ owned(good.id) }}</dd>
-            </div>
-          </dl>
-          <div>
-            <button type="button" (click)="select(good.id, 'buy')">Plan buy</button
-            ><button
-              type="button"
-              [disabled]="owned(good.id) === 0"
-              (click)="select(good.id, 'sell')"
-            >
-              Plan sell
-            </button>
-          </div>
-        </article>
-      }
-    </div>
-  </div>
-
-  <aside class="trade-builder page-card" aria-labelledby="trade-builder-title">
-    @if (selectedGood(); as good) {
-      <header>
-        <span class="eyebrow">Trade builder</span>
-        <h2 id="trade-builder-title">
-          {{ direction() === 'buy' ? 'Buy' : 'Sell' }} {{ good.name }}
-        </h2>
-        <p>{{ good.description }}</p>
-      </header>
-      <div class="selected-good">
-        <span aria-hidden="true">{{ good.icon }}</span>
-        <div>
-          <small>{{ direction() }} price per unit</small
-          ><strong>{{ runtime.money(unitPrice()) }}</strong>
-        </div>
-      </div>
-      <div class="direction" aria-label="Choose buy or sell">
-        <button type="button" [class.active]="direction() === 'buy'" (click)="direction.set('buy')">
-          Buy
-        </button>
-        <button
-          type="button"
-          [class.active]="direction() === 'sell'"
-          [disabled]="ownedQuantity() === 0"
-          (click)="direction.set('sell')"
-        >
-          Sell
-        </button>
-      </div>
-      <label class="quantity">
-        <span>Quantity</span>
-        <span
-          ><button type="button" aria-label="Decrease quantity" (click)="adjustQuantity(-1)">
-            −</button
-          ><input
-            type="number"
-            min="1"
-            [ngModel]="quantity()"
-            (ngModelChange)="quantity.set(+$event)"
-          /><button type="button" aria-label="Increase quantity" (click)="adjustQuantity(1)">
-            +
-          </button></span
-        >
-      </label>
-      <dl class="trade-math">
-        <div>
-          <dt>Unit price × quantity</dt>
-          <dd>{{ runtime.money(unitPrice()) }} × {{ quantity() }}</dd>
-        </div>
-        <div>
-          <dt>{{ direction() === 'buy' ? 'Estimated cost' : 'Estimated revenue' }}</dt>
-          <dd>{{ runtime.money(unitPrice() * quantity()) }}</dd>
-        </div>
-        <div>
-          <dt>Cash after trade</dt>
-          <dd>{{ runtime.money(selectedLinePreview().cashAfterCents) }}</dd>
-        </div>
-        <div>
-          <dt>Cargo after trade</dt>
-          <dd>{{ selectedLinePreview().cargoAfter }} / {{ runtime.capacity() }}</dd>
-        </div>
-      </dl>
-      @if (!selectedLinePreview().valid) {
-        <ul class="validation" role="alert">
-          @for (error of selectedLinePreview().errors; track error) {
-            <li>{{ error }}</li>
           }
-        </ul>
-      }
-      <button
-        class="primary"
-        type="button"
-        [disabled]="!selectedLinePreview().valid"
-        (click)="addToDraft()"
-      >
-        Add to trade draft
-      </button>
-    }
-
-    <section class="draft">
-      <header>
-        <h3>Trade draft</h3>
-        <span>{{ draft().length }} item(s)</span>
-      </header>
-      @for (line of draft(); track line.goodId + line.direction) {
-        <div>
-          <span
-            >{{ line.direction === 'buy' ? 'Buy' : 'Sell' }} {{ line.quantity }}
-            {{ goodName(line.goodId) }}</span
-          ><button type="button" aria-label="Remove from draft" (click)="removeLine(line)">
-            ×
-          </button>
         </div>
-      } @empty {
-        <p>No official changes happen until you review and confirm.</p>
-      }
-      @if (draft().length > 0) {
-        <dl>
+        <div
+          class="market-wagon"
+          [class.bump]="wagonBump()"
+          (dragover)="allowDrop($event)"
+          (drop)="dropAtWagon($event)"
+        >
+          <strong>YOUR WAGON</strong>
           <div>
-            <dt>Cash change</dt>
-            <dd
-              [class.signed-positive]="draftPreview().netCashChangeCents > 0"
-              [class.signed-negative]="draftPreview().netCashChangeCents < 0"
-            >
-              {{ runtime.money(draftPreview().netCashChangeCents, true) }}
-            </dd>
+            @for (unit of visualCargo(); track unit.key) {
+              <button
+                type="button"
+                draggable="true"
+                [class.proposed]="unit.proposed"
+                [attr.aria-label]="'Sell one ' + unit.name"
+                (dragstart)="beginDrag(unit.goodId, 'sell')"
+                (click)="select(unit.goodId, 'sell')"
+              >
+                {{ unit.icon }}
+              </button>
+            } @empty {
+              <span>Drop goods here to load them</span>
+            }
           </div>
-          <div>
-            <dt>Cash remaining</dt>
-            <dd>{{ runtime.money(draftPreview().cashAfterCents) }}</dd>
-          </div>
-        </dl>
-        <div class="draft-actions">
-          <button class="secondary" type="button" (click)="clearDraft()">Clear cargo draft</button
-          ><button class="primary" type="button" (click)="reviewOpen.set(true)">
-            Review trade
-          </button>
+          <i class="wheel left" aria-hidden="true"></i
+          ><i class="wheel right" aria-hidden="true"></i>
+        </div>
+      </div>
+      <footer>
+        <div class="merchant-portrait" aria-hidden="true">{{ selectedStall()?.icon ?? '♞' }}</div>
+        <p>
+          <strong>{{ selectedStall()?.merchantName ?? 'Market guide' }}:</strong> “{{
+            merchantMessage()
+          }}”
+        </p>
+        <span>Drag goods to the wagon to buy. Drag cargo back to a storefront to sell.</span>
+      </footer>
+      @if (tradeFeedback(); as feedback) {
+        <div class="trade-feedback" role="status" [class.profit]="feedback.amountCents >= 0">
+          <span aria-hidden="true">{{ feedback.amountCents >= 0 ? '✦' : '▣' }}</span>
+          <strong>{{ feedback.label }}</strong>
+          <b>{{ runtime.money(feedback.amountCents, true) }}</b>
         </div>
       }
     </section>
+  }
 
-    @if (lastReceiptId()) {
-      <section class="receipt" aria-live="polite">
-        <strong>Trade recorded</strong
-        ><span>Cash, cargo, and the ledger now match this receipt.</span
-        ><button type="button" (click)="pinReceipt()">Save receipt as evidence</button>
+  <div class="market-layout">
+    <div class="market-board page-card">
+      <header>
+        <div class="post-mark" aria-hidden="true">▥</div>
+        <div>
+          <span class="eyebrow">Local market · Day {{ runtime.state().currentDay }}</span>
+          <h1>{{ runtime.currentMarket()?.name }}</h1>
+          <p>{{ runtime.currentLocation()?.context }}</p>
+        </div>
+        <aside>
+          <strong>Market tip</strong>
+          <span
+            >Compare the price and cargo space for every unit. A higher selling price does not
+            always mean a better use of space.</span
+          >
+        </aside>
+      </header>
+
+      <div class="market-tools">
+        <label>
+          <span>Find a good</span>
+          <input
+            type="search"
+            [ngModel]="filter()"
+            (ngModelChange)="filter.set($event)"
+            placeholder="Search goods or categories"
+          />
+        </label>
+        <span class="status-chip">● {{ runtime.currentMarket()?.statusText }}</span>
+      </div>
+
+      @if (selectedStall() === undefined) {
+        <div class="market-empty">
+          <span aria-hidden="true">☞</span>
+          <strong>Explore a storefront above to reveal its goods.</strong>
+          <p>Merchants provide posted facts and rumors. Decide what evidence you trust.</p>
+        </div>
+      } @else if (selectedStall()?.categories?.length === 0) {
+        <div class="notice-intel">
+          <span aria-hidden="true">✦</span>
+          <div>
+            <strong>Market intelligence</strong>
+            <p>{{ selectedStall()?.rumor }}</p>
+            <small>{{ selectedStall()?.trustCue }}</small>
+          </div>
+        </div>
+      }
+
+      <div class="goods-table desktop-table" role="table" aria-label="Goods and local prices">
+        <div class="table-head" role="row">
+          <span role="columnheader">Good</span><span role="columnheader">Buy price</span
+          ><span role="columnheader">Sell price</span><span role="columnheader">Stock</span
+          ><span role="columnheader">Cargo / unit</span><span role="columnheader">Trend</span
+          ><span role="columnheader">Actions</span>
+        </div>
+        @for (good of visibleGoods(); track good.id) {
+          <div
+            class="good-row"
+            role="row"
+            draggable="true"
+            [class.active]="selectedGoodId() === good.id"
+            (dragstart)="beginDrag(good.id, 'buy')"
+          >
+            <button
+              class="good-name"
+              type="button"
+              role="cell"
+              (click)="select(good.id, direction())"
+            >
+              <span aria-hidden="true">{{ good.icon }}</span
+              ><span
+                ><strong>{{ good.name }}</strong
+                ><small>{{ good.category }} · Owned {{ owned(good.id) }}</small></span
+              >
+            </button>
+            <strong class="price-tag" role="cell">{{ runtime.money(buyPrice(good.id)) }}</strong>
+            <strong
+              class="price-tag"
+              [class.rising]="marketGood(good.id)?.trend === 'higher'"
+              [class.falling]="marketGood(good.id)?.trend === 'lower'"
+              role="cell"
+              >{{ runtime.money(sellPrice(good.id)) }}</strong
+            >
+            <span class="stock-level" role="cell"
+              ><b [style.width.%]="(stockRemaining(good.id) / 35) * 100"></b
+              >{{ stockRemaining(good.id) }}</span
+            >
+            <span role="cell">{{ good.unitCargo }} spaces</span>
+            <span role="cell"
+              >{{ marketGood(good.id)?.trend }} · {{ marketGood(good.id)?.note }}</span
+            >
+            <span class="row-actions" role="cell">
+              <button type="button" (click)="select(good.id, 'buy')">Buy</button>
+              <button
+                type="button"
+                [disabled]="owned(good.id) === 0"
+                (click)="select(good.id, 'sell')"
+              >
+                Sell
+              </button>
+            </span>
+          </div>
+        }
+      </div>
+
+      <div class="goods-cards">
+        @for (good of visibleGoods(); track good.id) {
+          <article>
+            <header>
+              <span aria-hidden="true">{{ good.icon }}</span>
+              <div>
+                <strong>{{ good.name }}</strong
+                ><small>{{ marketGood(good.id)?.note }}</small>
+              </div>
+            </header>
+            <dl>
+              <div>
+                <dt>Buy</dt>
+                <dd>{{ runtime.money(buyPrice(good.id)) }}</dd>
+              </div>
+              <div>
+                <dt>Sell</dt>
+                <dd>{{ runtime.money(sellPrice(good.id)) }}</dd>
+              </div>
+              <div>
+                <dt>Cargo</dt>
+                <dd>{{ good.unitCargo }} / unit</dd>
+              </div>
+              <div>
+                <dt>Owned</dt>
+                <dd>{{ owned(good.id) }}</dd>
+              </div>
+            </dl>
+            <div>
+              <button type="button" (click)="select(good.id, 'buy')">Plan buy</button
+              ><button
+                type="button"
+                [disabled]="owned(good.id) === 0"
+                (click)="select(good.id, 'sell')"
+              >
+                Plan sell
+              </button>
+            </div>
+          </article>
+        }
+      </div>
+    </div>
+
+    <aside class="trade-builder page-card" aria-labelledby="trade-builder-title">
+      @if (activeGood(); as good) {
+        <header>
+          <span class="eyebrow">Trade builder</span>
+          <h2 id="trade-builder-title">
+            {{ direction() === 'buy' ? 'Buy' : 'Sell' }} {{ good.name }}
+          </h2>
+          <p>{{ good.description }}</p>
+        </header>
+        <div class="selected-good">
+          <span aria-hidden="true">{{ good.icon }}</span>
+          <div>
+            <small>{{ direction() }} price per unit</small
+            ><strong>{{ runtime.money(unitPrice()) }}</strong>
+          </div>
+        </div>
+        <div class="direction" aria-label="Choose buy or sell">
+          <button
+            type="button"
+            [class.active]="direction() === 'buy'"
+            (click)="direction.set('buy')"
+          >
+            Buy
+          </button>
+          <button
+            type="button"
+            [class.active]="direction() === 'sell'"
+            [disabled]="ownedQuantity() === 0"
+            (click)="direction.set('sell')"
+          >
+            Sell
+          </button>
+        </div>
+        <label class="quantity">
+          <span>Quantity</span>
+          <span
+            ><button type="button" aria-label="Decrease quantity" (click)="adjustQuantity(-1)">
+              −</button
+            ><input
+              type="number"
+              min="1"
+              [ngModel]="quantity()"
+              (ngModelChange)="quantity.set(+$event)"
+            /><button type="button" aria-label="Increase quantity" (click)="adjustQuantity(1)">
+              +
+            </button></span
+          >
+        </label>
+        <dl class="trade-math">
+          <div>
+            <dt>Unit price × quantity</dt>
+            <dd>{{ runtime.money(unitPrice()) }} × {{ quantity() }}</dd>
+          </div>
+          <div>
+            <dt>{{ direction() === 'buy' ? 'Estimated cost' : 'Estimated revenue' }}</dt>
+            <dd>{{ runtime.money(unitPrice() * quantity()) }}</dd>
+          </div>
+          <div>
+            <dt>Cash after trade</dt>
+            <dd>{{ runtime.money(selectedLinePreview().cashAfterCents) }}</dd>
+          </div>
+          <div>
+            <dt>Cargo after trade</dt>
+            <dd>{{ selectedLinePreview().cargoAfter }} / {{ runtime.capacity() }}</dd>
+          </div>
+        </dl>
+        @if (!selectedLinePreview().valid) {
+          <ul class="validation" role="alert">
+            @for (error of selectedLinePreview().errors; track error) {
+              <li>{{ error }}</li>
+            }
+          </ul>
+        }
+        <button
+          class="primary"
+          type="button"
+          [disabled]="!selectedLinePreview().valid"
+          (click)="addToDraft()"
+        >
+          Add to trade draft
+        </button>
+      } @else {
+        <div class="builder-empty">
+          <span aria-hidden="true">⚖</span>
+          <strong>Meet a merchant to begin a trade.</strong>
+          <p>The trade builder opens after you choose a storefront with goods.</p>
+        </div>
+      }
+
+      <section class="draft">
+        <header>
+          <h3>Trade draft</h3>
+          <span>{{ draft().length }} item(s)</span>
+        </header>
+        @for (line of draft(); track line.goodId + line.direction) {
+          <div>
+            <span
+              >{{ line.direction === 'buy' ? 'Buy' : 'Sell' }} {{ line.quantity }}
+              {{ goodName(line.goodId) }}</span
+            ><button type="button" aria-label="Remove from draft" (click)="removeLine(line)">
+              ×
+            </button>
+          </div>
+        } @empty {
+          <p>No official changes happen until you review and confirm.</p>
+        }
+        @if (draft().length > 0) {
+          <dl>
+            <div>
+              <dt>Cash change</dt>
+              <dd
+                [class.signed-positive]="draftPreview().netCashChangeCents > 0"
+                [class.signed-negative]="draftPreview().netCashChangeCents < 0"
+              >
+                {{ runtime.money(draftPreview().netCashChangeCents, true) }}
+              </dd>
+            </div>
+            <div>
+              <dt>Cash remaining</dt>
+              <dd>{{ runtime.money(draftPreview().cashAfterCents) }}</dd>
+            </div>
+          </dl>
+          <div class="draft-actions">
+            <button class="secondary" type="button" (click)="clearDraft()">Clear cargo draft</button
+            ><button class="primary" type="button" (click)="reviewOpen.set(true)">
+              Review trade
+            </button>
+          </div>
+        }
       </section>
-    }
-  </aside>
+
+      @if (lastReceiptId()) {
+        <section class="receipt" aria-live="polite">
+          <strong>Trade recorded</strong
+          ><span>Cash, cargo, and the ledger now match this receipt.</span
+          ><button type="button" (click)="pinReceipt()">Save receipt as evidence</button>
+        </section>
+      }
+    </aside>
+  </div>
 
   @if (reviewOpen()) {
     <div class="review-backdrop">

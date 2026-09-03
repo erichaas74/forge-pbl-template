@@ -1571,3 +1571,163 @@
          ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
+X [ERROR] TS2741: Property 'world' is missing in type '{ schemaVersion: string; template: { id: "simulation-decision"; version: string; }; projectId: string; projectVersion: string; title: string; subtitle: string; gradeLabel: string; mission: string; ... 12 more ...; reportSections: ({ ...; } | { ...; })[]; }' but required in type 'SimulationDecisionConfig'. [plugin angular-compiler]
+
+    src/app/projects/frontier-trading/frontier-trading.config.ts:500:13:
+      500 │ export const frontierTradingConfig: SimulationDecisionConfig = {
+          ╵              ~~~~~~~~~~~~~~~~~~~~~
+
+  'world' is declared here.
+
+    src/app/templates/simulation-decision/domain/simulation-decision.models.ts:169:2:
+      169 │   world: SimulationWorldDefinition;
+          ╵   ~~~~~
+
+
+X [ERROR] TS2741: Property 'marketDiscoveries' is missing in type '{ simulationId: string; projectId: string; projectVersion: string; version: number; seed: number; difficulty: "standard"; status: "not_started"; lastView: "setup"; companyName: string; emblemId: string; ... 9 more ...; lastSavedAt: string; }' but required in type 'SimulationDecisionState'. [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/domain/simulation-decision.engine.ts:25:2:
+      25 │   return {
+         ╵   ~~~~~~
+
+  'marketDiscoveries' is declared here.
+
+    src/app/templates/simulation-decision/domain/simulation-decision.models.ts:288:2:
+      288 │   marketDiscoveries: Readonly<Record<string, readonly string[]>>;
+          ╵   ~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2366: Function lacks ending return statement and return type does not include 'undefined'. [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/domain/simulation-decision.engine.ts:62:3:
+      62 │ ): SimulationDecisionResult {
+         ╵    ~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2741: Property 'world' is missing in type '{ schemaVersion: string; template: { id: "simulation-decision"; version: string; }; projectId: string; projectVersion: string; title: string; subtitle: string; gradeLabel: string; mission: string; ... 12 more ...; reportSections: ({ ...; } | { ...; })[]; }' but required in type 'SimulationDecisionConfig'. [plugin angular-compiler]
+
+    src/app/projects/frontier-trading/frontier-trading.config.ts:500:13:
+      500 │ export const frontierTradingConfig: SimulationDecisionConfig = {
+          ╵              ~~~~~~~~~~~~~~~~~~~~~
+
+  'world' is declared here.
+
+    src/app/templates/simulation-decision/domain/simulation-decision.models.ts:169:2:
+      169 │   world: SimulationWorldDefinition;
+          ╵   ~~~~~
+
+
+X [ERROR] TS2741: Property 'world' is missing in type '{ schemaVersion: string; template: { id: "simulation-decision"; version: string; }; projectId: string; projectVersion: string; title: string; subtitle: string; gradeLabel: string; mission: string; ... 12 more ...; reportSections: ({ ...; } | { ...; })[]; }' but required in type 'SimulationDecisionConfig'. [plugin angular-compiler]
+
+    src/app/projects/frontier-trading/frontier-trading.config.ts:500:13:
+      500 │ export const frontierTradingConfig: SimulationDecisionConfig = {
+          ╵              ~~~~~~~~~~~~~~~~~~~~~
+
+  'world' is declared here.
+
+    src/app/templates/simulation-decision/domain/simulation-decision.models.ts:169:2:
+      169 │   world: SimulationWorldDefinition;
+          ╵   ~~~~~
+
+
+X [ERROR] TS2304: Cannot find name 'scene'. [plugin angular-compiler]
+
+    src/app/projects/frontier-trading/frontier-trading.config.ts:672:6:
+      672 │       scene('independence-post', 'plains', 'Bright morning with a...
+          ╵       ~~~~~
+
+
+X [ERROR] TS2304: Cannot find name 'scene'. [plugin angular-compiler]
+
+    src/app/projects/frontier-trading/frontier-trading.config.ts:673:6:
+      673 │       scene('fort-bridger', 'fort', 'Cool air and flags snapping ...
+          ╵       ~~~~~
+
+
+X [ERROR] TS2304: Cannot find name 'scene'. [plugin angular-compiler]
+
+    src/app/projects/frontier-trading/frontier-trading.config.ts:674:6:
+      674 │       scene('river-crossing', 'river', 'Fast water, drifting clou...
+          ╵       ~~~~~
+
+
+X [ERROR] TS2304: Cannot find name 'scene'. [plugin angular-compiler]
+
+    src/app/projects/frontier-trading/frontier-trading.config.ts:675:6:
+      675 │       scene('south-pass', 'mountain', 'Thin clouds with snow movi...
+          ╵       ~~~~~
+
+
+X [ERROR] TS2304: Cannot find name 'scene'. [plugin angular-compiler]
+
+    src/app/projects/frontier-trading/frontier-trading.config.ts:676:6:
+      676 │       scene('fort-laramie', 'fort', 'Warm afternoon with wagon tr...
+          ╵       ~~~~~
+
+
+X [ERROR] TS2304: Cannot find name 'scene'. [plugin angular-compiler]
+
+    src/app/projects/frontier-trading/frontier-trading.config.ts:677:6:
+      677 │       scene('miners-camp', 'camp', 'Mountain haze, cook-fire smok...
+          ╵       ~~~~~
+
+
+X [ERROR] TS2339: Property 'inspectStall' does not exist on type 'SimulationMarketViewComponent'. [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/market-view.component.ts:148:13:
+      148 │         this.inspectStall(stall);
+          ╵              ~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Unexpected closing tag "section". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/market-view.component.html:343:0:
+      343 │ </section>
+          ╵ ~~~~~~~~~~
+
+  Error occurs in the template of component SimulationMarketViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/market-view.component.ts:15:15:
+      15 │   templateUrl: './market-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Unexpected closing tag "section". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/market-view.component.html:375:0:
+      375 │ </section>
+          ╵ ~~~~~~~~~~
+
+  Error occurs in the template of component SimulationMarketViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/market-view.component.ts:15:15:
+      15 │   templateUrl: './market-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: @else block can only be used after an @if or @else if block. [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/market-view.component.html:307:6:
+      307 │     } @else {
+          ╵       ~~~~~~~
+
+  Error occurs in the template of component SimulationMarketViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/market-view.component.ts:18:15:
+      18 │   templateUrl: './market-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: @else block can only be used after an @if or @else if block. [plugin angular-compiler]
+
+    src/app/templates/simulation-decision/ui/pages/market-view.component.html:307:6:
+      307 │     } @else {
+          ╵       ~~~~~~~
+
+  Error occurs in the template of component SimulationMarketViewComponent.
+
+    src/app/templates/simulation-decision/ui/pages/market-view.component.ts:18:15:
+      18 │   templateUrl: './market-view.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+

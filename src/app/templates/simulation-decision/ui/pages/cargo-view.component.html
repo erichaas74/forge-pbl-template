@@ -41,22 +41,66 @@
           </button>
         </div>
       } @else {
-        <div class="wagon-bed">
-          @for (item of items(); track item.goodId) {
-            <button
-              type="button"
-              [class.selected]="selectedGoodId() === item.goodId"
-              (click)="selectedGoodId.set(item.goodId)"
+        <div class="wagon-stage" [class.near-capacity]="cargoPercent() >= 85">
+          <div class="wagon-bed" [style.transform]="'translateY(' + cargoPercent() / 20 + 'px)'">
+            @for (unit of packedUnits(); track unit.key) {
+              <button
+                type="button"
+                draggable="true"
+                [class.selected]="selectedGoodId() === unit.goodId"
+                [attr.aria-label]="unit.name + ', drag to the sell area or press to inspect'"
+                (dragstart)="beginCargoDrag(unit.goodId)"
+                (click)="selectedGoodId.set(unit.goodId)"
+              >
+                <span aria-hidden="true">{{ unit.icon }}</span
+                ><small>{{ unit.name }}</small>
+              </button>
+            }
+          </div>
+          <div class="wagon-axle" aria-hidden="true"><i></i><i></i></div>
+        </div>
+      }
+      @if (selectedItem(); as selected) {
+        <section class="cargo-tooltip" aria-live="polite">
+          <span aria-hidden="true">{{ selected.good.icon }}</span>
+          <div>
+            <strong>{{ selected.good.name }}</strong>
+            <small
+              >Bought for {{ runtime.money(selected.averageCostCents) }} average · sells here for
+              {{ runtime.money(selected.currentUnitValueCents) }}</small
             >
-              <span aria-hidden="true">{{ item.good.icon }}</span
-              ><strong>{{ item.good.name }}</strong
-              ><small>{{ item.quantity }} units · {{ item.totalCargo }} spaces</small>
-            </button>
-          }
+          </div>
+          <dl>
+            <div>
+              <dt>Profit / unit</dt>
+              <dd
+                [class.signed-positive]="
+                  selected.currentUnitValueCents - selected.averageCostCents >= 0
+                "
+              >
+                {{
+                  runtime.money(selected.currentUnitValueCents - selected.averageCostCents, true)
+                }}
+              </dd>
+            </div>
+            <div>
+              <dt>Total if sold</dt>
+              <dd>{{ runtime.money(selected.currentValueCents) }}</dd>
+            </div>
+          </dl>
+          <button class="primary" type="button" (click)="planSale(selected.goodId)">
+            Take to market
+          </button>
+        </section>
+      }
+      @if (items().length > 0) {
+        <div class="sell-drop" (dragover)="allowDrop($event)" (drop)="dropToSell($event)">
+          <span aria-hidden="true">⇄</span><strong>Drag cargo here to plan a sale</strong
+          ><small>No sale is final until you review it at the market.</small>
         </div>
       }
       <footer>
-        Selection highlights the matching inventory record. Packing positions are not a puzzle.
+        Every visible package is one owned unit. Heavier loads press the suspension lower.
       </footer>
     </section>
 
