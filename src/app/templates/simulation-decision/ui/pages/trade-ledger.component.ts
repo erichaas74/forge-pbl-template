@@ -103,9 +103,17 @@ export class SimulationTradeLedgerComponent {
   calculation(entry: LedgerEntry): string | undefined {
     const unitPrice = entry.details?.unitPriceCents;
     const quantity = entry.details?.quantity;
-    return unitPrice === undefined || quantity === undefined
-      ? undefined
-      : `${this.runtime.money(unitPrice)} × ${quantity} = ${this.absoluteCash(entry.cashChangeCents)}`;
+    if (unitPrice === undefined || quantity === undefined) return undefined;
+    const postedPrice = entry.details?.postedUnitPriceCents;
+    const discount = entry.details?.discountPercent ?? 0;
+    const answer = entry.details?.studentTotalCents;
+    const priceWork =
+      postedPrice !== undefined && discount > 0
+        ? `${this.runtime.money(postedPrice)} each − ${discount}% = ${this.runtime.money(unitPrice)} each; `
+        : '';
+    const answerRecord =
+      answer === undefined ? '' : ` Student answer: ${this.runtime.money(answer)}.`;
+    return `${priceWork}${this.runtime.money(unitPrice)} × ${quantity} = ${this.absoluteCash(entry.cashChangeCents)}.${answerRecord}`;
   }
 
   costBasis(entry: LedgerEntry): string | undefined {

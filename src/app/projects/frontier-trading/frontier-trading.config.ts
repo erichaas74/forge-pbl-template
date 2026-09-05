@@ -2,6 +2,7 @@ import type {
   GoodDefinition,
   MarketDefinition,
   MarketGoodDefinition,
+  MarketStallDefinition,
   LocationSceneDefinition,
   SimulationDecisionConfig,
   SimulationEventDefinition,
@@ -16,6 +17,7 @@ const goods = [
     4_800,
     3,
     'Warm pelts prized at colder mountain posts.',
+    'bale',
   ),
   good(
     'flour',
@@ -25,8 +27,18 @@ const goods = [
     2_200,
     2,
     'A staple food that sells steadily in growing settlements.',
+    'sack',
   ),
-  good('coffee', 'Coffee', '●', 'Food', 3_400, 2, 'A light luxury good with uneven demand.'),
+  good(
+    'coffee',
+    'Coffee',
+    '●',
+    'Food',
+    3_400,
+    2,
+    'A light luxury good with uneven demand.',
+    'sack',
+  ),
   good(
     'iron-tools',
     'Iron Tools',
@@ -35,8 +47,18 @@ const goods = [
     5_200,
     4,
     'Heavy, useful equipment with strong value at remote camps.',
+    'crate',
   ),
-  good('salt', 'Salt', '◇', 'Food', 1_500, 1, 'Compact, reliable, and useful for preserving food.'),
+  good(
+    'salt',
+    'Salt',
+    '◇',
+    'Food',
+    1_500,
+    1,
+    'Compact, reliable, and useful for preserving food.',
+    'sack',
+  ),
   good(
     'cloth',
     'Cloth',
@@ -45,6 +67,7 @@ const goods = [
     2_800,
     2,
     'Flexible cargo with demand in towns and forts.',
+    'bale',
   ),
   good(
     'lantern-oil',
@@ -54,9 +77,28 @@ const goods = [
     2_600,
     2,
     'Useful at camps, crossings, and night work sites.',
+    'crate',
   ),
-  good('sugar', 'Sugar', '■', 'Food', 3_200, 1, 'Small cargo units with luxury-market potential.'),
-  good('rope', 'Rope', '◎', 'Equipment', 2_100, 2, 'Practical trail equipment with steady demand.'),
+  good(
+    'sugar',
+    'Sugar',
+    '■',
+    'Food',
+    3_200,
+    1,
+    'Small cargo units with luxury-market potential.',
+    'sack',
+  ),
+  good(
+    'rope',
+    'Rope',
+    '◎',
+    'Equipment',
+    2_100,
+    2,
+    'Practical trail equipment with steady demand.',
+    'coil',
+  ),
   good(
     'dried-beans',
     'Dried Beans',
@@ -65,6 +107,7 @@ const goods = [
     1_800,
     1,
     'Affordable provisions that travel well.',
+    'sack',
   ),
 ] as const;
 
@@ -499,20 +542,99 @@ const events: readonly SimulationEventDefinition[] = [
 ];
 
 export const frontierTradingConfig: SimulationDecisionConfig = {
-  schemaVersion: '1.1',
-  template: { id: 'simulation-decision', version: '1.1' },
+  schemaVersion: '1.9',
+  template: { id: 'simulation-decision', version: '1.4' },
   projectId: 'frontier-trading-company',
-  projectVersion: '1.0.0',
+  projectVersion: '1.13.0',
   title: 'Frontier Trading Company',
   subtitle: 'Trading Season Simulation',
   gradeLabel: 'Grade 5 Mathematics PBL',
   mission:
-    'Build a trading company, use math to manage limited cash and cargo, travel one route, respond to trail events, and defend the strategy with evidence.',
+    'Build a trading company, manage limited cash and cargo, forecast route profit, solve trail math, and explain the strategy with game records.',
+  companyNameSuggestions: [
+    'Bison Trail Trading Co.',
+    'Red Fox Traders',
+    'River Otter Trading Co.',
+    'Great Horned Owl Company',
+    'Pronghorn Supply Company',
+    'Beaver Bend Traders',
+    'Mountain Lion Mercantile',
+    'Black Bear Trading Co.',
+    'Peregrine Trading Company',
+    'Elk Ridge Traders',
+    'Badger Creek Trading Co.',
+    'Snowshoe Hare Company',
+  ],
   startingCashCents: 20_000,
   reserveTargetCents: 5_000,
   profitTargetCents: 5_000,
   startingLocationId: 'independence-post',
   maxSeasonDays: 12,
+  choiceProgression: {
+    stages: [
+      {
+        id: 'starter-outfitter',
+        title: 'Starter Trader',
+        description:
+          'Begin with three useful goods and two clear routes. Visit the shops to learn more.',
+        availableGoodIds: ['flour', 'salt', 'dried-beans'],
+        availableRouteIds: ['route-northern', 'route-river'],
+      },
+      {
+        id: 'regional-outfitter',
+        title: 'Route Planner',
+        description:
+          'Choose a route, then compare goods that could earn money at your destination.',
+        requirements: { minimumDiscoveredStalls: 2 },
+        availableGoodIds: [
+          'flour',
+          'salt',
+          'dried-beans',
+          'cloth',
+          'rope',
+          'lantern-oil',
+          'fur-pelts',
+        ],
+        availableRouteIds: ['route-northern', 'route-river', 'route-south-pass', 'route-laramie'],
+      },
+      {
+        id: 'master-outfitter',
+        title: 'Frontier Trader',
+        description: 'You bought two kinds of goods. Every route and supply choice is now open.',
+        requirements: { minimumDiscoveredStalls: 2, minimumPurchasedGoodTypes: 2 },
+        availableGoodIds: goods.map((item) => item.id),
+        availableRouteIds: [
+          'route-northern',
+          'route-river',
+          'route-south-pass',
+          'route-laramie',
+          'route-miners',
+        ],
+      },
+    ],
+  },
+  routeForecastChallenge: {
+    requiredBeforeDeparture: true,
+    toleranceCents: 1,
+  },
+  finalShowcase: {
+    title: 'Company Strategy Showcase',
+    pitchSeconds: 180,
+    audiencePrompts: [
+      'Which calculation gave your company the most confidence?',
+      'Which price, route, or cargo choice would you change next time?',
+      'How did a trail event change your forecast?',
+      'What evidence proves that your final profit is correct?',
+      'Which trade-off mattered more: time, cargo space, or cash?',
+    ],
+  },
+  transactionMath: {
+    answerRequired: true,
+    purchaseDiscountTiers: [
+      { minimumQuantity: 3, discountPercent: 10 },
+      { minimumQuantity: 7, discountPercent: 14 },
+    ],
+  },
   emblems: [
     { id: 'compass', label: 'Compass', symbol: '✥' },
     { id: 'pine', label: 'Pine tree', symbol: '♠' },
@@ -668,6 +790,8 @@ export const frontierTradingConfig: SimulationDecisionConfig = {
   ],
   world: {
     travelAnimationMs: 5_200,
+    setupSceneAsset: '/frontier-trading/setup-scenes/company-charter.webp',
+    mapSceneAsset: '/frontier-trading/map-scenes/frontier-route-map.webp',
     locations: [
       scene(
         'independence-post',
@@ -819,65 +943,31 @@ export const frontierTradingConfig: SimulationDecisionConfig = {
   events,
   reportSections: [
     {
-      id: 'mission-summary',
-      title: 'Mission Summary',
-      prompt: 'What was your trading company trying to accomplish?',
+      id: 'my-plan',
+      title: 'My Plan',
+      prompt: 'What route and goods did you choose? Explain what you hoped would happen.',
       evidenceMinimum: 0,
     },
     {
-      id: 'starting-strategy',
-      title: 'Starting Strategy',
-      prompt: 'How did you plan to use cash, cargo space, and route information?',
-      evidenceMinimum: 0,
-    },
-    {
-      id: 'best-trade',
-      title: 'Best Trade Decision',
-      prompt: 'Which trade was strongest? Use a ledger record and explain why.',
-      evidenceMinimum: 1,
-    },
-    {
-      id: 'route-risk',
-      title: 'Route / Risk Decision',
-      prompt: 'How did distance, time, cost, and risk influence your route?',
-      evidenceMinimum: 1,
-    },
-    {
-      id: 'change-decision',
-      title: 'A Decision You Would Change',
-      prompt: 'Which choice would you revise after seeing the outcome?',
-      evidenceMinimum: 1,
-    },
-    {
-      id: 'math-evidence',
-      title: 'Math Evidence',
-      prompt: 'Show a unit-price, budget, or profit calculation that supported a choice.',
+      id: 'best-trade-math',
+      title: 'My Forecast and Trade Math',
+      prompt:
+        'Compare forecast and actual trip profit. Show one calculation and explain the biggest difference.',
       evidenceMinimum: 1,
       calculationRequired: true,
     },
     {
-      id: 'season-result',
-      title: 'Final Season Result',
-      prompt: 'What do the final numbers show about your strategy?',
+      id: 'route-choice',
+      title: 'Why I Chose My Route',
+      prompt: 'How did travel time, cost, risk, and destination needs affect your route choice?',
       evidenceMinimum: 1,
     },
     {
-      id: 'strategy-claim',
-      title: 'Final Strategy Claim',
-      prompt: 'What strategy would you recommend for another season, and why?',
-      evidenceMinimum: 2,
-    },
-    {
-      id: 'reflection',
-      title: 'Individual Reflection',
-      prompt: 'What did you learn about using mathematics to make decisions?',
-      evidenceMinimum: 0,
-    },
-    {
-      id: 'submission-check',
-      title: 'Submission Checklist',
-      prompt: 'Explain how your evidence and calculations support your final claim.',
-      evidenceMinimum: 0,
+      id: 'next-season',
+      title: 'What I Would Do Next',
+      prompt:
+        'What worked, what would you change, and what advice would you give the next company?',
+      evidenceMinimum: 1,
     },
   ],
 };
@@ -890,8 +980,9 @@ function good(
   baseBuyPriceCents: number,
   unitCargo: number,
   description: string,
+  cargoPackage: GoodDefinition['cargoPackage'],
 ): GoodDefinition {
-  return { id, name, icon, category, baseBuyPriceCents, unitCargo, description };
+  return { id, name, icon, category, baseBuyPriceCents, unitCargo, description, cargoPackage };
 }
 
 function choice(
@@ -958,6 +1049,7 @@ function scene(
     merchantName: string,
     merchantRole: string,
     icon: string,
+    buildingStyle: NonNullable<MarketStallDefinition['buildingStyle']>,
     categories: readonly string[],
     greeting: string,
     rumor: string,
@@ -968,6 +1060,16 @@ function scene(
     merchantName,
     merchantRole,
     icon,
+    buildingStyle,
+    interiorSceneAsset: `/frontier-trading/shop-scenes/${
+      buildingStyle === 'mercantile'
+        ? 'general-store-interior'
+        : buildingStyle === 'forge'
+          ? 'blacksmith-interior'
+          : buildingStyle === 'warehouse'
+            ? 'freight-depot-interior'
+            : 'notice-office-interior'
+    }.webp`,
     categories,
     greeting,
     rumor,
@@ -979,6 +1081,7 @@ function scene(
     environment,
     weather,
     arrivalText: `Your wagon rolls into a ${environment} trading stop. Inspect the stalls before committing company money.`,
+    streetSceneAsset: '/frontier-trading/shop-scenes/town-street.webp',
     stalls: [
       stall(
         'general-store',
@@ -986,6 +1089,7 @@ function scene(
         generalMerchant,
         'Store owner',
         '▤',
+        'mercantile',
         ['Food', 'Textiles', 'Supplies'],
         'Welcome, trader. Check the posted prices and leave room in that wagon.',
         rumors[0] ?? 'Travelers report changing demand farther west.',
@@ -997,6 +1101,7 @@ function scene(
         smith,
         'Blacksmith',
         '⚒',
+        'forge',
         ['Equipment'],
         'Tools cost coin, but a well-chosen load can earn it back on the trail.',
         rumors[1] ?? 'Freight crews have been asking about repair tools.',
@@ -1008,6 +1113,7 @@ function scene(
         freightMerchant,
         'Freight agent',
         '▰',
+        'warehouse',
         ['Raw materials'],
         'Space is money. Compare profit per cargo space before loading up.',
         rumors[2] ?? 'A wagon master expects raw materials to move soon.',
@@ -1019,6 +1125,7 @@ function scene(
         'Town notices',
         'Posted intelligence',
         '✦',
+        'notice-office',
         [],
         'Read the notices, then decide which claims deserve your trust.',
         rumors.join(' '),

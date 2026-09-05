@@ -6,14 +6,76 @@
     </header>
     <div class="event-layout page-card">
       <section class="event-story">
-        <div class="event-art" aria-hidden="true">
-          <span>{{ event.icon }}</span
-          ><i></i><b>TRAIL EVENT</b>
-          <div class="storm-cloud cloud-one"></div>
-          <div class="storm-cloud cloud-two"></div>
-          <div class="rain"></div>
-          <div class="lightning">ϟ</div>
-          <div class="event-wagon">▣</div>
+        <div class="event-art {{ eventScene() }}" aria-hidden="true">
+          <svg viewBox="0 0 700 360" preserveAspectRatio="xMidYMid slice" focusable="false">
+            <defs>
+              <linearGradient id="event-sky" x1="0" y1="0" x2="0" y2="1">
+                <stop stop-color="#6f8f98" />
+                <stop offset=".72" stop-color="#bcc7b9" />
+                <stop offset="1" stop-color="#d8ba7f" />
+              </linearGradient>
+              <linearGradient id="event-ground" x1="0" y1="0" x2="0" y2="1">
+                <stop stop-color="#8c875d" />
+                <stop offset="1" stop-color="#5c432b" />
+              </linearGradient>
+            </defs>
+            <rect width="700" height="360" fill="url(#event-sky)" />
+            <path
+              class="event-far-hills"
+              d="M0 201Q104 91 215 193Q330 61 450 188Q572 82 700 181V280H0Z"
+            />
+            <path
+              class="event-tree-line"
+              d="M0 221l28-50 26 38 31-66 32 65 29-46 30 45 34-71 36 73 31-51 30 50 36-76 38 78 32-49 31 48 38-70 37 69 31-44 29 43 39-67 39 66 33-46 31 45 32-57 35 58v58H0Z"
+            />
+            <rect y="238" width="700" height="122" fill="url(#event-ground)" />
+            <path class="event-trail" d="M-20 356Q160 257 348 271Q528 284 730 349" />
+            <g class="event-cloud-bank">
+              <path d="M-35 81q35-61 90-25 42-70 105-8 79-8 93 48H-42Z" />
+              <path d="M355 57q30-50 74-21 39-58 91-3 66-5 78 42H344Z" />
+            </g>
+            <g class="event-rain">
+              <path
+                d="M55 108l-21 50m73-55-23 57m76-48-25 61m79-69-22 55m79-47-25 63m85-72-25 66m84-59-21 52m79-54-24 58m82-63-26 64"
+              />
+            </g>
+            <path class="event-lightning" d="M493 63l-41 77h35l-19 64 64-91h-40l29-50Z" />
+            <path
+              class="event-river"
+              d="M-30 286Q125 231 271 289T535 278T735 286V350Q581 323 427 347T124 339T-30 355Z"
+            />
+            <g class="crossing-stake">
+              <path d="M110 203v117m-12-72h25m-25 28h25" />
+            </g>
+            <g class="camp-fire" transform="translate(118 286)">
+              <path class="fire" d="M0 23Q-17 4-3-14q4 14 13 6 13 19-10 31Z" />
+              <path class="logs" d="M-23 22l43 13m-40 0 42-15" />
+              <path class="smoke" d="M3-17q-14-18 2-31t-5-27" />
+            </g>
+            <g class="event-merchant" transform="translate(104 252)">
+              <circle cy="-25" r="12" />
+              <path d="M-15-10h29l9 55h-45Zm-8 19-28 24m61-24 29 20" />
+            </g>
+            <g class="broken-wheel" transform="translate(555 294)">
+              <circle r="45" />
+              <circle r="9" />
+              <path d="M0-42V42M-42 0H42M-29-29L29 29M29-29L-29 29" />
+              <path class="break-mark" d="M8-44L-7-8l20 9-22 42" />
+            </g>
+            <g class="event-birds">
+              <path d="M132 76q12-14 24 0m-12 0q12-14 24 0M610 119q10-12 20 0m-10 0q10-12 20 0" />
+            </g>
+          </svg>
+          <app-illustrated-wagon
+            [compact]="true"
+            [transportName]="runtime.transport()?.name ?? 'Prairie Wagon'"
+            [cargo]="wagonCargo()"
+            [loadPercent]="
+              runtime.capacity() === 0 ? 0 : (runtime.usedCargo() / runtime.capacity()) * 100
+            "
+            [strained]="eventScene() === 'breakdown' || eventScene() === 'storm'"
+          />
+          <b>TRAIL EVENT</b>
         </div>
         <div>
           <span class="eyebrow">{{ event.type }} event · Day {{ runtime.state().currentDay }}</span>
@@ -62,7 +124,7 @@
               <strong class="feedback">{{
                 mathCorrect()
                   ? 'Your calculation matches the check.'
-                  : 'Check the operation and try again. You may still review the decision.'
+                  : 'Check the operation and try again. A correct answer unlocks the decision.'
               }}</strong>
             }
           </section>
@@ -150,6 +212,65 @@
             >Travel day {{ travel.progressDays }} of {{ route()?.estimatedDays }}</span
           >
         </header>
+        <div class="journey-scene {{ journeyEnvironment() }}" [class.advancing]="journeyMoving()">
+          <svg viewBox="0 0 1000 340" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <defs>
+              <linearGradient id="journey-sky" x1="0" y1="0" x2="0" y2="1">
+                <stop stop-color="#86b7c5" />
+                <stop offset=".68" stop-color="#d4d4b3" />
+                <stop offset="1" stop-color="#dfbc7c" />
+              </linearGradient>
+              <linearGradient id="journey-ground" x1="0" y1="0" x2="0" y2="1">
+                <stop stop-color="#8e9b69" />
+                <stop offset="1" stop-color="#755238" />
+              </linearGradient>
+            </defs>
+            <rect width="1000" height="340" fill="url(#journey-sky)" />
+            <circle class="journey-sun" cx="820" cy="68" r="35" />
+            <g class="journey-distance">
+              <path
+                class="journey-far"
+                d="M0 207Q151 81 291 200Q443 43 604 199Q783 71 1000 187V280H0Z"
+              />
+              <path
+                class="journey-near"
+                d="M0 231Q168 157 338 228Q518 124 704 226Q849 152 1000 214V286H0Z"
+              />
+              <path
+                class="journey-snow"
+                d="M204 171l88-90 85 93-47-32-38 19-29-25ZM510 158l94-112 100 123-60-38-42 25-41-34Z"
+              />
+            </g>
+            <rect y="248" width="1000" height="92" fill="url(#journey-ground)" />
+            <path class="journey-river" d="M-20 271Q170 233 344 284T674 276T1020 270V340H-20Z" />
+            <path class="journey-road" d="M-80 340Q199 254 486 270Q730 284 1080 338" />
+            <g class="journey-trees">
+              <path
+                d="M48 270l31-74 31 74h-18l22 36H43l22-36Zm112 0 23-57 26 57h-15l18 30h-58l18-30Zm683 0 31-76 33 76h-19l23 37h-75l24-37Zm100 5 23-56 24 56h-14l17 28h-55l17-28Z"
+              />
+            </g>
+            <g class="journey-foreground">
+              <path d="M18 319l24-29 19 28 31-17 24 38H7ZM771 324l39-35 25 24 35-17 42 43H748Z" />
+              <path
+                class="journey-grass"
+                d="M145 338l-8-25m8 25 5-29m31 27-4-22m4 22 9-27m428 31-7-27m7 27 9-30m45 29-5-21m5 21 12-27"
+              />
+            </g>
+          </svg>
+          <app-illustrated-wagon
+            [compact]="true"
+            [moving]="journeyMoving()"
+            [transportName]="runtime.transport()?.name ?? 'Prairie Wagon'"
+            [cargo]="wagonCargo()"
+            [loadPercent]="
+              runtime.capacity() === 0 ? 0 : (runtime.usedCargo() / runtime.capacity()) * 100
+            "
+          />
+          <div class="journey-scene-caption">
+            <strong>{{ travel.progressDays }} / {{ route()?.estimatedDays }} days</strong>
+            <span>{{ journeyEnvironment() }} trail</span>
+          </div>
+        </div>
         <div class="trail-progress">
           <i
             ><span
@@ -157,7 +278,12 @@
             ></span
           ></i>
           <div>
-            <span>Departure</span><strong aria-hidden="true">▣</strong><span>Destination</span>
+            <span>Departure</span
+            ><strong
+              aria-hidden="true"
+              [style.left.%]="(travel.progressDays / (route()?.estimatedDays ?? 1)) * 100"
+              >{{ runtime.transport()?.icon }}</strong
+            ><span>Destination</span>
           </div>
         </div>
         @if (lastDecision(); as decision) {
@@ -175,7 +301,7 @@
                 <p>Math check: {{ decision.mathCorrect ? 'matched' : 'needs another look' }}</p>
               }
             </div>
-            <button type="button" (click)="pinLastDecision()">Use as evidence</button>
+            <button type="button" (click)="pinLastDecision()">Save for my reflection</button>
           </section>
         }
         <section class="travel-controls">
@@ -213,7 +339,30 @@
         </ol>
       } @else {
         <div class="journey-empty">
-          <span aria-hidden="true">✥</span>
+          <svg class="journey-empty-art" viewBox="0 0 700 220" aria-hidden="true">
+            <defs>
+              <linearGradient id="empty-sky" x1="0" y1="0" x2="0" y2="1">
+                <stop stop-color="#9fc3c5" />
+                <stop offset="1" stop-color="#dfc590" />
+              </linearGradient>
+            </defs>
+            <rect width="700" height="220" fill="url(#empty-sky)" />
+            <path
+              class="empty-hills"
+              d="M0 153Q111 63 219 149Q343 45 467 148Q583 78 700 141V220H0Z"
+            />
+            <path class="empty-ground" d="M0 172h700v48H0Z" />
+            <path class="empty-road" d="M204 220q110-57 262 0" />
+            <g class="empty-sign" transform="translate(542 101)">
+              <path d="M0 0v110M-42 8h92l-13 35h-79Z" />
+              <path d="M-24 57h57" />
+            </g>
+          </svg>
+          <app-illustrated-wagon
+            [compact]="true"
+            [transportName]="runtime.transport()?.name ?? 'Prairie Wagon'"
+            [cargo]="wagonCargo()"
+          />
           <h1>No journey is active</h1>
           <p>Compare reachable routes, commit travel, and return here for day-by-day progress.</p>
           <div>

@@ -1,0 +1,103 @@
+<section class="decision-panel" aria-labelledby="journey-step-title">
+  @if (runtime.step(); as step) {
+    <header>
+      <div>
+        <span>{{ step.kicker }}</span>
+        <h2 id="journey-step-title">Chapter {{ step.chapter }} · {{ step.title }}</h2>
+      </div>
+      <small>{{ runtime.state().completedSteps.length + 1 }} / {{ runtime.config.steps.length }}</small>
+    </header>
+
+    <p class="mission">{{ step.mission }}</p>
+    <fieldset>
+      <legend>{{ step.choicePrompt }}</legend>
+      <div class="choices">
+        @for (choice of step.choices; track choice.id) {
+          <button
+            type="button"
+            [class.selected]="runtime.choice()?.id === choice.id"
+            [attr.aria-pressed]="runtime.choice()?.id === choice.id"
+            (click)="runtime.selectChoice(choice.id)"
+          >
+            <span>{{ choice.label }}</span>
+            <small>{{ choice.summary }}</small>
+          </button>
+        }
+      </div>
+    </fieldset>
+
+    @if (runtime.choice(); as choice) {
+      <section class="reasoning" aria-labelledby="captains-question">
+        <div class="evidence-strip">
+          <span>Evidence on the chart</span>
+          @for (item of evidence(); track item.id) {
+            <details>
+              <summary>{{ item.title }}</summary>
+              <small>{{ item.sourceLabel }}</small>
+              <p>{{ item.summary }}</p>
+            </details>
+          }
+        </div>
+        <p class="hint"><strong>Navigator’s note:</strong> {{ choice.rationaleHint }}</p>
+        <h3 id="captains-question">Captain’s question</h3>
+        <p class="question">{{ choice.question }}</p>
+
+        <div class="response-modes" role="group" aria-label="Answer format">
+          <button type="button" [attr.aria-pressed]="runtime.state().responseDraft.responseMode === 'text'" (click)="runtime.setResponseMode('text')">Write</button>
+          <button type="button" [attr.aria-pressed]="runtime.state().responseDraft.responseMode === 'audio'" (click)="runtime.setResponseMode('audio')">Speak</button>
+        </div>
+
+        @if (runtime.state().responseDraft.responseMode === 'text') {
+          <label for="journey-response">Explain your decision</label>
+          <textarea
+            id="journey-response"
+            rows="5"
+            [value]="runtime.state().responseDraft.text"
+            placeholder="Use the evidence to explain what you chose and why."
+            (input)="responseInput($event)"
+            (blur)="runtime.flushDraft()"
+          ></textarea>
+        } @else {
+          <div class="audio-workspace">
+            <div class="audio-actions">
+              @if (recordingSupported) {
+                @if (!recording()) {
+                  <button type="button" class="record" (click)="startRecording()">● Record answer</button>
+                } @else {
+                  <button type="button" class="stop" (click)="stopRecording()">■ Stop recording</button>
+                }
+              }
+              <label class="file-button">
+                Attach audio
+                <input type="file" accept="audio/*" capture="user" (change)="audioFileSelected($event)" />
+              </label>
+              <span>{{ runtime.mediaState() === 'uploading' ? 'Saving audio…' : runtime.mediaState() === 'ready' ? 'Audio saved' : '' }}</span>
+            </div>
+            @if (runtime.mediaPreviewUrl(); as audioUrl) {
+              <audio controls [src]="audioUrl">Your browser does not support audio playback.</audio>
+            }
+            <label for="journey-transcript">Transcript or key sentence</label>
+            <textarea
+              id="journey-transcript"
+              rows="3"
+              [value]="runtime.state().responseDraft.transcript"
+              placeholder="Add a transcript so every listener can follow your reasoning."
+              (input)="transcriptInput($event)"
+              (blur)="runtime.flushDraft()"
+            ></textarea>
+          </div>
+        }
+
+        <button class="continue" type="button" [disabled]="!runtime.canComplete()" (click)="runtime.completeCurrentStep()">
+          Record chapter & continue <span aria-hidden="true">→</span>
+        </button>
+      </section>
+    }
+  } @else {
+    <section class="journey-complete">
+      <span>Expedition record complete</span>
+      <h2>Your journey is ready to replay.</h2>
+      <p>Every choice, explanation, consequence, and route point has been preserved in order.</p>
+    </section>
+  }
+</section>

@@ -13,8 +13,10 @@ import {
   seasonResults,
 } from '../domain/simulation-decision.engine';
 import { formatMoney } from '../domain/money';
+import { SimulationPlanning } from './simulation-planning';
 import type {
   EvidenceReference,
+  RouteForecastAnswer,
   SimulationDecisionAction,
   SimulationDecisionState,
   SimulationView,
@@ -27,6 +29,7 @@ import {
 
 @Injectable()
 export class SimulationDecisionRuntimeService {
+  readonly planning = new SimulationPlanning();
   readonly config = inject(SIMULATION_DECISION_CONFIG);
   private readonly persistence = inject(SIMULATION_DECISION_PERSISTENCE);
   readonly state = signal(createSimulationState(this.config));
@@ -70,8 +73,12 @@ export class SimulationDecisionRuntimeService {
       this.errors.set(['Resolve the current event before returning to trading or travel.']);
       return;
     }
-    if (view === 'results' && state.status !== 'season_complete' && state.status !== 'submitted') {
-      this.errors.set(['Results unlock when the trading season is complete.']);
+    if (
+      (view === 'results' || view === 'showcase') &&
+      state.status !== 'season_complete' &&
+      state.status !== 'submitted'
+    ) {
+      this.errors.set(['Results and the showcase unlock when the trading season is complete.']);
       return;
     }
     if (view === 'setup' && state.status !== 'not_started') {
@@ -96,8 +103,8 @@ export class SimulationDecisionRuntimeService {
     return this.apply({ type: 'market.stallInspected', stallId });
   }
 
-  commitRoute(routeId: string, rationale: string): boolean {
-    return this.apply({ type: 'route.committed', routeId, rationale });
+  commitRoute(routeId: string, rationale: string, forecast?: RouteForecastAnswer): boolean {
+    return this.apply({ type: 'route.committed', routeId, rationale, forecast });
   }
 
   planMarketTrade(goodId: string, direction: 'buy' | 'sell'): void {
@@ -194,6 +201,7 @@ export class SimulationDecisionRuntimeService {
   restart(): boolean {
     const changed = this.apply({ type: 'simulation.restarted' });
     if (changed) {
+      this.planning.clear();
       this.navigate('setup');
     }
     return changed;
@@ -201,6 +209,7 @@ export class SimulationDecisionRuntimeService {
 
   clearSavedData(): void {
     this.persistence.clear(this.config.projectId, this.config.projectVersion);
+    this.planning.clear();
     this.state.set(createSimulationState(this.config, this.state().seed));
     this.errors.set([]);
     this.saveState.set('saved');

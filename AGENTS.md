@@ -973,6 +973,7 @@ Prefer:
 - services for domain behavior
 - registered renderers/plugins
 - lazy loading for large evidence/details where useful
+- in-view disclosure: when an action opens, expands, or selects content, reveal that content inside the current view and move focus to its first meaningful container or control
 
 Avoid:
 
@@ -981,6 +982,13 @@ Avoid:
 - project logic inside templates
 - components that query the database independently per card/item
 - components that contain backend vendor SDK calls
+
+Interaction surfaces must not render newly opened controls far below the trigger or outside the
+visible page without guidance. Prefer an adjacent panel, popover, dialog, drawer, or contained
+workspace that keeps the trigger and result in the same view. When layout makes scrolling
+unavoidable, wait for render, scroll the opened region with `block: 'nearest'`, respect reduced
+motion, and then place logical focus without causing a second scroll. The student should never
+need to hunt down the result of an action.
 
 ---
 

@@ -11,10 +11,11 @@ import {
   mysteryVials,
   type MysteryVial,
 } from '../../projects/mystery-substance/mystery-substance.package';
+import { ConservationChamberComponent } from '../../projects/mystery-substance/conservation-chamber.component';
+import { EmergencyResponseComponent } from '../../projects/mystery-substance/emergency-response.component';
+import { PropertiesLabComponent } from '../../projects/mystery-substance/properties-lab.component';
+import { ReactionBenchComponent } from '../../projects/mystery-substance/reaction-bench.component';
 import {
-  ConservationWorkspaceComponent,
-  PropertiesWorkspaceComponent,
-  ReactionWorkspaceComponent,
   RestorationWorkspaceComponent,
   type StationCapture,
 } from '../../projects/mystery-substance/station-workspaces';
@@ -41,13 +42,145 @@ import type {
 } from '../../templates/investigation/ui/investigation-ui.models';
 import { InvestigationWorkingTheoryComponent } from '../../templates/investigation/ui/working-theory.component';
 
-type UtilityDrawer = 'mission' | 'notebook' | 'help' | 'lockedPhase' | undefined;
+type UtilityDrawer = 'mission' | 'notebook' | 'help' | 'route' | 'lockedPhase' | undefined;
+
+/**
+ * TESTING OVERRIDE — set back to `false` before this goes near a classroom.
+ *
+ * Opens the final investigation without completing the lab, so the final case
+ * and showcase can be worked on without replaying nine activities first. While
+ * it is on, the route guide says so in the drawer rather than hiding it.
+ */
+const finalUnlockedForTesting = true;
+
+/** One stop on the path through the lab, and what actually closes it. */
+interface RouteStep {
+  id: string;
+  number: string;
+  title: string;
+  where: string;
+  todo: string;
+  completes: string;
+  status: 'complete' | 'current' | 'todo';
+}
+
+/** What each phase asks for, in the words of the thing the student clicks. */
+const routeGuide: Readonly<Record<string, { where: string; todo: string; completes: string }>> = {
+  'phase-inventory': {
+    where: 'Specimen Scanner',
+    todo: 'Open each of the four sealed vials in turn and describe what the optical channel shows.',
+    completes:
+      'All four scans captured. Each needs the observation box filled in — tags alone will not file it.',
+  },
+  'phase-evidence': {
+    where: 'Evidence Locker',
+    todo: 'Open the recovered records and sort each into supports, uncertain, or contradicts.',
+    completes: 'The locker activity is marked complete once you have reviewed the case files.',
+  },
+  'phase-properties': {
+    where: 'Properties Lab',
+    todo: 'Run the magnifier, water, probe and scanner trials across all four vials under equal conditions.',
+    completes:
+      'One captured trial files the activity — but the 4 × 4 matrix only fills in as you run more.',
+  },
+  'phase-reactions': {
+    where: 'Reaction Bench',
+    todo: 'Drag a vial onto the bench, measure and weigh, then run Solution A and Indicator B in a sealed vessel.',
+    completes: 'A finished screening with your own observation typed in.',
+  },
+  'phase-conservation': {
+    where: 'Matter Tracker',
+    todo: 'Run the sealed chamber and the open chamber, and watch the particle count against the balance.',
+    completes:
+      'A settled run plus a written observation of what happened to the particles and the mass.',
+  },
+  'phase-restore': {
+    where: 'Shelf Restoration',
+    todo: 'Give every vial a label, a shelf position, a handling plan and the reasoning behind it.',
+    completes: 'A captured case draft. Each label may only be used once across the four vials.',
+  },
+  'phase-emergency': {
+    where: 'Bay 3 Response',
+    todo: 'Spend the 25-minute clock on the tests that can separate the two candidates, then file your call.',
+    completes: 'A call filed with the marshal and the incident record captured.',
+  },
+  'phase-showcase': {
+    where: 'Final case',
+    todo: 'Build the claim, the evidence trail, the reasoning and the shelf plan.',
+    completes: 'Submitting the final investigation for teacher review.',
+  },
+};
 
 interface ContextAlert {
   label: string;
   title: string;
   evidenceId?: string;
 }
+
+/** One physical place in the lab that the student can walk into from the bench rail. */
+export interface LabStation {
+  id: string;
+  name: string;
+  instrument: string;
+  purpose: string;
+  key: string;
+  trials: number;
+  done: number;
+  total: number;
+  complete: boolean;
+}
+
+const stationCatalogue = [
+  {
+    key: 'scanner',
+    activityId: 'activity-scan-vial-a',
+    name: 'Specimen Scanner',
+    instrument: '6x optical channel',
+    purpose: 'Look at each sealed vial and record what you can actually see.',
+  },
+  {
+    key: 'properties',
+    activityId: 'activity-property-comparison',
+    name: 'Properties Lab',
+    instrument: 'Magnifier / water / probe / scanner',
+    purpose: 'Test all four vials under equal conditions and fill the property grid.',
+  },
+  {
+    key: 'reaction',
+    activityId: 'activity-reaction-comparison',
+    name: 'Reaction Bench',
+    instrument: 'Solution A / Indicator B',
+    purpose: 'Run two vials side by side in sealed vessels and compare the change.',
+  },
+  {
+    key: 'conservation',
+    activityId: 'activity-conservation-model',
+    name: 'Matter Tracker',
+    instrument: 'Balance and particle counter',
+    purpose: 'Weigh a sealed and an open chamber to find where the mass went.',
+  },
+  {
+    key: 'restoration',
+    activityId: 'activity-shelf-restoration',
+    name: 'Shelf Restoration',
+    instrument: 'Label clips and shelf zones',
+    purpose: 'Commit a label, a position, and a handling plan for every vial.',
+  },
+  {
+    key: 'emergency',
+    activityId: 'activity-emergency-response',
+    name: 'Bay 3 Response',
+    instrument: 'Incident clock and marshal radio',
+    purpose: 'Identify an unlabeled shipment against the clock before a crew enters a spill.',
+  },
+] as const;
+
+const scanActivityIds = [
+  'activity-scan-vial-a',
+  'activity-scan-vial-b',
+  'activity-scan-vial-c',
+  'activity-scan-vial-d',
+] as const;
 
 const requiredFinalActivityIds = [
   'activity-scan-vial-a',
@@ -59,6 +192,7 @@ const requiredFinalActivityIds = [
   'activity-reaction-comparison',
   'activity-conservation-model',
   'activity-shelf-restoration',
+  'activity-emergency-response',
 ] as const;
 
 @Component({
@@ -71,21 +205,21 @@ const requiredFinalActivityIds = [
     InvestigationFinalCaseComponent,
     InvestigationOptionsPanelComponent,
     InvestigationWorkingTheoryComponent,
-    PropertiesWorkspaceComponent,
-    ReactionWorkspaceComponent,
-    ConservationWorkspaceComponent,
+    PropertiesLabComponent,
+    ReactionBenchComponent,
+    ConservationChamberComponent,
     RestorationWorkspaceComponent,
+    EmergencyResponseComponent,
   ],
   templateUrl: './mystery-investigation.component.html',
-  styleUrl: './mystery-investigation.component.scss',
+  styleUrls: ['./mystery-investigation.component.scss', './case-wall.scss'],
 })
 export class MysteryInvestigationComponent {
   readonly investigation = inject(MysteryInvestigationService);
-  readonly phaseDefinitions = mysteryInvestigationPhases;
   readonly observationTags = mysteryObservationTags;
   readonly vials = mysteryVials;
 
-  readonly workspacePair = signal<InvestigationWorkspacePair>('evidence-analysis');
+  readonly workspacePair = signal<InvestigationWorkspacePair>('bench');
   readonly activePhaseId = signal<string>(mysteryInvestigationPhases[0].id);
   readonly selectedEvidenceId = signal<string | undefined>(undefined);
   readonly activeActivityId = signal<string | undefined>(undefined);
@@ -176,6 +310,50 @@ export class MysteryInvestigationComponent {
     }));
   });
 
+  /** The lab stations shown on the bench rail and the bench landing view. */
+  readonly labStations = computed<readonly LabStation[]>(() => {
+    const activities = this.investigation.snapshot()?.activities ?? {};
+    return stationCatalogue.map((station) => {
+      const isScanner = station.activityId === scanActivityIds[0];
+      const memberIds = isScanner ? scanActivityIds : [station.activityId];
+      const done = memberIds.filter((id) => activities[id]?.status === 'complete').length;
+      const trials = memberIds.reduce(
+        (total, id) => total + (activities[id]?.resultHistory?.length ?? 0),
+        0,
+      );
+      const nextId = isScanner
+        ? (scanActivityIds.find((id) => activities[id]?.status !== 'complete') ??
+          scanActivityIds[0])
+        : station.activityId;
+      return {
+        id: nextId,
+        name: station.name,
+        instrument: station.instrument,
+        purpose: station.purpose,
+        key: station.key,
+        trials,
+        done,
+        total: memberIds.length,
+        complete: done === memberIds.length,
+      };
+    });
+  });
+
+  /** Evidence the student can actually open, newest-looking first. */
+  readonly benchEvidence = computed<readonly InvestigationEvidenceItem[]>(() =>
+    this.evidence().filter((item) => item.status !== 'locked'),
+  );
+
+  readonly newEvidenceCount = computed(
+    () =>
+      this.evidence().filter((item) => item.status === 'available' || item.status === 'unopened')
+        .length,
+  );
+
+  readonly phasesComplete = computed(
+    () => this.phases().filter((phase) => phase.status === 'complete').length,
+  );
+
   readonly finalReadinessMissing = computed<readonly string[]>(() => {
     const runtime = this.investigation.snapshot();
     if (runtime === undefined) {
@@ -197,7 +375,45 @@ export class MysteryInvestigationComponent {
     return missing;
   });
 
-  readonly finalReady = computed(() => this.finalReadinessMissing().length === 0);
+  readonly finalReady = computed(
+    () => finalUnlockedForTesting || this.finalReadinessMissing().length === 0,
+  );
+
+  /** True while the final case is open only because the override is on. */
+  readonly finalUnlockedForTesting = finalUnlockedForTesting;
+  readonly testingOverrideActive = computed(
+    () => finalUnlockedForTesting && this.finalReadinessMissing().length > 0,
+  );
+
+  /**
+   * The path through the lab, in order, with live status. Built from the same
+   * phase and activity state the rest of the shell reads, so it can never drift
+   * from what the workspace actually requires.
+   */
+  readonly labRoute = computed<readonly RouteStep[]>(() =>
+    this.phases().map((phase) => {
+      const guide = routeGuide[phase.id];
+      return {
+        id: phase.id,
+        number: phase.number,
+        title: phase.title,
+        where: guide?.where ?? 'Lab bench',
+        todo: guide?.todo ?? phase.instruction,
+        completes: guide?.completes ?? 'Capture a result from this station.',
+        status:
+          phase.status === 'complete'
+            ? 'complete'
+            : phase.id === this.activePhaseId()
+              ? 'current'
+              : 'todo',
+      };
+    }),
+  );
+
+  /** The first thing still standing between the student and the final case. */
+  readonly nextRouteStep = computed(() =>
+    this.labRoute().find((step) => step.status !== 'complete'),
+  );
 
   readonly phases = computed<readonly InvestigationPhaseView[]>(() => {
     const activities = this.investigation.snapshot()?.activities ?? {};
@@ -249,6 +465,8 @@ export class MysteryInvestigationComponent {
 
   readonly workspaceHelp = computed(() => {
     switch (this.workspacePair()) {
+      case 'bench':
+        return 'Walk into a lab station to run a test, or open a record in the evidence rail. Every test you run adds a record you can reason with.';
       case 'evidence-analysis':
         return 'Open a piece of evidence, record what you notice, then decide whether it supports, challenges, or leaves your explanation uncertain.';
       case 'analysis-theory':
@@ -262,6 +480,16 @@ export class MysteryInvestigationComponent {
 
   constructor() {
     void this.investigation.initialize();
+  }
+
+  openBench(): void {
+    this.workspacePair.set('bench');
+    this.activeActivityId.set(undefined);
+    this.drawer.set(undefined);
+  }
+
+  async launchStation(station: LabStation): Promise<void> {
+    await this.launchActivity(station.id);
   }
 
   selectWorkspace(pair: InvestigationWorkspacePair): void {
@@ -397,8 +625,7 @@ export class MysteryInvestigationComponent {
   }
 
   returnFromActivity(): void {
-    this.activeActivityId.set(undefined);
-    this.workspacePair.set('theory-investigate');
+    this.openBench();
   }
 
   async selectVial(vial: MysteryVial): Promise<void> {
@@ -424,7 +651,7 @@ export class MysteryInvestigationComponent {
     await new Promise((resolve) => setTimeout(resolve, 500));
     await this.investigation.captureScan(vial.vialId, this.observation(), this.selectedTags());
     this.scanState.set('captured');
-    this.returnWithEvidence(`evidence-scan-${vial.vialId}`, `Vial ${vial.code} optical scan`);
+    this.noteEvidence(`evidence-scan-${vial.vialId}`, `Vial ${vial.code} optical scan`);
   }
 
   async captureStationResult(capture: StationCapture): Promise<void> {
@@ -434,14 +661,15 @@ export class MysteryInvestigationComponent {
       capture.result,
       capture.note,
     );
-    this.returnWithEvidence(capture.evidenceId, evidenceTitle(capture.evidenceId));
+    this.noteEvidence(capture.evidenceId, evidenceTitle(capture.evidenceId));
   }
 
-  private returnWithEvidence(evidenceId: string, title: string): void {
-    this.activeActivityId.set(undefined);
-    this.workspacePair.set('evidence-analysis');
-    this.selectedEvidenceId.set(evidenceId);
-    this.mobilePanel.set('left');
+  /**
+   * Records the new evidence without closing the station. Students stay at the
+   * bench so they can run the next trial; the rail and the alert show what they
+   * just captured.
+   */
+  private noteEvidence(evidenceId: string, title: string): void {
     this.contextAlert.set({ label: 'New evidence collected', title, evidenceId });
   }
 }
@@ -510,6 +738,22 @@ function evidenceResultMatrix(
     const cells = new Map<string, string>();
     for (const result of results) {
       const trial = asRecord(result.outputs);
+      // One sealed-vessel screening files both stages for a single vial.
+      const stages = trial?.['stages'];
+      const trialVialId = stringValue(trial?.['vialId']);
+      if (Array.isArray(stages)) {
+        for (const stage of stages) {
+          const record = asRecord(stage);
+          const testId = stringValue(record?.['reagent']);
+          const vialId = stringValue(record?.['vialId']) ?? trialVialId;
+          const output = asRecord(record?.['output']);
+          if (testId !== undefined && vialId !== undefined && output !== undefined) {
+            cells.set(`${testId}::${vialId}`, summarizeResult(output));
+          }
+        }
+        continue;
+      }
+      // Older records captured one reagent across a pair of vessels.
       const testId = stringValue(trial?.['reagent']);
       const comparisons = trial?.['comparisons'];
       if (testId === undefined || !Array.isArray(comparisons)) {

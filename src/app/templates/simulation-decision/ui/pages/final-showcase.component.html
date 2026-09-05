@@ -1,0 +1,384 @@
+<section class="showcase-page" [class.presenting]="presenting()" aria-labelledby="showcase-title">
+  <header class="showcase-header page-card">
+    <div>
+      <span class="eyebrow">Final company defense</span>
+      <h1 id="showcase-title">
+        {{ runtime.config.finalShowcase?.title ?? 'Final Strategy Showcase' }}
+      </h1>
+      <p>Present the decision, prove the mathematics, explain the revision, and answer a peer.</p>
+    </div>
+    <div class="showcase-actions">
+      <div class="pitch-timer" [class.warning]="remainingSeconds() <= 30" aria-live="polite">
+        <small>Pitch timer</small><strong>{{ timerLabel() }}</strong>
+      </div>
+      <button type="button" (click)="toggleTimer()">
+        {{ timerRunning() ? 'Pause' : remainingSeconds() === 0 ? 'Restart' : 'Start timer' }}
+      </button>
+      <button type="button" (click)="resetTimer()">Reset</button>
+      <button type="button" (click)="presenting.set(!presenting())">
+        {{ presenting() ? 'Exit presentation' : 'Present' }}
+      </button>
+      <button type="button" (click)="print()">Print slide</button>
+    </div>
+  </header>
+
+  <section class="showcase-readiness page-card" aria-label="Showcase readiness">
+    <div>
+      <small>Ready to present</small>
+      <strong>{{ readyCount() }} / {{ readiness().length }}</strong>
+    </div>
+    <ul>
+      @for (item of readiness(); track item.label) {
+        <li [class.complete]="item.complete">
+          <span aria-hidden="true">{{ item.complete ? '✓' : '○' }}</span
+          >{{ item.label }}
+        </li>
+      }
+    </ul>
+  </section>
+
+  <nav class="showcase-nav page-card" aria-label="Showcase sections">
+    @for (slide of slides; track slide.label; let index = $index) {
+      <button
+        type="button"
+        [class.active]="activeSlide() === index"
+        [attr.aria-current]="activeSlide() === index ? 'step' : null"
+        (click)="setSlide(index)"
+      >
+        <span aria-hidden="true">{{ slide.icon }}</span>
+        <small>{{ index + 1 }}</small>
+        <strong>{{ slide.shortLabel }}</strong>
+      </button>
+    }
+  </nav>
+
+  <main class="showcase-stage page-card" tabindex="-1">
+    <div class="slide-count">{{ activeSlide() + 1 }} / {{ slides.length }}</div>
+    @switch (activeSlide()) {
+      @case (0) {
+        <section
+          class="showcase-slide opening-slide"
+          [style.background-image]="
+            'linear-gradient(90deg, #130c08ed 0 38%, #130c0870 64%, #130c082e), url(' +
+            (runtime.config.world.setupSceneAsset ?? runtime.config.world.mapSceneAsset ?? '') +
+            ')'
+          "
+        >
+          <div class="opening-copy">
+            <span class="slide-kicker">Our trading season</span>
+            <h2>{{ runtime.state().companyName }}</h2>
+            <p>
+              We will show the route we chose, the load we funded, the math that proves our result,
+              and the change we would make next.
+            </p>
+            <div class="opening-route">
+              <span>{{ startLocation()?.shortName ?? 'Starting post' }}</span>
+              <i aria-hidden="true">→</i>
+              <strong>{{ destination()?.shortName ?? 'Destination' }}</strong>
+            </div>
+          </div>
+          <div class="headline-results">
+            <article>
+              <small>Verified game score</small>
+              <strong>{{ runtime.results().score }}<span>/100</span></strong>
+            </article>
+            <article>
+              <small>Net profit / loss</small>
+              <strong>{{ runtime.money(runtime.results().netProfitCents, true) }}</strong>
+            </article>
+            <article>
+              <small>Final cash</small>
+              <strong>{{ runtime.money(runtime.results().endingCashCents) }}</strong>
+            </article>
+          </div>
+        </section>
+      }
+      @case (1) {
+        <section class="showcase-slide plan-slide">
+          <header>
+            <span class="slide-kicker">Decision 1</span>
+            <h2>Our route and load had to fit together</h2>
+            <p>
+              Explain the constraint first, then point to the numbers that made the plan feasible.
+            </p>
+          </header>
+          <div class="plan-layout">
+            <figure class="showcase-map">
+              <svg viewBox="0 0 100 80" role="img" aria-label="Selected company route">
+                @if (runtime.config.world.mapSceneAsset; as mapAsset) {
+                  <image
+                    [attr.href]="mapAsset"
+                    width="100"
+                    height="80"
+                    preserveAspectRatio="none"
+                  />
+                }
+                @if (route(); as selectedRoute) {
+                  <path class="route-glow" [attr.d]="selectedRoute.path" />
+                  <path class="route-line" [attr.d]="selectedRoute.path" />
+                }
+                @if (startLocation(); as start) {
+                  <circle
+                    class="route-start"
+                    [attr.cx]="start.mapX"
+                    [attr.cy]="start.mapY"
+                    r="2.3"
+                  />
+                }
+                @if (destination(); as end) {
+                  <circle class="route-end" [attr.cx]="end.mapX" [attr.cy]="end.mapY" r="3" />
+                }
+              </svg>
+              <figcaption>
+                @if (route(); as selectedRoute) {
+                  <strong>{{ selectedRoute.name }}</strong>
+                  <span
+                    >{{ selectedRoute.distanceMiles }} miles ·
+                    {{ selectedRoute.estimatedDays }} days ·
+                    {{ runtime.money(selectedRoute.supplyCostCents) }} supplies</span
+                  >
+                } @else {
+                  <strong>No completed route record</strong>
+                }
+              </figcaption>
+            </figure>
+            <section class="load-proof">
+              <header>
+                <div>
+                  <span class="slide-kicker">Original purchases</span>
+                  <h3>What we loaded</h3>
+                </div>
+                <strong>{{ plannedCargoSpaces() }} spaces purchased</strong>
+              </header>
+              <div class="capacity-bar" aria-label="Purchased cargo compared with capacity">
+                <i
+                  [style.width.%]="
+                    runtime.capacity() === 0
+                      ? 0
+                      : Math.min(100, (plannedCargoSpaces() / runtime.capacity()) * 100)
+                  "
+                ></i>
+              </div>
+              <div class="load-rows">
+                @for (row of loadRows(); track row.goodId) {
+                  <article>
+                    <span aria-hidden="true">{{ row.icon }}</span>
+                    <div>
+                      <strong>{{ row.name }}</strong
+                      ><small>{{ row.quantity }} units</small>
+                    </div>
+                    <div>
+                      <strong>{{ row.cargoSpaces }}</strong
+                      ><small>spaces</small>
+                    </div>
+                    <div>
+                      <strong>{{ runtime.money(row.costCents) }}</strong
+                      ><small>cost</small>
+                    </div>
+                  </article>
+                } @empty {
+                  <p>No purchase records are available.</p>
+                }
+              </div>
+            </section>
+          </div>
+        </section>
+      }
+      @case (2) {
+        <section class="showcase-slide math-slide">
+          <header>
+            <span class="slide-kicker">Decision 2</span>
+            <h2>The mathematics that proves our result</h2>
+            <p>Read each equation aloud and explain what every number represents.</p>
+          </header>
+          <div class="math-board">
+            @if (forecast(); as tripForecast) {
+              <article>
+                <span class="equation-number">1</span>
+                <div>
+                  <small>Forecast before departure</small>
+                  <p>
+                    {{ runtime.money(tripForecast.expectedSalesRevenueCents) }} −
+                    {{ runtime.money(tripForecast.goodsCostCents) }} −
+                    {{ runtime.money(route()?.supplyCostCents ?? 0) }} =
+                  </p>
+                  <strong>{{ runtime.money(tripForecast.expectedTripProfitCents, true) }}</strong>
+                </div>
+              </article>
+            }
+            <article>
+              <span class="equation-number">{{ forecast() ? 2 : 1 }}</span>
+              <div>
+                <small>Actual trip profit after events</small>
+                <p>
+                  {{ runtime.money(runtime.results().salesRevenueCents) }} −
+                  {{
+                    runtime.money(
+                      forecast()?.goodsCostCents ?? runtime.results().goodsPurchasedCents
+                    )
+                  }}
+                  − {{ runtime.money(runtime.results().supplyCostsCents) }} −
+                  {{ runtime.money(runtime.results().eventExpensesCents) }} +
+                  {{ runtime.money(runtime.results().eventIncomeCents) }} =
+                </p>
+                <strong>{{ runtime.money(actualTripProfitCents(), true) }}</strong>
+              </div>
+            </article>
+            <article class="audit-equation">
+              <span class="equation-number">{{ forecast() ? 3 : 2 }}</span>
+              <div>
+                <small>Final cash audit</small>
+                <p>{{ runtime.money(runtime.results().startingCashCents) }} − costs + revenue =</p>
+                <strong>{{ runtime.money(runtime.results().endingCashCents) }}</strong>
+                <span [class.verified]="runtime.reconciled()">
+                  {{
+                    runtime.reconciled()
+                      ? '✓ Official money record reconciles'
+                      : 'Audit needs review'
+                  }}
+                </span>
+              </div>
+            </article>
+          </div>
+          @if (forecast()) {
+            <div class="forecast-error">
+              <small>Forecast error · actual minus forecast</small>
+              <strong>{{ runtime.money(forecastErrorCents(), true) }}</strong>
+              <p>A smaller absolute difference means the forecast was more accurate.</p>
+            </div>
+          }
+        </section>
+      }
+      @case (3) {
+        <section class="showcase-slide revision-slide">
+          <header>
+            <span class="slide-kicker">Decision 3</span>
+            <h2>What changed and how we adapted</h2>
+            <p>Name the changed number, explain its effect, and defend the response.</p>
+          </header>
+          @if (mostImpactfulEvent(); as event) {
+            <div class="revision-story">
+              <article class="event-card">
+                <span class="event-mark" aria-hidden="true">!</span>
+                <div>
+                  <small>Trail challenge · Day {{ event.day }}</small>
+                  <h3>{{ eventTitle(event) }}</h3>
+                  <p>{{ event.outcome }}</p>
+                </div>
+              </article>
+              <div class="before-after">
+                <article>
+                  <small>Cash before</small>
+                  <strong>{{ runtime.money(event.cashBeforeCents) }}</strong>
+                </article>
+                <span aria-hidden="true">→</span>
+                <article>
+                  <small>Cash after</small>
+                  <strong>{{ runtime.money(event.cashAfterCents) }}</strong>
+                </article>
+                <article class="change">
+                  <small>Recorded change</small>
+                  <strong>{{ runtime.money(eventCashChange(event), true) }}</strong>
+                </article>
+              </div>
+              <blockquote>
+                <small>Our recorded reasoning</small>
+                <p>{{ event.reasoning || 'No written reasoning was recorded for this event.' }}</p>
+              </blockquote>
+              <div class="revision-prompt">
+                <strong>Defense sentence</strong>
+                <p>“When _____ changed by _____, we _____ because _____.”</p>
+              </div>
+            </div>
+          } @else {
+            <div class="missing-slide-data">
+              <span aria-hidden="true">○</span>
+              <h3>No resolved trail event is available</h3>
+              <p>Use a route, cargo, or price decision as the revision example.</p>
+            </div>
+          }
+        </section>
+      }
+      @case (4) {
+        <section class="showcase-slide defense-slide">
+          <header>
+            <span class="slide-kicker">Final defense</span>
+            <h2>Make the claim, show the record, answer another group</h2>
+            <p>Every answer should include one number and one saved game record.</p>
+          </header>
+          <div class="defense-layout">
+            <section class="claim-card">
+              <span class="slide-kicker">Our strongest evidence</span>
+              @if (strongestSale(); as sale) {
+                <h3>{{ goodName(sale.entry) }}</h3>
+                <strong>{{ runtime.money(sale.profitCents, true) }} sale profit</strong>
+                <p>
+                  {{ runtime.money(sale.entry.cashChangeCents) }} received −
+                  {{ runtime.money(sale.entry.details?.costBasisCents ?? 0) }} cost basis
+                </p>
+              } @else {
+                <h3>Our audited result</h3>
+                <strong>{{ runtime.money(runtime.results().netProfitCents, true) }}</strong>
+                <p>Use the final cash equation as the main evidence.</p>
+              }
+              <div class="score-three">
+                <span
+                  >Trade <b>{{ runtime.results().tradingScore }}/40</b></span
+                >
+                <span
+                  >Math <b>{{ runtime.results().mathScore }}/40</b></span
+                >
+                <span
+                  >Explain <b>{{ runtime.results().explanationScore }}/20</b></span
+                >
+              </div>
+            </section>
+            <section class="reflection-proof">
+              <span class="slide-kicker">Prepared claims</span>
+              @for (item of reportHighlights().slice(0, 3); track item.definition.id) {
+                <details>
+                  <summary>{{ item.definition.title }}</summary>
+                  <p>{{ item.state.response }}</p>
+                  @if (item.state.calculation) {
+                    <code>{{ item.state.calculation }}</code>
+                  }
+                </details>
+              } @empty {
+                <p>Complete the reflection to bring prepared claims into this presentation.</p>
+                <button type="button" (click)="runtime.navigate('report')">Open reflection</button>
+              }
+            </section>
+            <section class="audience-challenge">
+              <span class="slide-kicker">Another group asks</span>
+              <blockquote>{{ audiencePrompt() }}</blockquote>
+              <button type="button" (click)="nextAudiencePrompt()">Draw another question ↻</button>
+              <ol>
+                <li>Questioning group asks the displayed question.</li>
+                <li>Presenters answer with one number and one record.</li>
+                <li>Questioning group names one clear strength and one follow-up.</li>
+              </ol>
+            </section>
+          </div>
+        </section>
+      }
+    }
+  </main>
+
+  <footer class="showcase-footer page-card">
+    <button type="button" [disabled]="activeSlide() === 0" (click)="moveSlide(-1)">
+      ← Previous
+    </button>
+    <div>
+      <strong>{{ slides[activeSlide()].label }}</strong>
+      <span>Use ← and → to move during the presentation.</span>
+    </div>
+    <button
+      class="primary"
+      type="button"
+      [disabled]="activeSlide() === slides.length - 1"
+      (click)="moveSlide(1)"
+    >
+      Next →
+    </button>
+  </footer>
+</section>

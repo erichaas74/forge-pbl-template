@@ -1,0 +1,455 @@
+<section class="workbench" role="dialog" aria-labelledby="station-title">
+  <header class="workbench-header">
+    <button type="button" (click)="runtime.closeStation()">
+      <span aria-hidden="true">←</span> Close expanded tablet
+    </button>
+    <div>
+      <span>{{ runtime.currentRound().label }}</span>
+      <strong>{{ runtime.viewerFaction()?.name }}</strong>
+    </div>
+    <small
+      ><i></i
+      >{{
+        runtime.connectionState() === 'shared' ? 'Shared record live' : 'Official filing paused'
+      }}</small
+    >
+  </header>
+
+  @switch (runtime.state().activeStation) {
+    @case ('opponent') {
+      @if (runtime.previousOpponentTurn(); as turn) {
+        <div class="station opponent-station">
+          <header class="station-intro split-intro">
+            <div>
+              <span>The previous argument · filed {{ turn.filedAt | date: 'medium' }}</span>
+              <h2 id="station-title">{{ runtime.faction(turn.factionId)?.name }} has answered</h2>
+            </div>
+            <p>Listen closely, then mark the exact words your faction must address.</p>
+          </header>
+
+          <div class="opponent-floor">
+            <aside class="speaker-lectern">
+              <span>{{ runtime.faction(turn.factionId)?.emblem }}</span>
+              <h3>{{ turn.speakerDisplayName }}</h3>
+              <p>{{ runtime.roleLabel(turn) }} · {{ turn.durationSeconds }} seconds</p>
+              @if (turn.recording?.kind === 'video') {
+                <video
+                  controls
+                  [src]="turn.recording.downloadUrl"
+                  (ended)="runtime.markOpponentPlaybackComplete()"
+                  aria-label="Previous student video recording"
+                ></video>
+              } @else if (turn.recording?.kind === 'audio') {
+                <audio
+                  controls
+                  [src]="turn.recording.downloadUrl"
+                  (ended)="runtime.markOpponentPlaybackComplete()"
+                  aria-label="Previous student audio recording"
+                ></audio>
+              } @else {
+                <div class="transcript-only">
+                  <strong>Transcript contribution</strong>
+                  <p>No recorded media is attached to this preview turn.</p>
+                </div>
+                <button type="button" (click)="runtime.speak(turn.transcript ?? '')">
+                  Read transcript aloud
+                </button>
+                <button type="button" (click)="runtime.markOpponentPlaybackComplete()">
+                  I finished reading the full transcript
+                </button>
+              }
+              <div class="cited-scrolls">
+                <strong>Evidence cited</strong>
+                @for (evidenceId of turn.evidenceIds; track evidenceId) {
+                  <span>{{ runtime.evidenceTitle(evidenceId) }}</span>
+                }
+              </div>
+            </aside>
+
+            <article class="argument-transcript">
+              <header>
+                <span>Captions and argument marking</span
+                ><strong>Select the claim, then name what you will do with it.</strong>
+              </header>
+              @for (passage of runtime.opponentPassages(); track passage) {
+                <section class="passage" [class.marked]="runtime.annotationFor(passage)">
+                  <blockquote>“{{ passage }}”</blockquote>
+                  <div class="passage-marks">
+                    @for (mark of argumentMarks; track mark.value) {
+                      <button
+                        type="button"
+                        [class.selected]="runtime.annotationFor(passage)?.marker === mark.value"
+                        [attr.aria-pressed]="runtime.annotationFor(passage)?.marker === mark.value"
+                        (click)="runtime.markOpponentPassage(passage, mark.value)"
+                      >
+                        {{ mark.label }}
+                      </button>
+                    }
+                  </div>
+                </section>
+              }
+            </article>
+          </div>
+
+          <footer class="station-actions">
+            <span
+              >{{ runtime.state().annotations.length }} opponent claim{{
+                runtime.state().annotations.length === 1 ? '' : 's'
+              }}
+              carried to your lectern</span
+            >
+            <button
+              class="seal-action"
+              type="button"
+              [disabled]="
+                runtime.state().annotations.length === 0 ||
+                runtime.state().opponentPlaybackCompleteTurnId !== turn.id
+              "
+              (click)="runtime.markOpponentHeard()"
+            >
+              I heard and marked the full argument
+            </button>
+          </footer>
+        </div>
+      }
+    }
+
+    @case ('moderator') {
+      <div class="station moderator-station">
+        @if (runtime.canManageModerator()) {
+          @if (runtime.pendingModeratorPrompt(); as prompt) {
+            <header class="station-intro split-intro">
+              <div>
+                <span>Teacher moderator queue</span>
+                <h2 id="station-title">Proposed next question</h2>
+              </div>
+              <p>Transcript-driven draft · teacher approval required</p>
+            </header>
+            <div class="moderator-console">
+              <article class="prompt-reason">
+                <span>Why this question was selected</span>
+                <p>{{ prompt.reason }}</p>
+                <strong>Debate evidence that triggered it</strong>
+                @for (turnId of prompt.triggerTurnIds; track turnId) {
+                  @for (turn of runtime.session().turns; track turn.id) {
+                    @if (turn.id === turnId) {
+                      <blockquote>
+                        “{{ turn.transcript }}” <small>— {{ turn.speakerDisplayName }}</small>
+                      </blockquote>
+                    }
+                  }
+                }
+              </article>
+              <label class="prompt-editor">
+                <span>Question the Consul will ask</span>
+                <textarea
+                  rows="8"
+                  [value]="runtime.moderatorDraft() || prompt.question"
+                  (input)="updateModerator($event)"
+                ></textarea>
+                <small>Priority: {{ prompt.priority }} · Draft {{ prompt.generation }}</small>
+              </label>
+            </div>
+            <footer class="teacher-actions">
+              <button type="button" (click)="runtime.saveModeratorEdit(prompt)">Save edit</button>
+              <button type="button" (click)="runtime.regeneratePrompt(prompt)">
+                Generate another
+              </button>
+              @if (prompt.status === 'proposed') {
+                <button type="button" (click)="runtime.approvePrompt(prompt)">Approve</button>
+              }
+              <button class="seal-action" type="button" (click)="runtime.releasePrompt(prompt)">
+                Release to next faction
+              </button>
+            </footer>
+          } @else {
+            <div class="empty-moderator">
+              <span>Teacher moderator queue</span>
+              <h2 id="station-title">No question awaiting approval</h2>
+              <p>The next proposal will be created from the newest filed student transcript.</p>
+            </div>
+          }
+        } @else if (runtime.currentModeratorPrompt(); as prompt) {
+          <header class="station-intro">
+            <span>Opponent finishes · the chamber pauses · the dais illuminates</span>
+            <h2 id="station-title">{{ runtime.config.moderator.title }}</h2>
+          </header>
+          <div class="consul-address">
+            <div class="consul-seal">
+              <span>{{ runtime.config.moderator.initials }}</span
+              ><small>{{ runtime.config.moderator.displayName }}</small>
+            </div>
+            <blockquote>“{{ prompt.question }}”</blockquote>
+            <p>{{ prompt.reason }}</p>
+          </div>
+          <footer class="station-actions">
+            <button type="button" (click)="runtime.speak(prompt.question)">Hear the Consul</button>
+            <button class="seal-action" type="button" (click)="runtime.markModeratorHeard()">
+              Question received · illuminate our lectern
+            </button>
+          </footer>
+        } @else {
+          <div class="empty-moderator">
+            <span>Presiding dais</span>
+            <h2 id="station-title">The Consul is considering the record</h2>
+            <p>A question will appear after the required arguments are filed and approved.</p>
+          </div>
+        }
+      </div>
+    }
+
+    @case ('evidence') {
+      <div class="station evidence-station">
+        <header class="station-intro split-intro">
+          <div>
+            <span>Historical archive · optional during exchanges</span>
+            <h2 id="station-title">The Evidence Table</h2>
+          </div>
+          <p>
+            {{ runtime.state().selectedEvidenceIds.length }} of
+            {{ runtime.currentRound().minimumEvidence }} required sources pinned
+          </p>
+        </header>
+        <div class="evidence-grid">
+          @for (item of runtime.config.evidence; track item.id) {
+            <article
+              class="evidence-scroll"
+              [class.selected]="runtime.state().selectedEvidenceIds.includes(item.id)"
+            >
+              <header>
+                <span>{{ item.dateLabel }}</span
+                ><small>{{ item.sourceType }}</small>
+              </header>
+              <h3>{{ item.title }}</h3>
+              <blockquote>{{ item.excerpt }}</blockquote>
+              <p>{{ item.context }}</p>
+              <footer>
+                <label
+                  ><span>Classify</span
+                  ><select
+                    [value]="runtime.state().evidenceMarks[item.id]"
+                    (change)="markEvidence(item, $event)"
+                  >
+                    <option value="" disabled>Choose</option>
+                    @for (mark of evidenceMarks; track mark.value) {
+                      <option [value]="mark.value">{{ mark.label }}</option>
+                    }
+                  </select></label
+                >
+                <button type="button" (click)="runtime.toggleEvidence(item)">
+                  {{
+                    runtime.state().selectedEvidenceIds.includes(item.id)
+                      ? 'Unpin'
+                      : 'Pin to lectern'
+                  }}
+                </button>
+              </footer>
+              <small class="citation">{{ item.citation }} · {{ item.perspective }}</small>
+            </article>
+          }
+        </div>
+      </div>
+    }
+
+    @case ('lectern') {
+      @if (runtime.currentTurn(); as turn) {
+        @if (runtime.currentRound(); as round) {
+          <div class="station lectern-station" [class.crossfire]="round.type === 'crossfire'">
+            <header class="station-intro split-intro">
+              <div>
+                <span
+                  >{{ runtime.roleLabel(turn) }} · {{ round.minimumSeconds }}–{{
+                    round.timeLimitSeconds
+                  }}
+                  seconds</span
+                >
+                <h2 id="station-title">Your faction has the floor</h2>
+              </div>
+              <p>
+                {{
+                  round.type === 'crossfire'
+                    ? 'Crossfire is fast: one claim, one decisive source, one consequence.'
+                    : 'Build one continuous answer from the argument already in the room.'
+                }}
+              </p>
+            </header>
+
+            <div class="response-workstation">
+              <aside class="opponent-claims">
+                <span>Argument you must answer</span>
+                @for (annotation of runtime.state().annotations; track annotation.id) {
+                  <article>
+                    <small>{{ runtime.markerLabel(annotation.marker) }}</small>
+                    <blockquote>“{{ annotation.excerpt }}”</blockquote>
+                  </article>
+                } @empty {
+                  <p>No opponent passage marked. Return to the opposing lectern.</p>
+                }
+                <button type="button" (click)="runtime.openStation('opponent')">
+                  Hear previous argument again
+                </button>
+              </aside>
+
+              <article class="speech-tablet">
+                <div class="question-tablet">
+                  <span>Question Before the Senate</span>
+                  <p>
+                    {{
+                      runtime.currentModeratorPrompt()?.question ?? runtime.config.centralQuestion
+                    }}
+                  </p>
+                </div>
+                <ol class="speech-prompts">
+                  @for (prompt of round.preparationPrompts; track prompt; let index = $index) {
+                    <li>
+                      <span>{{ index + 1 }}</span
+                      >{{ prompt }}
+                    </li>
+                  }
+                </ol>
+                <label class="draft-script">
+                  <span>Build the speech</span>
+                  <textarea
+                    rows="12"
+                    [value]="runtime.state().draft"
+                    (input)="updateDraft($event)"
+                    placeholder="Presiding Consul, fellow senators…"
+                  ></textarea>
+                </label>
+                <label class="reasoning-note">
+                  <span>Your written reasoning contribution</span>
+                  <textarea
+                    rows="3"
+                    [value]="runtime.state().reasoningContribution"
+                    (input)="updateReasoning($event)"
+                    placeholder="Explain why your evidence answers the opponent and matters for the Republic."
+                  ></textarea>
+                </label>
+                <footer>
+                  <span>{{ draftWords() }} words</span
+                  ><span>{{ runtime.formatTime(runtime.state().rehearsalSeconds) }} rehearsed</span
+                  ><span>{{
+                    runtime.saveState() === 'saved' ? 'Draft secured locally' : 'Securing draft…'
+                  }}</span>
+                </footer>
+              </article>
+
+              <aside class="evidence-satchel">
+                <span>Evidence at the lectern</span>
+                @for (item of runtime.selectedEvidence(); track item.id) {
+                  <article>
+                    <small>{{ evidenceMarkLabel(runtime.state().evidenceMarks[item.id]) }}</small>
+                    <h3>{{ item.title }}</h3>
+                    <p>{{ item.excerpt }}</p>
+                    <button type="button" (click)="runtime.toggleEvidence(item)">Unpin</button>
+                  </article>
+                } @empty {
+                  <p>No evidence pinned.</p>
+                  <button type="button" (click)="runtime.openStation('evidence')">
+                    Approach evidence table
+                  </button>
+                }
+              </aside>
+            </div>
+
+            <section class="recording-ritual" aria-labelledby="recording-title">
+              <header>
+                <span>Draft → Rehearse → Record → Watch Yourself → File</span>
+                <h3 id="recording-title">The official contribution is the recording</h3>
+              </header>
+              <div class="recording-controls">
+                @if (!runtime.rehearsalRunning()) {
+                  <button type="button" (click)="runtime.startRehearsal()">
+                    Begin timed rehearsal
+                  </button>
+                } @else {
+                  <button class="danger" type="button" (click)="runtime.stopRehearsal()">
+                    Stop rehearsal · {{ runtime.formatTime(runtime.state().rehearsalSeconds) }}
+                  </button>
+                }
+                @if (runtime.state().rehearsed && runtime.recordingState() !== 'recording') {
+                  <button class="record" type="button" (click)="runtime.startRecording(true)">
+                    Record video
+                  </button>
+                  <button type="button" (click)="runtime.startRecording(false)">
+                    Record audio
+                  </button>
+                }
+                @if (runtime.recordingState() === 'recording') {
+                  <button class="danger" type="button" (click)="runtime.stopRecording()">
+                    <i></i> End recording ·
+                    {{ runtime.formatTime(runtime.state().recordingDurationSeconds) }}
+                  </button>
+                }
+                <button class="quiet" type="button" (click)="runtime.useTranscriptFallback()">
+                  Transcript-only accessibility option
+                </button>
+              </div>
+              @if (runtime.recordingPreviewUrl(); as previewUrl) {
+                <div class="recording-review">
+                  <strong>Watch yourself before filing</strong>
+                  @if (runtime.state().recordingKind === 'video') {
+                    <video controls [src]="previewUrl"></video>
+                  } @else {
+                    <audio controls [src]="previewUrl"></audio>
+                  }
+                  <button type="button" (click)="runtime.retakeRecording()">Record again</button>
+                </div>
+              } @else if (runtime.state().recordingKind === 'transcript') {
+                <div class="recording-review transcript">
+                  <strong>Transcript-only contribution ready</strong>
+                  <p>
+                    Your written transcript will be filed as the accessible official contribution.
+                  </p>
+                </div>
+              }
+              <aside class="inline-filing-checks" aria-label="Requirements before filing">
+                <p [class.done]="runtime.state().opponentHeardTurnId">Previous speech heard</p>
+                <p [class.done]="runtime.state().annotations.length > 0">Opponent passage marked</p>
+                <p
+                  [class.done]="
+                    runtime.state().moderatorHeardPromptId ||
+                    runtime.currentRound().moderatorBeforeTurn === false
+                  "
+                >
+                  Chair's question received
+                </p>
+                <p
+                  [class.done]="
+                    runtime.state().selectedEvidenceIds.length >=
+                    runtime.currentRound().minimumEvidence
+                  "
+                >
+                  Required evidence attached
+                </p>
+                <p [class.done]="runtime.state().reasoningContribution.length >= 30">
+                  Written reasoning added
+                </p>
+                <p [class.done]="runtime.state().rehearsed">Rehearsal complete</p>
+                <p [class.done]="runtime.state().recordingReady">Recording reviewed</p>
+              </aside>
+
+              @if (runtime.recordingState() === 'uploading') {
+                <div class="upload-progress">
+                  <span>Securing recording in Firebase Storage</span>
+                  <i><b [style.width.%]="runtime.uploadProgress()"></b></i>
+                  <strong>{{ runtime.uploadProgress() }}%</strong>
+                </div>
+              }
+
+              <button
+                class="file-seal direct-file"
+                type="button"
+                [disabled]="!runtime.canFile() || runtime.recordingState() === 'uploading'"
+                (click)="runtime.fileSpeech()"
+              >
+                <span aria-hidden="true">◆</span>
+                Enter into the record and send across the Senate
+              </button>
+            </section>
+          </div>
+        }
+      }
+    }
+  }
+</section>

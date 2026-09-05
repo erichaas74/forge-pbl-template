@@ -1,0 +1,231 @@
+<div
+  class="debate-studio"
+  [class.opponent-active]="runtime.chamberStage() === 'opponent'"
+  [class.moderator-active]="runtime.chamberStage() === 'moderator'"
+  [class.faction-active]="runtime.chamberStage() === 'your-turn'"
+  [class.crossfire-active]="runtime.session().status === 'crossfire'"
+  [style.--chamber-image]="'url(' + runtime.config.chamberImageUrl + ')'"
+>
+  <a class="skip-link" href="#senate-floor">Skip to the Senate floor</a>
+
+  @if (runtime.state().room === 'chamber') {
+    <header class="chamber-order">
+      <a
+        class="republic-seal"
+        routerLink="/projects"
+        aria-label="Leave the Senate and return to projects"
+      >
+        <span aria-hidden="true">SPQR</span>
+        <small>Leave chamber</small>
+      </a>
+      <div class="session-title">
+        <span>{{ runtime.config.historicalSetting }}</span>
+        <strong>{{ runtime.config.title }}</strong>
+      </div>
+      <div class="shared-status" [class.connected]="runtime.connectionState() === 'shared'">
+        <i></i>
+        <span>
+          {{
+            runtime.connectionState() === 'shared'
+              ? 'Shared Senate live'
+              : runtime.connectionState() === 'connecting'
+                ? 'Opening shared record'
+                : 'Shared record paused'
+          }}
+        </span>
+        <small>Revision {{ runtime.session().revision }}</small>
+      </div>
+    </header>
+
+    <main id="senate-floor" class="chamber" tabindex="-1">
+      <span class="sr-only">{{ runtime.config.chamberImageAlt }}</span>
+      <div class="sun-shaft" aria-hidden="true"></div>
+      <div class="chamber-vignette" aria-hidden="true"></div>
+
+      <app-debate-faction-rail
+        class="left-faction-rail"
+        [faction]="runtime.config.factions[0]"
+        side="left"
+      />
+
+      <section class="chamber-center" aria-labelledby="debate-status">
+        <button
+          class="docket-marker"
+          type="button"
+          [attr.aria-expanded]="docketOpen()"
+          aria-controls="debate-docket"
+          (click)="toggleDocket()"
+        >
+          <span>The Senate Docket</span>
+          <strong>{{ runtime.currentRound().label }}</strong>
+          <small>
+            {{ runtime.filedTurnCount() }} of {{ runtime.session().turns.length }} arguments filed
+            <b aria-hidden="true">{{ docketOpen() ? '−' : '+' }}</b>
+          </small>
+        </button>
+
+        @if (docketOpen()) {
+          <aside id="debate-docket" class="docket-details">
+            <header>
+              <span>Question before the Senate</span>
+              <button type="button" (click)="toggleDocket()" aria-label="Close Senate docket">
+                ×
+              </button>
+            </header>
+            <h2>{{ runtime.config.centralQuestion }}</h2>
+            <div class="docket-positions">
+              @for (faction of runtime.config.factions; track faction.id) {
+                <article>
+                  <strong>{{ faction.railLabel ?? faction.name }}</strong>
+                  <p>{{ faction.position }}</p>
+                </article>
+              }
+            </div>
+            <ol>
+              @for (round of runtime.config.rounds; track round.id; let index = $index) {
+                <li [class.current]="round.id === runtime.currentRound().id">
+                  <span>{{ index + 1 }}</span
+                  >{{ round.label }}
+                </li>
+              }
+            </ol>
+          </aside>
+        }
+
+        <div class="floor-focus" [class.workbench-open]="runtime.state().activeStation">
+          @if (runtime.pendingModeratorPrompt() && runtime.canManageModerator()) {
+            <article class="chair-decree teacher-decree">
+              <span>Moderator review waiting</span>
+              <h1 id="debate-status">The chair must approve the next question</h1>
+              <p>{{ runtime.pendingModeratorPrompt()!.question }}</p>
+              <button type="button" (click)="runtime.openStation('moderator')">
+                Review the proposed decree
+              </button>
+            </article>
+          } @else if (
+            runtime.chamberStage() === 'moderator' && runtime.currentModeratorPrompt();
+            as prompt
+          ) {
+            <article class="chair-decree">
+              <div class="decree-seal" aria-hidden="true">
+                {{ runtime.config.moderator.initials }}
+              </div>
+              <span>Decree of the presiding chair</span>
+              <h1 id="debate-status">{{ prompt.question }}</h1>
+              <p>{{ prompt.reason }}</p>
+              <div class="decree-actions">
+                <button type="button" (click)="runtime.speak(prompt.question)">
+                  Hear the Consul
+                </button>
+                <button class="primary" type="button" (click)="runtime.markModeratorHeard()">
+                  Question received · open our response
+                </button>
+              </div>
+            </article>
+          } @else {
+            <article class="floor-call">
+              <span class="record-alert">{{ runtime.currentRound().label }}</span>
+              <h1 id="debate-status">{{ runtime.chamberHeadline() }}</h1>
+              <p>{{ runtime.chamberDetail() }}</p>
+
+              @if (runtime.chamberStage() === 'opponent') {
+                <div class="floor-direction opponent-direction">
+                  <i aria-hidden="true">←</i>
+                  <span
+                    >Open the glowing argument on the opposing rail to hear it in the chamber.</span
+                  >
+                  <i aria-hidden="true">→</i>
+                </div>
+              } @else if (runtime.chamberStage() === 'your-turn') {
+                <div class="floor-direction own-direction">
+                  <span>Your response tablet is illuminated on your faction rail.</span>
+                </div>
+              }
+
+              <blockquote>{{ runtime.config.centralQuestion }}</blockquote>
+            </article>
+          }
+        </div>
+
+        @if (!runtime.preOpinion()) {
+          <aside class="initial-opinion" aria-labelledby="initial-opinion-title">
+            <span>Private clay token</span>
+            <h2 id="initial-opinion-title">Initial Senate Opinion</h2>
+            <p>Seal your view now. It will be compared with your vote after the debate.</p>
+            <div>
+              @for (option of runtime.config.opinionOptions; track option.id) {
+                <button type="button" (click)="runtime.castPreOpinion(option.id)">
+                  {{ option.label }}
+                </button>
+              }
+            </div>
+          </aside>
+        }
+
+        <aside
+          class="session-building"
+          [class.ready]="runtime.session().status === 'premiere-ready'"
+        >
+          <div>
+            <span>
+              {{
+                runtime.session().status === 'premiere-ready'
+                  ? 'The complete record is ready'
+                  : 'The Senate session is building'
+              }}
+            </span>
+            <small>{{ runtime.program().length }} broadcast segments assembled</small>
+          </div>
+          @if (runtime.session().status === 'premiere-ready') {
+            <button type="button" (click)="runtime.openStation('premiere')">
+              Convene the full Senate
+            </button>
+          }
+        </aside>
+
+        @if (runtime.state().activeStation) {
+          <app-debate-workbench />
+        }
+      </section>
+
+      <app-debate-faction-rail
+        class="right-faction-rail"
+        [faction]="runtime.config.factions[1]"
+        side="right"
+      />
+
+      @if (runtime.filingAnimation()) {
+        <div class="filing-flight" role="status">
+          <div class="flying-scroll"><span>SPQR</span></div>
+          <strong>Sealed into the record</strong>
+          <small>The argument crosses the chamber to the opposing rail.</small>
+        </div>
+      }
+    </main>
+
+    <footer class="chamber-whisper">
+      <div>
+        <strong>{{ runtime.viewerFaction()?.railLabel ?? runtime.viewerFaction()?.name }}</strong>
+        <span>
+          {{ runtime.config.viewer.studentDisplayName }} ·
+          {{ runtime.roleLabel(runtime.currentTurn()) }}
+        </span>
+      </div>
+      <p>Listen to what the other side actually said. Then answer it before the Senate.</p>
+      @if (runtime.config.viewer.allowTeacherPreview) {
+        <button type="button" (click)="runtime.toggleTeacherPreview()">
+          {{ runtime.teacherPreview() ? 'Return to student seat' : 'Open moderator preview' }}
+        </button>
+      }
+    </footer>
+  } @else {
+    <app-debate-showcase />
+  }
+
+  @if (runtime.notice() || runtime.error()) {
+    <div class="wax-notice" [class.error]="runtime.error()" role="status">
+      <span>{{ runtime.error() ?? runtime.notice() }}</span>
+      <button type="button" (click)="runtime.clearNotice()" aria-label="Dismiss message">×</button>
+    </div>
+  }
+</div>

@@ -827,6 +827,7 @@ export interface RuntimeScope {
   tenantId: string;
   projectId: string;
   projectVersion: string;
+  attemptId?: string;
 
   classId?: string;
   studentId?: string;
@@ -851,6 +852,8 @@ export interface RuntimeEvent {
   tenantId: string;
 
   projectId: string;
+
+  attemptId?: string;
 
   actor: {
     type: 'student' | 'team' | 'teacher' | 'system';

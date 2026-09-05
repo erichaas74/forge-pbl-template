@@ -3,10 +3,11 @@ import { FormsModule } from '@angular/forms';
 
 import { inventoryAverageCost, marketPrice } from '../../domain/simulation-decision.engine';
 import { SimulationDecisionRuntimeService } from '../../runtime/simulation-decision-runtime.service';
+import { IllustratedWagonComponent } from '../art/illustrated-wagon.component';
 
 @Component({
   selector: 'app-simulation-cargo-view',
-  imports: [FormsModule],
+  imports: [FormsModule, IllustratedWagonComponent],
   templateUrl: './cargo-view.component.html',
   styleUrl: './cargo-view.component.scss',
 })
@@ -69,15 +70,13 @@ export class SimulationCargoViewComponent {
   readonly selectedItem = computed(() =>
     this.items().find((item) => item.goodId === this.selectedGoodId()),
   );
-  readonly packedUnits = computed(() =>
-    this.items().flatMap((item) =>
-      Array.from({ length: item.quantity }, (_, index) => ({
-        key: `${item.goodId}-${index}`,
-        goodId: item.goodId,
-        name: item.good.name,
-        icon: item.good.icon,
-      })),
-    ),
+  readonly wagonCargo = computed(() =>
+    this.items().map((item) => ({
+      goodId: item.goodId,
+      name: item.good.name,
+      quantity: item.quantity,
+      packageKind: item.good.cargoPackage,
+    })),
   );
   readonly mostInvested = computed(
     () => [...this.items()].sort((a, b) => b.investedCostCents - a.investedCostCents)[0],

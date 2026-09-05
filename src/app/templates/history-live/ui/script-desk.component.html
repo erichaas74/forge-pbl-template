@@ -1,0 +1,105 @@
+<section class="script-room" aria-labelledby="script-title">
+  <header class="script-header">
+    <div>
+      <span>SCRIPT DESK · {{ runtime.state().pitch.reportFormat }}</span>
+      <h1 id="script-title">Write for the camera, not the essay page</h1>
+      <p>Short sentences. Visible evidence. Honest uncertainty.</p>
+    </div>
+    <div class="script-stats">
+      <span
+        ><strong>{{ runtime.state().scriptBlocks.length }}</strong> cues</span
+      ><span
+        ><strong>{{ runtime.state().claims.length }}</strong> checked claims</span
+      ><button type="button" (click)="runtime.goTo('production')">Open production →</button>
+    </div>
+  </header>
+  <div class="script-layout">
+    <div class="script-page">
+      <header>
+        <span>{{ runtime.selectedNetwork()?.shortName }} / STORY SCRIPT</span
+        ><small>{{ runtime.state().pitch.headline }}</small>
+      </header>
+      @for (block of runtime.state().scriptBlocks; track block.id; let number = $index) {
+        <article class="script-block">
+          <span class="line-number">{{ (number + 1).toString().padStart(2, '0') }}</span>
+          <label
+            ><span class="sr-only">Cue type</span
+            ><select [value]="block.type" (change)="updateType(block.id, $event)">
+              @for (type of blockTypes; track type) {
+                <option [selected]="type === block.type" [value]="type">{{ type }}</option>
+              }
+            </select></label
+          >
+          <textarea
+            [attr.aria-label]="'Script cue ' + (number + 1) + ': ' + block.type"
+            rows="3"
+            [value]="block.text"
+            (input)="updateText(block.id, $event)"
+            [placeholder]="
+              block.type === 'REPORTER CLOSE'
+                ? 'For ' + runtime.selectedNetwork()?.name + ', I’m…'
+                : 'Write the next line of the report…'
+            "
+          ></textarea>
+          <label
+            >Evidence claim<select
+              [value]="block.claimId || ''"
+              (change)="runtime.linkScriptClaim(block.id, $any($event.target).value)"
+            >
+              <option value="">Opening / transition / closing</option>
+              @for (claim of runtime.state().claims; track claim.id) {
+                <option [selected]="claim.id === block.claimId" [value]="claim.id">
+                  {{ claim.text }}
+                </option>
+              }
+            </select></label
+          >
+          <button
+            type="button"
+            (click)="runtime.removeScriptBlock(block.id)"
+            aria-label="Remove script cue"
+          >
+            ×
+          </button>
+        </article>
+      }
+      <div class="add-cues">
+        <span>ADD CUE</span>
+        @for (type of blockTypes; track type) {
+          <button type="button" (click)="runtime.addScriptBlock(type)">+ {{ type }}</button>
+        }
+      </div>
+    </div>
+    <aside class="script-sidebar">
+      <section>
+        <span class="sidebar-label">CHECKED CLAIMS</span>
+        @for (claim of runtime.state().claims; track claim.id) {
+          <article>
+            <strong>{{ claim.status.replace('-', ' ') }}</strong>
+            <p>{{ claim.text }}</p>
+            <small>{{ claim.supportingSourceIds.length }} sources</small>
+          </article>
+        }
+      </section>
+      <section>
+        <span class="sidebar-label">PINNED SOURCES</span>
+        @for (source of runtime.savedSources(); track source.id) {
+          <article class="source">
+            <span>{{ source.sourceType }}</span>
+            <p>{{ source.title }}</p>
+            <small>{{ source.creator }} · {{ source.dateLabel }}</small>
+          </article>
+        }
+      </section>
+      <section class="opposing">
+        <span class="sidebar-label">OTHER NETWORK CHECK</span>
+        <p>
+          {{
+            runtime.state().pitch.opposingChallenge ||
+              'Return to the pitch desk and name the strongest challenge the other network could make.'
+          }}
+        </p>
+      </section>
+    </aside>
+  </div>
+</section>

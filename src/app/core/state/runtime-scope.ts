@@ -5,6 +5,7 @@ export function runtimeScopeKey(scope: RuntimeScope): string {
     scope.tenantId,
     scope.projectId,
     scope.projectVersion,
+    scope.attemptId ?? '',
     scope.scopeType,
     scope.classId ?? '',
     scope.studentId ?? '',

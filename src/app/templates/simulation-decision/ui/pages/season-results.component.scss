@@ -43,6 +43,42 @@
 .score small {
   font-size: 0.8rem;
 }
+.score-breakdown {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+.score-breakdown article {
+  display: grid;
+  grid-template-columns: 2.8rem 1fr;
+  align-items: center;
+  gap: 0.55rem;
+  border-top: 0.28rem solid #1c6b78;
+  padding: 0.8rem;
+}
+.score-breakdown article > span {
+  display: grid;
+  width: 2.5rem;
+  aspect-ratio: 1;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff3d2;
+  background: #51341d;
+  font-weight: 900;
+}
+.score-breakdown small,
+.score-breakdown strong {
+  display: block;
+}
+.score-breakdown strong {
+  font: 800 1.4rem Georgia, serif;
+}
+.score-breakdown p {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #6d5940;
+  font-size: 0.76rem;
+}
 .result-metrics {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -150,6 +186,35 @@
   display: grid;
   gap: 0.7rem;
 }
+.forecast-audit {
+  display: grid;
+  gap: 0.8rem;
+  padding: 1rem;
+  border-top: 0.35rem solid #b87823;
+}
+.forecast-audit > header,
+.forecast-audit > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.forecast-audit h2,
+.forecast-audit p {
+  margin: 0;
+}
+.forecast-audit > div > article {
+  display: grid;
+  flex: 1;
+  gap: 0.2rem;
+  padding: 0.75rem;
+  border: 1px solid #cfbf9c;
+  border-radius: 0.45rem;
+  background: #fffaf0;
+}
+.forecast-audit article strong {
+  color: #224d43;
+  font: 800 1.35rem Georgia, serif;
+}
 .decision-card,
 .next-actions {
   display: grid;
@@ -199,8 +264,14 @@
   }
   .result-metrics,
   .decision-review,
-  .equation {
+  .equation,
+  .score-breakdown,
+  .forecast-audit > div {
     grid-template-columns: 1fr;
+  }
+  .forecast-audit > header,
+  .forecast-audit > div {
+    flex-direction: column;
   }
   .seal {
     display: none;

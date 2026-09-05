@@ -1,0 +1,302 @@
+:host {
+  display: block;
+  min-width: 0;
+  color: #eee0bd;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.atlas {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #967a49;
+  border-radius: 0.6rem;
+  background: #151d1c;
+  box-shadow: 0 1.2rem 3rem #05090899;
+}
+
+.atlas-tools,
+.lens-tray {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.55rem 0.7rem;
+  background: linear-gradient(90deg, #172724, #21352d 50%, #17241f);
+}
+
+.atlas-tools {
+  border-bottom: 1px solid #816a41;
+}
+
+.cover-switch,
+.zoom-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+button {
+  min-height: 2.45rem;
+  border: 1px solid #806b43;
+  border-radius: 0.35rem;
+  padding: 0.42rem 0.66rem;
+  color: #e9ddbd;
+  background: #283c34;
+  font: 750 0.76rem/1.1 ui-sans-serif, system-ui, sans-serif;
+  text-transform: capitalize;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled),
+button[aria-pressed='true'] {
+  border-color: #e8c774;
+  color: #1e2823;
+  background: #dfc47c;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+button:focus-visible,
+.world-map:focus-visible {
+  outline: 3px solid #72d4dc;
+  outline-offset: 2px;
+}
+
+output {
+  min-width: 3.4rem;
+  color: #ddc88e;
+  font: 750 0.75rem ui-monospace, monospace;
+  text-align: center;
+}
+
+.map-stage {
+  position: relative;
+  min-height: 31rem;
+  overflow: hidden;
+  background: #93b8b2;
+}
+
+.world-map {
+  display: block;
+  width: 100%;
+  height: clamp(31rem, calc(100dvh - 15rem), 50rem);
+  min-height: 31rem;
+  background: #b7d0c6;
+  transition: background 180ms ease;
+}
+
+.continents path {
+  fill: #c8ad74;
+  stroke: #5a5135;
+  stroke-width: 2.2;
+  filter: url(#ink-shadow);
+}
+
+.candidate-routes path {
+  fill: none;
+  stroke: #6d6248;
+  stroke-width: 3;
+  stroke-dasharray: 7 8;
+  opacity: 0.72;
+  vector-effect: non-scaling-stroke;
+}
+
+.route-shadow,
+.route-line {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.route-shadow {
+  stroke: #17211e;
+  stroke-width: 7;
+  opacity: 0.78;
+}
+
+.route-line {
+  stroke: var(--route-color);
+  stroke-width: 4;
+  filter: drop-shadow(0 0 4px #fff3);
+  animation: route-reveal 850ms ease-out both;
+}
+
+.pattern-long-dash .route-line { stroke-dasharray: 20 10; }
+.pattern-short-dash .route-line { stroke-dasharray: 8 7; }
+.pattern-dot-dash .route-line { stroke-dasharray: 2 7 15 7; }
+.pattern-double .route-line { stroke-width: 8; }
+.pattern-double .double-line { stroke: #1d2a26; stroke-width: 2; }
+
+.event-marker circle {
+  fill: #f0dbc0;
+  stroke: var(--route-color);
+  stroke-width: 3;
+  vector-effect: non-scaling-stroke;
+}
+
+.event-marker text {
+  fill: #33251a;
+  font: 900 16px Georgia, serif;
+  text-anchor: middle;
+}
+
+.weather-layer path {
+  fill: none;
+  stroke: #eef9e7;
+  stroke-width: 3;
+  stroke-dasharray: 14 7;
+  opacity: 0.72;
+  vector-effect: non-scaling-stroke;
+}
+
+.weather-layer circle {
+  fill: #485c62aa;
+  stroke: #e6f4ef;
+  stroke-width: 2;
+}
+
+.weather-layer text,
+.risk-layer text,
+.trade-layer text {
+  fill: #edf4e9;
+  font: 800 11px ui-sans-serif, sans-serif;
+  letter-spacing: 0.12em;
+  text-anchor: middle;
+}
+
+.risk-layer ellipse {
+  fill: #a53f3655;
+  stroke: #90352d;
+  stroke-width: 3;
+  stroke-dasharray: 8 7;
+}
+
+.trade-layer path {
+  fill: none;
+  stroke: #8e572c;
+  stroke-width: 5;
+  stroke-dasharray: 3 8;
+  opacity: 0.75;
+}
+
+.trade-layer text { fill: #654124; }
+
+.location {
+  cursor: pointer;
+}
+
+.port-pin {
+  fill: #ede0b7;
+  stroke: #314943;
+  stroke-width: 2.4;
+  vector-effect: non-scaling-stroke;
+}
+
+.pin-center { fill: #765126; }
+.location-ring { fill: none; stroke: transparent; stroke-width: 4; vector-effect: non-scaling-stroke; }
+.location:hover .location-ring,
+.location:focus-visible .location-ring,
+.location.inspected .location-ring { stroke: #eff5d6; }
+.location.shared .location-ring { stroke: #7b2e66; stroke-dasharray: 4 4; }
+.location:focus { outline: none; }
+
+.location-label,
+.shared-count {
+  fill: #172823;
+  font: 800 13px Georgia, serif;
+  paint-order: stroke;
+  stroke: #dce4c9;
+  stroke-width: 4;
+  stroke-linejoin: round;
+}
+
+.shared-count {
+  fill: #6b245c;
+  font: 800 10px ui-sans-serif, sans-serif;
+  text-anchor: middle;
+}
+
+.ship {
+  color: #f0c96a;
+  filter: drop-shadow(0 5px 5px #13201dbb);
+  transition: transform 650ms ease;
+  pointer-events: none;
+}
+
+.ship ellipse { fill: #1c2a27aa; }
+.ship path { fill: #67462a; stroke: #f3dfab; stroke-width: 2; vector-effect: non-scaling-stroke; }
+.ship path + path { fill: #f5e3bc; }
+.ship circle { fill: none; stroke: #f5df95; stroke-width: 2; stroke-dasharray: 5 5; vector-effect: non-scaling-stroke; animation: ship-pulse 1.6s ease-in-out infinite alternate; }
+
+.knowledge-fog path {
+  fill: #e8dfc9cc;
+  stroke: #8e8065;
+  stroke-width: 2;
+  stroke-dasharray: 6 9;
+}
+
+.knowledge-fog text {
+  fill: #7d6c4e;
+  font: italic 22px Georgia, serif;
+  letter-spacing: 0.14em;
+  text-anchor: middle;
+}
+
+.compass-rose circle { fill: #ead9a6aa; stroke: #71592f; stroke-width: 2; }
+.compass-rose path { fill: #72542d; stroke: #e4cf91; stroke-width: 1; }
+.compass-rose text { fill: #49391f; font: 900 15px Georgia, serif; text-anchor: middle; }
+
+.pan-pad {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  display: grid;
+  grid-template-columns: repeat(4, 2.5rem);
+  gap: 0.25rem;
+}
+
+.pan-pad button { width: 2.5rem; padding: 0; }
+
+.lens-tray {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  border-top: 1px solid #816a41;
+}
+
+.lens-tray > span {
+  margin-right: 0.35rem;
+  color: #c8b681;
+  font: 850 0.68rem ui-sans-serif, sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.lens-tray button { min-height: 2.15rem; font-size: 0.68rem; }
+
+@keyframes route-reveal {
+  from { opacity: 0; stroke-dashoffset: 40; }
+}
+
+@keyframes ship-pulse {
+  to { r: 25; opacity: 0.3; }
+}
+
+@media (max-width: 760px) {
+  .atlas-tools { align-items: stretch; flex-direction: column; }
+  .cover-switch,
+  .zoom-tools { justify-content: center; flex-wrap: wrap; }
+  .world-map { height: auto; min-height: 24rem; aspect-ratio: 4 / 3; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-line,
+  .ship circle { animation: none; }
+  .ship { transition: none; }
+}

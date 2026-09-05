@@ -1,0 +1,75 @@
+<section class="defense-panel" role="dialog" aria-modal="true" aria-labelledby="defense-title">
+  <header>
+    <div>
+      <span>Individual evidence</span>
+      <h2 id="defense-title">Defend your understanding</h2>
+      <p>Your answers belong to you, not the team submission.</p>
+    </div>
+    <button type="button" class="close" (click)="closed.emit()" aria-label="Close defense form">
+      ×
+    </button>
+  </header>
+
+  @if (alreadySubmitted()) {
+    <div class="submitted-message">
+      <span aria-hidden="true">✓</span>
+      <div>
+        <strong>Defense submitted</strong>
+        <p>Your individual evidence is recorded.</p>
+      </div>
+    </div>
+  } @else {
+    <fieldset>
+      <legend>Completion mode</legend>
+      <label
+        ><input
+          type="radio"
+          name="mode"
+          value="live"
+          [checked]="mode() === 'live'"
+          (change)="mode.set('live')"
+        />
+        Live opening</label
+      >
+      <label
+        ><input
+          type="radio"
+          name="mode"
+          value="makeup"
+          [checked]="mode() === 'makeup'"
+          (change)="mode.set('makeup')"
+        />
+        Makeup</label
+      >
+    </fieldset>
+
+    <div class="prompt-list">
+      @for (prompt of prompts(); track prompt.id; let number = $index) {
+        <label [for]="'defense-' + prompt.id">
+          <span>{{ number + 1 }}</span>
+          <strong>{{ prompt.label }}</strong>
+          @if (prompt.guidance) {
+            <small>{{ prompt.guidance }}</small>
+          }
+          <textarea
+            [id]="'defense-' + prompt.id"
+            rows="3"
+            [value]="answers()[prompt.id]"
+            (input)="update(prompt.id, $event)"
+            (blur)="save()"
+          ></textarea>
+        </label>
+      }
+    </div>
+
+    @if (fallbackChallenge()) {
+      <p class="fallback"><strong>No visitor card?</strong> {{ fallbackChallenge() }}</p>
+    }
+
+    <footer>
+      <small>Draft answers save on this device.</small>
+      <button type="button" class="secondary" (click)="save()">Save draft</button>
+      <button type="button" (click)="submit()">Submit defense</button>
+    </footer>
+  }
+</section>

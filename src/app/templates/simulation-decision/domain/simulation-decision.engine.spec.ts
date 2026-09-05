@@ -1,4 +1,4 @@
-import { frontierTradingConfig } from '../../../projects/frontier-trading/frontier-trading.config';
+import { frontierTradingConfig as frontierTradingProjectConfig } from '../../../projects/frontier-trading/frontier-trading.config';
 import { formatMoney } from './money';
 import {
   cargoUsed,
@@ -10,12 +10,20 @@ import {
   reduceSimulationDecision,
   reportMissingRequirements,
   routeIsCompatible,
+  routeProfitForecast,
   seasonResults,
+  tradeLineTotal,
 } from './simulation-decision.engine';
 import type {
   SimulationDecisionAction,
   SimulationDecisionState,
+  TradeLineInput,
 } from './simulation-decision.models';
+
+const frontierTradingConfig = {
+  ...frontierTradingProjectConfig,
+  choiceProgression: undefined,
+};
 
 describe('simulation decision domain', () => {
   it('formats integer cents without floating-point accounting', () => {
@@ -80,23 +88,63 @@ describe('simulation decision domain', () => {
 
   it('commits a valid purchase to cash, cargo, lots, and the ledger together', () => {
     const before = started('prairie-wagon');
-    const after = act(before, {
-      type: 'trade.committed',
-      lines: [{ goodId: 'flour', direction: 'buy', quantity: 3 }],
-    });
+    const after = act(
+      before,
+      verifiedTrade(before, [{ goodId: 'flour', direction: 'buy', quantity: 3 }]),
+    );
 
-    expect(cashOnHand(after)).toBe(9_268);
+    expect(cashOnHand(after)).toBe(9_940);
     expect(cargoUsed(frontierTradingConfig, after)).toBe(6);
-    expect(after.inventory[0]?.lots[0]?.unitCostCents).toBe(2_244);
-    expect(after.ledger.at(-1)?.cashChangeCents).toBe(-6_732);
+    expect(after.inventory[0]?.lots[0]?.unitCostCents).toBe(2_020);
+    expect(after.ledger.at(-1)?.cashChangeCents).toBe(-6_060);
+    expect(after.ledger.at(-1)?.details?.discountPercent).toBe(10);
     expect(ledgerReconciles(after)).toBe(true);
   });
 
-  it('carries remaining market stock across separate trade commits', () => {
-    const afterFirstPurchase = act(started('prairie-wagon'), {
+  it('requires exact transaction math and applies the configured bulk tiers', () => {
+    const state = started('prairie-wagon');
+    const missing = reduceSimulationDecision(frontierTradingConfig, state, {
       type: 'trade.committed',
-      lines: [{ goodId: 'fur-pelts', direction: 'buy', quantity: 1 }],
+      lines: [{ goodId: 'flour', direction: 'buy', quantity: 3 }],
     });
+    const wrong = reduceSimulationDecision(frontierTradingConfig, state, {
+      type: 'trade.committed',
+      lines: [{ goodId: 'flour', direction: 'buy', quantity: 3, studentTotalCents: 1 }],
+    });
+
+    expect(missing.state).toBe(state);
+    expect(missing.errors.join(' ')).toContain('enter the exact transaction total');
+    expect(wrong.state).toBe(state);
+    expect(wrong.errors.join(' ')).toContain('does not match');
+    expect(
+      tradeLineTotal(frontierTradingConfig, state.currentLocationId, {
+        goodId: 'flour',
+        direction: 'buy',
+        quantity: 2,
+      }),
+    ).toBe(4_488);
+    expect(
+      tradeLineTotal(frontierTradingConfig, state.currentLocationId, {
+        goodId: 'flour',
+        direction: 'buy',
+        quantity: 6,
+      }),
+    ).toBe(12_120);
+    expect(
+      tradeLineTotal(frontierTradingConfig, state.currentLocationId, {
+        goodId: 'flour',
+        direction: 'buy',
+        quantity: 7,
+      }),
+    ).toBe(13_510);
+  });
+
+  it('carries remaining market stock across separate trade commits', () => {
+    const initial = started('prairie-wagon');
+    const afterFirstPurchase = act(
+      initial,
+      verifiedTrade(initial, [{ goodId: 'fur-pelts', direction: 'buy', quantity: 1 }]),
+    );
     const remaining = marketStockRemaining(
       frontierTradingConfig,
       afterFirstPurchase,
@@ -123,25 +171,44 @@ describe('simulation decision domain', () => {
   });
 
   it('uses the same seed to produce the same route event schedule', () => {
-    const a = act(started('mule-train', 7_777), {
-      type: 'route.committed',
-      routeId: 'route-river',
-      rationale: 'The destination needs equipment.',
-    });
-    const b = act(started('mule-train', 7_777), {
-      type: 'route.committed',
-      routeId: 'route-river',
-      rationale: 'A different written rationale does not change randomness.',
-    });
+    const readyA = readyToDepart(started('mule-train', 7_777));
+    const readyB = readyToDepart(started('mule-train', 7_777));
+    const a = act(readyA, routeCommit(readyA, 'route-river', 'The destination needs equipment.'));
+    const b = act(
+      readyB,
+      routeCommit(
+        readyB,
+        'route-river',
+        'A different written rationale does not change randomness.',
+      ),
+    );
 
     expect(a.activeTravel?.eventIds).toEqual(b.activeTravel?.eventIds);
   });
 
-  it('records an inventory-loss event without creating a second cash charge', () => {
-    let state = act(started('mule-train'), {
-      type: 'trade.committed',
-      lines: [{ goodId: 'salt', direction: 'buy', quantity: 3 }],
+  it('records an accurate two-part route profit forecast before departure', () => {
+    const state = readyToDepart(started('mule-train', 4_321));
+    const inaccurate = reduceSimulationDecision(frontierTradingConfig, state, {
+      type: 'route.committed',
+      routeId: 'route-river',
+      rationale: 'This route fits the goods and available travel money.',
+      forecast: { salesRevenueCents: 1, tripProfitCents: 1 },
     });
+
+    expect(inaccurate.errors).toContain(
+      'Complete both profit forecast math checks before departing.',
+    );
+    const departed = act(
+      state,
+      routeCommit(state, 'route-river', 'This route fits the goods and available travel money.'),
+    );
+    expect(departed.routeHistory[0]?.forecast?.salesRevenueCorrect).toBe(true);
+    expect(departed.routeHistory[0]?.forecast?.tripProfitCorrect).toBe(true);
+  });
+
+  it('records an inventory-loss event without creating a second cash charge', () => {
+    let state = started('mule-train');
+    state = act(state, verifiedTrade(state, [{ goodId: 'salt', direction: 'buy', quantity: 3 }]));
     state = act(state, { type: 'teacher.eventInjected', eventId: 'event-river-crossing' });
     const cashBefore = cashOnHand(state);
     state = act(state, {
@@ -156,30 +223,41 @@ describe('simulation decision domain', () => {
     expect(ledgerReconciles(state)).toBe(true);
   });
 
-  it('tracks math-check accuracy without changing the configured decision effect', () => {
+  it('requires a correct math check before applying the configured decision effect', () => {
     let state = started('mule-train');
     state = act(state, { type: 'teacher.eventInjected', eventId: 'event-supply-bundle' });
-    state = act(state, {
+    const incorrect = reduceSimulationDecision(frontierTradingConfig, state, {
       type: 'event.resolved',
       choiceId: 'pass-bundle',
       reasoning: 'Protect the reserve.',
       mathAnswer: 5,
     });
-
-    expect(state.eventHistory[0]?.mathCorrect).toBe(false);
+    expect(incorrect.errors).toContain(
+      'Correct the math check before making the official trail choice.',
+    );
+    state = act(state, {
+      type: 'event.resolved',
+      choiceId: 'pass-bundle',
+      reasoning: 'Protect the reserve.',
+      mathAnswer: 4.5,
+    });
+    expect(state.eventHistory[0]?.mathCorrect).toBe(true);
     expect(state.eventHistory[0]?.cashAfterCents).toBe(state.eventHistory[0]?.cashBeforeCents);
   });
 
   it('completes a buy, travel, event, sale, and season flow with one canonical ledger', () => {
-    let state = act(started('mule-train', 9_001), {
-      type: 'trade.committed',
-      lines: [{ goodId: 'fur-pelts', direction: 'buy', quantity: 2 }],
-    });
-    state = act(state, {
-      type: 'route.committed',
-      routeId: 'route-northern',
-      rationale: 'The demand clue supports food and materials.',
-    });
+    let state = discoverStarterShops(started('mule-train', 9_001));
+    state = act(
+      state,
+      verifiedTrade(state, [
+        { goodId: 'fur-pelts', direction: 'buy', quantity: 2 },
+        { goodId: 'salt', direction: 'buy', quantity: 1 },
+      ]),
+    );
+    state = act(
+      state,
+      routeCommit(state, 'route-northern', 'The demand clue supports food and materials.'),
+    );
     for (let step = 0; step < 12 && state.activeTravel !== undefined; step += 1) {
       if (state.pendingEventId !== undefined) {
         const event = frontierTradingConfig.events.find(
@@ -198,16 +276,19 @@ describe('simulation decision domain', () => {
         state = act(state, { type: 'travel.advanced' });
       }
     }
-    state = act(state, {
-      type: 'trade.committed',
-      lines: [{ goodId: 'fur-pelts', direction: 'sell', quantity: 2 }],
-    });
+    state = act(
+      state,
+      verifiedTrade(state, [
+        { goodId: 'fur-pelts', direction: 'sell', quantity: 2 },
+        { goodId: 'salt', direction: 'sell', quantity: 1 },
+      ]),
+    );
     state = act(state, { type: 'season.completed' });
 
     expect(state.status).toBe('season_complete');
     expect(state.currentLocationId).toBe('fort-bridger');
     expect(state.inventory).toHaveLength(0);
-    expect(seasonResults(frontierTradingConfig, state).salesRevenueCents).toBe(13_440);
+    expect(seasonResults(frontierTradingConfig, state).salesRevenueCents).toBe(15_315);
     expect(ledgerReconciles(state)).toBe(true);
     expect(state.evidence.some((item) => item.sourceType === 'result')).toBe(true);
   });
@@ -275,6 +356,60 @@ function started(transportId: string, seed = 2_026): SimulationDecisionState {
     emblemId: 'compass',
     transportId,
   });
+}
+
+function discoverStarterShops(state: SimulationDecisionState): SimulationDecisionState {
+  const stalls = frontierTradingConfig.world.locations.find(
+    (location) => location.locationId === state.currentLocationId,
+  )!.stalls;
+  return stalls
+    .slice(0, 2)
+    .reduce(
+      (current, stall) => act(current, { type: 'market.stallInspected', stallId: stall.id }),
+      state,
+    );
+}
+
+function readyToDepart(state: SimulationDecisionState): SimulationDecisionState {
+  const discovered = discoverStarterShops(state);
+  return act(
+    discovered,
+    verifiedTrade(discovered, [
+      { goodId: 'flour', direction: 'buy', quantity: 1 },
+      { goodId: 'salt', direction: 'buy', quantity: 1 },
+    ]),
+  );
+}
+
+function verifiedTrade(
+  state: SimulationDecisionState,
+  lines: readonly Omit<TradeLineInput, 'studentTotalCents'>[],
+): SimulationDecisionAction {
+  return {
+    type: 'trade.committed',
+    lines: lines.map((line) => ({
+      ...line,
+      studentTotalCents: tradeLineTotal(frontierTradingConfig, state.currentLocationId, line),
+    })),
+  };
+}
+
+function routeCommit(
+  state: SimulationDecisionState,
+  routeId: string,
+  rationale: string,
+): SimulationDecisionAction {
+  const route = frontierTradingConfig.routes.find((item) => item.id === routeId)!;
+  const forecast = routeProfitForecast(frontierTradingConfig, state, route);
+  return {
+    type: 'route.committed',
+    routeId,
+    rationale,
+    forecast: {
+      salesRevenueCents: forecast.expectedSalesRevenueCents,
+      tripProfitCents: forecast.expectedTripProfitCents,
+    },
+  };
 }
 
 function act(

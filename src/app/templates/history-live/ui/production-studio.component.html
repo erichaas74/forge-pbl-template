@@ -1,0 +1,164 @@
+<section class="production-room" aria-labelledby="production-title">
+  <header class="production-header">
+    <div>
+      <span>PRODUCTION STUDIO · PACKAGE {{ runtime.state().revision }}</span>
+      <h1 id="production-title">Build the visual rundown</h1>
+      <p>Three deliberate camera states. One clear evidence story.</p>
+    </div>
+    <button type="button" (click)="runtime.markReadyToAir()">Submit package for review →</button>
+  </header>
+  <p role="status">
+    Package: {{ runtime.state().packageStatus || 'draft' }}. {{ runtime.state().packageFeedback }}
+  </p>
+  @if (runtime.readiness().length) {
+    <ul class="readiness-list">
+      @for (issue of runtime.readiness(); track issue) {
+        <li>{{ issue }}</li>
+      }
+    </ul>
+  }
+  <div class="production-layout">
+    <div class="studio-preview">
+      <app-history-live-evidence-scene [scene]="runtime.state().visualSequence[selectedScene()]" />
+      <div class="live-bug"><i></i> PREVIEW</div>
+      <div class="lower-third">
+        <span>{{ runtime.state().pitch.reportFormat }}</span>
+        <div>
+          <strong>{{ runtime.state().pitch.headline }}</strong
+          ><small
+            >{{ runtime.viewer.studentDisplayName }} · {{ runtime.selectedNetwork()?.name }}</small
+          >
+        </div>
+      </div>
+      <div class="ticker">
+        <strong>HISTORY LIVE</strong
+        ><span
+          >Evidence-led reporting · {{ runtime.config.historicalWindow }} · Sources attributed on
+          air</span
+        >
+      </div>
+    </div>
+    <aside class="recording-bay">
+      <span class="bay-label">REPORTER CAPTURE</span>
+      <h2>Record a rehearsal</h2>
+      <p>
+        Record or upload your report. A written script with evidence scenes is also a complete
+        presentation format.
+      </p>
+      @if (runtime.recordingUrl(); as url) {
+        <video controls [src]="url"></video>
+      } @else {
+        <div class="camera-placeholder">
+          <span>●</span>
+          <p>
+            {{
+              runtime.recordingState() === 'recording' ? 'RECORDING IN PROGRESS' : 'CAMERA PREVIEW'
+            }}
+          </p>
+          <small>{{ runtime.viewer.studentDisplayName }}</small>
+        </div>
+      }
+      @if (runtime.recordingState() === 'recording') {
+        <button class="stop" type="button" (click)="runtime.stopRecording()">
+          ■ Stop recording
+        </button>
+      } @else {
+        <button
+          type="button"
+          (click)="runtime.startRecording()"
+          [disabled]="runtime.recordingState() === 'requesting'"
+        >
+          ●
+          {{
+            runtime.recordingState() === 'requesting' ? 'Requesting camera…' : 'Record rehearsal'
+          }}
+        </button>
+      }
+      <label
+        >Upload a recording (maximum 100 MB)<input
+          type="file"
+          accept="video/*,audio/*"
+          (change)="upload($event)"
+          [disabled]="
+            runtime.recordingState() === 'requesting' || runtime.recordingState() === 'recording'
+          "
+      /></label>
+      @if (runtime.recordingUrl(); as url) {
+        <a [href]="url" download="report-recording">Download recording backup</a>
+      }
+      <label
+        >Accurate recording transcript<textarea
+          rows="5"
+          [value]="runtime.state().transcript || ''"
+          (input)="runtime.updateTranscript($any($event.target).value)"
+        ></textarea>
+      </label>
+    </aside>
+  </div>
+  <section class="scene-rundown">
+    <header>
+      <span>SCENE TIMELINE</span>
+      <p>The system controls layout. You control the evidence and message.</p>
+    </header>
+    <div class="scene-strip">
+      @for (scene of runtime.state().visualSequence; track scene.id; let number = $index) {
+        <article>
+          <button
+            type="button"
+            (click)="selectedScene.set(number)"
+            [attr.aria-pressed]="selectedScene() === number"
+          >
+            Preview scene {{ number + 1 }}</button
+          ><span class="scene-number">{{ number + 1 }}</span>
+          <div class="scene-thumb" [class]="'scene-thumb ' + scene.camera">
+            <i></i><b></b><small>{{ scene.camera }}</small>
+          </div>
+          <label
+            >Camera<select [value]="scene.camera" (change)="updateCamera(scene.id, $event)">
+              @for (camera of cameraStates; track camera.id) {
+                <option [selected]="camera.id === scene.camera" [value]="camera.id">
+                  {{ camera.label }}
+                </option>
+              }
+            </select></label
+          ><label
+            >Media<select [value]="scene.mediaType" (change)="updateMedia(scene.id, $event)">
+              @for (media of mediaTypes; track media.id) {
+                <option [selected]="media.id === scene.mediaType" [value]="media.id">
+                  {{ media.label }}
+                </option>
+              }
+            </select></label
+          ><label
+            >Evidence source<select
+              [value]="scene.sourceId || ''"
+              (change)="runtime.updateScene(scene.id, 'sourceId', $any($event.target).value)"
+            >
+              <option value="">Choose a source</option>
+              @for (source of runtime.savedSources(); track source.id) {
+                <option [selected]="source.id === scene.sourceId" [value]="source.id">
+                  {{ source.title }}
+                </option>
+              }
+            </select></label
+          ><label
+            >Evidence caption<textarea
+              rows="3"
+              [value]="scene.caption || ''"
+              (input)="runtime.updateScene(scene.id, 'caption', $any($event.target).value)"
+            ></textarea>
+          </label>
+        </article>
+      }
+    </div>
+  </section>
+  <aside class="teleprompter">
+    <span>TELEPROMPTER PREVIEW</span>
+    <div>
+      @for (block of runtime.state().scriptBlocks; track block.id) {
+        <small>[{{ block.type }}]</small>
+        <p>{{ block.text }}</p>
+      }
+    </div>
+  </aside>
+</section>

@@ -1,0 +1,282 @@
+<div class="atlas" [class.still]="!motion()">
+  <div class="map-tools" aria-label="Map controls">
+    <div class="zoom-controls">
+      <button
+        type="button"
+        aria-label="Zoom out"
+        [disabled]="view().zoom <= 1"
+        (click)="zoom(-0.25)"
+      >
+        −
+      </button>
+      <output aria-label="Map zoom">{{ zoomPercent() }}%</output>
+      <button type="button" aria-label="Zoom in" [disabled]="view().zoom >= 3" (click)="zoom(0.25)">
+        +
+      </button>
+    </div>
+    <button type="button" aria-label="Center on me" (click)="centerOnCompany()">◎ Company</button>
+    <button type="button" aria-label="Fit all routes" (click)="fitAll()">↗ World</button>
+    <button
+      type="button"
+      aria-label="Focus route"
+      [disabled]="!selectedTrail()"
+      (click)="focusRoute()"
+    >
+      ⌖ Trail
+    </button>
+  </div>
+  <div class="map-window">
+    <svg
+      #mapCanvas
+      class="route-map"
+      [attr.viewBox]="viewBox()"
+      tabindex="0"
+      role="group"
+      aria-label="Interactive route map"
+      aria-describedby="atlas-help"
+      [class.zoomed]="view().zoom > 1"
+      [class.dragging]="dragging()"
+      (keydown)="mapKey($event)"
+      (pointerdown)="startPan($event)"
+      (pointermove)="movePan($event)"
+      (pointerup)="endPan()"
+      (pointercancel)="endPan()"
+      (lostpointercapture)="endPan()"
+    >
+      <title>Trading destinations and trails</title>
+      <defs>
+        <pattern id="atlas-grid" width="5" height="5" patternUnits="userSpaceOnUse">
+          <path d="M5 0H0V5" fill="none" stroke="#917649" stroke-width=".12" opacity=".2" />
+        </pattern>
+        <radialGradient id="atlas-paper">
+          <stop stop-color="#f7e9b8" />
+          <stop offset=".72" stop-color="#d5c38e" />
+          <stop offset="1" stop-color="#a89061" />
+        </radialGradient>
+        <radialGradient id="atlas-vignette">
+          <stop offset=".62" stop-color="#291b0b" stop-opacity="0" />
+          <stop offset="1" stop-color="#291b0b" stop-opacity=".34" />
+        </radialGradient>
+        <g id="atlas-fort"><path d="M-3 2V-2H-2V-1H-1V-2H1V-1H2V-2H3V2ZM-1 2V0H1V2" /></g>
+        <g id="atlas-post"><path d="M-3 2V-1L0-3 3-1V2ZM-3-1H3M-1 2V0H1V2" /></g>
+        <g id="atlas-town"><path d="M-3 2V-1L-1-3 1-1V2M1 2V0L2-2 4 0V2ZM-2 2V0H0V2" /></g>
+        <g id="atlas-crossing"><path d="M-4 1Q0-3 4 1M-4 2H4M-3 0V3M3 0V3" /></g>
+        <g id="atlas-pass"><path d="M-4 2L-1-3 2 2ZM0 2L2-2 5 2ZM-2-1H0" /></g>
+        <g id="atlas-camp"><path d="M-4 2L0-3 4 2ZM-1 2L0 0 1 2M0-3V-4" /></g>
+      </defs>
+      <rect width="100" height="80" fill="url(#atlas-paper)" />
+      <rect width="100" height="80" fill="url(#atlas-grid)" />
+      <g
+        class="landscape"
+        [class.hidden]="!showTerrain() || !!backgroundAsset()"
+        aria-hidden="true"
+      ></g>
+      @if (backgroundAsset(); as background) {
+        <image
+          class="map-scene-background"
+          [class.hidden]="!showTerrain()"
+          [attr.href]="background"
+          x="0"
+          y="0"
+          width="100"
+          height="80"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        />
+        <rect
+          class="map-scene-wash"
+          [class.hidden]="!showTerrain()"
+          width="100"
+          height="80"
+          aria-hidden="true"
+        />
+      }
+      <rect
+        class="vignette"
+        width="100"
+        height="80"
+        fill="url(#atlas-vignette)"
+        pointer-events="none"
+      />
+      @for (trail of trails(); track trail.route.id) {
+        <g
+          [attr.class]="'trail ' + trail.state"
+          [class.chosen]="trail.route.id === selectedRouteId()"
+          [class.compared]="trail.compared"
+        >
+          <path class="trail-glow" [attr.d]="trail.route.path" />
+          <path class="trail-underlay" [attr.d]="trail.route.path" />
+          <path
+            class="trail-line"
+            [attr.data-route-id]="trail.route.id"
+            [attr.d]="trail.route.path"
+          />
+          @if (trail.state === 'traveling') {
+            <path
+              class="trail-progress"
+              [attr.d]="trail.route.path"
+              pathLength="100"
+              [attr.stroke-dasharray]="(travel()?.progress ?? 0) * 100 + ' 100'"
+            />
+          }
+          @if (trail.route.id === selectedRouteId() || trail.state === 'traveling') {
+            @for (checkpoint of checkpoints(trail.route); track checkpoint) {
+              <g class="checkpoint" aria-hidden="true">
+                <circle r="1.65" />
+                <text y=".7">{{ $index + 1 }}</text>
+                <animateMotion
+                  dur="1ms"
+                  [attr.path]="trail.route.path"
+                  [attr.keyPoints]="checkpoint + ';' + checkpoint"
+                  keyTimes="0;1"
+                  calcMode="linear"
+                  fill="freeze"
+                />
+              </g>
+            }
+          }
+          @if (trail.state !== 'inactive' && trail.state !== 'locked') {
+            <path
+              data-map-trail
+              class="trail-hit"
+              [attr.d]="trail.route.path"
+              (click)="routeSelected.emit(trail.route.id)"
+              aria-hidden="true"
+            >
+              <title>
+                {{ trail.route.name }} · {{ trail.route.distanceMiles }} miles · {{ trail.state }}
+              </title>
+            </path>
+          }
+        </g>
+      }
+      @for (location of locations(); track location.id) {
+        <g
+          data-map-stop
+          class="map-node"
+          [class.current]="location.id === currentLocationId()"
+          [class.chosen]="destinationTrail(location.id)?.route?.id === selectedRouteId()"
+          [class.unavailable]="destinationTrail(location.id)?.state === 'unavailable'"
+          [class.locked]="destinationTrail(location.id)?.state === 'locked'"
+          [attr.transform]="'translate(' + location.mapX + ' ' + location.mapY + ')'"
+          [attr.role]="destinationIsInteractive(location.id) ? 'button' : null"
+          [attr.tabindex]="destinationIsInteractive(location.id) ? 0 : null"
+          [attr.aria-label]="
+            location.name +
+            ', ' +
+            label(location) +
+            (destinationIsInteractive(location.id) ? ', inspect route' : '')
+          "
+          [attr.aria-pressed]="
+            destinationTrail(location.id)
+              ? destinationTrail(location.id)?.route?.id === selectedRouteId()
+              : null
+          "
+          (click)="selectDestination(location)"
+          (keydown.enter)="selectDestination(location)"
+          (keydown.space)="$event.preventDefault(); selectDestination(location)"
+          (focus)="revealLocation(location)"
+        >
+          <circle class="selection-ring" r="5.4" />
+          <ellipse class="shadow" cy="3.8" rx="4.5" ry="1.1" />
+          <circle class="node-disc" r="4.3" />
+          <use class="landmark" [attr.href]="'#atlas-' + location.kind" />
+          <text
+            class="place-name"
+            y="-6.2"
+            [attr.text-anchor]="location.mapX > 85 ? 'end' : 'middle'"
+          >
+            {{ location.shortName }}
+          </text>
+          <text
+            class="place-status"
+            [attr.y]="location.mapY < 30 ? -10.5 : 8"
+            [attr.text-anchor]="location.mapX > 85 ? 'end' : 'middle'"
+          >
+            {{ label(location) }}
+          </text>
+          @if (location.id === currentLocationId() && !travel()) {
+            <path class="here-flag" d="M5 2V-5H9L7-3 9-1H5" />
+          }
+        </g>
+      }
+      @if (travel(); as journey) {
+        @for (trail of trails(); track trail.route.id) {
+          @if (trail.route.id === journey.routeId) {
+            <g class="wagon-marker" aria-hidden="true">
+              <ellipse class="wagon-map-shadow" cy="2.3" rx="4.3" ry="1.1" />
+              <path class="wagon-map-canvas" d="M-3 .3Q-3-4 0-5.1Q3-4 3 .3Z" />
+              <path class="wagon-map-body" d="M-4 0h8l-1 2.5h-6Z" />
+              <path class="wagon-map-tongue" d="M-4 1.2l-3 1" />
+              <circle class="wagon-map-wheel" cx="-2.4" cy="2.5" r="1.25" />
+              <circle class="wagon-map-wheel" cx="2.2" cy="2.5" r="1.1" />
+              <animateMotion
+                dur="1ms"
+                [attr.path]="trail.route.path"
+                [attr.keyPoints]="journey.progress + ';' + journey.progress"
+                keyTimes="0;1"
+                calcMode="linear"
+                fill="freeze"
+              />
+            </g>
+          }
+        }
+      }
+      <g class="compass" transform="translate(92 9)" aria-hidden="true">
+        <circle r="4" />
+        <path d="M0-4L1 0 0 4-1 0ZM-4 0L0-1 4 0 0 1Z" />
+        <text y="-5.5">N</text>
+      </g>
+    </svg>
+    @if (view().zoom > 1) {
+      <div class="pan-controls" aria-label="Pan map">
+        <button type="button" aria-label="Pan map left" (click)="pan(-12, 0)">←</button>
+        <button type="button" aria-label="Pan map up" (click)="pan(0, -10)">↑</button>
+        <button type="button" aria-label="Pan map down" (click)="pan(0, 10)">↓</button>
+        <button type="button" aria-label="Pan map right" (click)="pan(12, 0)">→</button>
+      </div>
+    }
+  </div>
+  <div class="map-caption">
+    <div class="legend" aria-label="Map legend">
+      <span><i></i>Available</span><span><i class="selected"></i>Selected</span>
+      <span><i class="completed"></i>Traveled</span><span><i class="locked"></i>Rank locked</span>
+      <span><i class="blocked"></i>Transport blocked</span>
+    </div>
+    <div class="layer-controls">
+      <button
+        type="button"
+        [attr.aria-pressed]="showTerrain()"
+        (click)="showTerrain.set(!showTerrain())"
+      >
+        Scenery
+      </button>
+      <button type="button" [attr.aria-pressed]="motion()" (click)="motion.set(!motion())">
+        Motion {{ motion() ? 'on' : 'off' }}
+      </button>
+    </div>
+  </div>
+  <div class="selection-preview" aria-live="polite" aria-atomic="true">
+    @if (selectedTrail(); as trail) {
+      <div>
+        <small>Selected trail</small><strong>{{ trail.route.name }}</strong
+        ><span
+          >{{ trail.route.distanceMiles }} miles · {{ trail.route.estimatedDays }} days ·
+          {{ trail.route.risk }} risk</span
+        >
+      </div>
+      <button type="button" (click)="detailsRequested.emit()">
+        {{ trail.state === 'completed' ? 'View journey record' : 'Open trail planner' }} →
+      </button>
+    } @else {
+      <p>
+        <strong>Your next chapter starts here.</strong> Choose a destination or trail to explore the
+        journey.
+      </p>
+    }
+  </div>
+  <p id="atlas-help" class="map-help">
+    Zoom to explore, then drag or use the arrow controls. With the map focused, use + / −, arrow
+    keys, or Home to reset. Drawing not to scale.
+  </p>
+</div>

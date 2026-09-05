@@ -1,0 +1,264 @@
+:host {
+  display: block;
+}
+:host,
+:host * {
+  box-sizing: border-box;
+}
+.teacher-desk {
+  width: 18rem;
+  max-height: calc(100dvh - 8.2rem);
+  overflow-y: auto;
+  border: 1px solid #856f51;
+  border-radius: 0.5rem;
+  color: #2e271f;
+  background: #f0e7d5;
+  box-shadow: 0 0.8rem 1.8rem #110d0966;
+  scrollbar-width: thin;
+}
+.teacher-desk.collapsed {
+  width: 3.3rem;
+  overflow: hidden;
+}
+header {
+  position: sticky;
+  z-index: 2;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  border-bottom: 0.2rem solid #bd8b3d;
+  padding: 0.55rem;
+  color: #fff7e7;
+  background: #27231f;
+}
+.desk-seal {
+  display: grid;
+  width: 2.1rem;
+  flex: 0 0 2.1rem;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px solid #d9bd76;
+  border-radius: 50%;
+  color: #efcf82;
+  font:
+    800 0.8rem Georgia,
+    serif;
+}
+header > div:nth-child(2) {
+  display: grid;
+  flex: 1;
+}
+header span {
+  color: #d7b669;
+  font-size: 0.52rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+h2,
+h3 {
+  margin: 0;
+  font-family: Georgia, serif;
+}
+h2 {
+  font-size: 0.9rem;
+}
+header button {
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid #655847;
+  border-radius: 0.25rem;
+  color: #fff;
+  background: #3e3831;
+  font-size: 1.25rem;
+}
+.desk-status {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.4rem;
+  padding: 0.5rem 0.65rem;
+  color: #6f5e48;
+  background: #dfd2ba;
+  font-size: 0.55rem;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+.desk-status span {
+  display: flex;
+  align-items: center;
+  gap: 0.28rem;
+}
+.desk-status i {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: #b08642;
+}
+.desk-status i.live {
+  background: #4d8c52;
+  box-shadow: 0 0 0.35rem #4f9c59;
+}
+section {
+  display: grid;
+  gap: 0.45rem;
+  border-bottom: 1px solid #d2c1a4;
+  padding: 0.7rem;
+}
+h3 {
+  color: #765425;
+  font-size: 0.72rem;
+}
+.phase-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.3rem;
+}
+.phase-grid button:last-child {
+  grid-column: 1/-1;
+}
+button {
+  min-height: 2.2rem;
+  border: 1px solid #baa788;
+  border-radius: 0.25rem;
+  padding: 0.35rem 0.5rem;
+  color: #44392d;
+  background: #fff9ed;
+  font: 750 0.63rem/1.2 inherit;
+}
+button.active {
+  color: #fff;
+  border-color: #2b6b74;
+  background: #2c6972;
+}
+.focus-list {
+  display: grid;
+  gap: 0.3rem;
+}
+.focus-list > button {
+  display: grid;
+  grid-template-columns: 1.35rem 1fr;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: left;
+}
+.focus-list > button > span:first-child {
+  display: grid;
+  width: 1.25rem;
+  aspect-ratio: 1;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  background: #77613f;
+  font-size: 0.52rem;
+}
+.focus-list > button > span:last-child {
+  display: grid;
+  min-width: 0;
+}
+.focus-list strong,
+.focus-list small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.focus-list small {
+  opacity: 0.72;
+  font-size: 0.52rem;
+}
+.mode-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.mode-toggle button {
+  border-radius: 0;
+}
+label {
+  display: grid;
+  gap: 0.3rem;
+  color: #5a4b38;
+  font-size: 0.6rem;
+  font-weight: 800;
+}
+select {
+  width: 100%;
+  min-height: 2.2rem;
+  border: 1px solid #b6a080;
+  border-radius: 0.25rem;
+  padding: 0.35rem;
+  background: #fffaf0;
+  font: 0.64rem inherit;
+}
+button.switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  text-align: left;
+}
+.switch > span {
+  display: grid;
+}
+.switch small {
+  color: #796b59;
+  font-size: 0.51rem;
+}
+.switch i {
+  min-width: 2.7rem;
+  border-radius: 999px;
+  padding: 0.24rem 0.4rem;
+  color: #65463c;
+  background: #ebc6b8;
+  font-size: 0.5rem;
+  font-style: normal;
+  text-align: center;
+}
+.switch i.on {
+  color: #275b36;
+  background: #cde2c5;
+}
+.not-ready {
+  display: flex;
+  flex-wrap: wrap;
+}
+.not-ready h3 {
+  width: 100%;
+}
+.not-ready span {
+  border-radius: 999px;
+  padding: 0.25rem 0.45rem;
+  color: #704a1e;
+  background: #ead1a6;
+  font-size: 0.55rem;
+  font-weight: 800;
+}
+footer {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.7rem;
+}
+footer button {
+  color: #6b2e27;
+  border-color: #c7a59e;
+  background: #f2dcd7;
+}
+footer small {
+  color: #7e705e;
+  font-size: 0.5rem;
+  line-height: 1.35;
+}
+button:focus-visible,
+select:focus-visible {
+  outline: 3px solid #55adb7;
+  outline-offset: 2px;
+}
+@media (max-width: 950px) {
+  .teacher-desk {
+    width: 100%;
+    max-height: none;
+  }
+  .teacher-desk.collapsed {
+    width: 100%;
+    height: 3.3rem;
+  }
+}

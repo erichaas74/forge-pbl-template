@@ -1,0 +1,112 @@
+:host {
+  display: block;
+}
+.progression {
+  padding: 0.85rem 1rem;
+  color: #f7ead0;
+  border: 1px solid #977440;
+  border-radius: 0.55rem;
+  background: linear-gradient(135deg, #342315, #1f160e);
+  box-shadow: 0 0.35rem 1rem #1b10096b;
+}
+header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+}
+.stage-medallion {
+  display: grid;
+  place-items: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  color: #35230e;
+  border: 2px solid #f4d589;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffe9a9, #c08a35);
+  font:
+    800 1.2rem Georgia,
+    serif;
+}
+small {
+  color: #e3b85f;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+h2 {
+  margin: 0.1rem 0;
+  color: #fff0c9;
+  font:
+    700 1.05rem Georgia,
+    serif;
+}
+p {
+  margin: 0;
+  color: #d8c8aa;
+  font-size: 0.8rem;
+}
+.choice-count {
+  padding: 0.4rem 0.55rem;
+  color: #2e271b;
+  border-radius: 999px;
+  background: #ead49b;
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+.stage-track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 0.25rem;
+  margin: 0.7rem 0;
+}
+.stage-track i {
+  height: 0.32rem;
+  border-radius: 999px;
+  background: #766344;
+}
+.stage-track i.complete {
+  background: linear-gradient(90deg, #dca844, #f4d776);
+  box-shadow: 0 0 0.45rem #d6a33c99;
+}
+.next-unlock {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem 1rem;
+  padding-top: 0.55rem;
+  border-top: 1px solid #715b3b;
+  font-size: 0.75rem;
+}
+.next-unlock ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.85rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.next-unlock li {
+  color: #e9d5ad;
+}
+.next-unlock li.complete {
+  color: #bedd9c;
+}
+.mastered {
+  padding-top: 0.5rem;
+  border-top: 1px solid #715b3b;
+  color: #dce8ad;
+  font-weight: 700;
+}
+@media (max-width: 600px) {
+  header {
+    grid-template-columns: auto 1fr;
+  }
+  .choice-count {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}

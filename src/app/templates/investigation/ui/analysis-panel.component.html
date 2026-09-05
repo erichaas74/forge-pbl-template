@@ -1,11 +1,5 @@
 <section class="analysis-panel" aria-labelledby="analysis-title">
-  <header>
-    <div>
-      <span class="eyebrow">What does the evidence mean?</span>
-      <h2 id="analysis-title">Analysis Board</h2>
-    </div>
-    <span class="connection-label">Select a card to trace its role</span>
-  </header>
+  <p class="panel-tab" id="analysis-title">Analysis</p>
 
   @if (selectedEvidence(); as selected) {
     <article class="evidence-trace" aria-live="polite">
@@ -26,10 +20,7 @@
       <section class="analysis-zone" [class.highlighted]="hasSelectedInZone(zone.id)">
         <header>
           <span aria-hidden="true">{{ zone.symbol }}</span>
-          <div>
-            <h3>{{ zone.label }}</h3>
-            <p>{{ zone.prompt }}</p>
-          </div>
+          <h3>{{ zone.label }}</h3>
           <em>{{ inZone(zone.id).length }}</em>
         </header>
         <div class="zone-cards">
@@ -39,25 +30,23 @@
               [class.selected]="item.id === selectedEvidenceId()"
               (click)="evidenceSelected.emit(item.id)"
             >
-              <span>{{ item.type }}</span>
               <strong>{{ item.title }}</strong>
               @if (item.important) {
                 <em aria-label="Important evidence">★</em>
               }
             </button>
           } @empty {
-            <p class="empty-zone">Move evidence here when it {{ zone.prompt.toLowerCase() }}.</p>
+            <p class="empty-zone">{{ zone.prompt }}</p>
           }
         </div>
       </section>
     }
   </div>
 
-  <section class="questions">
-    <header>
-      <h3>Questions to investigate</h3>
-      <span>{{ questions().length }} open</span>
-    </header>
+  <details class="questions">
+    <summary>
+      Questions to investigate<span>{{ questions().length }}</span>
+    </summary>
     @for (question of questions(); track question.id) {
       <button type="button" class="question-chip">
         <span aria-hidden="true">?</span>{{ question.text }}
@@ -78,5 +67,5 @@
         <button type="button" (click)="addQuestion()">Add</button>
       </span>
     </label>
-  </section>
+  </details>
 </section>

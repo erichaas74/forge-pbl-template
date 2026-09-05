@@ -1,8 +1,15 @@
 <section class="setup page-card" aria-labelledby="setup-title">
   <header>
     <div class="mission-art" aria-hidden="true">
-      <span>✥</span>
-      <i></i>
+      @if (runtime.config.world.setupSceneAsset; as setupSceneAsset) {
+        <img class="mission-background" [src]="setupSceneAsset" alt="" />
+      } @else {
+        <div class="mission-fallback"></div>
+      }
+      <app-illustrated-wagon
+        [compact]="true"
+        [transportName]="selectedTransport()?.name ?? 'Prairie Wagon'"
+      />
       <b>TRAIL 1870</b>
     </div>
     <div>
@@ -17,16 +24,30 @@
       <h2>1. Name and mark your company</h2>
       <label class="field">
         Company name
-        <input
-          type="text"
-          maxlength="36"
-          [ngModel]="companyName()"
-          (ngModelChange)="companyName.set($event)"
-          placeholder="Example: Pine Ridge Traders"
-        />
+        <span class="company-name-row">
+          <input
+            type="text"
+            maxlength="36"
+            [ngModel]="companyName()"
+            (ngModelChange)="companyName.set($event)"
+            placeholder="Example: Pine Ridge Traders"
+          />
+          @if (runtime.config.companyNameSuggestions?.length) {
+            <button
+              class="random-name"
+              type="button"
+              aria-label="Choose another animal company name"
+              title="Choose another animal name"
+              (click)="randomizeCompanyName()"
+            >
+              ↻ New animal
+            </button>
+          }
+        </span>
+        <small>Your animal company name is ready. Change it or start the game.</small>
       </label>
       <fieldset>
-        <legend>Choose an accessible emblem</legend>
+        <legend>Choose your company symbol</legend>
         <div class="emblems">
           @for (emblem of runtime.config.emblems; track emblem.id) {
             <button
@@ -44,7 +65,7 @@
     </section>
 
     <section>
-      <h2>2. Choose transportation</h2>
+      <h2>2. Choose how you will travel</h2>
       <div class="transport-list">
         @for (transport of runtime.config.transports; track transport.id) {
           <button
@@ -67,7 +88,7 @@
                   <dd>{{ transport.cargoCapacity }} spaces</dd>
                 </div>
                 <div>
-                  <dt>Tradeoff</dt>
+                  <dt>Watch for</dt>
                   <dd>{{ transport.vulnerability }}</dd>
                 </div>
               </dl>
@@ -85,16 +106,14 @@
         <dd>{{ runtime.money(runtime.config.startingCashCents) }}</dd>
       </div>
       <div>
-        <dt>Transportation</dt>
+        <dt>Travel choice</dt>
         <dd>− {{ runtime.money(selectedTransport()?.costCents ?? 0) }}</dd>
       </div>
       <div>
-        <dt>Cash for goods and travel</dt>
+        <dt>Money left for goods and travel</dt>
         <dd>{{ runtime.money(remainingBudget()) }}</dd>
       </div>
     </dl>
-    <button class="primary" type="button" (click)="start()">
-      Sign charter and open the market
-    </button>
+    <button class="primary" type="button" (click)="start()">Start trading game →</button>
   </footer>
 </section>

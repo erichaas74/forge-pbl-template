@@ -4,6 +4,9 @@ import { FormsModule } from '@angular/forms';
 import type { HypothesisRuntimeState } from '../domain/runtime-state';
 import type { InvestigationEvidenceItem, TheoryDraft } from './investigation-ui.models';
 
+/** One question in the revision pass. */
+type TheoryStep = 'statement' | 'reasoning' | 'question' | 'change' | 'evidence';
+
 @Component({
   selector: 'app-investigation-working-theory',
   imports: [FormsModule],
@@ -22,6 +25,13 @@ export class InvestigationWorkingTheoryComponent {
   readonly evidenceSelected = output<string>();
   readonly investigateRequested = output<void>();
   readonly finalRequested = output<void>();
+
+  /**
+   * Revision is dealt one slip at a time rather than as a five-field form. The
+   * questions are the same; asking them one at a time is what stops the panel
+   * reading like a web form and starts it reading like thinking.
+   */
+  readonly step = signal(0);
 
   readonly editing = signal(false);
   readonly creatingAlternative = signal(false);
@@ -46,6 +56,44 @@ export class InvestigationWorkingTheoryComponent {
     this.evidence().filter((item) => item.status !== 'locked'),
   );
 
+  /** Which slips this pass asks for — a revision asks one the others do not. */
+  readonly steps = computed<readonly TheoryStep[]>(() => {
+    const revising = this.theory() !== undefined && !this.creatingAlternative();
+    return [
+      'statement',
+      'reasoning',
+      'question',
+      ...(revising ? (['change'] as const) : []),
+      ...(this.compact() ? [] : (['evidence'] as const)),
+    ];
+  });
+
+  readonly currentStep = computed<TheoryStep>(
+    () => this.steps()[Math.min(this.step(), this.steps().length - 1)],
+  );
+
+  readonly onLastStep = computed(() => this.step() >= this.steps().length - 1);
+
+  /** A theory needs a statement; everything after it may be left for later. */
+  readonly canAdvance = computed(
+    () => this.currentStep() !== 'statement' || this.statement().trim().length > 0,
+  );
+
+  next(): void {
+    if (!this.canAdvance()) {
+      return;
+    }
+    if (this.onLastStep()) {
+      this.saveTheory();
+      return;
+    }
+    this.step.update((value) => value + 1);
+  }
+
+  back(): void {
+    this.step.update((value) => Math.max(value - 1, 0));
+  }
+
   constructor() {
     effect(() => {
       if (this.editing() || this.creatingAlternative()) {
@@ -69,10 +117,12 @@ export class InvestigationWorkingTheoryComponent {
   }
 
   beginEditing(): void {
+    this.step.set(0);
     this.editing.set(true);
   }
 
   beginAlternative(): void {
+    this.step.set(0);
     this.creatingAlternative.set(true);
     this.editing.set(false);
     this.statement.set('');
@@ -84,6 +134,7 @@ export class InvestigationWorkingTheoryComponent {
   }
 
   cancelEditing(): void {
+    this.step.set(0);
     this.creatingAlternative.set(false);
     this.editing.set(false);
     const theory = this.theory();
@@ -123,5 +174,6 @@ export class InvestigationWorkingTheoryComponent {
     this.reasonForChange.set('');
     this.creatingAlternative.set(false);
     this.editing.set(false);
+    this.step.set(0);
   }
 }

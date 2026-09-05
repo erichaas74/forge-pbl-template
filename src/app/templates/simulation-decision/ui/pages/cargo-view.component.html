@@ -33,33 +33,92 @@
         </div>
         <span>{{ items().length }} different goods</span>
       </header>
-      @if (items().length === 0) {
-        <div class="empty-wagon">
-          <span aria-hidden="true">▱</span><strong>The cargo bed is empty.</strong
-          ><button class="primary" type="button" (click)="runtime.navigate('market')">
-            Open the market
-          </button>
-        </div>
-      } @else {
-        <div class="wagon-stage" [class.near-capacity]="cargoPercent() >= 85">
-          <div class="wagon-bed" [style.transform]="'translateY(' + cargoPercent() / 20 + 'px)'">
-            @for (unit of packedUnits(); track unit.key) {
+      <div class="wagon-stage" [class.near-capacity]="cargoPercent() >= 85">
+        <svg
+          class="cargo-yard"
+          viewBox="0 0 720 470"
+          preserveAspectRatio="xMidYMid slice"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <defs>
+            <linearGradient id="cargo-sky" x1="0" y1="0" x2="0" y2="1">
+              <stop stop-color="#91b8c0" />
+              <stop offset="1" stop-color="#d5cfaa" />
+            </linearGradient>
+            <linearGradient id="cargo-yard-ground" x1="0" y1="0" x2="0" y2="1">
+              <stop stop-color="#b89b67" />
+              <stop offset="1" stop-color="#77563a" />
+            </linearGradient>
+          </defs>
+          <rect width="720" height="470" fill="url(#cargo-sky)" />
+          <path class="yard-hills" d="M0 193Q115 91 224 187Q339 66 468 186Q592 90 720 175V280H0Z" />
+          <path
+            class="yard-tree-line"
+            d="M0 210l31-58 25 42 32-68 34 68 29-48 29 47 37-73 39 76 30-54 36 52 37-78 41 80 31-47 31 45 38-66 36 64 31-43 33 42 38-72 38 70 31-42 29 40 37-61 35 61v75H0Z"
+          />
+          <rect y="244" width="720" height="226" fill="url(#cargo-yard-ground)" />
+          <path class="yard-track" d="M-40 440Q186 310 379 325Q563 337 770 430" />
+          <g class="yard-shed">
+            <path d="M20 248V100h176v148M3 107l98-72 110 72" />
+            <path d="M47 248v-82h58v82m26-108h41v50h-41Z" />
+            <path class="shed-boards" d="M22 130h172M22 158h172M22 188h172M22 218h172" />
+          </g>
+          <g class="yard-fence">
+            <path d="M528 218v91m83-104v91m82-103v91M505 239l212-31m-208 72 209-31" />
+          </g>
+          <g class="yard-props">
+            <path d="M566 318h51v43h-51Zm8-13h35v13h-35M624 328h42v33h-42Zm5-10h32v10h-32" />
+            <path class="prop-lines" d="M571 333h41m-20-14v41m37-18h32m-16-18v36" />
+            <ellipse cx="69" cy="300" rx="31" ry="10" />
+            <path d="M38 300l7 65q24 14 48 0l7-65M41 322h56m-53 25h51" />
+          </g>
+          <g class="yard-clouds">
+            <path d="M265 69q18-31 47-12 26-41 61-3 42-2 51 28H251Z" />
+            <path d="M510 94q15-25 39-10 19-31 49-1 35-3 43 22H499Z" />
+          </g>
+        </svg>
+        <app-illustrated-wagon
+          class="cargo-wagon-art"
+          [transportName]="runtime.transport()?.name ?? 'Prairie Wagon'"
+          [loadPercent]="cargoPercent()"
+          [cargo]="wagonCargo()"
+          [strained]="cargoPercent() >= 95"
+        />
+        @if (items().length === 0) {
+          <div class="empty-wagon">
+            <span>Outfitting yard</span><strong>The wagon is ready for its first load.</strong
+            ><button class="primary" type="button" (click)="runtime.navigate('market')">
+              Open the market
+            </button>
+          </div>
+        } @else {
+          <div class="cargo-load" aria-label="Visible cargo units">
+            @for (item of items(); track item.goodId) {
               <button
                 type="button"
                 draggable="true"
-                [class.selected]="selectedGoodId() === unit.goodId"
-                [attr.aria-label]="unit.name + ', drag to the sell area or press to inspect'"
-                (dragstart)="beginCargoDrag(unit.goodId)"
-                (click)="selectedGoodId.set(unit.goodId)"
+                [class.selected]="selectedGoodId() === item.goodId"
+                [attr.aria-label]="
+                  item.quantity +
+                  ' ' +
+                  item.good.name +
+                  ', drag to the sell area or press to inspect'
+                "
+                (dragstart)="beginCargoDrag(item.goodId)"
+                (click)="selectedGoodId.set(item.goodId)"
               >
-                <span aria-hidden="true">{{ unit.icon }}</span
-                ><small>{{ unit.name }}</small>
+                <span aria-hidden="true">{{ item.good.icon }}</span
+                ><small>{{ item.good.name }}</small
+                ><b>×{{ item.quantity }}</b>
               </button>
             }
           </div>
-          <div class="wagon-axle" aria-hidden="true"><i></i><i></i></div>
+        }
+        <div class="yard-caption" aria-hidden="true">
+          <span>{{ cargoPercent() }}%</span><small>loaded</small>
         </div>
-      }
+      </div>
       @if (selectedItem(); as selected) {
         <section class="cargo-tooltip" aria-live="polite">
           <span aria-hidden="true">{{ selected.good.icon }}</span>
@@ -100,7 +159,8 @@
         </div>
       }
       <footer>
-        Every visible package is one owned unit. Heavier loads press the suspension lower.
+        Package stacks grow at 2, 4, and 7 units. The quantity tags and inventory table show the
+        exact owned amount.
       </footer>
     </section>
 
@@ -193,7 +253,7 @@
         <button class="secondary" type="button" (click)="runtime.navigate('market')">
           What if I sold? Open market</button
         ><button class="primary" type="button" (click)="pinSnapshot()">
-          Save inventory snapshot as evidence
+          Save wagon record for my reflection
         </button>
       </aside>
     </div>

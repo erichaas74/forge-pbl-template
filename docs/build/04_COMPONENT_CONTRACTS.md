@@ -932,3 +932,49 @@ behavior. Only platform-controlled deployments may install executable plugins.
 Activity and final-product APIs must expose completion, mastery, submission,
 approval, and grade separately. Components may present a combined progress view,
 but must not persist a combined status that destroys those distinctions.
+
+---
+
+# 43. Authoritative Command Gateway
+
+Commands registered as `serverRequired` cross an explicit
+`AuthoritativeCommandGateway` boundary in official mode. The request carries an
+attempt-aware scope, registered command, idempotency key, and optional expected
+versions. The result is accepted, rejected, or pending and returns structured
+errors plus committed event/version references.
+
+Authenticated infrastructure resolves the actor and verifies tenant,
+enrollment, class, team, project, and attempt membership. Client-supplied scope
+or role fields never grant authority. The ordinary `RuntimeEngine` remains the
+processor for one scoped snapshot; capability-owned authoritative handlers may
+coordinate multiple bounded records transactionally behind the gateway.
+
+Local/practice implementations may provide a clearly identified mock gateway.
+Official UI must not display a server-required command as confirmed before an
+accepted authoritative result or matching confirmed projection is received.
+
+---
+
+# 44. Reusable Live Activity Capabilities
+
+The approved live activity contract set is:
+
+- `liveSession`
+- `resourceAccounts`
+- `multiPartyExchange`
+- `challengeGates`
+- `scenarioScheduler`
+- `awardLedger`
+- `activityEvidenceBridge`
+- `summaryProjection`
+
+These are independently versioned shared capabilities, not parts of a
+Frontier-specific runtime. A contract may be registered with `status: future`
+for discovery and schema work, but project validation must reject that status
+until an actual runtime implementation and required handlers/adapters are
+installed.
+
+Official live attempts use an attempt-aware runtime scope. Practice runtimes may
+omit `attemptId`; official live runtimes require a server-issued value. Scope,
+persistence, realtime, idempotency, event, cache, and trace identities must not
+collide across attempts.

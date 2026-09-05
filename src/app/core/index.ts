@@ -1,3 +1,4 @@
+export * from './authority/authoritative-command-gateway';
 export * from './commands/runtime-command';
 export * from './commands/command-executor';
 export * from './commands/command-handler-contracts';

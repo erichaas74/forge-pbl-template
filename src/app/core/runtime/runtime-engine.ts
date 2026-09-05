@@ -105,7 +105,8 @@ export class RuntimeEngine<
       snapshot.tenantId !== this.definitionAdapter.tenantId(definitions) ||
       snapshot.projectId !== event.projectId ||
       snapshot.projectId !== scope.projectId ||
-      snapshot.projectVersion !== scope.projectVersion
+      snapshot.projectVersion !== scope.projectVersion ||
+      event.attemptId !== scope.attemptId
     ) {
       return {
         event,
@@ -277,6 +278,7 @@ export class RuntimeEngine<
       matchedRuleIds: result.matchedRuleIds,
       commandTypes: result.commands?.map((command) => command.commandType),
       stateVersion: result.snapshot?.version,
+      attemptId: scope.attemptId,
       errors: result.errors,
     });
   }

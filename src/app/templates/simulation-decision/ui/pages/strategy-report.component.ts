@@ -98,6 +98,16 @@ export class SimulationStrategyReportComponent implements OnDestroy {
     );
   }
 
+  responseHint(definition: ReportSectionDefinition): string {
+    const hints: Record<string, string> = {
+      'my-plan': 'I chose the ___ route and bought ___ because…',
+      'best-trade-math': 'I forecast ___. The actual trip profit was ___ because…',
+      'route-choice': 'I chose this route because it cost ___, took ___ days, and…',
+      'next-season': 'Next time I would ___ because…',
+    };
+    return hints[definition.id] ?? 'Answer the question with a complete explanation.';
+  }
+
   submit(): void {
     this.saveNow();
     if (this.runtime.submitReport()) {
@@ -109,7 +119,38 @@ export class SimulationStrategyReportComponent implements OnDestroy {
     const state = this.runtime.state().report.sections[sectionId];
     this.response.set(state?.response ?? '');
     this.calculation.set(state?.calculation ?? '');
-    this.evidenceIds.set([...(state?.evidenceIds ?? [])]);
+    const currentEvidence = [...(state?.evidenceIds ?? [])];
+    const definition = this.runtime.config.reportSections.find((section) => section.id === sectionId);
+    const suggested =
+      currentEvidence.length > 0 || definition === undefined
+        ? currentEvidence
+        : this.suggestedEvidence(definition);
+    this.evidenceIds.set(suggested);
+    if (suggested.length > 0 && currentEvidence.length === 0) {
+      this.runtime.updateReportSection(
+        sectionId,
+        state?.response ?? '',
+        suggested,
+        state?.calculation ?? '',
+      );
+    }
+  }
+
+  private suggestedEvidence(definition: ReportSectionDefinition): string[] {
+    const preferredTypes: Partial<Record<string, readonly EvidenceReference['sourceType'][]>> = {
+      'best-trade-math': ['ledger'],
+      'route-choice': ['route'],
+      'next-season': ['result', 'event'],
+    };
+    const preferred = preferredTypes[definition.id] ?? [];
+    return [...this.runtime.state().evidence]
+      .sort((left, right) => {
+        const leftIndex = preferred.indexOf(left.sourceType);
+        const rightIndex = preferred.indexOf(right.sourceType);
+        return (leftIndex < 0 ? 99 : leftIndex) - (rightIndex < 0 ? 99 : rightIndex);
+      })
+      .slice(0, definition.evidenceMinimum)
+      .map((evidence) => evidence.id);
   }
 
   private scheduleSave(): void {

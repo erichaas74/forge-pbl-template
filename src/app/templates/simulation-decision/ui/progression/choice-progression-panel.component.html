@@ -1,0 +1,49 @@
+@if (progression().enabled) {
+  <section class="progression" aria-labelledby="progression-title">
+    <header>
+      <span class="stage-medallion" aria-hidden="true">{{
+        progression().currentStageIndex + 1
+      }}</span>
+      <div>
+        <small
+          >Trading level {{ progression().currentStageIndex + 1 }} of
+          {{ progression().stageCount }}</small
+        >
+        <h2 id="progression-title">{{ progression().currentStage.title }}</h2>
+        <p>{{ progression().currentStage.description }}</p>
+      </div>
+      <strong class="choice-count"
+        >{{ availableCount() }} / {{ totalCount() }} {{ choiceLabel() }}</strong
+      >
+    </header>
+    <div
+      class="stage-track"
+      role="progressbar"
+      [attr.aria-valuenow]="progression().currentStageIndex + 1"
+      aria-valuemin="1"
+      [attr.aria-valuemax]="progression().stageCount"
+      [attr.aria-label]="'Trading level ' + (progression().currentStageIndex + 1)"
+    >
+      @for (index of stageIndexes(); track index) {
+        <i [class.complete]="index <= progression().currentStageIndex"></i>
+      }
+    </div>
+    @if (progression().nextStage; as next) {
+      <div class="next-unlock">
+        <strong>Next unlock: {{ next.title }}</strong>
+        <ul>
+          @for (requirement of progression().nextRequirements; track requirement.key) {
+            <li [class.complete]="requirement.complete">
+              <span aria-hidden="true">{{ requirement.complete ? '✓' : '○' }}</span>
+              {{ requirement.label }} · {{ requirement.current }} / {{ requirement.target }}
+            </li>
+          }
+        </ul>
+      </div>
+    } @else {
+      <p class="mastered">
+        <span aria-hidden="true">★</span> All trading choices are open.
+      </p>
+    }
+  </section>
+}

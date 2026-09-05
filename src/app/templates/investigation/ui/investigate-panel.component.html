@@ -1,11 +1,7 @@
 <section class="investigate-panel" aria-labelledby="investigate-title">
-  <header>
-    <div>
-      <span class="eyebrow">What should you do next?</span>
-      <h2 id="investigate-title">Investigate</h2>
-    </div>
-    <span class="available-count">{{ activities().length }} options</span>
-  </header>
+  <p class="panel-tab" id="investigate-title">
+    Investigate<span>{{ activities().length }}</span>
+  </p>
 
   <section class="question-link">
     <span aria-hidden="true">?</span>
@@ -22,27 +18,10 @@
         [class.complete]="activity.runtime?.status === 'complete'"
       >
         <header>
-          <span>{{ activity.typeLabel }}</span>
+          <h3>{{ activity.title }}</h3>
           <em>{{ studentStatus(activity) }}</em>
         </header>
-        <h3>{{ activity.title }}</h3>
         <p>{{ activity.purpose }}</p>
-        <dl>
-          <div>
-            <dt>Helps you learn</dt>
-            <dd>{{ activity.helpsWith }}</dd>
-          </div>
-          <div>
-            <dt>Mode</dt>
-            <dd>
-              {{ activity.displayMode === 'expanded' ? 'Full workstation' : 'Paired activity' }}
-            </dd>
-          </div>
-          <div>
-            <dt>Attempt</dt>
-            <dd>Practice investigation</dd>
-          </div>
-        </dl>
         @if (activity.locked) {
           <div class="lock-reason"><span aria-hidden="true">🔒</span>{{ activity.lockReason }}</div>
         } @else {
@@ -58,15 +37,4 @@
       </article>
     }
   </div>
-
-  <details>
-    <summary>Completed investigations</summary>
-    <ul>
-      @for (activity of activities(); track activity.id) {
-        @if (activity.runtime?.status === 'complete') {
-          <li><span aria-hidden="true">✓</span> {{ activity.title }}</li>
-        }
-      }
-    </ul>
-  </details>
 </section>

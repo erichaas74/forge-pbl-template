@@ -1,0 +1,165 @@
+@if (board; as board) {
+  <article
+    class="museum-board"
+    [class]="'museum-board ' + mode + ' ' + (board.themeVariant ?? 'ochre')"
+    [attr.aria-label]="board.title"
+  >
+    <header>
+      <span>{{ board.teamCredit.displayName }} presents</span>
+      <h2>{{ board.title }}</h2>
+      <p>{{ board.centralClaim }}</p>
+    </header>
+
+    <div class="object-grid">
+      @for (object of board.objects; track object.id; let index = $index) {
+        <section class="object-card">
+          <div class="object-portrait">
+            @if (object.imageAssetId) {
+              <img [src]="object.imageAssetId" [alt]="object.imageAlt ?? ''" />
+            } @else {
+              <span aria-hidden="true">{{ objectMark(index) }}</span>
+              <small aria-hidden="true">Object {{ index + 1 }}</small>
+            }
+          </div>
+          <div>
+            <h3>{{ object.title }}</h3>
+            @if (mode !== 'thumbnail') {
+              <p>{{ object.description }}</p>
+              <strong>Why it matters</strong>
+              <p>{{ object.evidenceConnection }}</p>
+            }
+          </div>
+        </section>
+      }
+    </div>
+
+    @if (mode === 'thumbnail' && board.immersiveGallery) {
+      <div class="immersive-badge"><span aria-hidden="true">360°</span> Includes a 3D gallery</div>
+    }
+    @if (mode === 'thumbnail' && board.videoPresentation) {
+      <div class="immersive-badge"><span aria-hidden="true">▶</span> Includes a curator video</div>
+    }
+
+    @if (mode !== 'thumbnail' && galleryEmbedUrl; as embedUrl) {
+      <section class="immersive-gallery" aria-labelledby="immersive-gallery-title">
+        <div class="gallery-heading">
+          <div>
+            <span>Final interactive exhibit</span>
+            <h3 id="immersive-gallery-title">{{ board.immersiveGallery?.title }}</h3>
+          </div>
+          <a [href]="galleryUrl" target="_blank" rel="noopener noreferrer">
+            Open full screen <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+        <div class="embed-frame">
+          <iframe
+            [src]="embedUrl"
+            [title]="board.immersiveGallery?.title ?? 'MetaSteps immersive gallery'"
+            loading="lazy"
+            allow="fullscreen; autoplay; accelerometer; gyroscope; xr-spatial-tracking"
+            sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-popups"
+            allowfullscreen
+          ></iframe>
+        </div>
+        <p class="embed-help">
+          Click inside the gallery to explore. Keyboard and motion controls are provided by
+          MetaSteps.
+        </p>
+      </section>
+    }
+
+    @if (mode !== 'thumbnail' && board.videoPresentation; as presentation) {
+      <section class="video-presentation" aria-labelledby="video-presentation-title">
+        <div class="gallery-heading">
+          <div>
+            <span>{{
+              presentation.prototype ? 'Prototype video station' : 'Student curator presentation'
+            }}</span>
+            <h3 id="video-presentation-title">{{ presentation.title }}</h3>
+          </div>
+          @if (presentationVideo?.normalizedUrl; as videoUrl) {
+            <a [href]="videoUrl" target="_blank" rel="noopener noreferrer">
+              Open video <span aria-hidden="true">↗</span>
+            </a>
+          }
+        </div>
+        @if (presentation.prototype) {
+          <button
+            type="button"
+            class="prototype-video"
+            [class.playing]="prototypePlaying()"
+            (click)="togglePrototypeVideo()"
+            [attr.aria-pressed]="prototypePlaying()"
+          >
+            <span class="prototype-presenter" aria-hidden="true">NC</span>
+            <span class="prototype-copy">
+              <strong>{{ presentation.presenterLabel ?? board.teamCredit.displayName }}</strong>
+              <small>
+                @if (prototypePlaying()) {
+                  Playing sample curator explanation…
+                } @else {
+                  Select play to preview the student presentation station
+                }
+              </small>
+              <i><b [style.width.%]="prototypePlaying() ? 42 : 0"></b></i>
+            </span>
+            <span class="prototype-play" aria-hidden="true">{{
+              prototypePlaying() ? 'Ⅱ' : '▶'
+            }}</span>
+          </button>
+          <p class="prototype-note">
+            Prototype: the finished version plays the student or group’s recorded artifact tour
+            here.
+          </p>
+        } @else if (presentationVideo; as video) {
+          <div class="video-frame">
+            @if (video.kind === 'embedded' && presentationEmbedUrl; as embedUrl) {
+              <iframe
+                [src]="embedUrl"
+                [title]="presentation.title"
+                loading="lazy"
+                allow="fullscreen; autoplay; encrypted-media; picture-in-picture"
+                sandbox="allow-scripts allow-same-origin allow-presentation"
+                allowfullscreen
+              ></iframe>
+            } @else if (video.kind === 'direct' && video.normalizedUrl) {
+              <video controls preload="metadata" [src]="video.normalizedUrl">
+                Your browser cannot play this presentation video.
+              </video>
+            }
+          </div>
+          <p class="embed-help">Watch the curator explanation before posting a question card.</p>
+        }
+      </section>
+    }
+
+    @if (mode !== 'thumbnail') {
+      <footer>
+        <div>
+          <strong>Sources</strong>
+          <ol>
+            @for (source of board.sources; track source.id) {
+              <li>
+                @if (source.url) {
+                  <a [href]="source.url" target="_blank" rel="noreferrer">{{ source.citation }}</a>
+                } @else {
+                  {{ source.citation }}
+                }
+              </li>
+            }
+          </ol>
+        </div>
+        <p>
+          Curated by <strong>{{ board.teamCredit.displayName }}</strong>
+          @if (board.teamCredit.memberDisplayNames?.length) {
+            <span>{{ board.teamCredit.memberDisplayNames.join(' · ') }}</span>
+          }
+        </p>
+      </footer>
+    }
+  </article>
+} @else {
+  <div class="render-error" role="alert">
+    This snapshot cannot be displayed by the museum-board renderer.
+  </div>
+}

@@ -1,0 +1,118 @@
+<header class="rail-standard">
+  <span class="faction-emblem" aria-hidden="true">{{ faction().emblem }}</span>
+  <div>
+    <small>{{
+      side() === 'left' ? 'Left side of the chamber' : 'Right side of the chamber'
+    }}</small>
+    <h2>{{ faction().railLabel ?? faction().name }}</h2>
+  </div>
+  @if (hasIncomingArgument()) {
+    <span class="incoming-seal" aria-label="New opposing argument">NEW</span>
+  }
+</header>
+
+<div class="rail-rule" aria-hidden="true"><i></i></div>
+
+<ol
+  class="message-stack"
+  [attr.aria-label]="(faction().railLabel ?? faction().name) + ' argument record'"
+>
+  @for (turn of filedTurns(); track turn.id) {
+    <li class="message-slip" [class.incoming]="isNewestIncoming(turn)">
+      <header>
+        <span>{{ romanNumeral(turn) }}</span>
+        <div>
+          <small>{{ turn.roundLabel }}</small
+          ><strong>{{ runtime.roleLabel(turn) }}</strong>
+        </div>
+        <b>{{ isNewestIncoming(turn) ? 'NEW' : 'FILED' }}</b>
+      </header>
+      <p class="speaker">{{ turn.speakerDisplayName }}</p>
+      <p class="faction-name">{{ faction().railLabel ?? faction().name }}</p>
+      <footer>
+        <time>{{ formattedDuration(turn) }}</time>
+        @if (isNewestIncoming(turn)) {
+          <button class="hear-now" type="button" (click)="openIncoming()">
+            <span aria-hidden="true">▶</span> Hear & mark
+          </button>
+        } @else {
+          <button type="button" (click)="toggleReplay(turn)">
+            <span aria-hidden="true">▶</span>
+            {{ expandedTurnId() === turn.id ? 'Close replay' : 'Replay' }}
+          </button>
+        }
+      </footer>
+      @if (expandedTurnId() === turn.id && turn.recording?.kind === 'video') {
+        <video
+          controls
+          preload="metadata"
+          [src]="turn.recording.downloadUrl"
+          aria-label="Filed student debate video"
+        ></video>
+      } @else if (expandedTurnId() === turn.id && turn.recording?.kind === 'audio') {
+        <audio
+          controls
+          preload="metadata"
+          [src]="turn.recording.downloadUrl"
+          aria-label="Filed student debate audio"
+        ></audio>
+      }
+    </li>
+  } @empty {
+    <li class="empty-slip">
+      <span>I</span>
+      <p>This side is preparing its opening address.</p>
+    </li>
+  }
+
+  @if (isViewerFaction() && currentFactionTurn(); as turn) {
+    <li
+      class="current-message"
+      [class.response-open]="runtime.chamberStage() === 'your-turn'"
+      [class.held]="runtime.chamberStage() !== 'your-turn'"
+    >
+      <header>
+        <span>{{ romanNumeral(turn) }}</span
+        ><b>{{ runtime.chamberStage() === 'your-turn' ? 'YOUR RESPONSE' : 'HELD' }}</b>
+      </header>
+      <small>{{ turn.roundLabel }}</small>
+      <h3>
+        {{
+          runtime.chamberStage() === 'your-turn'
+            ? 'Your faction has the floor'
+            : 'Next faction response'
+        }}
+      </h3>
+      <dl>
+        <div>
+          <dt>Assigned speaker</dt>
+          <dd>{{ runtime.config.viewer.studentDisplayName }}</dd>
+        </div>
+        <div>
+          <dt>Role</dt>
+          <dd>{{ runtime.roleLabel(turn) }}</dd>
+        </div>
+      </dl>
+      @if (runtime.chamberStage() === 'your-turn') {
+        <button type="button" (click)="openResponse()">Prepare response</button>
+      } @else if (runtime.chamberStage() === 'moderator') {
+        <p>The chair's question is waiting in the center of the chamber.</p>
+      } @else {
+        <p>Hear the newest opposing entry before this tablet can be opened.</p>
+      }
+    </li>
+  }
+</ol>
+
+@if (isViewerFaction()) {
+  <footer class="rail-tools">
+    <button type="button" (click)="runtime.openStation('evidence')">
+      <span aria-hidden="true">▱</span>
+      Evidence Scrolls
+      <small
+        >{{ runtime.config.evidence.length }} available ·
+        {{ runtime.state().selectedEvidenceIds.length }} pinned</small
+      >
+    </button>
+  </footer>
+}

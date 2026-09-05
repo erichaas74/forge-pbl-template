@@ -130,12 +130,48 @@
             <small>Select at least four existing evidence records.</small>
           </div>
           <nav class="evidence-filters" aria-label="Filter evidence for the final case">
-            <button type="button" [class.active]="evidenceFilter() === 'all'" (click)="evidenceFilter.set('all')">All</button>
-            <button type="button" [class.active]="evidenceFilter() === 'supports'" (click)="evidenceFilter.set('supports')">Supports</button>
-            <button type="button" [class.active]="evidenceFilter() === 'contradicts'" (click)="evidenceFilter.set('contradicts')">Challenges</button>
-            <button type="button" [class.active]="evidenceFilter() === 'uncertain'" (click)="evidenceFilter.set('uncertain')">Uncertain</button>
-            <button type="button" [class.active]="evidenceFilter() === 'important'" (click)="evidenceFilter.set('important')">Important</button>
-            <button type="button" [class.active]="evidenceFilter() === 'studentCreated'" (click)="evidenceFilter.set('studentCreated')">Created by me</button>
+            <button
+              type="button"
+              [class.active]="evidenceFilter() === 'all'"
+              (click)="evidenceFilter.set('all')"
+            >
+              All
+            </button>
+            <button
+              type="button"
+              [class.active]="evidenceFilter() === 'supports'"
+              (click)="evidenceFilter.set('supports')"
+            >
+              Supports
+            </button>
+            <button
+              type="button"
+              [class.active]="evidenceFilter() === 'contradicts'"
+              (click)="evidenceFilter.set('contradicts')"
+            >
+              Challenges
+            </button>
+            <button
+              type="button"
+              [class.active]="evidenceFilter() === 'uncertain'"
+              (click)="evidenceFilter.set('uncertain')"
+            >
+              Uncertain
+            </button>
+            <button
+              type="button"
+              [class.active]="evidenceFilter() === 'important'"
+              (click)="evidenceFilter.set('important')"
+            >
+              Important
+            </button>
+            <button
+              type="button"
+              [class.active]="evidenceFilter() === 'studentCreated'"
+              (click)="evidenceFilter.set('studentCreated')"
+            >
+              Created by me
+            </button>
           </nav>
           <div class="final-evidence-picker">
             @for (item of filteredEvidence(); track item.id) {
@@ -150,7 +186,12 @@
                   ><strong>{{ item.title }}</strong
                   ><small>{{ item.classification ?? item.type }}</small></span
                 >
-                <button type="button" (click)="$event.stopPropagation(); previewEvidenceId.set(item.id)">Preview</button>
+                <button
+                  type="button"
+                  (click)="$event.stopPropagation(); previewEvidenceId.set(item.id)"
+                >
+                  Preview
+                </button>
               </label>
             } @empty {
               <p>No collected evidence matches this filter.</p>
@@ -264,7 +305,9 @@
 
         <footer>
           @if (!connectionAvailable()) {
-            <p role="status">Connection required to submit. Your draft remains saved on this device.</p>
+            <p role="status">
+              Connection required to submit. Your draft remains saved on this device.
+            </p>
           }
           <button type="button" (click)="saveDraft()">Save draft</button>
           <button

@@ -1,9 +1,9 @@
 <section class="report-page">
   <header class="report-heading page-card">
     <div>
-      <span class="eyebrow">Final product</span>
-      <h1>Strategy Report</h1>
-      <p>Build a claim with your own decisions, calculations, evidence, and reasoning.</p>
+      <span class="eyebrow">Final reflection</span>
+      <h1>My Season Reflection</h1>
+      <p>Answer four short questions using your trip, trade, and math records.</p>
     </div>
     <div class="save-indicator" aria-live="polite">
       <strong>{{ autosaveLabel() }}</strong
@@ -18,18 +18,21 @@
     <section class="submitted page-card" aria-live="polite">
       <span aria-hidden="true">✓</span>
       <div>
-        <h2>Report submitted</h2>
-        <p>
-          This attempt is read-only. Your ledger, evidence, and final responses remain available for
-          review.
-        </p>
+        <h2>Reflection finished</h2>
+        <p>Your answers and game records are saved for your teacher to review.</p>
       </div>
+      <button class="primary" type="button" (click)="runtime.navigate('showcase')">
+        Open final showcase →
+      </button>
     </section>
   }
 
   <div class="report-layout">
     <nav class="sections page-card" aria-label="Report sections">
-      <header><span class="eyebrow">Report sections</span><strong>Complete all ten</strong></header>
+      <header>
+        <span class="eyebrow">Four short questions</span
+        ><strong>Complete all {{ runtime.config.reportSections.length }}</strong>
+      </header>
       @for (section of runtime.config.reportSections; track section.id) {
         <button
           type="button"
@@ -71,7 +74,7 @@
             [disabled]="runtime.state().status === 'submitted'"
             [ngModel]="response()"
             (ngModelChange)="updateResponse($event)"
-            placeholder="State your claim, cite specific evidence, and explain what the numbers mean."
+            [placeholder]="responseHint(definition)"
           ></textarea
           ><small>{{ response().trim().length }} characters · at least 12 needed</small></label
         >
@@ -83,18 +86,18 @@
               [disabled]="runtime.state().status === 'submitted'"
               [ngModel]="calculation()"
               (ngModelChange)="updateCalculation($event)"
-              placeholder="Example: sale revenue − cost basis = profit"
+              placeholder="Example: money from sale − what the goods cost = profit"
             ></textarea
-            ><small>Label each number and include the unit.</small></label
+            ><small>Write the operation, label the money, and include the answer.</small></label
           >
         }
 
         <section class="attached-evidence">
           <header>
             <strong
-              >Attached evidence ({{ evidenceIds().length }} of
+              >Records added ({{ evidenceIds().length }} of
               {{ definition.evidenceMinimum }} required)</strong
-            ><span>Evidence proves the claim; it does not replace your explanation.</span>
+            ><span>The game suggests a matching record. You can choose a different one.</span>
           </header>
           <div>
             @for (evidenceId of evidenceIds(); track evidenceId) {
@@ -107,7 +110,7 @@
                 ><b aria-label="Remove evidence">×</b>
               </button>
             } @empty {
-              <p>No evidence attached to this section yet.</p>
+              <p>No game record added to this answer yet.</p>
             }
           </div>
         </section>
@@ -117,19 +120,29 @@
     <aside class="evidence-library page-card">
       <header>
         <div>
-          <span class="eyebrow">Pinned during the simulation</span>
-          <h2>Evidence Library</h2>
+          <span class="eyebrow">Saved during the game</span>
+          <h2>Game Records</h2>
         </div>
-        <span>{{ runtime.state().evidence.length }} items</span>
+        <span>{{ runtime.state().evidence.length }} records</span>
       </header>
       <div class="evidence-filters" aria-label="Filter evidence">
-        @for (filter of ['all', 'ledger', 'route', 'event', 'result', 'notebook']; track filter) {
+        @for (
+          filter of [
+            { id: 'all', label: 'All' },
+            { id: 'ledger', label: 'Trade receipts' },
+            { id: 'route', label: 'Routes' },
+            { id: 'event', label: 'Trail choices' },
+            { id: 'result', label: 'Score' },
+            { id: 'notebook', label: 'Shop clues' },
+          ];
+          track filter.id
+        ) {
           <button
             type="button"
-            [class.active]="evidenceFilter() === filter"
-            (click)="evidenceFilter.set($any(filter))"
+            [class.active]="evidenceFilter() === filter.id"
+            (click)="evidenceFilter.set($any(filter.id))"
           >
-            {{ filter }}
+            {{ filter.label }}
           </button>
         }
       </div>
@@ -149,22 +162,22 @@
           </article>
         } @empty {
           <section class="empty-evidence">
-            <strong>No evidence matches this filter.</strong>
-            <p>Return to the ledger, route map, cargo page, or results to pin records.</p>
+            <strong>No game records match this filter.</strong>
+            <p>Open your money record, route, wagon, or score to save a useful record.</p>
             <button class="secondary" type="button" (click)="runtime.navigate('ledger')">
-              Open ledger
+              Open money record
             </button>
           </section>
         }
       </div>
       <section class="rubric">
-        <h3>Submission readiness</h3>
+        <h3>Ready to finish?</h3>
         <ul>
           <li [class.complete]="runtime.reportMissing().length === 0">
-            Every section answers its prompt
+            All four questions are answered
           </li>
           <li [class.complete]="runtime.state().evidence.length > 0">
-            Claims use simulation evidence
+            Matching game records are included
           </li>
           <li
             [class.complete]="
@@ -173,7 +186,7 @@
           >
             Season is complete
           </li>
-          <li [class.complete]="runtime.reconciled()">Ledger reconciles</li>
+          <li [class.complete]="runtime.reconciled()">Money record is correct</li>
         </ul>
         @if (runtime.reportMissing().length > 0) {
           <details>
@@ -195,12 +208,12 @@
           "
           (click)="confirmSubmit.set(true)"
         >
-          Submit final report
+          Finish reflection
         </button>
         @if (
           runtime.state().status !== 'season_complete' && runtime.state().status !== 'submitted'
         ) {
-          <p>Finish the trading season before submitting. Drafting is available now.</p>
+          <p>Finish the trading season before completing this reflection.</p>
         }
       </section>
     </aside>
@@ -210,15 +223,12 @@
     <div class="review-backdrop">
       <section role="alertdialog" aria-modal="true" aria-labelledby="submit-title">
         <span class="eyebrow">Official submission</span>
-        <h2 id="submit-title">Submit this report?</h2>
-        <p>
-          Submitting locks the official attempt for student editing. Review all ten sections before
-          continuing.
-        </p>
+        <h2 id="submit-title">Finish this reflection?</h2>
+        <p>Finishing locks this attempt for editing. Review all four answers before continuing.</p>
         <div>
           <button class="secondary" type="button" (click)="confirmSubmit.set(false)">
             Keep editing</button
-          ><button class="primary" type="button" (click)="submit()">Submit report</button>
+          ><button class="primary" type="button" (click)="submit()">Finish reflection</button>
         </div>
       </section>
     </div>

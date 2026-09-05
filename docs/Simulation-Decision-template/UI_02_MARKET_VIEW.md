@@ -1,12 +1,15 @@
 # UI 02 — Market View
 
 ## Page Purpose
+
 The Market View is the primary buy/sell workspace. Students compare changing local prices, calculate unit cost and expected profit, and decide what inventory to buy or sell while staying inside cash and cargo constraints.
 
 ## Curriculum / Product Alignment
+
 This page belongs to the **Frontier Trading Simulation** project type. The curriculum foundation is a trading-company challenge built around limited money, cargo capacity, changing prices, budgeting, unit price, profit, and defending trade decisions. The social-studies extension adds route choice, maps, terrain, supplies, risk events, consequences, and multiple perspectives.
 
 **Source-supported learning priorities**
+
 - Decimal and money calculations.
 - Budgeting and unit-price comparisons.
 - Profit / loss reasoning.
@@ -16,6 +19,7 @@ This page belongs to the **Frontier Trading Simulation** project type. The curri
 - Simulation evidence that can be saved into the project notebook and final submission.
 
 **Design decisions introduced by this UI spec**
+
 - A turn/stop-based trading season.
 - Student-facing market, route, cargo, event, ledger, and season-results views.
 - Persistent simulation state that carries across all page views.
@@ -23,8 +27,11 @@ This page belongs to the **Frontier Trading Simulation** project type. The curri
 - No single “correct” route; students are expected to justify tradeoffs with evidence.
 
 ## Layout
+
 ### Main Desktop Layout
+
 **Left: Market Board (55–60%)**
+
 - Current trading-post header with location name and short economic context.
 - Goods table/cards with:
   - good name + icon,
@@ -37,6 +44,7 @@ This page belongs to the **Frontier Trading Simulation** project type. The curri
 - Sort/filter by price, category, cargo efficiency, or owned/not owned.
 
 **Right: Trade Builder (40–45%)**
+
 - Selected good.
 - Current inventory of that good.
 - Quantity stepper / direct numeric input.
@@ -48,6 +56,7 @@ This page belongs to the **Frontier Trading Simulation** project type. The curri
 - `Add to Trade Draft`.
 
 **Bottom / Sticky Review Drawer**
+
 - Multi-item draft transaction.
 - Total cost or revenue.
 - Cash after transaction.
@@ -56,7 +65,9 @@ This page belongs to the **Frontier Trading Simulation** project type. The curri
 - `Confirm Trade`.
 
 ### Instructional Micro-Prompts
+
 Use short expandable prompts rather than worksheet clutter:
+
 - “Which price gives you more value per cargo unit?”
 - “Can you afford this and still keep enough cash for later?”
 - “What evidence makes this trade worth the risk?”
@@ -64,7 +75,9 @@ Use short expandable prompts rather than worksheet clutter:
 These can be configured as required evidence checkpoints.
 
 ## Student Actions
+
 Students can:
+
 - Inspect local prices and quantities.
 - Select a good and calculate the cost/revenue for different quantities before committing.
 - Buy and sell multiple goods in one transaction draft.
@@ -77,7 +90,9 @@ Students can:
 - Cancel a draft without affecting saved inventory or cash.
 
 ## Component States
+
 ### Market States
+
 - `open` — normal trade.
 - `limited_stock` — selected good has a maximum available quantity.
 - `sold_out` — buy control disabled, sell may remain available.
@@ -88,7 +103,9 @@ Students can:
 - `teacher_paused` — read-only with banner.
 
 ### Trade Draft Validation
+
 Show specific inline states:
+
 - insufficient cash,
 - cargo capacity exceeded,
 - quantity above stock,
@@ -98,16 +115,19 @@ Show specific inline states:
 - trade allowed.
 
 ### Confirmation
+
 Before commit show:
 `You spend $___, use ___ cargo spaces, and will have $___ remaining.`
 
 After commit:
+
 - animate cash and cargo totals changing,
 - append ledger entry,
 - show a compact receipt,
 - offer `Save this trade as evidence`.
 
 ## Mobile Behavior
+
 - Goods become stacked cards with buy/sell prices in large numerals.
 - Tapping a good opens Trade Builder as full-height bottom sheet.
 - Draft basket is a sticky button: `Trade Draft (3) • $42.75`.
@@ -116,6 +136,7 @@ After commit:
 - No dense spreadsheet table on phone.
 
 ## Graphics / Assets Needed
+
 - 10–20 reusable trade-good illustrations or clean icons.
 - Trading post / market header art per location.
 - Price up/down/steady indicator icons with labels.
@@ -127,7 +148,9 @@ After commit:
 All goods should also have text labels; never require image recognition.
 
 ## LMS / Data Requirements
+
 ### Market Configuration
+
 ```ts
 Market {
   marketId
@@ -151,7 +174,9 @@ MarketGood {
 ```
 
 ### Transaction Log
+
 Each confirmed trade records:
+
 ```ts
 Transaction {
   transactionId
@@ -171,6 +196,7 @@ Transaction {
 ```
 
 ### LMS Evidence
+
 - Allow transaction to be attached to Notebook.
 - Auto-calculate completion for configured tasks such as “complete first trade.”
 - Record math checkpoints separately from trade success.
@@ -179,6 +205,7 @@ Transaction {
 - Market prices used in an official challenge must come from the server/configured simulation seed so every student/team uses the intended rule set.
 
 ## Accessibility / Student Support
+
 - Prices displayed as currency with consistent decimal places.
 - Quantity controls have keyboard buttons plus direct numeric entry.
 - Trade validation messages are written in plain language.
@@ -187,8 +214,21 @@ Transaction {
 - Prevent rapid double-submit on Confirm Trade.
 
 ## Acceptance Criteria
+
 - Student can model a trade before committing it.
 - No trade can create negative cash, negative inventory, or cargo above capacity.
 - Confirmed transactions immediately update Shell, Cargo View, and Ledger.
 - Market changes never rewrite earlier market snapshots or transaction history.
 - Students can use a completed trade as evidence in the final strategy report.
+
+## Implemented planning profile — September 2026
+
+For the current configured simulation, use goods cards on desktop and mobile to avoid a wide seven-column table. The merchant scene and goods occupy the main column and the shopping plan occupies the companion column; phones stack these surfaces and selecting a good brings the editor into view. All discovered goods can be compared without exposing unexplored merchant categories.
+
+The existing `trend` configuration field remains compatible, but the UI presents local demand notes because multiplier snapshots do not establish changes over time. Rumor text includes its merchant source and trust cue. A price-history view requires actual recorded history.
+
+Uncommitted drafts and selections survive simulation-workspace changes in route-scoped planning memory. Additions accumulate, quantity edits replace, and all previews validate the candidate complete draft. Planned crates open purchase editing; owned crates open sale planning. Official transactions remain review-before-commit and use the existing ledger/runtime boundary. See `../frontier-trading/ROUTE_MARKET_FIXES.md` for verification.
+
+## Implemented choice progression profile — September 2026
+
+When a project configures `choiceProgression`, Market shows the current outfitter rank, the number of open supplies, and a live checklist for the next rank. Goods outside the current stage do not enter search, merchant selection, drag actions, or trade previews. Unlock progress derives from recorded stall discoveries and committed purchase ledger lines, and the domain rejects a locked good even when supplied through a stale draft or direct command. Projects without the optional configuration continue to expose every configured good.

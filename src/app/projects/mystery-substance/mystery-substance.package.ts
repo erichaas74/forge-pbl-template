@@ -18,6 +18,7 @@ const phaseIds = [
   'phase-reactions',
   'phase-conservation',
   'phase-restore',
+  'phase-emergency',
   'phase-showcase',
 ] as const;
 
@@ -306,6 +307,27 @@ const capabilityEvidence = [
     unlockRuleIds: ['rule-unlock-shelf-case'],
   },
   {
+    id: 'evidence-emergency-response',
+    schemaVersion: '1.0',
+    title: 'Bay 3 incident record',
+    evidenceType: 'performanceArtifact',
+    content: {
+      text: 'The call filed with the fire marshal, the tests bought to support it, the confidence held, and the minutes it cost.',
+    },
+    availability: {
+      initialState: 'locked',
+      ruleIds: ['rule-unlock-emergency-response'],
+    },
+    requirement: 'required',
+    studentCapabilities: {
+      annotate: true,
+      classify: false,
+      connect: true,
+      cite: true,
+    },
+    unlockRuleIds: ['rule-unlock-emergency-response'],
+  },
+  {
     id: 'evidence-final-case-file',
     schemaVersion: '1.0',
     title: 'Case-file showcase versions',
@@ -333,6 +355,7 @@ const capabilityRules = [
   ['reaction-trials', 'activity-reaction-comparison', 'evidence-reaction-trials'],
   ['conservation-trials', 'activity-conservation-model', 'evidence-conservation-trials'],
   ['shelf-case', 'activity-shelf-restoration', 'evidence-shelf-case'],
+  ['emergency-response', 'activity-emergency-response', 'evidence-emergency-response'],
   ['final-case-file', 'activity-case-showcase', 'evidence-final-case-file'],
 ].map(([suffix, activityId, evidenceId]) => ({
   id: `rule-unlock-${suffix}`,
@@ -438,8 +461,15 @@ export const mysterySubstanceProjectPackage: Readonly<Record<string, unknown>> =
       {
         id: phaseIds[6],
         schemaVersion: '1.0',
-        title: 'Defend the case',
+        title: 'Answer the Bay 3 call',
         order: 7,
+        activityIds: ['activity-emergency-response'],
+      },
+      {
+        id: phaseIds[7],
+        schemaVersion: '1.0',
+        title: 'Defend the case',
+        order: 8,
         activityIds: ['activity-case-showcase'],
       },
     ],
@@ -585,6 +615,19 @@ export const mysterySubstanceProjectPackage: Readonly<Record<string, unknown>> =
         },
       },
       {
+        id: 'activity-emergency-response',
+        schemaVersion: '1.0',
+        title: 'Bay 3 Emergency Response',
+        type: 'timedIdentification',
+        required: true,
+        extensions: {
+          investigation: {
+            evidenceProducedIds: ['evidence-emergency-response'],
+            ruleIds: ['rule-unlock-emergency-response'],
+          },
+        },
+      },
+      {
         id: 'activity-case-showcase',
         schemaVersion: '1.0',
         title: 'Case-File Showcase',
@@ -720,6 +763,15 @@ export const mysteryInvestigationPhases = [
   {
     id: phaseIds[6],
     number: '07',
+    shortTitle: 'Bay 3',
+    title: 'Answer the Bay 3 call',
+    instruction:
+      'An unidentified white powder has to be identified before a crew can enter an acid spill. Spend the clock on the tests that can actually settle it.',
+    activityIds: ['activity-emergency-response'],
+  },
+  {
+    id: phaseIds[7],
+    number: '08',
     shortTitle: 'Final',
     title: 'Defend the case',
     instruction: 'Build a final claim from your evidence, analysis, and working theory.',
@@ -813,6 +865,17 @@ export const mysteryInvestigationActivities = [
     helpsWith: 'Testing whether the current explanation accounts for the whole shelf',
     phaseId: phaseIds[5],
     evidenceId: 'evidence-shelf-case',
+    required: true,
+    displayMode: 'expanded',
+  },
+  {
+    id: 'activity-emergency-response',
+    title: 'Bay 3 Emergency Response',
+    typeLabel: 'Timed identification',
+    purpose: 'Identify an unlabeled shipment against a clock before a crew enters an acid spill.',
+    helpsWith: 'Choosing the test that can actually settle a question when time is scarce',
+    phaseId: phaseIds[6],
+    evidenceId: 'evidence-emergency-response',
     required: true,
     displayMode: 'expanded',
   },

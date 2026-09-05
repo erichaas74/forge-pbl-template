@@ -3,10 +3,11 @@ import { FormsModule } from '@angular/forms';
 
 import { SimulationDecisionRuntimeService } from '../../runtime/simulation-decision-runtime.service';
 import type { EventChoiceDefinition } from '../../domain/simulation-decision.models';
+import { IllustratedWagonComponent } from '../art/illustrated-wagon.component';
 
 @Component({
   selector: 'app-simulation-event-decision',
-  imports: [FormsModule],
+  imports: [FormsModule, IllustratedWagonComponent],
   templateUrl: './event-decision.component.html',
   styleUrl: './event-decision.component.scss',
 })
@@ -20,7 +21,9 @@ export class SimulationEventDecisionComponent implements OnDestroy {
   readonly journeyPaused = signal(false);
   readonly speed = signal<1 | 2>(1);
   readonly resolvingChoice = signal<EventChoiceDefinition | undefined>(undefined);
+  readonly journeyMoving = signal(false);
   private resolutionTimer?: ReturnType<typeof setTimeout>;
+  private journeyTimer?: ReturnType<typeof setTimeout>;
 
   readonly event = computed(() =>
     this.runtime.config.events.find((event) => event.id === this.runtime.state().pendingEventId),
@@ -40,9 +43,37 @@ export class SimulationEventDecisionComponent implements OnDestroy {
     const challenge = this.event()?.mathChallenge;
     return challenge === undefined || this.mathAnswer() === challenge.answer;
   });
+  readonly eventScene = computed(() => {
+    const title = this.event()?.title.toLowerCase() ?? '';
+    if (/river|water|crossing/.test(title)) return 'river';
+    if (/wheel|repair|break/.test(title)) return 'breakdown';
+    if (/food|supply|ration|reserve/.test(title)) return 'camp';
+    if (/rumor|market|shared|trader/.test(title)) return 'opportunity';
+    if (/hail|storm|weather/.test(title)) return 'storm';
+    return 'trail';
+  });
+  readonly journeyEnvironment = computed(() => {
+    const terrain = this.route()?.terrain ?? [];
+    if (terrain.includes('mountain') || terrain.includes('rocky')) return 'mountain';
+    if (terrain.includes('river')) return 'river';
+    if (terrain.includes('forest')) return 'forest';
+    return 'plains';
+  });
+  readonly wagonCargo = computed(() =>
+    this.runtime.state().inventory.map((item) => {
+      const good = this.runtime.config.goods.find((definition) => definition.id === item.goodId);
+      return {
+        goodId: item.goodId,
+        name: good?.name ?? item.goodId,
+        quantity: item.quantity,
+        packageKind: good?.cargoPackage,
+      };
+    }),
+  );
 
   ngOnDestroy(): void {
     clearTimeout(this.resolutionTimer);
+    clearTimeout(this.journeyTimer);
   }
 
   choiceAffordable(cashChangeCents: number): boolean {
@@ -72,6 +103,12 @@ export class SimulationEventDecisionComponent implements OnDestroy {
       this.runtime.errors.set(['Complete the math check before reviewing this choice.']);
       return;
     }
+    if (this.event()?.mathChallenge !== undefined && !this.mathCorrect()) {
+      this.runtime.errors.set([
+        'Try the math check again. A correct answer unlocks the trail choice.',
+      ]);
+      return;
+    }
     if (this.reasoning().trim().length < 12) {
       this.runtime.errors.set(['Explain why this choice fits your strategy before reviewing it.']);
       return;
@@ -97,6 +134,7 @@ export class SimulationEventDecisionComponent implements OnDestroy {
         );
         this.resolvingChoice.set(undefined);
         if (changed) {
+          this.pinLastDecision();
           this.reviewOpen.set(false);
           this.selectedChoiceId.set('');
           this.reasoning.set('');
@@ -112,12 +150,23 @@ export class SimulationEventDecisionComponent implements OnDestroy {
     if (this.journeyPaused()) {
       return;
     }
+    let advanced = false;
     for (let count = 0; count < this.speed(); count += 1) {
       if (!this.runtime.advanceTravel() || this.runtime.state().pendingEventId !== undefined) {
         break;
       }
+      advanced = true;
       if (this.runtime.state().activeTravel === undefined) {
         break;
+      }
+    }
+    if (advanced) {
+      const reducedMotion =
+        typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!reducedMotion) {
+        this.journeyMoving.set(true);
+        clearTimeout(this.journeyTimer);
+        this.journeyTimer = setTimeout(() => this.journeyMoving.set(false), 900);
       }
     }
   }

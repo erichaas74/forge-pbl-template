@@ -17,145 +17,152 @@ select {
 .panel-shell {
   padding: 1rem;
 }
-.panel-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
 h2,
 h3,
 p {
   margin: 0;
 }
-h2 {
-  margin-top: 0.12rem;
-  color: #f4fbff;
-  font-size: 1.25rem;
-}
-.eyebrow {
-  color: #7fd9d7;
-  font-size: 0.64rem;
+
+/* ---- The drawer ------------------------------------------------------------
+ * Records sit as spines until one is opened. Fourteen competing cards became
+ * fourteen scannable titles and a single thing at eye level.
+ */
+
+.panel-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--case-accent, #8fb0c0);
+  font-size: 0.66rem;
   font-weight: 800;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
-.count {
-  border: 1px solid #31566d;
-  border-radius: 999px;
-  padding: 0.3rem 0.55rem;
-  color: #a9c5d3;
-  font-size: 0.68rem;
-}
-.panel-guidance {
-  margin-top: 0.45rem;
-  color: #9fb8c8;
-  font-size: 0.78rem;
-  line-height: 1.4;
+.panel-tab span {
+  color: var(--case-muted, #6d8b9a);
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
-.evidence-grid {
+.drawer {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
-  gap: 0.65rem;
-  margin-top: 0.9rem;
+  gap: 1px;
+  margin: 0.7rem 0 0;
+  padding: 0;
+  list-style: none;
 }
-.evidence-card {
-  overflow: hidden;
-  border: 1px solid #284a5f;
-  border-radius: 0.7rem;
-  background: rgba(8, 27, 40, 0.9);
-  transition:
-    border-color 150ms ease,
-    transform 150ms ease;
+.drawer {
+  gap: 0.22rem;
 }
-.evidence-card:hover,
-.evidence-card:focus-within {
-  border-color: #5daeb1;
-  transform: translateY(-1px);
-}
-.evidence-card.new {
-  border-inline-start: 3px solid #e3b959;
-}
-.evidence-card.important {
-  box-shadow: inset 0 0 0 1px rgba(239, 202, 93, 0.3);
-}
-.evidence-card.locked {
-  opacity: 0.75;
-}
-.card-open {
+/* Each record is a filed card seen edge-on: paper stock, a coloured tab, and
+ * it lifts toward you when you reach for it. */
+.spine {
+  position: relative;
   display: grid;
   width: 100%;
-  grid-template-columns: 3.2rem minmax(0, 1fr);
-  gap: 0.65rem;
+  align-items: center;
+  gap: 0.55rem;
+  grid-template-columns: 1.55rem minmax(0, 1fr) auto;
   border: 0;
-  padding: 0.65rem;
+  border-inline-start: 3px solid transparent;
+  border-radius: 0.18rem 0.3rem 0.3rem 0.18rem;
+  padding: 0.44rem 0.55rem;
   color: inherit;
-  text-align: left;
-  background: transparent;
+  background: linear-gradient(
+    100deg,
+    rgba(239, 228, 210, 0.14),
+    rgba(239, 228, 210, 0.05) 62%,
+    rgba(239, 228, 210, 0.02)
+  );
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
   cursor: pointer;
+  text-align: left;
+  transition:
+    transform 140ms ease,
+    background 140ms ease;
 }
-.card-open img,
+.spine:hover,
+.spine:focus-visible {
+  background: linear-gradient(100deg, rgba(245, 233, 214, 0.24), rgba(239, 228, 210, 0.08));
+  transform: translateX(3px);
+}
+/* A record nobody has opened still has its evidence tag stapled on. */
+.spine.new {
+  border-inline-start-color: var(--case-accent, #e3b959);
+}
+.spine.new::after {
+  position: absolute;
+  top: -0.18rem;
+  right: 0.3rem;
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #ffd9a0, #c8642c 62%, #7d3413);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  content: '';
+}
+.spine.locked {
+  opacity: 0.55;
+}
+.spine[data-zone='supports'] {
+  border-inline-start-color: #6fd0a4;
+}
+.spine[data-zone='uncertain'] {
+  border-inline-start-color: #e3b959;
+}
+.spine[data-zone='contradicts'] {
+  border-inline-start-color: #e08c7a;
+}
+.spine img,
 .type-icon {
-  width: 3.2rem;
-  height: 3.2rem;
-  border-radius: 0.45rem;
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 0.2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   object-fit: cover;
 }
 .type-icon {
   display: grid;
   place-items: center;
-  color: #8ddedb;
-  background: #123646;
-  font-size: 1.2rem;
+  color: #23150d;
+  background: var(--case-paper, #123646);
+  font-size: 0.78rem;
 }
-.card-copy {
-  display: grid;
-  align-content: start;
-  gap: 0.18rem;
-  min-width: 0;
-}
-.card-copy small {
-  color: #79c9c8;
-  font-size: 0.58rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-.card-copy strong {
+.spine-title {
   overflow: hidden;
-  color: #eef7fb;
-  font-size: 0.79rem;
+  color: var(--case-ink, #eef7fb);
+  font-size: 0.78rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.card-copy > span {
-  display: -webkit-box;
-  overflow: hidden;
-  color: #92aebb;
-  font-size: 0.66rem;
-  line-height: 1.35;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+.mark {
+  color: #efca5d;
+  font-size: 0.68rem;
 }
-.card-open em {
-  grid-column: 1 / -1;
-  color: #acc4cf;
-  font-size: 0.62rem;
-  font-style: normal;
+.spine-state {
+  color: var(--case-muted, #7c98a6);
+  font-size: 0.6rem;
+  white-space: nowrap;
+}
+.drawer-empty {
+  padding: 1.6rem 0.5rem;
+  text-align: center;
+}
+.drawer-empty p:first-child {
+  color: var(--case-ink, #cfe4ec);
+  font-size: 0.86rem;
   font-weight: 700;
 }
-.evidence-card > label {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: 0.45rem;
-  border-top: 1px solid rgba(100, 149, 173, 0.18);
-  padding: 0.45rem 0.65rem;
-  color: #8da9b7;
-  font-size: 0.61rem;
+.drawer-empty p + p {
+  margin-top: 0.3rem;
+  color: var(--case-muted, #86a3b2);
+  font-size: 0.72rem;
 }
-select,
+.add-evidence {
+  color: var(--case-accent, #9fe5e1);
+  font-weight: 750;
+}
+
 input,
 textarea {
   min-width: 0;
@@ -167,22 +174,10 @@ textarea {
 }
 
 .student-evidence {
-  margin-top: 0.8rem;
+  margin-top: 0.4rem;
   border: 1px dashed #385d70;
-  border-radius: 0.7rem;
-  padding: 0.75rem;
-}
-.add-evidence {
-  width: 100%;
-  border: 0;
-  color: #9fe5e1;
-  background: transparent;
-  cursor: pointer;
-  font-weight: 750;
-}
-.student-evidence h3 {
-  color: #edf7fb;
-  font-size: 0.88rem;
+  border-radius: 0.6rem;
+  padding: 0.7rem;
 }
 .student-evidence label {
   display: grid;
@@ -216,7 +211,6 @@ textarea {
 }
 
 button:focus-visible,
-select:focus-visible,
 input:focus-visible,
 textarea:focus-visible {
   outline: 2px solid #8ae7e1;
@@ -224,7 +218,11 @@ textarea:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .evidence-card {
+  .spine {
     transition: none;
+  }
+  .spine:hover,
+  .spine:focus-visible {
+    transform: none;
   }
 }

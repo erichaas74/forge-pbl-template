@@ -1,0 +1,328 @@
+<section class="lab-canvas">
+  <div class="lab-scene" role="img" aria-label="Physical properties bench"></div>
+  <div class="lab-shade" aria-hidden="true"></div>
+
+  <div class="lab-grid">
+    <!-- ---- Instruments and specimens -------------------------------------- -->
+    <aside class="rack" aria-labelledby="rack-title">
+      <span class="kicker">Instruments</span>
+      <h2 id="rack-title">Choose a test</h2>
+
+      <ul class="instrument-list">
+        @for (test of tests; track test.id) {
+          <li>
+            <button
+              type="button"
+              [class.active]="testId() === test.id"
+              [disabled]="running()"
+              [attr.aria-pressed]="testId() === test.id"
+              (click)="selectTest(test.id)"
+            >
+              <span class="instrument-icon" [attr.data-test]="test.id" aria-hidden="true"></span>
+              <span class="instrument-copy">
+                <strong>{{ test.title }}</strong>
+                <small>{{ test.instrument }}</small>
+              </span>
+              <span class="coverage" [attr.aria-label]="coverage(test.id) + ' of 4 vials tested'">
+                {{ coverage(test.id) }}/4
+              </span>
+            </button>
+          </li>
+        }
+      </ul>
+
+      <span class="kicker">Specimens</span>
+      <ul class="vial-row">
+        @for (vial of vials; track vial.vialId) {
+          <li>
+            <button
+              type="button"
+              [class.active]="vialId() === vial.vialId"
+              [style.--vial-color]="vial.color"
+              [disabled]="running()"
+              [attr.aria-pressed]="vialId() === vial.vialId"
+              [attr.aria-label]="
+                'Vial ' + vial.code + (hasRun(vial.vialId, testId()) ? ', already tested' : '')
+              "
+              (click)="selectVial(vial.vialId)"
+            >
+              <img [src]="vial.image" alt="" />
+              <strong>{{ vial.code }}</strong>
+              @if (hasRun(vial.vialId, testId())) {
+                <span class="done" aria-hidden="true">✓</span>
+              }
+            </button>
+          </li>
+        }
+      </ul>
+
+      @if (trials().length > 0) {
+        <span class="kicker">Trial log</span>
+        <ol class="trial-log">
+          @for (trial of trials(); track trial.id) {
+            <li>
+              <span class="trial-index">{{ trial.vialCode }}</span>
+              <span>
+                <strong>{{ trial.testTitle }}</strong>
+                <small>{{ trial.headline }}</small>
+              </span>
+            </li>
+          }
+        </ol>
+      }
+    </aside>
+
+    <!-- ---- The instrument stage ------------------------------------------- -->
+    <div class="stage">
+      <header class="stage-head">
+        <div>
+          <span class="kicker">{{ activeTest().instrument }} · equal conditions</span>
+          <h1>{{ activeTest().title }} · Vial {{ activeVial().code }}</h1>
+        </div>
+        @if (testId() === 'solubility' && phase() !== 'idle') {
+          <div class="stage-clock">
+            <small>Trial clock</small>
+            <strong>{{ elapsedSeconds() }}<span>s</span></strong>
+          </div>
+        }
+      </header>
+
+      <div class="instrument-well">
+        @switch (testId()) {
+          <!-- ---- Optical scan: a lens with a swinging key light ---- -->
+          @case ('appearance') {
+            <div class="magnifier" [style.--light-angle.deg]="lightAngle()">
+              @if (art.magnifier.src; as plate) {
+                <img class="part-plate" [src]="plate" alt="" />
+              }
+              <div class="lens" [style.--zoom]="zoom()">
+                <div class="lens-field" aria-hidden="true">
+                  @for (grain of field(); track grain.id) {
+                    <i
+                      [class.sparkle]="grain.sparkle"
+                      [style.background]="activeVial().color"
+                      [style.top.%]="grain.top"
+                      [style.left.%]="grain.left"
+                      [style.--grain-size.px]="grain.size * zoom() * 0.4"
+                      [style.--spin]="grain.spinDeg + 'deg'"
+                    ></i>
+                  }
+                </div>
+                <span class="lens-glare" aria-hidden="true"></span>
+                <span class="scale-bar" aria-hidden="true"><i></i>1 mm</span>
+              </div>
+              @if (!art.magnifier.src) {
+                <span class="lens-ring" aria-hidden="true"></span>
+              }
+            </div>
+
+            <div class="optics-controls">
+              <label>
+                Light angle
+                <input
+                  type="range"
+                  min="0"
+                  max="180"
+                  step="5"
+                  [value]="lightAngle()"
+                  (input)="setLightAngle(numberValue($event))"
+                />
+              </label>
+              <label>
+                Magnification
+                <input
+                  type="range"
+                  min="3"
+                  max="12"
+                  step="1"
+                  [value]="zoom()"
+                  (input)="setZoom(numberValue($event))"
+                />
+                <strong>{{ zoom() }}×</strong>
+              </label>
+            </div>
+          }
+
+          <!-- ---- Water trial: powder in, cloudiness clears or holds ---- -->
+          @case ('solubility') {
+            <div class="water-rig">
+              <div class="cup" [class.stirring]="running()">
+                @if (art.waterCup.src; as plate) {
+                  <img
+                    class="part-plate"
+                    [src]="plate"
+                    [style.mix-blend-mode]="art.waterCup.blend"
+                    alt=""
+                  />
+                }
+                <div class="cup-glass">
+                  <div class="water">
+                    <span
+                      class="cloud"
+                      [style.opacity]="cloudiness()"
+                      [style.background]="activeVial().color"
+                      aria-hidden="true"
+                    ></span>
+                    <span
+                      class="water-surface"
+                      [class.agitated]="running()"
+                      aria-hidden="true"
+                    ></span>
+                    @if (running()) {
+                      <div class="settling" aria-hidden="true">
+                        @for (grain of grains(); track grain.id) {
+                          <i
+                            [style.background]="activeVial().color"
+                            [style.--grain-x.px]="grain.offsetX"
+                            [style.--grain-size.px]="grain.size"
+                            [style.animation-delay.ms]="grain.delayMs"
+                          ></i>
+                        }
+                      </div>
+                    }
+                    @if (phase() === 'settled' && cloudiness() > 0.4) {
+                      <span
+                        class="settled-layer"
+                        [style.background]="activeVial().color"
+                        aria-hidden="true"
+                      ></span>
+                    }
+                  </div>
+                  @if (!art.waterCup.src) {
+                    <span class="cup-outline" aria-hidden="true"></span>
+                  }
+                </div>
+              </div>
+              <p class="rig-caption">Equal 2 g into equal 50 mL, stirred the same way.</p>
+            </div>
+          }
+
+          <!-- ---- Probe trial: needle sweeps, lamp answers ---- -->
+          @case ('conductivity') {
+            <div class="probe-rig">
+              <div class="meter">
+                <svg viewBox="0 0 200 120" aria-hidden="true">
+                  <path class="meter-face" d="M12 112 A88 88 0 0 1 188 112 Z" />
+                  @for (tick of [0, 1, 2, 3, 4]; track tick) {
+                    <line
+                      class="meter-tick"
+                      x1="100"
+                      y1="24"
+                      x2="100"
+                      y2="34"
+                      [attr.transform]="'rotate(' + (-52 + tick * 26) + ' 100 112)'"
+                    />
+                  }
+                  <line
+                    class="meter-needle"
+                    x1="100"
+                    y1="112"
+                    x2="100"
+                    y2="34"
+                    [attr.transform]="'rotate(' + needleAngle() + ' 100 112)'"
+                  />
+                  <circle class="meter-pin" cx="100" cy="112" r="7" />
+                </svg>
+                <span class="meter-read" aria-live="polite">
+                  {{ result() ? result()!['millisiemens'] : '—' }} <small>mS</small>
+                </span>
+              </div>
+
+              <div class="cell">
+                <div class="lamp" [style.--glow]="lampGlow()">
+                  @if (art.lamp.src; as plate) {
+                    <img class="part-plate" [src]="plate" alt="" />
+                  }
+                  <span class="lamp-bulb" aria-hidden="true"></span>
+                  <span class="lamp-halo" aria-hidden="true"></span>
+                </div>
+                <div class="probe" [class.dipped]="phase() !== 'idle'">
+                  @if (art.probe.src; as plate) {
+                    <img class="part-plate" [src]="plate" alt="" />
+                  }
+                  @if (!art.probe.src) {
+                    <span class="probe-body" aria-hidden="true"></span>
+                    <span class="probe-tines" aria-hidden="true"></span>
+                  }
+                </div>
+                <div class="cell-glass">
+                  <span class="cell-water" aria-hidden="true"></span>
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- ---- Surface scan: particle field with a sweeping scan line ---- -->
+          @case ('texture') {
+            <div class="scan-rig">
+              @if (art.scanBed.src; as plate) {
+                <img class="part-plate" [src]="plate" alt="" />
+              }
+              <div class="scan-bed">
+                <div class="scan-field" aria-hidden="true">
+                  @for (grain of field(); track grain.id) {
+                    <i
+                      [class.sparkle]="grain.sparkle"
+                      [style.background]="activeVial().color"
+                      [style.top.%]="grain.top"
+                      [style.left.%]="grain.left"
+                      [style.--grain-size.px]="grain.size * 2.2"
+                    ></i>
+                  }
+                </div>
+                @if (running()) {
+                  <span class="scan-line" aria-hidden="true"></span>
+                }
+                <span class="scan-scale" aria-hidden="true"><i></i>1 mm</span>
+              </div>
+            </div>
+          }
+        }
+      </div>
+
+      <div class="stage-controls">
+        <p class="stage-hint" aria-live="polite">{{ hint() }}</p>
+        <button class="primary-action" type="button" [disabled]="running()" (click)="run()">
+          {{ running() ? 'Running…' : 'Run equal-condition trial' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- ---- Record ---------------------------------------------------------- -->
+    <aside class="record" aria-labelledby="record-title">
+      <span class="kicker">Your record</span>
+      <h2 id="record-title">What did you see?</h2>
+
+      @if (phase() === 'settled') {
+        <div class="readout" aria-live="polite">
+          @for (entry of entries(result()); track entry[0]) {
+            <div>
+              <small>{{ entry[0] }}</small>
+              <strong>{{ entry[1] }}</strong>
+            </div>
+          }
+        </div>
+
+        <label class="observation-field">
+          Write what the instrument showed
+          <textarea
+            rows="4"
+            [ngModel]="observation()"
+            (ngModelChange)="observation.set($event)"
+            placeholder="Under the light I could see…"
+          ></textarea>
+        </label>
+        <button class="primary-action" type="button" [disabled]="!canCapture()" (click)="capture()">
+          File this trial as evidence
+        </button>
+        @if (!canCapture()) {
+          <p class="record-note">
+            The bench will not file a trial until you describe it in your own words.
+          </p>
+        }
+      } @else {
+        <p class="record-note">Nothing to record yet. Run a trial and watch the instrument.</p>
+      }
+    </aside>
+  </div>
+</section>

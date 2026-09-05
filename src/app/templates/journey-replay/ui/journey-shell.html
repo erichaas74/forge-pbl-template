@@ -1,0 +1,114 @@
+<main class="journey-page">
+  <header class="command-bar">
+    <a routerLink="/projects" aria-label="Return to project library">← Projects</a>
+    <div class="project-title"><span>{{ runtime.config.subtitle }}</span><h1>{{ runtime.config.title }}</h1></div>
+    <div class="voyage-status">
+      <span>{{ runtime.config.team.emblem }} {{ runtime.config.team.name }}</span>
+      <div><i [style.width.%]="runtime.progressPercent()"></i></div>
+      <small>{{ runtime.progressPercent() }}% recorded · {{ runtime.authorityState() }}</small>
+    </div>
+    @if (view() === 'class') {
+      <button type="button" (click)="returnToJourney()">Return to voyage</button>
+    } @else if (runtime.isTeacher() || !runtime.session()) {
+      <button type="button" class="class-map-button" (click)="openClassMap()">Class map</button>
+    }
+  </header>
+
+  @if (view() === 'journey') {
+    <section class="journey-workspace">
+      <nav class="artifact-tools" aria-label="Expedition tools">
+        <button type="button" [attr.aria-pressed]="utility() === 'mission'" (click)="openUtility('mission')"><span aria-hidden="true">⌖</span><small>Compass</small></button>
+        <button type="button" [attr.aria-pressed]="utility() === 'location'" (click)="openUtility('location')"><span aria-hidden="true">◉</span><small>Spyglass</small></button>
+        <button type="button" [attr.aria-pressed]="utility() === 'manifest'" (click)="openUtility('manifest')"><span aria-hidden="true">▤</span><small>Manifest</small></button>
+        <button type="button" [attr.aria-pressed]="utility() === 'log'" (click)="openUtility('log')"><span aria-hidden="true">▣</span><small>Captain’s log</small></button>
+        <button type="button" class="replay-tool" [disabled]="runtime.state().replayTimeline.length === 0" (click)="openReplay()"><span aria-hidden="true">▶</span><small>Replay</small></button>
+      </nav>
+
+      <section class="map-column">
+        <app-living-journey-map
+          [map]="runtime.config.map"
+          [route]="runtime.state().route"
+          [team]="runtime.config.team"
+          [candidateRouteIds]="candidateRouteIds()"
+          mapLabel="Interactive Atlantic journey map"
+          (locationInspected)="inspectLocation($event)"
+        />
+        @if (utility(); as openUtilityName) {
+          <aside class="utility-sheet" [attr.aria-label]="openUtilityName">
+            <button type="button" class="utility-close" aria-label="Close tool" (click)="utility.set(undefined)">×</button>
+            @switch (openUtilityName) {
+              @case ('mission') {
+                <span>Current heading</span><h2>{{ runtime.step()?.title || 'Journey recorded' }}</h2>
+                <p>{{ runtime.step()?.mission || runtime.config.drivingQuestion }}</p>
+                <dl><div><dt>Driving question</dt><dd>{{ runtime.config.drivingQuestion }}</dd></div><div><dt>Student role</dt><dd>{{ runtime.config.roles.join(' · ') }}</dd></div></dl>
+              }
+              @case ('location') {
+                <span>Spyglass report</span><h2>{{ inspectedLocation()?.name || 'Choose a map location' }}</h2>
+                <p>{{ inspectedLocation()?.description || 'Select any marked port or waypoint to inspect it.' }}</p>
+                @if (inspectedLocation(); as location) {
+                  <dl><div><dt>Region</dt><dd>{{ location.regionId }}</dd></div><div><dt>Coordinates</dt><dd>{{ location.latitude.toFixed(2) }}°, {{ location.longitude.toFixed(2) }}°</dd></div></dl>
+                }
+              }
+              @case ('manifest') {
+                <span>Ship’s manifest</span><h2>Expedition resources</h2>
+                <div class="resource-list">
+                  @for (resource of runtime.config.resources; track resource.id) {
+                    <div><header><strong>{{ resource.label }}</strong><output>{{ runtime.state().resources[resource.id] }}{{ resource.unit }}</output></header><div><i [style.width.%]="(runtime.state().resources[resource.id] / resource.maximum) * 100"></i></div></div>
+                  }
+                </div>
+              }
+              @case ('log') {
+                <span>Captain’s log</span><h2>{{ runtime.state().completedSteps.length }} chapters recorded</h2>
+                <div class="log-list">
+                  @for (record of runtime.state().completedSteps; track record.stepId) {
+                    <article><small>Chapter {{ $index + 1 }}</small><strong>{{ choiceLabel(record.stepId) }}</strong><p>{{ record.studentResponse.text || record.studentResponse.transcript || 'Audio response attached' }}</p><footer>@for (mastery of record.masteryResults; track mastery.masteryTag) { <span>✓ {{ mastery.masteryTag }}</span> }</footer></article>
+                  } @empty { <p>Your completed decisions and explanations will appear here.</p> }
+                </div>
+              }
+            }
+          </aside>
+        }
+      </section>
+
+      <aside class="decision-column">
+        <app-journey-decision-panel />
+        @if (runtime.state().completionStatus === 'complete') {
+          <button type="button" class="play-journey" (click)="openReplay()">▶ Play my journey</button>
+          <section class="submission-card" aria-labelledby="submission-title">
+            <span>Teacher review</span>
+            <h2 id="submission-title">Submit the recorded voyage</h2>
+            @if (runtime.submission(); as submission) {
+              <p class="submission-state" [class.approved]="submission.status === 'approved'">
+                {{ submission.status === 'revision-requested' ? 'Revision requested' : submission.status }}
+              </p>
+              @if (submission.teacherFeedback) { <p>{{ submission.teacherFeedback }}</p> }
+            } @else {
+              <p>Submission creates an authoritative snapshot. Later edits stay separate until you submit again.</p>
+            }
+            @if (!runtime.session()) {
+              <p>Open the signed-in hosted site to submit this local draft.</p>
+            }
+            @if (runtime.canSubmit()) {
+              <button type="button" class="submit-journey" (click)="runtime.submitJourney()">
+                {{ runtime.submission()?.status === 'revision-requested' ? 'Resubmit journey' : 'Submit for review' }}
+              </button>
+            }
+          </section>
+        }
+      </aside>
+    </section>
+
+    <nav class="chapter-rail" aria-label="Journey chapters">
+      @for (step of runtime.config.steps; track step.id) {
+        <div [class.complete]="$index < runtime.state().currentStepIndex" [class.current]="$index === runtime.state().currentStepIndex"><span>{{ $index < runtime.state().currentStepIndex ? '✓' : step.chapter }}</span><p><small>{{ step.kicker }}</small><strong>{{ step.title }}</strong></p></div>
+      }
+    </nav>
+  } @else if (view() === 'class') {
+    <app-class-journey-map />
+  }
+
+  @if (view() === 'replay') { <app-journey-replay-player (closed)="returnToJourney()" /> }
+  @if (runtime.notice() || runtime.error()) {
+    <div class="toast" [class.error]="runtime.error()" role="status"><span>{{ runtime.error() || runtime.notice() }}</span><button type="button" aria-label="Dismiss message" (click)="runtime.clearMessages()">×</button></div>
+  }
+</main>

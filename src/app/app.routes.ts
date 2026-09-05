@@ -31,6 +31,38 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'class-exhibit-hall',
+    title: 'Objects That Changed Us: Ancient Egypt | Class Exhibit Hall',
+    loadChildren: () =>
+      import('./features/class-exhibit-hall/class-exhibit-hall.routes').then(
+        (module) => module.CLASS_EXHIBIT_HALL_ROUTES,
+      ),
+  },
+  {
+    path: 'history-live',
+    title: 'History Live: The Revolutionary War | Forge PBL',
+    loadChildren: () =>
+      import('./features/history-live/history-live.routes').then(
+        (module) => module.HISTORY_LIVE_ROUTES,
+      ),
+  },
+  {
+    path: 'debate-studio',
+    title: 'The Fate of the Republic | Ancient World Debate Studio',
+    loadChildren: () =>
+      import('./features/debate-studio/debate-studio.routes').then(
+        (module) => module.DEBATE_STUDIO_ROUTES,
+      ),
+  },
+  {
+    path: 'journey-replay',
+    title: 'Race Around the World | Expedition Journey Replay',
+    loadChildren: () =>
+      import('./features/journey-replay/journey-replay.routes').then(
+        (module) => module.JOURNEY_REPLAY_ROUTES,
+      ),
+  },
+  {
     path: '**',
     redirectTo: 'projects',
   },

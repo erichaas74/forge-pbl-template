@@ -12,6 +12,7 @@ export interface ProjectComponentContext<TRuntimeState = unknown> {
   tenantId: string;
   projectId: string;
   projectVersion: string;
+  attemptId?: string;
   studentId?: string;
   teamId?: string;
   classId?: string;

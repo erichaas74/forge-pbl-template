@@ -4,6 +4,7 @@ export interface RuntimeTraceEntry {
   timestamp: string;
   eventId?: string;
   eventType?: string;
+  attemptId?: string;
   matchedRuleIds?: readonly string[];
   commandTypes?: readonly string[];
   stateVersion?: number;
@@ -34,4 +35,3 @@ export class MemoryRuntimeTracer implements RuntimeTracer {
     return structuredClone(this.entries);
   }
 }
-

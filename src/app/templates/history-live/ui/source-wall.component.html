@@ -1,0 +1,266 @@
+<section class="source-room" aria-labelledby="source-wall-title">
+  <header class="source-header">
+    <div>
+      <span>SOURCE WALL · EVIDENCE DESK</span>
+      <h1 id="source-wall-title">Build the story from the record</h1>
+    </div>
+    <div class="source-count">
+      <strong>{{ runtime.state().savedSourceIds.length }}</strong
+      ><span>sources pinned<small>2 minimum</small></span>
+    </div>
+    <button type="button" (click)="runtime.goTo('script')">Move to script desk →</button>
+  </header>
+
+  <div class="source-toolbar">
+    <span>FILTER THE WALL</span>
+    <button
+      type="button"
+      [class.active]="filter() === 'all'"
+      [attr.aria-pressed]="filter() === 'all'"
+      (click)="setFilter('all')"
+    >
+      All sources
+    </button>
+    <button
+      type="button"
+      [class.active]="filter() === 'patriot'"
+      [attr.aria-pressed]="filter() === 'patriot'"
+      (click)="setFilter('patriot')"
+    >
+      Patriot lens
+    </button>
+    <button
+      type="button"
+      [class.active]="filter() === 'british'"
+      [attr.aria-pressed]="filter() === 'british'"
+      (click)="setFilter('british')"
+    >
+      British lens
+    </button>
+    <button
+      type="button"
+      [class.active]="filter() === 'international'"
+      [attr.aria-pressed]="filter() === 'international'"
+      (click)="setFilter('international')"
+    >
+      International
+    </button>
+    <button
+      type="button"
+      [class.active]="filter() === 'multiple'"
+      [attr.aria-pressed]="filter() === 'multiple'"
+      (click)="setFilter('multiple')"
+    >
+      Multiple
+    </button>
+    <small>Open a source to question its perspective and limits.</small>
+  </div>
+
+  <div class="source-workspace" [class.detail-open]="runtime.selectedSource()">
+    <div class="source-grid">
+      @for (source of visibleSources(); track source.id) {
+        <article
+          class="source-card"
+          [class.saved]="runtime.state().savedSourceIds.includes(source.id)"
+          [class]="
+            'source-card ' +
+            source.perspective +
+            (runtime.state().savedSourceIds.includes(source.id) ? ' saved' : '')
+          "
+        >
+          <header>
+            <span>{{ source.sourceType }}</span
+            ><small>{{ source.dateLabel }}</small>
+          </header>
+          <div class="document-mark" aria-hidden="true"><span>H</span><i></i><b></b></div>
+          <h2>{{ source.title }}</h2>
+          @if (recommended(source.id)) {
+            <p>Recommended for your story</p>
+          }
+          @if (!runtime.sourceUsable(source.id)) {
+            <p>Later evidence: use only for retrospective reporting</p>
+          }
+          <p>{{ source.creator }}</p>
+          <div class="tags">
+            @for (tag of source.tags; track tag) {
+              <span>{{ tag }}</span>
+            }
+          </div>
+          <footer>
+            <button
+              type="button"
+              class="open"
+              [attr.data-source-id]="source.id"
+              (click)="runtime.selectSource(source.id)"
+            >
+              Examine source
+            </button>
+            <button
+              type="button"
+              class="pin"
+              [attr.aria-label]="
+                (runtime.state().savedSourceIds.includes(source.id) ? 'Remove ' : 'Pin ') +
+                source.title
+              "
+              (click)="runtime.toggleSource(source.id)"
+            >
+              {{ runtime.state().savedSourceIds.includes(source.id) ? 'Pinned ✓' : '+ Pin' }}
+            </button>
+          </footer>
+        </article>
+      }
+    </div>
+
+    @if (runtime.selectedSource(); as source) {
+      <aside class="source-detail" tabindex="-1" aria-label="Source inspection">
+        <header>
+          <span>SOURCE INSPECTION</span
+          ><button type="button" (click)="runtime.closeSource()" aria-label="Close source">
+            ×
+          </button>
+        </header>
+        <div class="detail-meta">
+          <strong>{{ source.perspective }}</strong
+          ><span>{{ source.sourceType }} · {{ source.dateLabel }}</span>
+        </div>
+        <h2>{{ source.title }}</h2>
+        <p class="creator">{{ source.creator }}</p>
+        <section>
+          <strong>{{
+            source.excerptKind === 'quotation'
+              ? 'Document quotation'
+              : 'Editorial summary — not a quotation'
+          }}</strong>
+          <p>{{ source.excerpt }}</p>
+        </section>
+        @if (source.imageUrl) {
+          <img
+            class="source-image"
+            [src]="source.imageUrl"
+            [alt]="source.imageAlt || source.title"
+          />
+        }
+        <section>
+          <span>CONTEXT & LIMITS</span>
+          <p>{{ source.context }}</p>
+        </section>
+        <dl>
+          <div>
+            <dt>Created by</dt>
+            <dd>{{ source.creator }}</dd>
+          </div>
+          <div>
+            <dt>Perspective</dt>
+            <dd>{{ source.perspective }}</dd>
+          </div>
+          <div>
+            <dt>Use it for</dt>
+            <dd>{{ source.tags.join(' · ') }}</dd>
+          </div>
+        </dl>
+        <div class="check-questions">
+          <strong>Ask before airtime</strong><span>Who created this—and for whom?</span
+          ><span>What context is missing?</span
+          ><span>Would the other network read it differently?</span>
+        </div>
+        <p class="citation">{{ source.citation }}</p>
+        <footer>
+          @if (source.url) {
+            <a [href]="source.url" target="_blank" rel="noreferrer">Open original ↗</a>
+          }
+          <button type="button" (click)="runtime.toggleSource(source.id)">
+            {{
+              runtime.state().savedSourceIds.includes(source.id)
+                ? 'Remove from story'
+                : 'Pin to story'
+            }}
+          </button>
+        </footer>
+      </aside>
+    }
+  </div>
+
+  <section class="fact-check-board" aria-labelledby="fact-check-title">
+    <header>
+      <div>
+        <span>FACT-CHECK BOARD</span>
+        <h2 id="fact-check-title">Turn evidence into a responsible claim</h2>
+      </div>
+      <small>Every major claim needs visible support.</small>
+    </header>
+    <div class="claim-composer">
+      <label
+        ><span>Your claim</span
+        ><textarea
+          rows="2"
+          [value]="claimText()"
+          (input)="updateClaim($event)"
+          placeholder="Based on the evidence, our reporting finds…"
+        ></textarea>
+      </label>
+      <label
+        ><span>Evidence status</span
+        ><select [value]="claimStatus()" (change)="updateStatus($event)">
+          <option value="verified">Verified</option>
+          <option value="strongly-supported">Strongly supported</option>
+          <option value="partially-supported">Partially supported</option>
+          <option value="uncertain">Uncertain</option>
+          <option value="disputed">Disputed</option>
+        </select></label
+      >
+      <label
+        ><span>Reasoning: how does the passage support or challenge the claim?</span
+        ><textarea rows="3" [value]="reasoning()" (input)="updateReasoning($event)"></textarea>
+      </label>
+      <label
+        ><span>Limits and uncertainty to explain on air</span
+        ><textarea rows="2" [value]="uncertainty()" (input)="updateUncertainty($event)"></textarea>
+      </label>
+      <fieldset>
+        <legend>
+          Select evidence by entering a passage, page reference, or map observation. Leave unused
+          sources blank.
+        </legend>
+        @for (source of runtime.savedSources(); track source.id) {
+          <label
+            >{{ source.title
+            }}<textarea
+              rows="2"
+              [value]="evidenceFor(source.id)?.passage || ''"
+              (input)="setEvidence(source.id, 'passage', $event)"
+            ></textarea></label
+          ><label
+            >Relationship for {{ source.title
+            }}<select
+              [value]="evidenceFor(source.id)?.relationship || 'supports'"
+              (change)="setEvidence(source.id, 'relationship', $event)"
+            >
+              <option value="supports">Supports</option>
+              <option value="challenges">Challenges / counterevidence</option>
+            </select></label
+          >
+        }
+      </fieldset>
+      <button type="button" (click)="addClaim()">Add checked claim</button>
+    </div>
+    <div class="claim-list">
+      @for (claim of runtime.state().claims; track claim.id) {
+        <article>
+          <span [class]="claim.status">{{ claim.status.replace('-', ' ') }}</span>
+          <p>{{ claim.text }}</p>
+          <small>{{ claim.supportingSourceIds.length }} supporting sources</small>
+          <p>{{ claim.reasoning }}</p>
+          <p>{{ claim.uncertainty }}</p>
+          @for (link of claim.evidence || []; track link.sourceId) {
+            <p>{{ link.relationship }} · {{ link.passage }}</p>
+          }
+          <button type="button" (click)="runtime.removeClaim(claim.id)" aria-label="Remove claim">
+            ×
+          </button>
+        </article>
+      } @empty {
+        <p class="empty">Your checked claims will appear here before they move into the script.</p>
+      }
+    </div>
+  </section>
+</section>

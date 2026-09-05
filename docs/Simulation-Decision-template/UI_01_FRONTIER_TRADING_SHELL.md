@@ -1,14 +1,17 @@
 # UI 01 — Frontier Trading Shell
 
 ## Page Purpose
-The persistent application shell for the entire simulation. It keeps the student oriented inside the trading season, exposes the essential status information without overwhelming the work area, and provides navigation between Market, Route Map, Wagon/Cargo, Event Decisions, Ledger, Results, and Final Strategy Report.
+
+The persistent application shell for the entire simulation. It keeps the student oriented inside the trading season, exposes the essential status information without overwhelming the work area, and organizes the experience into Expedition, Journey, and Company Journal.
 
 The shell should feel like a **frontier trading company command desk**, not a generic LMS page. The LMS/project navigation exists, but the central viewport is devoted to the simulation.
 
 ## Curriculum / Product Alignment
+
 This page belongs to the **Frontier Trading Simulation** project type. The curriculum foundation is a trading-company challenge built around limited money, cargo capacity, changing prices, budgeting, unit price, profit, and defending trade decisions. The social-studies extension adds route choice, maps, terrain, supplies, risk events, consequences, and multiple perspectives.
 
 **Source-supported learning priorities**
+
 - Decimal and money calculations.
 - Budgeting and unit-price comparisons.
 - Profit / loss reasoning.
@@ -18,6 +21,7 @@ This page belongs to the **Frontier Trading Simulation** project type. The curri
 - Simulation evidence that can be saved into the project notebook and final submission.
 
 **Design decisions introduced by this UI spec**
+
 - A turn/stop-based trading season.
 - Student-facing market, route, cargo, event, ledger, and season-results views.
 - Persistent simulation state that carries across all page views.
@@ -25,7 +29,9 @@ This page belongs to the **Frontier Trading Simulation** project type. The curri
 - No single “correct” route; students are expected to justify tradeoffs with evidence.
 
 ## Layout
+
 ### Desktop / Tablet Landscape
+
 Use a three-zone structure:
 
 1. **Top Mission Bar — 72–88 px**
@@ -47,7 +53,9 @@ Use a three-zone structure:
 
 3. **Main Simulation Workspace**
    - Left vertical navigation rail on wide screens:
-     `Market`, `Route`, `Cargo`, `Events`, `Ledger`.
+     `Expedition`, `Journey`, `Company Journal`.
+   - Expedition contains Trading Post, Wagon Load, and Route Map as tools on one game board.
+   - Company Journal contains Records, Season Results, and Final Strategy as chapters of one record.
    - Center page viewport for the active view.
    - Right contextual panel used only when the active page needs it:
      - local market summary,
@@ -58,16 +66,20 @@ Use a three-zone structure:
    - `Strategy Report` remains available as a draft but cannot be finally submitted until required evidence exists.
 
 ### Focus Rule
+
 Only one primary simulation task should dominate the center viewport. The shell can show **summary state**, but it must not duplicate the full content of other views. Example: the Market page may show cargo totals in the HUD, but not the entire wagon inventory table.
 
 ### Navigation Guardrails
-- Students can freely inspect Market, Route, Cargo, and Ledger before committing a move.
+
+- Students can freely inspect the Expedition Board and Company Journal before committing a move.
 - An unresolved Event Decision can temporarily lock route travel and market transactions.
 - A “Commit Travel” or “Confirm Trade” action always uses a review step before changing persistent state.
 - Browser refresh must restore the latest saved state.
 
 ## Student Actions
+
 Students can:
+
 - Move between the major simulation views without losing work.
 - Open project rules, vocabulary, mini-lessons, and rubric from a slide-over resource panel.
 - Open the Project Notebook / evidence panel.
@@ -77,7 +89,9 @@ Students can:
 - Exit back to the Project Hub without ending the simulation.
 
 ## Component States
+
 ### Global Simulation States
+
 - `not_started` — mission launch visible; simulation controls disabled until student begins.
 - `planning` — full inspection allowed; no official transaction committed yet.
 - `active` — normal trading / travel workflow.
@@ -89,6 +103,7 @@ Students can:
 - `needs_revision` — final report or evidence requires revision; simulation data remains immutable unless teacher reopens the season.
 
 ### Save States
+
 - `saved`
 - `saving`
 - `offline_local`
@@ -96,7 +111,9 @@ Students can:
 - `conflict_detected` — requires reload/merge rule; never silently overwrite.
 
 ### Navigation States
+
 Each nav item can be:
+
 - available,
 - active,
 - locked,
@@ -104,13 +121,16 @@ Each nav item can be:
 - complete.
 
 ## Mobile Behavior
+
 ### Tablet Portrait
+
 - Top Mission Bar collapses into two rows.
 - HUD becomes a horizontally scrollable strip of 4–5 metric cards.
-- Navigation rail becomes a fixed bottom tab bar with `Market`, `Route`, `Cargo`, `Ledger`, and `More`.
-- `Events`, `Results`, and `Report` move under `More` unless currently required.
+- Navigation rail becomes a fixed bottom tab bar with `Expedition`, `Journey`, and `Journal`.
+- The Expedition and Journal tool switchers remain inside their respective spaces.
 
 ### Phone
+
 - Preserve **one task per screen**.
 - No three-column layout.
 - Context panel becomes a bottom sheet.
@@ -120,7 +140,9 @@ Each nav item can be:
 - Map remains pannable/zoomable; route comparison opens as a separate sheet rather than side-by-side.
 
 ## Graphics / Assets Needed
+
 Required visual system:
+
 - Frontier trading-post / wagon-company visual identity.
 - Project banner / mission art.
 - Navigation icons: market stall, map/compass, wagon/crate, event card, ledger/book, trophy/results, report.
@@ -130,13 +152,16 @@ Required visual system:
 - Loading, save, warning, locked, and completed icon states.
 
 Avoid:
+
 - decorative textures behind long text,
 - hard-to-read script fonts,
 - excessive Western stereotypes or caricatures,
 - graphics that imply a historically neutral “empty frontier.”
 
 ## LMS / Data Requirements
+
 ### Required Persistent Simulation Object
+
 ```ts
 FrontierSimulationState {
   simulationId
@@ -165,6 +190,7 @@ FrontierSimulationState {
 ```
 
 ### LMS Integration
+
 - Activity status maps to LMS statuses: Locked, Not Started, In Progress, Submitted, Complete, Needs Revision, Missing, Excused.
 - Every major commit logs timestamp, inputs, outputs, and simulation result data.
 - Completion remains separate from mastery.
@@ -175,6 +201,7 @@ FrontierSimulationState {
 - Final challenge mode can lock rules and limit official attempts.
 
 ## Accessibility / Student Support
+
 - Minimum 16 px body text; key money values 20–28 px.
 - Icons always paired with text labels or accessible names.
 - Keyboard traversal for nav, dialogs, and transaction controls.
@@ -185,9 +212,16 @@ FrontierSimulationState {
 - Keep numeric alignment consistent and use tabular numerals when possible.
 
 ## Acceptance Criteria
+
 - Student always knows current location, cash, cargo use, profit/loss, and next available action.
 - Changing pages never resets transaction drafts or simulation state.
 - Pending events prevent contradictory actions.
 - Season-complete state automatically unlocks Results and final submission workflow.
 - The shell can load from configuration data; page content is not hard-coded for one project.
 - All major state changes are auditable in the LMS/simulation log.
+
+## Implemented guided-space profile — September 2026
+
+The student shell exposes three primary spaces. Expedition groups the Trading Post, Wagon Load, and Route Map; Journey owns travel and event decisions; Company Journal groups Records, Season Results, and Final Strategy. Existing runtime views remain stable internal destinations, so evidence links and saved `lastView` values remain compatible while the visible page count is reduced.
+
+A persistent Next Mission card translates state into one concrete action. It guides merchant exploration, a two-supply starter manifest, route comparison, travel, destination sales, and final evidence review. The target tool receives an attention marker, the first useful storefront receives a `Next mission` marker, and starter-manifest goods receive plain-language labels. Progress comes from canonical discoveries, distinct purchased-good IDs, travel records, and season state.

@@ -613,3 +613,17 @@ Do not implement in this phase:
 - project-specific simulation
 - mastery/reteach
 - analytics dashboard
+
+---
+
+# 31. Approved Authority Extension
+
+The core exposes an `AuthoritativeCommandGateway` contract for operations marked
+`serverRequired`. This is an extension seam, not a second runtime and not a
+database implementation. Single-scope deterministic events, rules, commands,
+and mutations continue through `RuntimeEngine`; trusted capability handlers may
+use the gateway to coordinate authoritative multi-record operations.
+
+`RuntimeScope` includes optional `attemptId` identity. The runtime scope key and
+therefore persistence, realtime, and idempotency isolation include that value.
+Existing practice scopes without an attempt remain compatible.

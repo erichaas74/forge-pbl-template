@@ -11,6 +11,7 @@ export interface RuntimeEvent {
   timestamp: string;
   tenantId: string;
   projectId: string;
+  attemptId?: string;
   actor: RuntimeActor;
   sourceId?: string;
   payload?: Record<string, unknown>;

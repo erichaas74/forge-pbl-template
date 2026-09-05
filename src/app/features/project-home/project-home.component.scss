@@ -231,6 +231,56 @@ h1 {
   color: #e2bf70;
 }
 
+.project-card.museum .project-art {
+  color: #fff1ca;
+  background: linear-gradient(145deg, #352d2c, #171519);
+}
+
+.project-card.museum .project-art > span {
+  border-color: #d7b76a;
+  border-radius: 0;
+  background: #292320;
+  box-shadow: 0 0 2rem #e2bb5b40;
+  transform: rotate(45deg);
+}
+
+.project-card.museum .project-art i {
+  background: #211a18;
+}
+
+.project-card.museum .project-art small {
+  color: #d8bc7b;
+}
+
+.project-card.broadcast .project-art {
+  color: #f3e4bf;
+  background:
+    radial-gradient(circle at 50% 32%, rgba(102, 145, 177, 0.45), transparent 35%),
+    linear-gradient(145deg, #172c3b, #090f17 62%, #381715);
+}
+
+.project-card.broadcast .project-art > span {
+  width: 5.7rem;
+  border-color: #bd3e36;
+  border-radius: 0;
+  color: #fff;
+  background: #a93530;
+  font-size: 1.15rem;
+  font-style: italic;
+  letter-spacing: -0.04em;
+  box-shadow: 0 0 2rem #b83f3650;
+  transform: skew(-6deg);
+}
+
+.project-card.broadcast .project-art i {
+  border-top: 1px solid #b9995a;
+  background: #0a151e;
+}
+
+.project-card.broadcast .project-art small {
+  color: #d2b878;
+}
+
 .project-content {
   display: grid;
   grid-template-rows: auto auto 1fr auto;
@@ -321,9 +371,92 @@ h1 {
   font-weight: 850;
   text-decoration: none;
 }
+.project-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.45rem;
+}
+.project-content a.builder-link {
+  border: 1px solid #9aaeb3;
+  color: #3c5a62;
+  background: #edf3f4;
+  font-size: 0.7rem;
+}
+.project-card.frontier .project-content a.builder-link {
+  border-color: #bca77b;
+  color: #5c431d;
+  background: #f4eddd;
+}
 
 .project-card.frontier .project-content a {
   background: #694717;
+}
+
+.project-card.museum .project-content a {
+  background: #5d4729;
+}
+
+.project-card.broadcast .project-content a {
+  background: #9f3631;
+}
+
+.project-card.senate .project-art {
+  color: #f7dfaa;
+  background:
+    radial-gradient(circle at 50% 32%, rgba(214, 165, 88, 0.28), transparent 34%),
+    linear-gradient(145deg, #4e251c, #170c09 68%, #090504);
+}
+
+.project-card.senate .project-art > span {
+  width: 5.8rem;
+  border-color: #c9a35d;
+  border-radius: 50%;
+  color: #efd28e;
+  background: radial-gradient(circle, #6d2b20, #321710 68%);
+  box-shadow: inset 0 0 0 0.25rem #24110c, 0 0 2rem #d7a14d3d;
+  font: 800 0.95rem Georgia, serif;
+  letter-spacing: 0.08em;
+}
+
+.project-card.senate .project-art i {
+  border-top: 1px solid #a77c3e;
+  background: #1b0d09;
+}
+
+.project-card.senate .project-art small {
+  color: #d5b572;
+}
+
+.project-card.senate .project-content a {
+  background: #7e3025;
+}
+
+.project-card.atlas .project-art {
+  color: #f3df9e;
+  background:
+    radial-gradient(circle at 50% 34%, rgba(91, 166, 158, 0.45), transparent 34%),
+    linear-gradient(145deg, #23473f, #0b1b18 68%, #332719);
+}
+
+.project-card.atlas .project-art > span {
+  border-color: #d8bd6a;
+  color: #f3dc8e;
+  background: radial-gradient(circle, #426c60, #172e29 68%);
+  box-shadow: inset 0 0 0 0.25rem #122620, 0 0 2rem #e3c56244;
+}
+
+.project-card.atlas .project-art i {
+  border-top: 1px solid #9e854d;
+  background: #132620;
+}
+
+.project-card.atlas .project-art small {
+  color: #d9c37d;
+}
+
+.project-card.atlas .project-content a {
+  background: #2b6662;
 }
 
 .project-content a b {

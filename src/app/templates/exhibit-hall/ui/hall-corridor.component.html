@@ -1,0 +1,88 @@
+<div class="gallery-viewport" aria-label="Scrollable class exhibit corridor">
+  <div class="ceiling" aria-hidden="true">
+    @for (location of locations(); track location.locationId) {
+      <i></i>
+    }
+  </div>
+  <div class="corridor">
+    @for (location of locations(); track location.locationId) {
+      <article
+        class="hall-location"
+        [class.focused]="location.hanging?.id === focusedHangingId()"
+        [class.empty]="location.hanging === undefined"
+      >
+        <span class="location-number">{{
+          (location.position + 1).toString().padStart(2, '0')
+        }}</span>
+        @if (location.hanging && location.snapshot) {
+          @if (location.hanging.id === focusedHangingId()) {
+            <span class="standing-plate"><i></i> Class standing here</span>
+          }
+          @if (location.snapshot.corridorPreview; as preview) {
+            @if (preview.walkUpAvailable) {
+              <button
+                type="button"
+                class="frame preview-frame available"
+                (click)="opened.emit(location.hanging.id)"
+                [attr.aria-label]="'Walk up to ' + location.snapshot.accessibleData.title"
+              >
+                <img [src]="preview.imageUrl" [alt]="preview.imageAlt" />
+                <span class="scene-depth" aria-hidden="true"></span>
+                <span class="preview-status available-status">Explore this wing</span>
+                <span class="frame-glint" aria-hidden="true"></span>
+              </button>
+            } @else {
+              <div
+                class="frame preview-frame unavailable"
+                [attr.aria-label]="
+                  location.snapshot.accessibleData.title + '. Walk-up coming soon.'
+                "
+              >
+                <img [src]="preview.imageUrl" [alt]="preview.imageAlt" />
+                <span class="scene-depth" aria-hidden="true"></span>
+                <span class="preview-status">Walk-up coming soon</span>
+                <span class="frame-glint" aria-hidden="true"></span>
+              </div>
+            }
+          } @else {
+            <button
+              type="button"
+              class="frame"
+              (click)="opened.emit(location.hanging.id)"
+              [attr.aria-label]="'Walk up to ' + location.snapshot.accessibleData.title"
+            >
+              <app-exhibit-render-host [snapshot]="location.snapshot" mode="thumbnail" />
+              <span class="frame-glint" aria-hidden="true"></span>
+            </button>
+          }
+          <div class="museum-label">
+            <div>
+              <strong>{{ location.snapshot.accessibleData.title }}</strong>
+              <span>{{ location.team.displayName }}</span>
+            </div>
+            <small>Snapshot v{{ location.snapshot.version }}</small>
+          </div>
+          <div class="location-actions">
+            @if (location.snapshot.corridorPreview?.walkUpAvailable !== false) {
+              <button type="button" (click)="opened.emit(location.hanging.id)">Walk up</button>
+              @if (teacherMode()) {
+                <button type="button" class="point" (click)="pointed.emit(location.hanging.id)">
+                  Point class here
+                </button>
+              }
+            } @else {
+              <span class="coming-soon-action"><i aria-hidden="true"></i>Walk-up coming soon</span>
+            }
+          </div>
+        } @else {
+          <div class="empty-nail" aria-label="No exhibit published">
+            <span aria-hidden="true"></span>
+            <strong>{{ emptyLabel() }}</strong>
+            <p>{{ location.team.displayName }} is still preparing its exhibit.</p>
+          </div>
+        }
+      </article>
+    }
+  </div>
+  <div class="floor" aria-hidden="true"></div>
+</div>

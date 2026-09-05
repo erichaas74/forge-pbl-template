@@ -1,5 +1,6 @@
 import { applyBasisPoints, sumCents } from './money';
 import { deterministicSample } from './seeded-random';
+import { choiceProgression, goodIsUnlocked, routeIsUnlocked } from './choice-progression';
 import type {
   AcquisitionLot,
   EvidenceReference,
@@ -8,6 +9,8 @@ import type {
   MarketDefinition,
   ReportSectionState,
   RouteDefinition,
+  RouteForecastAnswer,
+  RouteProfitForecast,
   SimulationDecisionAction,
   SimulationDecisionConfig,
   SimulationDecisionResult,
@@ -88,7 +91,7 @@ export function reduceSimulationDecision(
     case 'market.stallInspected':
       return inspectMarketStall(config, state, action.stallId);
     case 'route.committed':
-      return commitRoute(config, state, action.routeId, action.rationale);
+      return commitRoute(config, state, action.routeId, action.rationale, action.forecast);
     case 'travel.advanced':
       return advanceTravel(config, state);
     case 'event.resolved':
@@ -174,6 +177,37 @@ export function marketPrice(
   );
 }
 
+export function purchaseDiscountPercent(
+  config: SimulationDecisionConfig,
+  direction: 'buy' | 'sell',
+  quantity: number,
+): number {
+  if (direction !== 'buy') return 0;
+  return (
+    [...(config.transactionMath?.purchaseDiscountTiers ?? [])]
+      .sort((left, right) => right.minimumQuantity - left.minimumQuantity)
+      .find((tier) => quantity >= tier.minimumQuantity)?.discountPercent ?? 0
+  );
+}
+
+export function effectiveTradeUnitPrice(
+  config: SimulationDecisionConfig,
+  locationId: string,
+  line: Pick<TradeLineInput, 'goodId' | 'direction' | 'quantity'>,
+): number {
+  const postedPrice = marketPrice(config, locationId, line.goodId, line.direction) ?? 0;
+  const discountPercent = purchaseDiscountPercent(config, line.direction, line.quantity);
+  return Math.round((postedPrice * (100 - discountPercent)) / 100);
+}
+
+export function tradeLineTotal(
+  config: SimulationDecisionConfig,
+  locationId: string,
+  line: Pick<TradeLineInput, 'goodId' | 'direction' | 'quantity'>,
+): number {
+  return effectiveTradeUnitPrice(config, locationId, line) * line.quantity;
+}
+
 export function marketStockRemaining(
   config: SimulationDecisionConfig,
   state: Readonly<SimulationDecisionState>,
@@ -225,6 +259,9 @@ export function previewTrade(
   lines: readonly TradeLineInput[],
 ): TradePreview {
   const errors: string[] = [];
+  if (['not_started', 'paused_by_teacher', 'submitted'].includes(state.status)) {
+    errors.push('Trading is unavailable while this attempt is read-only.');
+  }
   if (state.pendingEventId !== undefined || state.status === 'event_pending') {
     errors.push('Resolve the current event before trading.');
   }
@@ -252,11 +289,15 @@ export function previewTrade(
       errors.push('That good is not traded at this location.');
       continue;
     }
+    if (!goodIsUnlocked(config, state, line.goodId)) {
+      errors.push(`${good.name}: finish the current trading mission to unlock this good.`);
+      continue;
+    }
     if (!Number.isInteger(line.quantity) || line.quantity <= 0) {
       errors.push(`${good.name}: enter a whole-number quantity above zero.`);
       continue;
     }
-    const price = marketPrice(config, state.currentLocationId, line.goodId, line.direction) ?? 0;
+    const lineTotal = tradeLineTotal(config, state.currentLocationId, line);
     if (line.direction === 'buy') {
       const nextPurchased = (purchased.get(line.goodId) ?? 0) + line.quantity;
       purchased.set(line.goodId, nextPurchased);
@@ -269,7 +310,7 @@ export function previewTrade(
       if (nextPurchased > remainingStock) {
         errors.push(`${good.name}: only ${remainingStock} units are available.`);
       }
-      cash -= price * line.quantity;
+      cash -= lineTotal;
       cargo += good.unitCargo * line.quantity;
       quantities.set(line.goodId, (quantities.get(line.goodId) ?? 0) + line.quantity);
     } else {
@@ -278,7 +319,7 @@ export function previewTrade(
         errors.push(`${good.name}: you only own ${owned} units.`);
       } else {
         quantities.set(line.goodId, owned - line.quantity);
-        cash += price * line.quantity;
+        cash += lineTotal;
         cargo -= good.unitCargo * line.quantity;
       }
     }
@@ -312,6 +353,28 @@ export function routeIsCompatible(
   );
 }
 
+export function routeProfitForecast(
+  config: SimulationDecisionConfig,
+  state: Readonly<SimulationDecisionState>,
+  route: RouteDefinition,
+): RouteProfitForecast {
+  const expectedSalesRevenueCents = state.inventory.reduce((total, item) => {
+    const destinationPrice = marketPrice(config, route.toLocationId, item.goodId, 'sell') ?? 0;
+    return total + destinationPrice * item.quantity;
+  }, 0);
+  const goodsCostCents = state.inventory.reduce(
+    (total, item) =>
+      total + item.lots.reduce((lotTotal, lot) => lotTotal + lot.quantity * lot.unitCostCents, 0),
+    0,
+  );
+  return {
+    expectedSalesRevenueCents,
+    goodsCostCents,
+    travelCostCents: route.supplyCostCents,
+    expectedTripProfitCents: expectedSalesRevenueCents - goodsCostCents - route.supplyCostCents,
+  };
+}
+
 export function ledgerReconciles(state: Readonly<SimulationDecisionState>): boolean {
   let running = 0;
   return state.ledger.every((entry) => {
@@ -331,7 +394,7 @@ export function reportMissingRequirements(
       missing.push(`${definition.title}: add your explanation`);
     }
     if ((section?.evidenceIds.length ?? 0) < definition.evidenceMinimum) {
-      missing.push(`${definition.title}: add ${definition.evidenceMinimum} evidence item(s)`);
+      missing.push(`${definition.title}: add ${definition.evidenceMinimum} game record(s)`);
     }
     if (definition.calculationRequired && (section?.calculation.trim().length ?? 0) === 0) {
       missing.push(`${definition.title}: show a calculation`);
@@ -358,16 +421,29 @@ export function seasonResults(
     .reduce((total, route) => total + route.distanceMiles, 0);
   const ending = cashOnHand(state);
   const netProfit = ending - config.startingCashCents;
-  const profitProgress = Math.max(
+  const tradingScore = Math.max(
     0,
-    Math.min(60, Math.round((netProfit / config.profitTargetCents) * 60)),
+    Math.min(40, Math.round((netProfit / config.profitTargetCents) * 40)),
   );
-  const evidenceProgress = Math.min(20, state.evidence.length * 4);
-  const reasoningProgress = Math.min(
+  const mathChecks = [
+    ...state.routeHistory.flatMap((route) =>
+      route.forecast === undefined
+        ? []
+        : [route.forecast.salesRevenueCorrect, route.forecast.tripProfitCorrect],
+    ),
+    ...state.eventHistory.flatMap((item) =>
+      item.mathCorrect === undefined ? [] : [item.mathCorrect],
+    ),
+  ];
+  const mathScore =
+    mathChecks.length === 0
+      ? 0
+      : Math.round((mathChecks.filter(Boolean).length / mathChecks.length) * 40);
+  const explanationScore = Math.min(
     20,
-    state.eventHistory.filter((item) => item.reasoning.trim().length > 0).length * 5,
+    state.eventHistory.filter((item) => item.reasoning.trim().length >= 12).length * 10,
   );
-  const score = Math.max(0, Math.min(100, profitProgress + evidenceProgress + reasoningProgress));
+  const score = Math.max(0, Math.min(100, tradingScore + mathScore + explanationScore));
   return {
     startingCashCents: config.startingCashCents,
     endingCashCents: ending,
@@ -384,6 +460,9 @@ export function seasonResults(
     distanceTraveled: distance,
     tradeCount: state.ledger.filter((entry) => entry.type === 'purchase' || entry.type === 'sale')
       .length,
+    tradingScore,
+    mathScore,
+    explanationScore,
     score,
     performanceLabel:
       score >= 80
@@ -462,9 +541,29 @@ function commitTrade(
   let ledger = [...state.ledger];
   for (const line of lines) {
     const good = config.goods.find((item) => item.id === line.goodId);
-    const unitPrice = marketPrice(config, state.currentLocationId, line.goodId, line.direction);
-    if (good === undefined || unitPrice === undefined) {
+    const postedUnitPrice = marketPrice(
+      config,
+      state.currentLocationId,
+      line.goodId,
+      line.direction,
+    );
+    if (good === undefined || postedUnitPrice === undefined) {
       return failure(state, 'A trade item is no longer available at this market.');
+    }
+    const discountPercent = purchaseDiscountPercent(config, line.direction, line.quantity);
+    const unitPrice = effectiveTradeUnitPrice(config, state.currentLocationId, line);
+    const lineTotal = unitPrice * line.quantity;
+    if (config.transactionMath?.answerRequired && line.studentTotalCents === undefined) {
+      return failure(
+        state,
+        `${good.name}: enter the exact transaction total before completing the trade.`,
+      );
+    }
+    if (line.studentTotalCents !== undefined && line.studentTotalCents !== lineTotal) {
+      return failure(
+        state,
+        `${good.name}: the transaction total does not match the price calculation.`,
+      );
     }
     const entryId = `ledger-${state.version + 1}-${ledger.length + 1}`;
     let costBasisCents: number | undefined;
@@ -490,7 +589,7 @@ function commitTrade(
       inventory = sold.inventory;
       costBasisCents = sold.costBasisCents;
     }
-    const cashChange = unitPrice * line.quantity * (line.direction === 'buy' ? -1 : 1);
+    const cashChange = lineTotal * (line.direction === 'buy' ? -1 : 1);
     const cargoDelta = good.unitCargo * line.quantity * (line.direction === 'buy' ? 1 : -1);
     ledger = appendLedger(ledger, {
       id: entryId,
@@ -504,6 +603,9 @@ function commitTrade(
         goodId: good.id,
         quantity: line.quantity,
         unitPriceCents: unitPrice,
+        postedUnitPriceCents: postedUnitPrice,
+        discountPercent,
+        studentTotalCents: line.studentTotalCents,
         costBasisCents,
       },
       createdAt: new Date().toISOString(),
@@ -560,6 +662,7 @@ function commitRoute(
   state: Readonly<SimulationDecisionState>,
   routeId: string,
   rationale: string,
+  forecastAnswer?: RouteForecastAnswer,
 ): SimulationDecisionResult {
   if (state.pendingEventId !== undefined || state.activeTravel !== undefined) {
     return failure(state, 'Finish the current journey before choosing another route.');
@@ -571,18 +674,43 @@ function commitRoute(
   if (route === undefined || route.fromLocationId !== state.currentLocationId) {
     return failure(state, 'Choose a route that begins at your current location.');
   }
+  if (!routeIsUnlocked(config, state, route.id)) {
+    return failure(state, 'Finish the current trading mission to unlock this route.');
+  }
+  const progression = choiceProgression(config, state);
+  if (progression.enabled && progression.currentStageIndex < progression.stageCount - 1) {
+    return failure(state, 'Buy two kinds of goods before departing.');
+  }
   if (!routeIsCompatible(config, state, route)) {
     return failure(state, 'Your transportation is not compatible with this route terrain.');
   }
   if (cashOnHand(state) < route.supplyCostCents) {
     return failure(state, 'You do not have enough cash for route supplies.');
   }
+  const forecast = routeProfitForecast(config, state, route);
+  const forecastRule = config.routeForecastChallenge;
+  const salesRevenueCorrect =
+    forecastAnswer !== undefined &&
+    Math.abs(forecastAnswer.salesRevenueCents - forecast.expectedSalesRevenueCents) <=
+      (forecastRule?.toleranceCents ?? 0);
+  const tripProfitCorrect =
+    forecastAnswer !== undefined &&
+    Math.abs(forecastAnswer.tripProfitCents - forecast.expectedTripProfitCents) <=
+      (forecastRule?.toleranceCents ?? 0);
+  if (forecastRule?.requiredBeforeDeparture && (!salesRevenueCorrect || !tripProfitCorrect)) {
+    return failure(state, 'Complete both profit forecast math checks before departing.');
+  }
   const eventCount = Math.min(2, Math.max(1, route.estimatedDays - 1));
-  const eventIds = deterministicSample(
-    config.events,
-    state.seed + state.routeHistory.length * 97,
-    eventCount,
-  ).map((event) => event.id);
+  const eventSeed = state.seed + state.routeHistory.length * 97;
+  const mathEvents = config.events.filter((event) => event.mathChallenge !== undefined);
+  const decisionEvents = config.events.filter((event) => event.mathChallenge === undefined);
+  const guaranteedMath = deterministicSample(mathEvents, eventSeed, Math.min(1, eventCount));
+  const remainingEvents = deterministicSample(
+    decisionEvents.length > 0 ? decisionEvents : config.events,
+    eventSeed + 31,
+    eventCount - guaranteedMath.length,
+  );
+  const eventIds = [...guaranteedMath, ...remainingEvents].map((event) => event.id);
   const historyId = `route-choice-${state.routeHistory.length + 1}`;
   const ledger = appendLedger(state.ledger, {
     id: `ledger-route-${state.routeHistory.length + 1}`,
@@ -606,6 +734,18 @@ function commitRoute(
         rationale: rationale.trim(),
         knownInfoSnapshot: structuredClone(route),
         eventIdsTriggered: eventIds,
+        forecast:
+          forecastAnswer === undefined
+            ? undefined
+            : {
+                expectedSalesRevenueCents: forecast.expectedSalesRevenueCents,
+                expectedTripProfitCents: forecast.expectedTripProfitCents,
+                goodsCostCents: forecast.goodsCostCents,
+                studentSalesRevenueCents: forecastAnswer.salesRevenueCents,
+                studentTripProfitCents: forecastAnswer.tripProfitCents,
+                salesRevenueCorrect,
+                tripProfitCorrect,
+              },
       },
     ],
     activeTravel: { routeId: route.id, progressDays: 0, eventIds, resolvedEventIds: [] },
@@ -653,6 +793,9 @@ function resolveEvent(
   }
   if (reasoning.trim().length < 12) {
     return failure(state, 'Explain why this event choice fits your strategy.');
+  }
+  if (event.mathChallenge !== undefined && mathAnswer !== event.mathChallenge.answer) {
+    return failure(state, 'Correct the math check before making the official trail choice.');
   }
   if (cashOnHand(state) + choice.cashChangeCents < 0) {
     return failure(state, 'You do not have enough cash for that choice.');

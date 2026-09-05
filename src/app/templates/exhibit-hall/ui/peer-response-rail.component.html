@@ -1,0 +1,74 @@
+<section class="response-rail" aria-labelledby="response-title">
+  <header>
+    <div class="card-stack" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div>
+      <span>Visitor response rail</span>
+      <h2 id="response-title">Question cards</h2>
+    </div>
+    <strong>{{ responses().length }}</strong>
+  </header>
+
+  @if (canRespond()) {
+    <form (submit)="$event.preventDefault(); posted.emit(draft())">
+      <label for="peer-response">{{ prompt() }}</label>
+      <textarea
+        id="peer-response"
+        rows="4"
+        [value]="draft()"
+        [attr.aria-describedby]="'peer-response-count'"
+        (input)="draftChanged.emit(readValue($event))"
+        (blur)="draftBlurred.emit()"
+        placeholder="Ask a specific question about the claim or evidence…"
+      ></textarea>
+      <div>
+        <small id="peer-response-count" [class.over]="words(draft()) > maxWords()">
+          {{ words(draft()) }} / {{ maxWords() }} words · Draft saves privately
+        </small>
+        <button type="submit" [disabled]="!draft().trim() || words(draft()) > maxWords()">
+          Post {{ responseName() }}
+        </button>
+      </div>
+    </form>
+  } @else {
+    <p class="response-closed">
+      Responses are unavailable here. They may be closed, or this may be your team’s exhibit.
+    </p>
+  }
+
+  <div class="posted-cards" aria-label="Posted question cards">
+    @for (response of responses(); track response.id) {
+      <article [class.hidden]="response.status === 'hidden'">
+        <span aria-hidden="true">?</span>
+        <p>
+          @if (response.status === 'hidden') {
+            <em>Hidden by teacher</em>
+          } @else {
+            {{ response.body }}
+          }
+        </p>
+        <footer>
+          <strong>{{ response.authorDisplayName }}</strong>
+          <small>Snapshot {{ response.snapshotId.split('-').at(-1) }}</small>
+          @if (teacherMode()) {
+            <button
+              type="button"
+              (click)="
+                moderated.emit({
+                  responseId: response.id,
+                  action: response.status === 'hidden' ? 'restore' : 'hide',
+                })
+              "
+            >
+              {{ response.status === 'hidden' ? 'Restore' : 'Hide' }}
+            </button>
+          }
+        </footer>
+      </article>
+    } @empty {
+      <div class="no-cards">
+        <span aria-hidden="true">✦</span>
+        <p>No posted cards yet. Be the first visitor to ask a focused question.</p>
+      </div>
+    }
+  </div>
+</section>

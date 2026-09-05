@@ -1,0 +1,67 @@
+<section class="replay-shell" aria-labelledby="replay-title">
+  <header class="replay-header">
+    <div>
+      <span>Journey replay · {{ runtime.enrollment.studentDisplayName }}</span>
+      <h1 id="replay-title">{{ runtime.config.replay.title }}</h1>
+    </div>
+    <button type="button" class="close" (click)="close()">Return to journey</button>
+  </header>
+
+  <div class="replay-stage">
+    <app-living-journey-map
+      [map]="runtime.config.map"
+      [route]="route()"
+      [team]="runtime.config.team"
+      mapLabel="Animated replay of the recorded student journey"
+    />
+    @if (scene(); as currentScene) {
+      <article class="scene-card" aria-live="polite">
+        <span>Scene {{ sceneIndex() + 1 }} · {{ currentScene.type }}</span>
+        <h2>{{ currentScene.title }}</h2>
+        <p>{{ currentScene.systemNarration }}</p>
+        @if (stepRecord(); as record) {
+          <blockquote>
+            {{ record.studentResponse.text || record.studentResponse.transcript || 'Student audio response' }}
+            <cite>Student reasoning · {{ record.studentResponse.responseMode }}</cite>
+          </blockquote>
+          @if (record.studentResponse.mediaAssetId && runtime.mediaPreviewUrl(); as audioUrl) {
+            <audio controls [src]="audioUrl">Student audio response</audio>
+          }
+        }
+        <div class="mastery" aria-label="Mastery evidence collected">
+          @for (tag of currentScene.masteryHighlights; track tag) {
+            <span>✓ {{ tag }}</span>
+          }
+        </div>
+      </article>
+    } @else {
+      <article class="empty-replay">
+        <h2>Complete a chapter to begin the replay.</h2>
+        <p>Recorded choices and explanations will become scenes automatically.</p>
+      </article>
+    }
+  </div>
+
+  <footer class="replay-controls">
+    <div class="transport" aria-label="Playback controls">
+      <button type="button" (click)="previous()" [disabled]="sceneIndex() === 0">← Previous</button>
+      <button type="button" class="play" (click)="togglePlayback()" [disabled]="playableScenes().length === 0">
+        {{ playing ? 'Pause' : 'Play my journey' }}
+      </button>
+      <button type="button" (click)="next()" [disabled]="sceneIndex() >= playableScenes().length - 1">Next →</button>
+    </div>
+    <div class="scene-editor" aria-label="Replay scene editor">
+      @for (item of runtime.state().replayTimeline; track item.id) {
+        <div [class.current]="scene()?.id === item.id" [class.hidden]="item.hidden">
+          <label>
+            <input type="checkbox" [checked]="!item.hidden" (change)="toggleScene(item.id, $event)" />
+            Include
+          </label>
+          <button type="button" [disabled]="item.hidden" (click)="selectScene(item.id)">
+            <span>{{ item.order + 1 }}</span>{{ item.title }}
+          </button>
+        </div>
+      }
+    </div>
+  </footer>
+</section>

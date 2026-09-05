@@ -4,13 +4,19 @@
     <app-simulation-company-setup />
   </div>
 } @else {
-  <div class="simulation-shell">
+  <div
+    class="simulation-shell"
+    [class.map-mode]="runtime.state().lastView === 'route'"
+    [class.market-mode]="runtime.state().lastView === 'market'"
+    [class.cargo-mode]="runtime.state().lastView === 'cargo'"
+    [class.journey-mode]="runtime.state().lastView === 'events'"
+  >
     <header class="mission-bar">
       <div class="brand">
         <span class="compass" aria-hidden="true">✥</span>
         <div>
           <strong>{{ runtime.config.title }}</strong
-          ><small>{{ runtime.state().companyName }} · {{ runtime.config.gradeLabel }}</small>
+          ><small>{{ runtime.state().companyName }}</small>
         </div>
       </div>
       <dl>
@@ -35,26 +41,35 @@
         <a routerLink="/projects">← Projects</a
         ><button type="button" (click)="helpOpen.set(true)">? Help / Rules</button>
       </div>
+      <div
+        class="season-track"
+        role="progressbar"
+        aria-label="Trading season progress"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        [attr.aria-valuenow]="seasonPercent()"
+      >
+        <span [style.width.%]="seasonPercent()"><i aria-hidden="true">◆</i></span>
+      </div>
     </header>
 
     <aside class="navigation-rail">
       <div class="rail-emblem" aria-hidden="true">{{ runtime.config.emblems[0]?.symbol }}</div>
-      <nav aria-label="Simulation workspaces">
-        @for (item of navigation; track item.view) {
+      <nav aria-label="Main game spaces">
+        @for (item of primaryNavigation; track item.space; let index = $index) {
           <button
             type="button"
-            [class.active]="runtime.state().lastView === item.view"
-            [class.attention]="item.view === 'events' && runtime.state().pendingEventId"
-            [disabled]="locked(item.view)"
-            (click)="navigate(item.view)"
+            [class.active]="currentSpace() === item.space"
+            [class.attention]="item.space === 'travel' && runtime.state().pendingEventId"
+            [attr.aria-keyshortcuts]="'' + (index + 1)"
+            (click)="navigateSpace(item.space)"
           >
             <span aria-hidden="true">{{ item.icon }}</span
             ><strong>{{ item.label }}</strong>
-            @if (locked(item.view)) {
-              <small>Locked</small>
-            }
-            @if (item.view === 'events' && runtime.state().pendingEventId) {
+            @if (item.space === 'travel' && runtime.state().pendingEventId) {
               <small>Decision</small>
+            } @else {
+              <kbd aria-hidden="true">{{ index + 1 }}</kbd>
             }
           </button>
         }
@@ -70,13 +85,13 @@
 
     <main class="simulation-main">
       <section class="hud" aria-label="Live company status">
-        <article>
+        <article [class.resource-flash]="cashFeedbackActive()">
           <span aria-hidden="true">$</span>
           <div>
             <small>Cash on hand</small><strong>{{ runtime.money(runtime.cash()) }}</strong>
           </div>
         </article>
-        <article>
+        <article [class.resource-flash]="cargoFeedbackActive()">
           <span aria-hidden="true">▣</span>
           <div>
             <small>Cargo used / capacity</small
@@ -105,12 +120,62 @@
         <article>
           <span aria-hidden="true">★</span>
           <div>
-            <small>Mission target</small
-            ><strong>{{ runtime.money(runtime.config.profitTargetCents) }}</strong
-            ><em>Reserve {{ runtime.money(runtime.config.reserveTargetCents) }}</em>
+            <small>Live game score</small><strong>{{ runtime.results().score }} / 100</strong
+            ><em
+              >Trade {{ runtime.results().tradingScore }}/40 · Math
+              {{ runtime.results().mathScore }}/40 · Explain
+              {{ runtime.results().explanationScore }}/20</em
+            >
+            <i class="goal-meter"><b [style.width.%]="runtime.results().score"></b></i>
           </div>
         </article>
       </section>
+
+      @if (currentSpace() !== 'teacher') {
+        @if (contextNavigation().length > 0) {
+          <nav class="context-navigation" [attr.aria-label]="contextTitle() + ' tools'">
+            <div>
+              <small>{{
+                currentSpace() === 'plan' ? 'One planning board' : 'Your final work'
+              }}</small>
+              <strong>{{ contextTitle() }}</strong>
+            </div>
+            @for (item of contextNavigation(); track item.view) {
+              <button
+                type="button"
+                [class.active]="runtime.state().lastView === item.view"
+                [class.next]="nextMission().actionView === item.view"
+                [disabled]="locked(item.view)"
+                (click)="navigate(item.view)"
+              >
+                <span aria-hidden="true">{{ item.icon }}</span
+                >{{ item.label }}
+                @if (locked(item.view)) {
+                  <small>Locked</small>
+                }
+              </button>
+            }
+          </nav>
+        }
+
+        <section class="next-mission" aria-labelledby="next-mission-title" aria-live="polite">
+          <div class="mission-number" aria-hidden="true">GO</div>
+          <div class="mission-copy">
+            <small>{{ nextMission().eyebrow }}</small>
+            <h2 id="next-mission-title">{{ nextMission().title }}</h2>
+            <p>{{ nextMission().description }}</p>
+            @if (nextMission().progressLabel; as progressLabel) {
+              <div class="mission-progress">
+                <i><b [style.width.%]="missionProgressPercent()"></b></i>
+                <span>{{ progressLabel }}</span>
+              </div>
+            }
+          </div>
+          <button type="button" (click)="runNextMission()">
+            {{ nextMission().actionLabel }} <span aria-hidden="true">→</span>
+          </button>
+        </section>
+      }
 
       @if (runtime.state().status === 'paused_by_teacher') {
         <section class="paused-banner" role="status">
@@ -135,7 +200,12 @@
         </section>
       }
 
-      <div class="workspace" [attr.aria-busy]="runtime.saveState() === 'saving'">
+      <div
+        class="workspace"
+        tabindex="-1"
+        [attr.aria-label]="currentSpace() + ' workspace'"
+        [attr.aria-busy]="runtime.saveState() === 'saving'"
+      >
         @switch (runtime.state().lastView) {
           @case ('market') {
             <app-simulation-market-view />
@@ -158,6 +228,9 @@
           @case ('report') {
             <app-simulation-strategy-report />
           }
+          @case ('showcase') {
+            <app-simulation-final-showcase />
+          }
           @case ('teacher') {
             <app-simulation-teacher-control />
           }
@@ -168,19 +241,41 @@
       </div>
     </main>
 
-    <nav class="mobile-nav" aria-label="Mobile simulation navigation">
-      @for (item of navigation; track item.view) {
+    <nav class="mobile-nav" aria-label="Mobile game spaces">
+      @for (item of primaryNavigation; track item.space) {
         <button
           type="button"
-          [class.active]="runtime.state().lastView === item.view"
-          [disabled]="locked(item.view)"
-          (click)="navigate(item.view)"
+          [class.active]="currentSpace() === item.space"
+          (click)="navigateSpace(item.space)"
         >
           <span aria-hidden="true">{{ item.icon }}</span
           ><small>{{ item.label }}</small>
         </button>
       }
     </nav>
+
+    @if (resourceFeedback(); as feedback) {
+      <aside class="resource-feedback {{ feedback.direction }}" role="status" aria-live="polite">
+        <span aria-hidden="true">{{ feedback.icon }}</span>
+        <div>
+          <strong>{{ feedback.title }}</strong>
+          @for (line of feedback.lines; track line) {
+            <small>{{ line }}</small>
+          }
+        </div>
+      </aside>
+    }
+
+    @if (sceneTransition(); as scene) {
+      <div class="scene-transition" role="status" aria-live="polite">
+        <div>
+          <span aria-hidden="true">{{ scene.icon }}</span>
+          <small>{{ scene.eyebrow }}</small>
+          <strong>{{ scene.title }}</strong>
+          <p>{{ scene.subtitle }}</p>
+        </div>
+      </div>
+    }
   </div>
 }
 
@@ -201,19 +296,28 @@
     <section>
       <h3>Decision cycle</h3>
       <ol>
-        <li>Compare market prices and cargo space.</li>
-        <li>Draft and review trades before committing.</li>
-        <li>Compare route cost, time, terrain, and risk.</li>
-        <li>Resolve events using the known effects and math.</li>
-        <li>Pin ledger records and decisions as evidence.</li>
+        <li>Visit two shops and read their clues.</li>
+        <li>Choose a route and note its travel cost.</li>
+        <li>Buy two kinds of goods while keeping travel money.</li>
+        <li>Predict sales and trip profit with the harder forecast.</li>
+        <li>Travel, solve the trail math check, and explain both choices.</li>
+        <li>Sell your goods, then finish and see your score.</li>
       </ol>
     </section>
     <section>
       <h3>Scoring</h3>
-      <p>
-        Financial results matter, but evidence and written reasoning also contribute. Unsold
-        inventory value is shown separately from cash.
-      </p>
+      <ul>
+        <li><strong>Trading: 40 points</strong> for profit toward the $50 goal.</li>
+        <li><strong>Math: 40 points</strong> for the profit forecast and trail math.</li>
+        <li><strong>Explain: 20 points</strong> for explaining both trail choices.</li>
+      </ul>
+      <p>Your game score is separate from your teacher's review of your mathematics.</p>
+    </section>
+    <section>
+      <h3>Words used in the game</h3>
+      <p><strong>Travel money:</strong> cash kept aside to pay for your route.</p>
+      <p><strong>Money record:</strong> the list of money earned and spent.</p>
+      <p><strong>Profit:</strong> money earned after subtracting all costs.</p>
     </section>
     <section>
       <h3>Saving</h3>

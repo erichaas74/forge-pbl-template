@@ -1,0 +1,219 @@
+<main class="builder-page">
+  <header class="builder-bar">
+    <a routerLink="/projects">← Project library</a>
+    <div>
+      <span>Builder information</span>
+      <strong>{{ config.title }}</strong>
+    </div>
+    <a class="open-game" routerLink="/frontier-trading">Open student game →</a>
+  </header>
+
+  <section class="builder-hero">
+    <div>
+      <span class="eyebrow">Current source of truth</span>
+      <h1>{{ info.projectLabel }}</h1>
+      <p>{{ info.statusSummary }}</p>
+      <div class="hero-actions">
+        <button type="button" (click)="copySnapshot()">
+          {{ copiedPath() === '__snapshot__' ? '✓ Snapshot copied' : 'Copy current snapshot' }}
+        </button>
+        <a routerLink="/frontier-trading">Preview student path</a>
+      </div>
+    </div>
+    <aside>
+      <small>Current release</small>
+      <strong>v{{ config.projectVersion }}</strong>
+      <span>{{ info.currentMode }}</span>
+      <p>Snapshot updated {{ info.updatedAt }}</p>
+    </aside>
+  </section>
+
+  @if (!snapshotAligned()) {
+    <section class="stale-warning" role="alert">
+      <strong>Builder snapshot needs an update.</strong>
+      <span>
+        Notes describe v{{ info.snapshotVersion }}, but the live configuration is
+        v{{ config.projectVersion }}. Update the builder snapshot before relying on its change log.
+      </span>
+    </section>
+  }
+
+  <nav class="page-index" aria-label="Builder page sections">
+    <a href="#settings">Settings</a>
+    <a href="#student-path">Student path</a>
+    <a href="#scaffolding">Scaffolding</a>
+    <a href="#routes">Route paths</a>
+    <a href="#hbc">HBC direction</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#files">Files</a>
+    <a href="#changes">Changes</a>
+  </nav>
+
+  <section id="settings" class="page-section settings-section">
+    <header>
+      <div><span class="eyebrow">Read from live configuration</span><h2>Current settings</h2></div>
+      <p>These values update automatically when the project configuration changes.</p>
+    </header>
+    <div class="settings-grid">
+      @for (setting of currentSettings(); track setting.label) {
+        <article><small>{{ setting.label }}</small><strong>{{ setting.value }}</strong></article>
+      }
+    </div>
+  </section>
+
+  <section id="student-path" class="page-section path-section">
+    <header>
+      <div><span class="eyebrow">Student experience</span><h2>Current learning path</h2></div>
+      <p>The easy base comes first; harder forecast and audit work is added later.</p>
+    </header>
+    <ol>
+      @for (step of info.studentPath; track step) {
+        <li><span>{{ $index + 1 }}</span><p>{{ step }}</p></li>
+      }
+    </ol>
+  </section>
+
+  <section id="scaffolding" class="page-section">
+    <header>
+      <div><span class="eyebrow">Configuration-driven gates</span><h2>Choice scaffolding</h2></div>
+      <p>Changing a stage updates goods and routes without changing the generic UI component.</p>
+    </header>
+    <div class="stage-grid">
+      @for (stage of progressionStages(); track stage.id) {
+        <article>
+          <span>Level {{ stage.number }}</span>
+          <h3>{{ stage.title }}</h3>
+          <p>{{ stage.description }}</p>
+          <dl>
+            <div><dt>Gate</dt><dd>{{ stage.requirement }}</dd></div>
+            <div><dt>Goods open</dt><dd>{{ stage.availableGoodIds.length }} / {{ config.goods.length }}</dd></div>
+            <div><dt>Routes open</dt><dd>{{ stage.availableRouteIds.length }} / {{ config.routes.length }}</dd></div>
+          </dl>
+        </article>
+      }
+    </div>
+    <div class="assessment-grid">
+      <article>
+        <span class="eyebrow">Harder math gate</span>
+        <h3>Profit forecast</h3>
+        <p>Students calculate destination sales, then subtract goods and travel costs before departure.</p>
+      </article>
+      <article>
+        <span class="eyebrow">Route event</span>
+        <h3>Guaranteed math</h3>
+        <p>Every committed route schedules a math event and requires a correct answer to continue.</p>
+      </article>
+      <article>
+        <span class="eyebrow">End audit</span>
+        <h3>Forecast versus actual</h3>
+        <p>Results isolate the difference caused by prices, trail costs, events, and decisions.</p>
+      </article>
+      <article>
+        <span class="eyebrow">Final response</span>
+        <h3>{{ config.reportSections.length }} reflection prompts</h3>
+        <p>{{ config.reportSections[0]?.title }} · {{ config.reportSections[1]?.title }} · {{ config.reportSections[2]?.title }} · {{ config.reportSections[3]?.title }}</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="routes" class="page-section route-section">
+    <header>
+      <div><span class="eyebrow">Live route configuration</span><h2>Current route paths</h2></div>
+      <p>This is the practice network. It is not labeled as the final historical HBC network.</p>
+    </header>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Route ID</th><th>Path</th><th>Open at</th><th>Days</th><th>Cost</th><th>Risk</th><th>Destination market</th></tr></thead>
+        <tbody>
+          @for (route of routeRows(); track route.id) {
+            <tr>
+              <td><code>{{ route.id }}</code></td>
+              <td><strong>{{ route.from }} → {{ route.to }}</strong><small>{{ route.name }}</small></td>
+              <td>{{ route.firstStage }}</td>
+              <td>{{ route.estimatedDays }}</td>
+              <td>{{ money(route.supplyCostCents) }}</td>
+              <td><span [class]="'risk ' + route.risk">{{ route.risk }}</span></td>
+              <td>{{ route.market }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="hbc" class="page-section hbc-section">
+    <header>
+      <div><span class="eyebrow">Historical build status</span><h2>HBC direction and boundaries</h2></div>
+      <p>Read this before changing route names, vehicles, map art, events, or historical claims.</p>
+    </header>
+    <ul>
+      @for (item of info.historicalDirection; track item) {
+        <li><span aria-hidden="true">✥</span><p>{{ item }}</p></li>
+      }
+    </ul>
+  </section>
+
+  <section id="roadmap" class="page-section roadmap-section">
+    <header>
+      <div><span class="eyebrow">Competition delivery path</span><h2>Builder roadmap</h2></div>
+      <p>The next safe implementation slice is the reviewed HBC scenario package.</p>
+    </header>
+    <div class="roadmap">
+      @for (phase of info.roadmap; track phase.phase) {
+        <article [class]="'roadmap-card ' + phase.status">
+          <span>{{ phase.status }}</span>
+          <h3>{{ phase.phase }}</h3>
+          <p>{{ phase.outcome }}</p>
+          @if (phase.dependsOn) { <small>Depends on: {{ phase.dependsOn }}</small> }
+        </article>
+      }
+    </div>
+  </section>
+
+  <section id="files" class="page-section files-section">
+    <header>
+      <div><span class="eyebrow">Application, source, and document locations</span><h2>Builder paths</h2></div>
+      <label>Filter paths<input type="search" [ngModel]="pathQuery()" (ngModelChange)="pathQuery.set($event)" placeholder="route, engine, HBC, competition…" /></label>
+    </header>
+    <div class="file-list">
+      @for (item of filteredPaths(); track item.path) {
+        <article>
+          <span [class]="'kind ' + item.kind">{{ item.kind }}</span>
+          <div><strong>{{ item.label }}</strong><code>{{ item.path }}</code><p>{{ item.purpose }}</p></div>
+          @if (item.kind === 'app') {
+            <a [routerLink]="item.path">Open</a>
+          } @else {
+            <button type="button" (click)="copyPath(item)">{{ copiedPath() === item.path ? '✓ Copied' : 'Copy path' }}</button>
+          }
+        </article>
+      } @empty {
+        <p class="empty">No paths match that filter.</p>
+      }
+    </div>
+  </section>
+
+  <section id="changes" class="page-section changes-section">
+    <header>
+      <div><span class="eyebrow">Versioned builder snapshot</span><h2>Latest changes</h2></div>
+      <p>Edit the builder snapshot whenever curriculum, gates, scoring, or architecture changes.</p>
+    </header>
+    <div class="change-list">
+      @for (release of info.changes; track release.version) {
+        <article>
+          <header><span>v{{ release.version }}</span><div><h3>{{ release.title }}</h3><small>{{ release.date }}</small></div></header>
+          <ul>@for (change of release.changes; track change) { <li>{{ change }}</li> }</ul>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="page-section guardrail-section">
+    <header><div><span class="eyebrow">Do not bypass</span><h2>Builder guardrails</h2></div></header>
+    <ul>@for (guardrail of info.guardrails; track guardrail) { <li>{{ guardrail }}</li> }</ul>
+  </section>
+
+  <footer class="builder-footer">
+    <div><strong>{{ config.projectId }}@{{ config.projectVersion }}</strong><span>{{ info.updatedBy }}</span></div>
+    <a routerLink="/frontier-trading">Return to student game →</a>
+  </footer>
+</main>

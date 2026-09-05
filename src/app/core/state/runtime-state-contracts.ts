@@ -6,6 +6,7 @@ export interface RuntimeScope {
   tenantId: string;
   projectId: string;
   projectVersion: string;
+  attemptId?: string;
   classId?: string;
   studentId?: string;
   teamId?: string;

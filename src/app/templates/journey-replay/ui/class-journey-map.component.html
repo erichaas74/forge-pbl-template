@@ -1,0 +1,117 @@
+<section class="class-map" aria-labelledby="class-map-title">
+  <header>
+    <div>
+      <span>Final class artifact</span>
+      <h2 id="class-map-title">Class voyages · One changing world</h2>
+      <p>Each route remains a separate voyage record. The live summary refreshes without exposing another student's private runtime.</p>
+    </div>
+    <button type="button" class="replay" [disabled]="voyages().length === 0" (click)="startClassReplay()">▶ Class replay</button>
+  </header>
+
+  @if (runtime.session() && !runtime.isTeacher()) {
+    <div class="access-note" role="status">
+      The live class map is a teacher view. Your own voyage remains saved and available in Journey Replay.
+    </div>
+  } @else if (runtime.isTeacher()) {
+    <div class="live-status" role="status">
+      <span aria-hidden="true"></span>
+      Live class summary · {{ runtime.classSummary()?.members?.length ?? 0 }} enrolled voyages
+    </div>
+  }
+
+  <nav class="modes" aria-label="Class map modes">
+    <button type="button" [attr.aria-pressed]="mode() === 'all'" (click)="setMode('all')">All voyages</button>
+    <button type="button" [attr.aria-pressed]="mode() === 'single'" (click)="setMode('single')">Single voyage</button>
+    <button type="button" [attr.aria-pressed]="mode() === 'compare'" (click)="setMode('compare')">Compare two</button>
+  </nav>
+
+  <div class="team-legend" aria-label="Team routes">
+    @for (voyage of voyages(); track voyage.voyageId) {
+      <button
+        type="button"
+        [class.active]="visibleVoyages().includes(voyage)"
+        [disabled]="mode() === 'all' || mode() === 'classReplay'"
+        [style.--team-color]="voyage.team.color"
+        (click)="toggleVoyage(voyage.voyageId)"
+      >
+        <span>{{ voyage.team.emblem }}</span>
+        <strong>{{ voyage.team.name }}</strong>
+        <small>{{ voyage.team.linePattern }}</small>
+      </button>
+    } @empty {
+      <p>No class voyages are available in this view.</p>
+    }
+  </div>
+
+  @if (mode() === 'classReplay') {
+    <div class="reveal-status" aria-live="polite">
+      Voyage {{ revealCount() }} of {{ voyages().length }} ·
+      {{ visibleVoyages().at(-1)?.team?.name }} joins the class map
+    </div>
+  }
+
+  <app-living-journey-map
+    [map]="runtime.config.map"
+    [route]="[]"
+    [team]="runtime.config.team"
+    [classVoyages]="visibleVoyages()"
+    [intersections]="intersections()"
+    mapLabel="Class expedition map showing separate team voyage layers"
+  />
+
+  <div class="comparison-notes">
+    <article>
+      <span>Shared locations</span>
+      <strong>{{ intersections().length }}</strong>
+      <p>Ports used by more than one team become comparison points.</p>
+    </article>
+    @for (intersection of intersections().slice(0, 3); track intersection.locationId) {
+      <article>
+        <span>{{ locationName(intersection.locationId) }}</span>
+        <strong>{{ intersection.voyageIds.length }} voyages</strong>
+        <p>{{ intersection.eventLabels.join(' · ') || 'Routes crossed here' }}</p>
+      </article>
+    }
+  </div>
+
+  @if (runtime.isTeacher()) {
+    <section class="review-queue" aria-labelledby="review-queue-title">
+      <header>
+        <div>
+          <span>Authoritative assessment</span>
+          <h3 id="review-queue-title">Replay approval queue</h3>
+        </div>
+        <strong>{{ pendingReviews().length }} awaiting review</strong>
+      </header>
+      <div class="review-settings">
+        <label>Mastery level
+          <select [value]="reviewLevel()" (change)="setReviewLevel($event)">
+            <option value="developing">Developing</option>
+            <option value="proficient">Proficient</option>
+            <option value="advanced">Advanced</option>
+          </select>
+        </label>
+        <label>Feedback
+          <textarea rows="2" [value]="reviewFeedback()" (input)="setReviewFeedback($event)" placeholder="Add evidence-based feedback"></textarea>
+        </label>
+      </div>
+      <div class="submission-list">
+        @for (member of pendingReviews(); track member.studentId) {
+          <article>
+            <div>
+              <span>{{ member.completedStepCount }} / {{ member.totalStepCount }} chapters</span>
+              <h4>{{ member.studentDisplayName }}</h4>
+              <p>{{ member.responsePreview || 'Replay and journey record are ready for review.' }}</p>
+            </div>
+            <footer>
+              <button type="button" class="revise" (click)="review(member, 'revision-requested')">Request revision</button>
+              <button type="button" class="approve" (click)="review(member, 'approved')">Approve replay</button>
+            </footer>
+          </article>
+        } @empty {
+          <p class="empty-review">No submitted journeys are waiting for review.</p>
+        }
+      </div>
+    </section>
+  }
+</section>

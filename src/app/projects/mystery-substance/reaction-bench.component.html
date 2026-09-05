@@ -1,0 +1,718 @@
+<section class="bench-canvas" (dragend)="clearDockHover()">
+  <div class="bench-scene" role="img" aria-label="Sealed-vessel reaction bench"></div>
+  <div class="bench-shade" aria-hidden="true"></div>
+
+  <div class="bench-grid">
+    <!-- ---- Specimen tray + protocol -------------------------------------- -->
+    <aside class="tray" aria-labelledby="tray-title">
+      <span class="kicker">Sealed specimens</span>
+      <h2 id="tray-title">Specimen tray</h2>
+      <p class="tray-hint">Drag one vial onto the bench to start a run.</p>
+
+      <ul class="vial-tray">
+        @for (vial of vials; track vial.vialId) {
+          <li>
+            <button
+              class="vial-chip"
+              type="button"
+              draggable="true"
+              [class.active]="vialId() === vial.vialId"
+              [class.held]="heldVialId() === vial.vialId"
+              [style.--vial-color]="vial.color"
+              [disabled]="busy()"
+              [attr.aria-pressed]="heldVialId() === vial.vialId"
+              [attr.aria-label]="
+                'Vial ' +
+                vial.code +
+                ', ' +
+                vial.cue +
+                (isScreened(vial.vialId) ? ', already screened' : '') +
+                (heldVialId() === vial.vialId ? ', picked up' : '')
+              "
+              (dragstart)="startVialDrag($event, vial.vialId)"
+              (click)="holdVial(vial.vialId)"
+            >
+              <img [src]="vial.image" alt="" />
+              <span class="vial-chip__code">{{ vial.code }}</span>
+              <span class="vial-chip__cue">{{ vial.cue }}</span>
+              @if (isScreened(vial.vialId)) {
+                <span class="vial-chip__done" aria-hidden="true">✓</span>
+              }
+            </button>
+          </li>
+        }
+      </ul>
+
+      <span class="kicker">Protocol</span>
+      <ol class="protocol">
+        <li [class.done]="volumeOk() && step() !== 'fill'" [class.active]="step() === 'fill'">
+          <span aria-hidden="true">1</span>
+          <span
+            >Turn the valve and draw <strong>{{ targetVolumeMl.toFixed(1) }} mL</strong> into the
+            vessel</span
+          >
+        </li>
+        <li [class.done]="stages().length > 0" [class.active]="step() === 'weigh'">
+          <span aria-hidden="true">2</span>
+          <span
+            >Tip <strong>{{ targetMassG.toFixed(2) }} g</strong> of specimen onto the balance</span
+          >
+        </li>
+        <li [class.done]="stages().length > 0" [class.active]="step() === 'react'">
+          <span aria-hidden="true">3</span>
+          <span>Transfer it into the sealed vessel and observe</span>
+        </li>
+        <li [class.done]="step() === 'complete'" [class.active]="step() === 'indicator'">
+          <span aria-hidden="true">4</span>
+          <span
+            >Add <strong>{{ requiredDrops }} drops</strong> of Indicator B</span
+          >
+        </li>
+      </ol>
+
+      @if (procedureLog().length > 0) {
+        <span class="kicker">Procedure log</span>
+        <ol class="run-log">
+          @for (entry of procedureLog(); track entry.id) {
+            <li [class.off-protocol]="!entry.clean">
+              <span class="run-log__index">{{ entry.vialCode }}</span>
+              <span>
+                <strong>{{ entry.headline }}</strong>
+                <small>
+                  {{ entry.volumeMl.toFixed(2) }} mL · {{ entry.massG.toFixed(2) }} g ·
+                  {{ entry.drops }} drops
+                  @if (entry.retries > 0) {
+                    · {{ entry.retries }} reset(s)
+                  }
+                </small>
+              </span>
+            </li>
+          }
+        </ol>
+      }
+    </aside>
+
+    <!-- ---- The rig -------------------------------------------------------- -->
+    <div class="rig">
+      <header class="rig-head">
+        <div>
+          <span class="kicker">Sealed vessel · single specimen</span>
+          <h1>
+            @if (activeVial(); as vial) {
+              Screening Vial {{ vial.code }}
+            } @else {
+              Drag a vial onto the bench
+            }
+          </h1>
+        </div>
+        @if (step() === 'react') {
+          <div class="rig-clock">
+            <small>Reaction clock</small>
+            <strong>{{ elapsedSeconds() }}<span>s</span></strong>
+          </div>
+        }
+      </header>
+
+      <div class="apparatus">
+        <!-- ---- Plumbed column: reservoir on top, tube down to the vessel --- -->
+        <div class="plumbing">
+          <div class="tun" [class.flowing]="tapOpen()">
+            <span class="tun-label" aria-hidden="true">Solution A reservoir</span>
+            <div class="tun-body" [class.has-plate]="art.reservoir.src">
+              @if (art.reservoir.src; as plate) {
+                <img
+                  class="part-plate"
+                  [src]="plate"
+                  [style.mix-blend-mode]="art.reservoir.blend"
+                  alt=""
+                />
+              }
+              <div class="tun-well">
+                <div class="tun-liquid" [style.height.%]="tunLevelPercent()">
+                  <span class="tun-surface" aria-hidden="true"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="feed-tube"
+            [class.flowing]="tapOpen()"
+            [class.has-plate]="art.tube.src"
+            aria-hidden="true"
+          >
+            @if (art.tube.src; as plate) {
+              <img
+                class="part-plate part-plate--tile"
+                [src]="plate"
+                [style.mix-blend-mode]="art.tube.blend"
+                alt=""
+              />
+            }
+            <span class="tube-wall"></span>
+            <span class="tube-flow"></span>
+          </div>
+
+          <!-- the valve is the control: turning it is what opens the line -->
+          <button
+            class="valve"
+            type="button"
+            [class.has-plate-body]="art.valve.src"
+            [class.open]="tapOpen()"
+            [disabled]="step() !== 'fill' || busy()"
+            [attr.aria-pressed]="tapOpen()"
+            [attr.aria-label]="
+              (tapOpen() ? 'Close' : 'Open') +
+              ' the solution valve. Currently ' +
+              (tapOpen() ? 'open and flowing.' : 'closed.')
+            "
+            (click)="toggleTap()"
+          >
+            @if (art.valve.src; as plate) {
+              <img
+                class="part-plate valve-plate"
+                [src]="plate"
+                [style.mix-blend-mode]="art.valve.blend"
+                alt=""
+              />
+            } @else {
+              <span class="valve-housing" aria-hidden="true"></span>
+            }
+            <span class="valve-handle" aria-hidden="true"><i></i></span>
+            <span class="valve-caption">{{ tapOpen() ? 'Open' : 'Closed' }}</span>
+          </button>
+
+          <div class="spout" aria-hidden="true">
+            <span class="spout-neck"></span>
+            @if (tapOpen()) {
+              <div class="pour-stream">
+                <span class="stream-body"></span>
+                @for (bead of [0, 1, 2]; track bead) {
+                  <i class="stream-bead" [style.animation-delay.ms]="bead * 160"></i>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- ---- The sealed vessel, directly under the spout ---- -->
+          <!-- Art slot: apparatusArt.beaker. The SVG below is the stand-in;
+               a rendered plate drops in behind the dynamic layers. -->
+          <div class="beaker" [class.reacting]="step() === 'react'">
+            @if (art.beaker.src; as plate) {
+              <img
+                class="beaker-plate"
+                [src]="plate"
+                [style.mix-blend-mode]="art.beaker.blend"
+                alt=""
+              />
+            }
+
+            <svg
+              class="beaker-svg"
+              viewBox="0 0 128 176"
+              [class.plain]="!filters()"
+              aria-hidden="true"
+            >
+              <defs>
+                <clipPath id="rb-well">
+                  <path d="M33 47 H94 V135 A8 8 0 0 1 86 143 H41 A8 8 0 0 1 33 135 Z" />
+                </clipPath>
+
+                <!-- liquid deepens toward the base (Beer-Lambert) -->
+                <linearGradient id="rb-depth" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#fff" stop-opacity="0.34" />
+                  <stop offset="0.45" stop-color="#000" stop-opacity="0" />
+                  <stop offset="1" stop-color="#000" stop-opacity="0.42" />
+                </linearGradient>
+
+                <linearGradient id="rb-glass" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0" stop-color="#dff2f8" stop-opacity="0.85" />
+                  <stop offset="0.13" stop-color="#ffffff" stop-opacity="0.5" />
+                  <stop offset="0.34" stop-color="#8fbccb" stop-opacity="0.12" />
+                  <stop offset="0.82" stop-color="#cfe9f2" stop-opacity="0.3" />
+                  <stop offset="1" stop-color="#eaf8fc" stop-opacity="0.8" />
+                </linearGradient>
+
+                <!-- what sits behind the liquid bends and swims -->
+                <filter id="rb-refract" x="-12%" y="-12%" width="124%" height="124%">
+                  <feTurbulence
+                    type="fractalNoise"
+                    baseFrequency="0.014 0.05"
+                    numOctaves="2"
+                    seed="7"
+                    result="noise"
+                  />
+                  <feDisplacementMap
+                    in="SourceGraphic"
+                    in2="noise"
+                    scale="6"
+                    xChannelSelector="R"
+                    yChannelSelector="G"
+                  />
+                </filter>
+
+                <filter id="rb-gloss" x="-30%" y="-30%" width="160%" height="160%">
+                  <feGaussianBlur stdDeviation="2.4" />
+                </filter>
+                <filter id="rb-soft" x="-60%" y="-60%" width="220%" height="220%">
+                  <feGaussianBlur stdDeviation="5" />
+                </filter>
+              </defs>
+
+              <!-- contact shadow, and the caustic the filled vessel throws -->
+              <ellipse class="rb-shadow" cx="64" cy="168" rx="44" ry="6" filter="url(#rb-soft)" />
+              @if (volumeMl() > 0) {
+                <ellipse
+                  class="rb-caustic"
+                  cx="64"
+                  cy="169"
+                  rx="30"
+                  ry="4.5"
+                  [attr.fill]="liquid()"
+                  filter="url(#rb-soft)"
+                />
+              }
+
+              <g clip-path="url(#rb-well)">
+                <!-- back wall + graduations, seen through the liquid -->
+                <g
+                  class="rb-behind"
+                  [attr.filter]="filters() && volumeMl() > 0 ? 'url(#rb-refract)' : null"
+                >
+                  <rect x="33" y="47" width="61" height="96" fill="#08202c" opacity="0.4" />
+                  @if (!art.beaker.src) {
+                    @for (mark of [2, 4, 6]; track mark) {
+                      <g class="rb-grad" [attr.transform]="'translate(0 ' + gradY(mark) + ')'">
+                        <line x1="86" y1="0" x2="104" y2="0" />
+                        <text x="82" y="3.4">{{ mark }}</text>
+                      </g>
+                    }
+                  }
+                </g>
+
+                <!-- the target band the student has to stop inside -->
+                <rect
+                  class="rb-band"
+                  [attr.x]="wellX"
+                  [attr.y]="bandY()"
+                  [attr.width]="wellW"
+                  [attr.height]="bandH()"
+                />
+
+                <!-- liquid: body, depth grade, meniscus -->
+                @if (volumeMl() > 0) {
+                  <g class="rb-liquid">
+                    <rect
+                      class="rb-liquid-body"
+                      [attr.x]="wellX"
+                      [attr.y]="liquidY()"
+                      [attr.width]="wellW"
+                      [attr.height]="liquidH()"
+                      [attr.fill]="liquid()"
+                    />
+                    <rect
+                      [attr.x]="wellX"
+                      [attr.y]="liquidY()"
+                      [attr.width]="wellW"
+                      [attr.height]="liquidH()"
+                      fill="url(#rb-depth)"
+                    />
+                    <!-- concave meniscus pulling up at the walls -->
+                    <ellipse
+                      class="rb-meniscus"
+                      cx="64"
+                      [attr.cy]="liquidY()"
+                      rx="30.5"
+                      ry="3.6"
+                      [attr.fill]="liquid()"
+                    />
+                    <ellipse
+                      class="rb-meniscus-rim"
+                      cx="64"
+                      [attr.cy]="liquidY()"
+                      rx="30.5"
+                      ry="3.6"
+                    />
+                  </g>
+                }
+
+                @if (bubbling()) {
+                  <g class="rb-bubbles">
+                    @for (bubble of [0, 1, 2, 3, 4, 5, 6, 7, 8]; track bubble) {
+                      <circle
+                        [attr.cx]="37 + bubble * 6.8"
+                        [attr.cy]="liquidY() + liquidH() - 6"
+                        [attr.r]="1.6 + (bubble % 3) * 1.1"
+                        [style.animation-delay.ms]="bubble * 170"
+                      />
+                    }
+                  </g>
+                }
+
+                @if (transferring()) {
+                  <g class="rb-fall">
+                    @for (grain of transferGrains(); track grain.id) {
+                      <rect
+                        [attr.width]="grain.size"
+                        [attr.height]="grain.size"
+                        [attr.x]="64 + grain.offsetX"
+                        y="24"
+                        rx="0.6"
+                        [attr.fill]="vialColor(vialId())"
+                        [style.animation-delay.ms]="grain.delayMs"
+                        [style.--spin]="grain.spinDeg + 'deg'"
+                      />
+                    }
+                  </g>
+                }
+                @if (splashing()) {
+                  <ellipse
+                    class="rb-puff"
+                    cx="64"
+                    [attr.cy]="liquidY() + 6"
+                    rx="34"
+                    ry="12"
+                    [attr.fill]="vialColor(vialId())"
+                    filter="url(#rb-soft)"
+                  />
+                  <ellipse class="rb-ring" cx="64" [attr.cy]="liquidY()" rx="10" ry="3" />
+                  <ellipse
+                    class="rb-ring rb-ring--late"
+                    cx="64"
+                    [attr.cy]="liquidY()"
+                    rx="10"
+                    ry="3"
+                  />
+                }
+                @if (dropFalling()) {
+                  <ellipse class="rb-drop" cx="64" cy="30" rx="2.6" ry="3.4" />
+                }
+              </g>
+
+              <!-- glass body: only when no plate is carrying it -->
+              @if (!art.beaker.src) {
+                <path
+                  class="rb-glass"
+                  d="M28 41 H100 V135 A10 10 0 0 1 90 145 H38 A10 10 0 0 1 28 135 Z"
+                  fill="url(#rb-glass)"
+                />
+                <path
+                  class="rb-glass-edge"
+                  d="M28 41 H100 V135 A10 10 0 0 1 90 145 H38 A10 10 0 0 1 28 135 Z"
+                />
+                <path class="rb-highlight" d="M37 51 L35 126" filter="url(#rb-gloss)" />
+                <path class="rb-rimlight" d="M93 53 L95 130" />
+                <rect class="rb-stopper" x="46" y="24" width="36" height="14" rx="4" />
+                <rect class="rb-stopper-top" x="49" y="26" width="30" height="4" rx="2" />
+              }
+            </svg>
+
+            <div class="volume-readout" aria-live="polite">
+              <strong [class.ok]="volumeOk()" [class.over]="volumeOver()">
+                {{ volumeMl().toFixed(2) }} mL
+              </strong>
+              <small>
+                @if (volumeOk()) {
+                  in band
+                } @else if (volumeOver()) {
+                  over
+                } @else {
+                  target {{ targetVolumeMl.toFixed(1) }}
+                }
+              </small>
+            </div>
+          </div>
+
+          <div class="thermometer" [class.active]="step() === 'react' || stages().length > 0">
+            <div class="thermometer__track">
+              <div
+                class="thermometer__column"
+                [style.width.%]="((temperature() - 15) / 15) * 100"
+              ></div>
+            </div>
+            <span class="thermometer__read" aria-live="polite">
+              {{ temperature().toFixed(1) }} °C
+            </span>
+          </div>
+
+          <div class="line-controls">
+            <button
+              type="button"
+              [disabled]="step() !== 'fill' || tapOpen() || busy()"
+              (click)="nudgeVolume()"
+            >
+              +0.1 mL
+            </button>
+            <button type="button" [disabled]="busy() || volumeMl() === 0" (click)="drainBeaker()">
+              Drain vessel
+            </button>
+          </div>
+
+          @if (step() === 'fill') {
+            <button
+              class="primary-action"
+              type="button"
+              [disabled]="!volumeOk() || tapOpen()"
+              (click)="confirmVolume()"
+            >
+              Lock in {{ volumeMl().toFixed(2) }} mL → weigh specimen
+            </button>
+          }
+          @if (step() === 'indicator') {
+            <button class="primary-action" type="button" [disabled]="busy()" (click)="addDrop()">
+              Add drop {{ drops() + 1 }} of {{ requiredDrops }}
+            </button>
+          }
+        </div>
+
+        <!-- ---- Balance bay: the vial stands here and tips over the pan ---- -->
+        <div class="balance-bay">
+          <div
+            class="vial-dock"
+            [class.hovered]="dockHover()"
+            [class.filled]="activeVial() !== undefined"
+            (dragover)="allowDock($event)"
+            (dragleave)="clearDockHover()"
+            (drop)="dockVial()"
+            (click)="dockVial()"
+          >
+            @if (activeVial(); as vial) {
+              <!-- Art slot: apparatusArt.vial. SVG stand-in until a plate exists. -->
+              <div
+                class="lab-vial"
+                [class.tipping]="tipping()"
+                [class.has-plate]="art.vial.src"
+                [style.--vial-color]="vial.color"
+              >
+                @if (art.vial.src; as plate) {
+                  <img
+                    class="part-plate"
+                    [src]="plate"
+                    [style.mix-blend-mode]="art.vial.blend"
+                    alt=""
+                  />
+                }
+                <svg viewBox="0 0 34 82" aria-hidden="true">
+                  <defs>
+                    <linearGradient
+                      [attr.id]="'rb-barrel-' + vial.code"
+                      x1="0"
+                      y1="0"
+                      x2="1"
+                      y2="0"
+                    >
+                      <stop offset="0" stop-color="#0d2a36" stop-opacity="0.5" />
+                      <stop offset="0.2" stop-color="#ffffff" stop-opacity="0.42" />
+                      <stop offset="0.55" stop-color="#9fd2e0" stop-opacity="0.08" />
+                      <stop offset="0.88" stop-color="#dff2f8" stop-opacity="0.36" />
+                      <stop offset="1" stop-color="#0d2a36" stop-opacity="0.45" />
+                    </linearGradient>
+                    <clipPath [attr.id]="'rb-vial-well-' + vial.code">
+                      <path d="M9 22 H25 V66 A5 5 0 0 1 20 71 H14 A5 5 0 0 1 9 66 Z" />
+                    </clipPath>
+                  </defs>
+
+                  @if (!art.vial.src) {
+                    <rect class="rbv-cap" x="10" y="2" width="14" height="8" rx="2" />
+                    <rect class="rbv-neck" x="12" y="10" width="10" height="10" />
+                  }
+
+                  <g [attr.clip-path]="'url(#rb-vial-well-' + vial.code + ')'">
+                    <rect x="9" y="22" width="16" height="49" fill="#07202b" opacity="0.35" />
+                    <rect
+                      class="rbv-powder"
+                      x="9"
+                      y="47"
+                      width="16"
+                      height="24"
+                      [attr.fill]="vial.color"
+                    />
+                    <ellipse class="rbv-powder-top" cx="17" cy="47" rx="8" ry="1.8" />
+                  </g>
+
+                  <path
+                    class="rbv-glass"
+                    d="M6 20 H28 V70 A6 6 0 0 1 22 76 H12 A6 6 0 0 1 6 70 Z"
+                    [attr.fill]="'url(#rb-barrel-' + vial.code + ')'"
+                  />
+                  <path class="rbv-edge" d="M6 20 H28 V70 A6 6 0 0 1 22 76 H12 A6 6 0 0 1 6 70 Z" />
+                  @if (!art.vial.src) {
+                    <rect class="rbv-label" x="9" y="33" width="16" height="20" />
+                  }
+                  <text class="rbv-code" x="17" y="46">{{ vial.code }}</text>
+                  <path class="rbv-shine" d="M10 24 L9.5 68" />
+                </svg>
+              </div>
+
+              @if (tipping()) {
+                <div class="vial-pour" aria-hidden="true">
+                  @if (grainProfile().dust > 0) {
+                    <span
+                      class="pour-dust"
+                      [style.background]="vial.color"
+                      [style.opacity]="grainProfile().dust"
+                    ></span>
+                  }
+                  @for (grain of pourGrains(); track grain.id) {
+                    <i
+                      [class.sparkle]="grain.sparkle"
+                      [class.clump]="grainProfile().clump"
+                      [style.background]="vial.color"
+                      [style.--grain-x.px]="grain.offsetX"
+                      [style.--grain-size.px]="grain.size"
+                      [style.--spin]="grain.spinDeg + 'deg'"
+                      [style.animation-delay.ms]="grain.delayMs"
+                    ></i>
+                  }
+                </div>
+              }
+            } @else {
+              <p class="dock-empty">
+                <span aria-hidden="true">⤓</span>
+                Drag a vial here
+              </p>
+            }
+          </div>
+
+          <div class="scale" [class.live]="step() === 'weigh'" [class.has-plate]="art.balance.src">
+            @if (art.balance.src; as plate) {
+              <img
+                class="part-plate scale-plate"
+                [src]="plate"
+                [style.mix-blend-mode]="art.balance.blend"
+                alt=""
+              />
+            }
+            <div class="scale-pan" [class.tipping]="transferring()"></div>
+            <div class="scale-body">
+              <output class="scale-readout" [class.ok]="massOk()" [class.over]="massOver()">
+                {{ massG().toFixed(2) }}
+                <span>g</span>
+              </output>
+              <div class="scale-status">
+                <i [class.stable]="scaleStable()"></i>
+                {{ scaleStable() ? 'stable' : 'measuring…' }}
+              </div>
+            </div>
+          </div>
+
+          <button
+            class="tip-control"
+            type="button"
+            [class.open]="tipping()"
+            [disabled]="step() !== 'weigh' || busy()"
+            [attr.aria-pressed]="tipping()"
+            (click)="toggleTip()"
+          >
+            {{ tipping() ? 'Stand the vial upright' : 'Tip the vial over the pan' }}
+          </button>
+          <div class="line-controls">
+            <button
+              type="button"
+              [disabled]="step() !== 'weigh' || tipping() || busy() || massG() === 0"
+              (click)="removePinch()"
+            >
+              −0.1 g
+            </button>
+            <button type="button" [disabled]="busy() || massG() === 0" (click)="emptyPan()">
+              Empty pan
+            </button>
+          </div>
+
+          @if (step() === 'weigh') {
+            <button
+              class="primary-action"
+              type="button"
+              [disabled]="!canTransfer()"
+              (click)="transfer()"
+            >
+              Transfer {{ massG().toFixed(2) }} g into vessel
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="rig-controls">
+        <p class="rig-hint" aria-live="polite">{{ stepHint() }}</p>
+        @if (vialId()) {
+          <button class="ghost-action" type="button" [disabled]="busy()" (click)="resetRun()">
+            Abandon run
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- ---- Observation record --------------------------------------------- -->
+    <aside class="record" aria-labelledby="record-title">
+      <span class="kicker">Your record</span>
+      <h2 id="record-title">What did you see?</h2>
+
+      @if (stages().length === 0) {
+        <p class="record-note">
+          Nothing to record yet. Run the protocol and watch the vessel at each stage.
+        </p>
+      } @else {
+        <div class="readout-stack" aria-live="polite">
+          @if (solutionStage(); as stage) {
+            <section>
+              <header>Stage 1 · Solution A</header>
+              @for (entry of entries(stage.output); track entry[0]) {
+                <div>
+                  <small>{{ entry[0] }}</small>
+                  <strong>{{ entry[1] }}</strong>
+                </div>
+              }
+            </section>
+          }
+          @if (indicatorStage(); as stage) {
+            <section>
+              <header>Stage 2 · Indicator B</header>
+              @for (entry of entries(stage.output); track entry[0]) {
+                <div>
+                  <small>{{ entry[0] }}</small>
+                  <strong>{{ entry[1] }}</strong>
+                </div>
+              }
+            </section>
+          }
+        </div>
+      }
+
+      @if (step() === 'complete') {
+        <div class="protocol-card" [class.off]="!tightRun()">
+          <small>Conditions you set</small>
+          <strong>
+            {{ recordedVolumeMl().toFixed(2) }} mL · {{ recordedMassG().toFixed(2) }} g ·
+            {{ drops() }} drops
+          </strong>
+          <small>
+            @if (tightRun()) {
+              Held tightly, first attempt — a clean comparison with your other vials.
+            } @else {
+              Inside tolerance after {{ retries() }} reset(s). Closer pours make your comparisons
+              stronger.
+            }
+          </small>
+        </div>
+
+        <label class="observation-field">
+          Write what the vessel showed you
+          <textarea
+            rows="4"
+            [ngModel]="observation()"
+            (ngModelChange)="observation.set($event)"
+            placeholder="When the specimen went in… then after the indicator…"
+          ></textarea>
+        </label>
+        <button class="primary-action" type="button" [disabled]="!canCapture()" (click)="capture()">
+          File this screening as evidence
+        </button>
+        @if (!canCapture()) {
+          <p class="record-note">
+            The bench will not file a record until you describe the change in your own words.
+          </p>
+        }
+      }
+    </aside>
+  </div>
+</section>

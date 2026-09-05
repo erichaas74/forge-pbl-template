@@ -1,0 +1,216 @@
+<div
+  (focusout)="runtime.flushDrafts()"
+  class="history-live"
+  [class.is-opening]="runtime.state().stage === 'opening'"
+>
+  @if (runtime.state().stage === 'opening') {
+    <main class="opening" aria-labelledby="history-live-title">
+      <div class="opening-grain" aria-hidden="true"></div>
+      <header class="opening-bar">
+        <a routerLink="/projects" aria-label="Back to project library">FORGE / PROJECTS</a>
+        <span>{{ runtime.config.historicalWindow }}</span>
+        <span>{{ runtime.isDemo ? 'LOCAL DEMONSTRATION' : 'CLASSROOM EDITION' }}</span>
+      </header>
+      <section class="opening-copy">
+        <p class="kicker"><span></span> A History Live Special Report</p>
+        <div class="title-lockup">
+          <span>HISTORY</span>
+          <strong id="history-live-title">LIVE</strong>
+        </div>
+        <h1>{{ runtime.config.event }}</h1>
+        <p class="opening-question">{{ runtime.config.drivingQuestion }}</p>
+        <div class="opening-actions">
+          <button type="button" (click)="runtime.goTo('side')">
+            Enter the newsroom <b aria-hidden="true">→</b>
+          </button>
+          <span><i></i> Special broadcast scheduled {{ runtime.config.broadcastDateLabel }}</span>
+        </div>
+      </section>
+      <aside class="opening-rundown" aria-label="Project overview">
+        <span>01</span>
+        <p>Choose your network</p>
+        <span>02</span>
+        <p>Claim a developing story</p>
+        <span>03</span>
+        <p>Verify every major claim</p>
+        <span>04</span>
+        <p>Take your report live</p>
+      </aside>
+      <footer class="opening-ticker">
+        <strong>COMING UP</strong>
+        <div>
+          <span>Two networks</span><span>One historical record</span
+          ><span>Your story decides what makes air</span>
+        </div>
+      </footer>
+    </main>
+  } @else {
+    <header class="newsroom-header">
+      <a class="brand" routerLink="/projects" aria-label="Back to project library">
+        <span>HL</span>
+        <div>
+          <strong>HISTORY LIVE</strong><small>{{ runtime.config.event }}</small>
+        </div>
+      </a>
+      <div class="assignment-chip">
+        @if (runtime.selectedNetwork(); as network) {
+          <i [class]="network.side"></i>
+          <span><small>REPORTING FOR</small>{{ network.name }}</span>
+        } @else {
+          <i></i><span><small>ASSIGNMENT</small>Unassigned</span>
+        }
+      </div>
+      <div class="header-meta">
+        <span>{{ runtime.viewer.classLabel }}</span>
+        <span class="save-state"
+          ><i></i
+          >{{
+            runtime.saveState() === 'saved'
+              ? runtime.isDemo
+                ? 'Saved on this device'
+                : 'Saved'
+              : runtime.saveState()
+          }}</span
+        >
+        @if (runtime.isDemo) {
+          <label>
+            <span class="sr-only">Demo view as</span>
+            <select [value]="runtime.state().role" (change)="chooseRole($event)">
+              <option value="student">Demo reporter</option>
+              <option value="producer">Demo producer</option>
+            </select>
+          </label>
+        }
+        <button type="button" (click)="runtime.exportWork()">Export work</button>
+      </div>
+    </header>
+
+    @if (runtime.isDemo) {
+      <p class="demo-banner">
+        Local demonstration · reviews are simulated by you; work and media stay in this browser.
+      </p>
+    }
+    <nav class="story-progress" aria-label="News package progress">
+      <div
+        class="progress-meter"
+        aria-label="{{ runtime.completion() }} of 8 newsroom checks complete"
+      >
+        <span [style.width.%]="runtime.completion() * 12.5"></span>
+      </div>
+      <div class="progress-scroll">
+        @for (stage of stages; track stage.id; let index = $index) {
+          @if (stage.id !== 'opening') {
+            <button
+              type="button"
+              [class.active]="runtime.state().stage === stage.id"
+              [class.available]="runtime.canOpen(stage.id)"
+              [attr.aria-disabled]="!runtime.canOpen(stage.id)"
+              [attr.aria-current]="runtime.state().stage === stage.id ? 'step' : null"
+              [title]="runtime.stageIssues(stage.id).join(' ')"
+              (click)="runtime.goTo(stage.id)"
+            >
+              <span>{{ index.toString().padStart(2, '0') }}</span
+              >{{ stage.shortLabel }}
+            </button>
+          }
+        }
+      </div>
+    </nav>
+
+    @if (runtime.notification() || runtime.error()) {
+      <div class="notice" [class.error]="runtime.error()" role="status">
+        <span>{{ runtime.error() ?? runtime.notification() }}</span>
+        <button type="button" (click)="runtime.clearNotice()" aria-label="Dismiss message">
+          ×
+        </button>
+      </div>
+    }
+
+    <main class="newsroom-main" [attr.aria-busy]="runtime.busy()">
+      <details class="learning-rubric">
+        <summary>Reporting rubric and learning goals</summary>
+        <dl>
+          @for (criterion of runtime.config.rubric || []; track criterion.id) {
+            <dt>{{ criterion.label }}</dt>
+            <dd>{{ criterion.expectation }}</dd>
+          }
+        </dl>
+      </details>
+      @switch (runtime.state().stage) {
+        @case ('side') {
+          <section class="side-choice" aria-labelledby="choose-network-title">
+            <header class="station-heading">
+              <div>
+                <span>NEWSROOM CREDENTIALS · STEP 01</span>
+                <h1 id="choose-network-title">Choose your reporting network</h1>
+              </div>
+              <p>
+                Your network shapes your reporting lens. It never changes the standard for evidence.
+              </p>
+            </header>
+
+            <div class="network-stage">
+              @for (network of runtime.config.networks; track network.id) {
+                <article [class]="'network-card ' + network.side">
+                  <img
+                    class="network-art"
+                    [src]="network.deskImageUrl"
+                    [alt]="network.deskImageAlt"
+                  />
+                  <div class="network-signal"><span></span><i></i></div>
+                  <div class="network-monogram">{{ network.monogram || network.shortName }}</div>
+                  <span class="network-eyebrow"
+                    >{{ network.deskLabel }} · {{ network.deskLocationLabel }}</span
+                  >
+                  <h2>{{ network.name }}</h2>
+                  <p>{{ network.perspective }}</p>
+                  <ul>
+                    @for (community of network.communities || []; track community) {
+                      <li>{{ community }}</li>
+                    }
+                  </ul>
+                  <button type="button" (click)="chooseSide(network.side)">
+                    Join {{ network.shortName }} <span aria-hidden="true">→</span>
+                  </button>
+                </article>
+              }
+              <div class="versus" aria-hidden="true">
+                <span>CHOOSE</span><b>YOUR</b><span>LENS</span>
+              </div>
+            </div>
+            <aside class="accuracy-rule">
+              <strong>THE HISTORY LIVE STANDARD</strong>
+              <p>Modern television style is fictional. Historical claims are not.</p>
+              <span>Evidence first</span><span>Fact ≠ interpretation</span
+              ><span>Challenge your own side</span>
+            </aside>
+          </section>
+        }
+        @case ('assignment') {
+          <app-history-live-assignment-desk />
+        }
+        @case ('pitch') {
+          <app-history-live-assignment-desk />
+        }
+        @case ('sources') {
+          <app-history-live-source-wall />
+        }
+        @case ('script') {
+          <app-history-live-script-desk />
+        }
+        @case ('production') {
+          <app-history-live-production-studio />
+        }
+        @case ('broadcast') {
+          <app-history-live-broadcast-player />
+        }
+        @case ('schedule') {
+          <app-history-live-producer-console />
+        }
+        @case ('showcase') {
+          <app-history-live-broadcast-player />
+        }
+      }
+    </main>
+  }
+</div>

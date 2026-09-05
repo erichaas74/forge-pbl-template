@@ -1,0 +1,41 @@
+<div
+  class="wagon-art {{ transportClass() }}"
+  [class.compact]="compact()"
+  [class.moving]="moving()"
+  [class.strained]="strained()"
+  aria-hidden="true"
+>
+  <span class="ground-shadow"></span>
+  <div class="wagon-vehicle" [style.transform]="'translateY(' + bodyDrop() + 'px)'">
+    <img
+      class="wagon-photo"
+      src="/frontier-trading/vehicle-scenes/trade-wagon-realistic.webp"
+      alt=""
+      draggable="false"
+    />
+    @if (visibleCargo().length) {
+      <div class="onboard-cargo">
+        @for (slot of visibleCargo(); track slot.goodId) {
+          <span
+            class="cargo-group cargo-{{ slot.packageKind }}"
+            [style.left.%]="slot.left"
+            [style.bottom.%]="slot.bottom"
+            [style.rotate.deg]="slot.rotate"
+            [style.z-index]="slot.zIndex"
+          >
+            <span class="package-stack">
+              @for (piece of slot.pieces; track piece) {
+                <img [src]="slot.asset" alt="" draggable="false" [style.--piece]="piece" />
+              }
+            </span>
+            <b
+              >{{ slot.name }} <i>×{{ slot.quantity }}</i></b
+            >
+          </span>
+        }
+      </div>
+    }
+  </div>
+  <span class="trail-dust dust-one"></span>
+  <span class="trail-dust dust-two"></span>
+</div>

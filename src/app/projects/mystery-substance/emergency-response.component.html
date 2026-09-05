@@ -1,0 +1,261 @@
+<section class="bay-canvas">
+  <div class="bay-scene" aria-hidden="true"></div>
+  <div class="bay-shade" aria-hidden="true"></div>
+
+  <!-- ---- Incident briefing ------------------------------------------------ -->
+  @if (briefingOpen()) {
+    <div class="briefing-scrim">
+      <article class="briefing" role="dialog" aria-modal="true" aria-labelledby="briefing-title">
+        <header>
+          <span class="stamp">Incident · {{ briefing.time }} · {{ briefing.location }}</span>
+          <h1 id="briefing-title">{{ briefing.headline }}</h1>
+        </header>
+        <p>{{ briefing.situation }}</p>
+        <p>{{ briefing.shipment }}</p>
+        <blockquote>
+          {{ briefing.quote }}
+          <cite>{{ briefing.attribution }}</cite>
+        </blockquote>
+        <p class="constraint">{{ briefing.constraint }}</p>
+        <footer>
+          <span>You have {{ minutesLeft() }} minutes of bench time. The crew is waiting.</span>
+          <button type="button" class="primary" (click)="briefingOpen.set(false)">
+            Take the bench
+          </button>
+        </footer>
+      </article>
+    </div>
+  }
+
+  <div class="bay-grid">
+    <!-- ---- The tub and the clock ----------------------------------------- -->
+    <aside class="rack" aria-labelledby="rack-title">
+      <span class="kicker">Unidentified shipment</span>
+      <h2 id="rack-title">The tub</h2>
+
+      <div class="tub" aria-hidden="true">
+        <svg viewBox="0 0 120 108" role="presentation">
+          <rect x="18" y="26" width="84" height="72" rx="7" class="tub-body" />
+          <rect x="12" y="16" width="96" height="14" rx="5" class="tub-lid" />
+          <rect x="30" y="44" width="60" height="34" rx="3" class="tub-label" />
+          <path d="M34 54h44M34 62h30M34 70h38" class="tub-smear" />
+          <path d="M30 44l60 34M90 44l-60 34" class="tub-water" />
+        </svg>
+      </div>
+      <p class="tub-note">
+        Legible on the label: <strong>SODIUM BICARB—</strong> · <strong>NaHCO</strong> · seal
+        intact. Harbor Ridge will not confirm it.
+      </p>
+
+      <div class="clock" [class.spent]="outOfTime()" aria-live="polite">
+        <small>Crew waiting</small>
+        <strong>{{ clockLabel() }}</strong>
+        <div class="clock-bar"><span [style.width.%]="clockPercent()"></span></div>
+        <small class="clock-foot"> {{ spent() }} min spent · attempt {{ attempt() }} </small>
+      </div>
+
+      <button type="button" class="ghost" (click)="showPrior.set(!showPrior())">
+        {{ showPrior() ? 'Hide' : 'Open' }} your shelf records
+      </button>
+
+      @if (showPrior()) {
+        <table class="prior" aria-label="What your shelf investigation recorded">
+          <thead>
+            <tr>
+              <th scope="col">Test</th>
+              <th scope="col">Vial C</th>
+              <th scope="col">Vial D</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (record of priorRecords; track record.testId) {
+              <tr>
+                <th scope="row">{{ record.label }}</th>
+                <td>{{ record.vialC }}</td>
+                <td>{{ record.vialD }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+
+      <button type="button" class="ghost" (click)="briefingOpen.set(true)">
+        Re-read the incident brief
+      </button>
+    </aside>
+
+    <!-- ---- Bench: buy a test --------------------------------------------- -->
+    <div class="stage">
+      <header class="stage-head">
+        <div>
+          <span class="kicker">Bay 3 · unidentified white powder</span>
+          <h1>Which test is worth the crew's time?</h1>
+        </div>
+        <div class="decisive-count" aria-live="polite">
+          <small>Tests that could separate the two</small>
+          <strong>{{ decisiveRun() }}</strong>
+        </div>
+      </header>
+
+      <p class="hint" aria-live="polite">{{ hint() }}</p>
+
+      <ul class="test-list">
+        @for (test of tests; track test.id) {
+          <li>
+            <button
+              type="button"
+              class="test"
+              [class.done]="hasRun(test.id)"
+              [class.busy]="running() === test.id"
+              [disabled]="blockedReason(test) !== undefined || running() !== undefined"
+              (click)="runTest(test)"
+            >
+              <span class="test-cost">{{ test.cost }}<small>min</small></span>
+              <span class="test-body">
+                <strong>{{ test.title }}</strong>
+                <small>{{ test.instrument }}</small>
+                <em>{{ test.prompt }}</em>
+              </span>
+              <span class="test-state">
+                @if (running() === test.id) {
+                  Running…
+                } @else if (blockedReason(test); as reason) {
+                  {{ reason }}
+                } @else {
+                  Buy
+                }
+              </span>
+            </button>
+          </li>
+        }
+      </ul>
+
+      @if (ran().length > 0) {
+        <section class="results" aria-label="Bench results">
+          <span class="kicker">What the bench reported</span>
+          <ol>
+            @for (result of ran(); track result.id) {
+              <li [class.decisive]="result.decisive">
+                <header>
+                  <strong>{{ result.title }}</strong>
+                  <small>−{{ result.cost }} min · {{ result.clockAfter }} min left</small>
+                </header>
+                <p>{{ result.reading }}</p>
+                <dl>
+                  @for (field of result.fields; track field.label) {
+                    <div>
+                      <dt>{{ field.label }}</dt>
+                      <dd>{{ field.value }}</dd>
+                    </div>
+                  }
+                </dl>
+              </li>
+            }
+          </ol>
+        </section>
+      }
+    </div>
+
+    <!-- ---- The call ------------------------------------------------------- -->
+    <aside class="console" aria-labelledby="console-title">
+      <span class="kicker">Radio · fire marshal</span>
+      <h2 id="console-title">File your call</h2>
+
+      <div class="call-options">
+        @for (option of calls; track option.id) {
+          <button
+            type="button"
+            [class.selected]="call() === option.id"
+            [disabled]="verdict() !== undefined"
+            [attr.aria-pressed]="call() === option.id"
+            (click)="chooseCall(option.id)"
+          >
+            <strong>{{ option.title }}</strong>
+            <small>{{ option.detail }}</small>
+          </button>
+        }
+      </div>
+
+      @if (ran().length > 0) {
+        <span class="kicker">Evidence you are standing on</span>
+        <div class="citations">
+          @for (result of ran(); track result.id) {
+            <button
+              type="button"
+              [class.selected]="cited(result.id)"
+              [disabled]="verdict() !== undefined"
+              (click)="toggleCitation(result.id)"
+            >
+              {{ result.title }}
+            </button>
+          }
+        </div>
+      }
+
+      <label class="reasoning-field">
+        Why does your evidence say that?
+        <textarea
+          rows="4"
+          [ngModel]="reasoning()"
+          (ngModelChange)="reasoning.set($event)"
+          [disabled]="verdict() !== undefined"
+          placeholder="We ran… and it showed… which matches Vial… because…"
+        ></textarea>
+      </label>
+
+      <label class="confidence-field">
+        Confidence before the pour
+        <strong>{{ confidence() }}%</strong>
+        <input
+          type="range"
+          min="0"
+          max="100"
+          step="10"
+          [value]="confidence()"
+          [disabled]="verdict() !== undefined"
+          (input)="setConfidence($event)"
+        />
+      </label>
+
+      @if (verdict() === undefined) {
+        <button type="button" class="primary" [disabled]="!canFile()" (click)="fileCall()">
+          Radio the marshal
+        </button>
+      }
+
+      @if (verdict(); as result) {
+        <article class="verdict" [attr.data-tone]="result.tone" aria-live="assertive">
+          <span class="verdict-label">{{ result.label }}</span>
+          <h3>{{ result.headline }}</h3>
+          <p>{{ result.detail }}</p>
+
+          @if (result.neutralises) {
+            <div class="bay-floor" role="img" aria-label="Carbon dioxide leaving the Bay 3 floor">
+              <svg viewBox="0 0 160 100" role="presentation">
+                <rect x="0" y="84" width="160" height="16" class="floor" />
+                <rect x="0" y="80" width="160" height="6" class="spill" />
+                @for (bubble of fizz(); track bubble.id) {
+                  <circle [attr.cx]="bubble.x" [attr.cy]="bubble.y" [attr.r]="bubble.size" />
+                }
+              </svg>
+              <p class="gas-count" aria-live="polite">
+                <strong>{{ gasCount() }}</strong> carbon dioxide particles released
+              </p>
+            </div>
+          }
+
+          <div class="verdict-actions">
+            @if (result.id === 'wrong') {
+              <button type="button" class="ghost" (click)="tryAgain()">
+                The crew is still outside — {{ retryMinutes }} minutes left
+              </button>
+            }
+            <button type="button" class="primary" (click)="captureRecord()">
+              File the incident record
+            </button>
+          </div>
+        </article>
+      }
+    </aside>
+  </div>
+</section>

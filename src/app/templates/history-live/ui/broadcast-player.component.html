@@ -1,0 +1,185 @@
+<h1 class="sr-only">
+  {{ runtime.state().stage === 'showcase' ? 'Class special report' : 'Package preview' }}
+</h1>
+<section class="broadcast-shell" aria-label="History Live broadcast player">
+  @if (runtime.state().stage === 'broadcast') {
+    <header class="preview-header">
+      <div>
+        <span>PACKAGE PREVIEW</span>
+        <h1>Review your report package</h1>
+      </div>
+      <p>Check the scenes, recording, transcript, and evidence before producer clearance.</p>
+      <div>
+        <button type="button" (click)="runtime.goTo('production')">← Edit package</button
+        ><button type="button" (click)="runtime.goTo('schedule')">View rundown →</button>
+      </div>
+    </header>
+  }
+  <div
+    class="broadcast-frame"
+    [class.is-held]="runtime.state().showStatus === 'held'"
+    [class.ended]="runtime.state().showStatus === 'ended'"
+  >
+    @if (previewSegment(); as segment) {
+      <div class="media-wall">
+        @if (segment.scenes?.length) {
+          <app-history-live-evidence-scene [scene]="segment.scenes[sceneIndex()]" />
+        } @else {
+          <strong>{{ segment.visualLabel }}</strong>
+          <p>
+            {{
+              segment.sample
+                ? 'Sample rundown entry — no student media'
+                : 'No evidence scene attached'
+            }}
+          </p>
+        }
+      </div>
+      <div class="network-logo" [class.british]="segment.side === 'british'">
+        <span>{{ segment.side === 'patriot' ? 'C' : 'CR' }}</span
+        ><small>{{ segment.networkName }}</small>
+      </div>
+      <div class="live-indicator">
+        <i></i
+        >{{
+          runtime.state().stage === 'broadcast'
+            ? 'PREVIEW'
+            : runtime.state().showStatus.toUpperCase()
+        }}
+      </div>
+      <div class="broadcast-clock">{{ segment.startLabel }}</div>
+      <div class="reporter-silhouette" aria-hidden="true"><span></span><i></i></div>
+      <div class="lower-third">
+        <span>{{ segment.desk }}</span>
+        <div>
+          <strong>{{ segment.headline }}</strong
+          ><small>{{ segment.reporter }} · {{ segment.networkName }}</small>
+        </div>
+      </div>
+      <div class="news-ticker">
+        <strong>HISTORY LIVE</strong>
+        <div>
+          <span>Developing: {{ segment.headline }}</span
+          ><span>Inspect the cited evidence and its limits</span
+          ><span>Coming up: competing perspectives on the war</span>
+        </div>
+      </div>
+      @if (runtime.state().showStatus === 'held') {
+        <div class="state-overlay"><span>PRODUCER HOLD</span></div>
+      }
+      @if (runtime.state().showStatus === 'ended') {
+        <div class="state-overlay">
+          <span>THIS SPECIAL REPORT HAS ENDED</span
+          ><strong>What changed when you heard both networks?</strong>
+        </div>
+      }
+    }
+  </div>
+  @if (previewSegment(); as segment) {
+    <section class="package-content" aria-label="Report media and transcript">
+      @if (segment.scenes?.length) {
+        <nav aria-label="Evidence scenes">
+          @for (scene of segment.scenes; track scene.id; let index = $index) {
+            <button
+              type="button"
+              [attr.aria-pressed]="sceneIndex() === index"
+              (click)="sceneIndex.set(index)"
+            >
+              Scene {{ index + 1 }}
+            </button>
+          }
+        </nav>
+      }
+      @if (mediaUrl(); as url) {
+        <video
+          #reportVideo
+          [src]="url"
+          controls
+          aria-label="Recorded report"
+          aria-describedby="report-transcript"
+        ></video
+        ><a [href]="url" download="report-recording">Download recording</a>
+      }
+      <div id="report-transcript">
+        <h2>Report transcript</h2>
+        <p class="transcript">{{ segment.transcript }}</p>
+      </div>
+      <p>
+        Package status: {{ runtime.state().packageStatus || 'draft' }}.
+        {{ runtime.state().packageFeedback }}
+      </p>
+    </section>
+  }
+  @if (runtime.state().stage === 'showcase') {
+    <div class="show-controls">
+      <div>
+        <span>ON AIR</span
+        ><strong
+          >{{ runtime.state().activeSegmentIndex + 1 }} /
+          {{ runtime.state().schedule.length }}</strong
+        ><small
+          >NEXT:
+          {{
+            runtime.state().schedule[runtime.state().activeSegmentIndex + 1]?.headline ||
+              'Closing analysis'
+          }}</small
+        >
+      </div>
+      @if (runtime.canProduce()) {
+        <button
+          type="button"
+          (click)="runtime.previousSegment()"
+          [disabled]="runtime.state().activeSegmentIndex === 0"
+        >
+          ← Previous</button
+        ><button type="button" class="hold" (click)="runtime.holdShow()">
+          {{ runtime.state().showStatus === 'held' ? 'Resume' : 'Hold' }}</button
+        ><button
+          type="button"
+          class="take"
+          (click)="runtime.nextSegment()"
+          [disabled]="runtime.state().activeSegmentIndex === runtime.state().schedule.length - 1"
+        >
+          Take next →</button
+        ><button type="button" (click)="runtime.endShow()">End show</button>
+      }
+    </div>
+    <section class="reflection">
+      <h2>After the broadcast</h2>
+      <label
+        >{{
+          runtime.config.reflectionPrompt ||
+            'Which claim changed after hearing another perspective, and which evidence changed it?'
+        }}<textarea
+          rows="5"
+          [value]="runtime.state().reflection || ''"
+          (input)="runtime.updateReflection($any($event.target).value)"
+        ></textarea></label
+      ><button type="button" (click)="runtime.saveReflection()">Save reflection revision</button>
+      <details>
+        <summary>Earlier reflections</summary>
+        @for (entry of runtime.state().reflectionHistory || []; track $index) {
+          <p>{{ entry.timestamp }} · {{ entry.text }}</p>
+        }
+      </details>
+    </section>
+    <aside class="audience-bar">
+      <span>AUDIENCE RESPONSE</span>
+      <p>Which signal best matches this report?</p>
+      @for (
+        reaction of [
+          'Strong evidence',
+          'Interesting perspective',
+          'Clear explanation',
+          'Question',
+          'Applause',
+        ];
+        track reaction
+      ) {
+        <button type="button" (click)="runtime.react(reaction)">
+          {{ reaction }} <small>{{ reactionCount(reaction) || '' }}</small>
+        </button>
+      }
+    </aside>
+  }
+</section>

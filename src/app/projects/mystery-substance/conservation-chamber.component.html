@@ -1,0 +1,235 @@
+<section class="matter-canvas">
+  <div class="matter-scene" role="img" aria-label="Matter tracking bench"></div>
+  <div class="matter-shade" aria-hidden="true"></div>
+
+  <div class="matter-grid">
+    <!-- ---- Chamber choice -------------------------------------------------- -->
+    <aside class="rack" aria-labelledby="rack-title">
+      <span class="kicker">System</span>
+      <h2 id="rack-title">Choose a chamber</h2>
+
+      <ul class="chamber-list">
+        @for (item of trials; track item.id) {
+          <li>
+            <button
+              type="button"
+              [class.active]="trialId() === item.id"
+              [disabled]="running()"
+              [attr.aria-pressed]="trialId() === item.id"
+              (click)="selectTrial(item.id)"
+            >
+              <span class="chamber-icon" [attr.data-system]="item.system" aria-hidden="true"></span>
+              <span>
+                <strong>{{ item.title }}</strong>
+                <small>{{ item.system }} system</small>
+              </span>
+            </button>
+          </li>
+        }
+      </ul>
+
+      <label class="boundary-toggle">
+        <input type="checkbox" [checked]="showBoundary()" (change)="toggleBoundary()" />
+        Show the measured boundary
+      </label>
+      <p class="rack-note">
+        The boundary is what the balance weighs. Anything that leaves it stops being measured.
+      </p>
+
+      @if (log().length > 0) {
+        <span class="kicker">Trial log</span>
+        <ol class="trial-log">
+          @for (entry of log(); track entry.id) {
+            <li>
+              <strong>{{ entry.title }}</strong>
+              <small>{{ entry.headline }}</small>
+            </li>
+          }
+        </ol>
+      }
+    </aside>
+
+    <!-- ---- Chamber + balance ---------------------------------------------- -->
+    <div class="stage">
+      <header class="stage-head">
+        <div>
+          <span class="kicker">Particle and mass tracker</span>
+          <h1>{{ trial().title }}</h1>
+        </div>
+        <div class="particle-count" aria-live="polite">
+          <small>Inside the boundary</small>
+          <strong>{{ phase() === 'idle' ? trial().beforeParticles : insideCount() }}</strong>
+        </div>
+      </header>
+
+      <div class="chamber-well">
+        <div class="chamber" [class.open]="!sealed()">
+          @if (art.chamber.src; as plate) {
+            <img
+              class="part-plate"
+              [src]="plate"
+              [style.mix-blend-mode]="art.chamber.blend"
+              alt=""
+            />
+          }
+
+          <svg viewBox="0 0 160 132" aria-hidden="true">
+            <!-- the measured boundary -->
+            @if (showBoundary()) {
+              <rect
+                class="boundary"
+                [attr.x]="box.left"
+                [attr.y]="box.top"
+                [attr.width]="box.right - box.left"
+                [attr.height]="box.bottom - box.top"
+              />
+            }
+
+            <!-- particles, inside and escaped -->
+            @for (particle of particles(); track particle.id) {
+              <circle
+                class="particle"
+                [class.gone]="particle.gone"
+                [attr.cx]="particle.x"
+                [attr.cy]="particle.y"
+                r="2.6"
+              />
+            }
+
+            <!-- chamber walls, drawn when no plate carries them -->
+            @if (!art.chamber.src) {
+              <path
+                class="chamber-wall"
+                [attr.d]="
+                  'M' +
+                  box.left +
+                  ' ' +
+                  box.top +
+                  ' V' +
+                  box.bottom +
+                  ' H' +
+                  box.right +
+                  ' V' +
+                  box.top
+                "
+              />
+              @if (sealed()) {
+                <line
+                  class="chamber-lid"
+                  [attr.x1]="box.left - 3"
+                  [attr.y1]="box.top"
+                  [attr.x2]="box.right + 3"
+                  [attr.y2]="box.top"
+                />
+              } @else {
+                <line
+                  class="chamber-lid"
+                  [attr.x1]="box.left - 3"
+                  [attr.y1]="box.top"
+                  x2="62"
+                  [attr.y2]="box.top"
+                />
+                <line
+                  class="chamber-lid"
+                  x1="98"
+                  [attr.y1]="box.top"
+                  [attr.x2]="box.right + 3"
+                  [attr.y2]="box.top"
+                />
+              }
+            }
+          </svg>
+
+          @if (!sealed()) {
+            <span class="vent-label" aria-hidden="true">open to the room</span>
+          }
+        </div>
+
+        <!-- the balance reads what is still inside -->
+        <div class="balance">
+          @if (art.padBalance.src; as plate) {
+            <img class="part-plate" [src]="plate" alt="" />
+          }
+          <div class="balance-body">
+            <output class="balance-read" [class.falling]="massDelta() < 0">
+              {{ mass().toFixed(1) }} <span>g</span>
+            </output>
+            <div class="balance-delta" aria-live="polite">
+              @if (phase() === 'idle') {
+                start mass
+              } @else if (massDelta() === 0) {
+                no change
+              } @else {
+                {{ massDelta().toFixed(1) }} g
+              }
+            </div>
+          </div>
+          @if (!art.padBalance.src) {
+            <span class="balance-plinth" aria-hidden="true"></span>
+          }
+        </div>
+      </div>
+
+      <div class="stage-controls">
+        <p class="stage-hint" aria-live="polite">{{ hint() }}</p>
+        <div class="stage-buttons">
+          <button class="ghost-action" type="button" [disabled]="running()" (click)="reset()">
+            Reset
+          </button>
+          <button class="primary-action" type="button" [disabled]="running()" (click)="run()">
+            {{ running() ? 'Reaction running…' : 'Run the reaction' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- Record ---------------------------------------------------------- -->
+    <aside class="record" aria-labelledby="record-title">
+      <span class="kicker">Your record</span>
+      <h2 id="record-title">What did you see?</h2>
+
+      @if (phase() === 'settled') {
+        <div class="readout" aria-live="polite">
+          <div>
+            <small>Particles before</small>
+            <strong>{{ trial().beforeParticles }}</strong>
+          </div>
+          <div>
+            <small>Particles after</small>
+            <strong>{{ insideCount() }}</strong>
+          </div>
+          <div>
+            <small>Mass before</small>
+            <strong>{{ trial().beforeMass.toFixed(1) }} g</strong>
+          </div>
+          <div>
+            <small>Mass after</small>
+            <strong>{{ mass().toFixed(1) }} g</strong>
+          </div>
+        </div>
+
+        <label class="observation-field">
+          Write what happened to the matter
+          <textarea
+            rows="4"
+            [ngModel]="observation()"
+            (ngModelChange)="observation.set($event)"
+            placeholder="The particles… and the balance…"
+          ></textarea>
+        </label>
+        <button class="primary-action" type="button" [disabled]="!canCapture()" (click)="capture()">
+          File this trial as evidence
+        </button>
+        @if (!canCapture()) {
+          <p class="record-note">
+            The tracker will not file a trial until you describe it in your own words.
+          </p>
+        }
+      } @else {
+        <p class="record-note">
+          Nothing to record yet. Run a chamber and watch the particles and the balance together.
+        </p>
+      }
+    </aside>
+  </div>
+</section>

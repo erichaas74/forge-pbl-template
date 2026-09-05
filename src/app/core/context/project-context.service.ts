@@ -4,6 +4,7 @@ export interface ProjectContext {
   tenantId: string;
   projectId: string;
   projectVersion: string;
+  attemptId?: string;
   classId?: string;
   studentId?: string;
   teamId?: string;
@@ -22,6 +23,7 @@ export class ProjectContextService {
       tenantId: this.context.tenantId,
       projectId: this.context.projectId,
       projectVersion: this.context.projectVersion,
+      attemptId: this.context.attemptId,
       classId: this.context.classId,
       studentId: scopeType === 'student' ? this.context.studentId : undefined,
       teamId: scopeType === 'team' ? this.context.teamId : undefined,

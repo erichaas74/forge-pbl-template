@@ -1,0 +1,378 @@
+:host {
+  --rail-accent: #b79254;
+  position: relative;
+  z-index: 8;
+  display: grid;
+  min-width: 0;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  height: 100%;
+  overflow: hidden;
+  border-inline: 1px solid #d6b56a42;
+  color: #eee0bd;
+  background:
+    linear-gradient(90deg, #0a0605ed, #26160edb 48%, #0a0605ed),
+    repeating-linear-gradient(0deg, transparent 0 18px, #d6b56a08 19px);
+  box-shadow: 0 0 2rem #000c;
+  transition:
+    box-shadow 220ms ease,
+    filter 220ms ease;
+}
+
+:host.rail-active {
+  box-shadow:
+    inset 0 0 2.4rem #d7ab5140,
+    0 0 3.5rem #e0ae4f4f;
+  filter: brightness(1.08);
+}
+
+.rail-standard {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 5.2rem;
+  padding: 0.8rem 0.85rem 0.65rem;
+  background: linear-gradient(180deg, #352015f0, #17100cdd);
+}
+
+.faction-emblem {
+  display: grid;
+  width: 2.7rem;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px solid #d3b36f;
+  border-radius: 50%;
+  color: #edcf88;
+  box-shadow:
+    inset 0 0 0 0.28rem #120b08,
+    0 0 1rem #dba84d26;
+  font:
+    700 1rem Georgia,
+    serif;
+}
+
+.rail-standard small,
+.rail-standard h2 {
+  display: block;
+  margin: 0;
+}
+
+.rail-standard small {
+  color: #ad9567;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rail-standard h2 {
+  margin-top: 0.16rem;
+  color: #f0dba9;
+  font:
+    700 clamp(0.82rem, 1.1vw, 1rem)/1.15 Georgia,
+    serif;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.incoming-seal {
+  display: grid;
+  width: 2.45rem;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 0.25rem double #f0c671;
+  border-radius: 50%;
+  color: #fff2c8;
+  background: #8a3329;
+  box-shadow:
+    0 0 0.85rem #f0b856,
+    0 0 1.8rem #d96f44;
+  font-size: 0.58rem;
+  font-weight: 900;
+  animation: seal-pulse 1.35s ease-in-out infinite alternate;
+}
+
+.rail-rule {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.75rem;
+}
+.rail-rule::before,
+.rail-rule::after {
+  height: 1px;
+  flex: 1;
+  background: linear-gradient(90deg, transparent, #d1ad66, transparent);
+  content: '';
+}
+.rail-rule i {
+  width: 0.32rem;
+  aspect-ratio: 1;
+  border: 1px solid #d1ad66;
+  transform: rotate(45deg);
+}
+
+.message-stack {
+  display: grid;
+  align-content: start;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0.85rem 0.65rem 1rem;
+  overflow-y: auto;
+  scrollbar-color: #9b7946 #150c08;
+  list-style: none;
+}
+
+.message-slip,
+.current-message,
+.empty-slip {
+  position: relative;
+  border: 1px solid #9f7b4557;
+  border-left: 0.22rem solid #a8854f;
+  padding: 0.72rem;
+  color: #342013;
+  background:
+    linear-gradient(105deg, #e0c792, #b9945e),
+    repeating-linear-gradient(0deg, transparent 0 16px, #6f47200a 17px);
+  box-shadow: 0 0.65rem 1rem #0007;
+}
+
+.message-slip.incoming {
+  border-color: #f1cf82;
+  box-shadow:
+    0 0 0 0.14rem #d5aa5440,
+    0 0 1.8rem #e8a84c7d,
+    0 0.8rem 1.2rem #0009;
+}
+
+.message-slip > header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  gap: 0.5rem;
+  border-bottom: 1px solid #74462042;
+  padding-bottom: 0.42rem;
+}
+
+.message-slip header > span,
+.current-message header > span,
+.empty-slip > span {
+  color: #72431f;
+  font:
+    700 0.84rem Georgia,
+    serif;
+}
+
+.message-slip header small,
+.message-slip header strong {
+  display: block;
+}
+.message-slip header small {
+  color: #79512d;
+  font-size: 0.64rem;
+  line-height: 1.2;
+}
+.message-slip header strong {
+  margin-top: 0.13rem;
+  font:
+    700 0.75rem/1.2 Georgia,
+    serif;
+  text-transform: uppercase;
+}
+.message-slip header b,
+.current-message header b {
+  border: 1px solid currentColor;
+  padding: 0.15rem 0.28rem;
+  color: #6d4a2a;
+  font-size: 0.55rem;
+  letter-spacing: 0.08em;
+}
+.message-slip.incoming header b {
+  color: #932d24;
+}
+.speaker {
+  margin: 0.55rem 0 0;
+  font:
+    700 0.92rem Georgia,
+    serif;
+}
+.faction-name {
+  margin: 0.1rem 0 0.5rem;
+  color: #674528;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.message-slip footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.message-slip time {
+  font:
+    700 0.72rem Georgia,
+    serif;
+}
+.message-slip button,
+.current-message button,
+.rail-tools button {
+  border: 1px solid #6d4527;
+  padding: 0.42rem 0.55rem;
+  color: #311c10;
+  background: #f1ddb0;
+  font:
+    700 0.68rem Georgia,
+    serif;
+  cursor: pointer;
+}
+.message-slip .hear-now {
+  color: #fff1cc;
+  background: #71291f;
+}
+.message-slip video,
+.message-slip audio {
+  width: 100%;
+  max-height: 9rem;
+  margin-top: 0.6rem;
+  background: #0a0604;
+}
+
+.current-message {
+  border: 1px dashed #9f814e;
+  border-left: 0.3rem solid #9f814e;
+  color: #d4c29d;
+  background: linear-gradient(145deg, #271810eb, #120b08f2);
+}
+.current-message.response-open {
+  border-style: solid;
+  border-color: #e1bd70;
+  box-shadow:
+    inset 0 0 1.5rem #dca84d1c,
+    0 0 1.8rem #e1ad4d5c;
+}
+.current-message header {
+  display: flex;
+  justify-content: space-between;
+}
+.current-message header > span {
+  color: #d2ad65;
+}
+.current-message header b {
+  color: #e6c97f;
+}
+.current-message > small {
+  display: block;
+  margin-top: 0.65rem;
+  color: #ad956a;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+}
+.current-message h3 {
+  margin: 0.18rem 0 0.6rem;
+  color: #f2dfb6;
+  font:
+    700 1rem Georgia,
+    serif;
+  text-transform: uppercase;
+}
+.current-message dl {
+  margin: 0 0 0.6rem;
+}
+.current-message dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border-top: 1px solid #c6a15b30;
+  padding: 0.28rem 0;
+}
+.current-message dt,
+.current-message dd,
+.current-message p {
+  margin: 0;
+  font-size: 0.68rem;
+  line-height: 1.4;
+}
+.current-message dt {
+  color: #a7926c;
+}
+.current-message dd {
+  color: #e5c982;
+  font-weight: 700;
+  text-align: right;
+}
+.current-message button {
+  width: 100%;
+  border-color: #e6c374;
+  color: #2b180e;
+  background: linear-gradient(180deg, #f0d18a, #b98a43);
+  text-transform: uppercase;
+}
+.current-message.held {
+  opacity: 0.72;
+}
+
+.empty-slip {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  opacity: 0.72;
+}
+.empty-slip p {
+  margin: 0;
+  font:
+    italic 0.75rem/1.4 Georgia,
+    serif;
+}
+
+.rail-tools {
+  border-top: 1px solid #cda86042;
+  padding: 0.7rem;
+  background: #120b08e8;
+}
+.rail-tools button {
+  display: grid;
+  width: 100%;
+  grid-template-columns: auto 1fr;
+  gap: 0 0.55rem;
+  align-items: center;
+  border-color: #b08d535c;
+  color: #ddc89d;
+  background: #24150e;
+  text-align: left;
+}
+.rail-tools button > span {
+  grid-row: 1 / span 2;
+  color: #deb967;
+  font-size: 1.2rem;
+}
+.rail-tools button > small {
+  color: #9f8d6c;
+  font-size: 0.62rem;
+}
+
+@keyframes seal-pulse {
+  to {
+    transform: scale(1.08);
+    box-shadow:
+      0 0 1.3rem #ffd17a,
+      0 0 2.5rem #d96f44;
+  }
+}
+
+@media (max-width: 820px) {
+  :host {
+    min-height: 31rem;
+    border: 1px solid #d6b56a42;
+  }
+  .message-stack {
+    max-height: 34rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .incoming-seal {
+    animation: none;
+  }
+}

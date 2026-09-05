@@ -1,0 +1,550 @@
+<section class="composer" role="dialog" aria-modal="true" aria-labelledby="composer-title">
+  <header class="composer-header" [class.review-header]="activeStep() === steps.length - 1">
+    @if (activeStep() === steps.length - 1) {
+      <button type="button" class="back-to-editing" (click)="backToEditing()">
+        <span aria-hidden="true">←</span> Back to editing
+      </button>
+      <div class="studio-title review-title">
+        <span>Full visitor review</span>
+        <h1 id="composer-title">Inspect the complete exhibit</h1>
+        <p>Walk through the final snapshot exactly as visitors will experience it.</p>
+      </div>
+      <div class="header-actions">
+        <button
+          type="button"
+          class="header-showcase"
+          [disabled]="
+            !validation().valid || submissionLocked() || (published() && rehangsRemaining() === 0)
+          "
+          (click)="publishedRequested.emit()"
+        >
+          {{ submissionLocked() ? 'Submissions locked' : publishLabel() }}
+        </button>
+        <button
+          type="button"
+          class="close"
+          (click)="closed.emit()"
+          aria-label="Close final exhibit builder"
+        >
+          ×
+        </button>
+      </div>
+    } @else {
+      <div class="studio-title">
+        <span>Student curator studio</span>
+        <h1 id="composer-title">Build your final exhibit</h1>
+        <p>Build one part at a time. Your work becomes the visitor-ready museum snapshot.</p>
+      </div>
+
+      <div class="studio-progress">
+        <div>
+          <span>Exhibit readiness</span>
+          <strong>{{ completedStepCount() }} of {{ editingStepCount }} stations ready</strong>
+        </div>
+        <i
+          role="progressbar"
+          aria-label="Exhibit build progress"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuenow]="completionPercent()"
+        >
+          <b [style.width.%]="completionPercent()"></b>
+        </i>
+      </div>
+
+      <div class="header-actions">
+        <button
+          type="button"
+          class="close"
+          (click)="closed.emit()"
+          aria-label="Close final exhibit builder"
+        >
+          ×
+        </button>
+      </div>
+    }
+  </header>
+
+  <div class="composer-layout" [class.reviewing]="activeStep() === steps.length - 1">
+    @if (activeStep() < steps.length - 1) {
+      <nav class="studio-map" aria-label="Exhibit build steps">
+        <header>
+          <span>Build path</span>
+          <strong>Six studio stations</strong>
+          <p>Move in order or return to any station.</p>
+        </header>
+        <ol>
+          @for (step of steps; track step.shortLabel; let index = $index) {
+            <li [class.active]="activeStep() === index" [class.complete]="isStepComplete(index)">
+              <button
+                type="button"
+                (click)="goToStep(index)"
+                [attr.aria-current]="activeStep() === index ? 'step' : null"
+              >
+                <span class="step-number">{{ (index + 1).toString().padStart(2, '0') }}</span>
+                <span class="step-name">
+                  <strong>{{ step.shortLabel }}</strong>
+                  <small>{{ step.title }}</small>
+                </span>
+                <span class="step-state">
+                  {{ activeStep() === index ? 'Now' : isStepComplete(index) ? 'Ready' : 'To do' }}
+                </span>
+              </button>
+            </li>
+          }
+        </ol>
+        <footer>
+          <i aria-hidden="true"></i>
+          <span>Changes stay in your team draft until you showcase.</span>
+        </footer>
+      </nav>
+
+      <form class="workbench" (submit)="$event.preventDefault(); publishedRequested.emit()">
+        <div class="workbench-heading">
+          <span>Station {{ (activeStep() + 1).toString().padStart(2, '0') }}</span>
+          <h2 #stepHeading tabindex="-1">{{ currentStep().title }}</h2>
+          <p>{{ currentStep().guidance }}</p>
+        </div>
+
+        <div class="work-surface">
+          @switch (activeStep()) {
+            @case (0) {
+              <section class="step-sheet story-sheet" aria-label="Collection story">
+                <div class="desk-note">
+                  <span aria-hidden="true">Museum question</span>
+                  <strong
+                    >What should a visitor understand after seeing all three artifacts?</strong
+                  >
+                </div>
+                <label class="plaque-field" data-field-id="exhibit-title">
+                  <span>
+                    Entrance title
+                    <small [class.over-limit]="words(draft().title) > 12">
+                      {{ words(draft().title) }} / 12 words
+                    </small>
+                  </span>
+                  <input
+                    type="text"
+                    [value]="draft().title"
+                    (input)="titleChanged.emit(value($event))"
+                    aria-describedby="title-help"
+                    placeholder="Give the collection a memorable name"
+                  />
+                  <small id="title-help"
+                    >This becomes the title visitors see in the corridor.</small
+                  >
+                </label>
+                <label class="claim-field" data-field-id="central-claim">
+                  <span>
+                    Collection claim
+                    <small [class.over-limit]="words(draft().centralClaim) > 60">
+                      {{ words(draft().centralClaim) }} / 60 words
+                    </small>
+                  </span>
+                  <textarea
+                    rows="7"
+                    [value]="draft().centralClaim"
+                    (input)="claimChanged.emit(value($event))"
+                    placeholder="Together, these artifacts show that…"
+                  ></textarea>
+                </label>
+                <div class="curator-test">
+                  <span aria-hidden="true">?</span>
+                  <p>
+                    <strong>Curator test:</strong> Could you point to every artifact while
+                    explaining this claim? If not, make the claim more focused.
+                  </p>
+                </div>
+              </section>
+            }
+
+            @case (1) {
+              <section
+                class="step-sheet artifact-sheet"
+                data-field-id="selected-objects"
+                aria-label="Artifact labels"
+              >
+                <div class="object-editors" data-field-id="object-captions">
+                  @for (object of draft().objects; track object.id; let index = $index) {
+                    <article>
+                      <header>
+                        <span class="object-number">{{ index + 1 }}</span>
+                        <div>
+                          <small>Display object</small>
+                          <strong>{{ object.title || 'Untitled artifact' }}</strong>
+                        </div>
+                      </header>
+                      <label>
+                        <span>Artifact name</span>
+                        <input
+                          type="text"
+                          [value]="object.title"
+                          (input)="
+                            objectChanged.emit({
+                              objectId: object.id,
+                              field: 'title',
+                              value: value($event),
+                            })
+                          "
+                        />
+                      </label>
+                      <label>
+                        <span>What is it?</span>
+                        <small>Describe material, use, date, and context.</small>
+                        <textarea
+                          rows="5"
+                          [value]="object.description"
+                          (input)="
+                            objectChanged.emit({
+                              objectId: object.id,
+                              field: 'description',
+                              value: value($event),
+                            })
+                          "
+                        ></textarea>
+                      </label>
+                      <label class="claim-link">
+                        <span>Why does it belong?</span>
+                        <small>Connect this object directly to the collection claim.</small>
+                        <textarea
+                          rows="4"
+                          [value]="object.evidenceConnection"
+                          (input)="
+                            objectChanged.emit({
+                              objectId: object.id,
+                              field: 'evidenceConnection',
+                              value: value($event),
+                            })
+                          "
+                        ></textarea>
+                      </label>
+                    </article>
+                  }
+                </div>
+              </section>
+            }
+
+            @case (2) {
+              <section
+                class="step-sheet source-sheet"
+                data-field-id="source-list"
+                aria-label="Research sources"
+              >
+                <div class="source-intro">
+                  <span aria-hidden="true">⌕</span>
+                  <div>
+                    <strong>Leave a research trail</strong>
+                    <p>
+                      Visitors should be able to tell where your facts came from and why the source
+                      is trustworthy.
+                    </p>
+                  </div>
+                </div>
+                <div class="source-slips">
+                  @for (source of draft().sources; track source.id; let index = $index) {
+                    <label>
+                      <span
+                        ><i>{{ index + 1 }}</i> Museum or scholarly source</span
+                      >
+                      <textarea
+                        rows="4"
+                        [value]="source.citation"
+                        (input)="
+                          sourceChanged.emit({ sourceId: source.id, citation: value($event) })
+                        "
+                        placeholder="Museum or author, resource title, collection or publisher, date or URL"
+                      ></textarea>
+                    </label>
+                  }
+                </div>
+                <div class="source-check">
+                  <strong>A strong citation usually answers:</strong>
+                  <span>Who made it?</span><span>What is it called?</span
+                  ><span>Where is it kept?</span>
+                </div>
+              </section>
+            }
+
+            @case (3) {
+              <section
+                class="step-sheet connection-sheet"
+                data-field-id="immersive-gallery"
+                aria-label="MetaSteps gallery connection"
+              >
+                <div class="connection-model">
+                  <div class="model-door" aria-hidden="true">
+                    <span>3D</span>
+                    <i></i>
+                  </div>
+                  <div>
+                    <span>Shared museum connection</span>
+                    <h3>Link the entrance to MetaSteps</h3>
+                    <p>
+                      This connection lets visitors leave the exhibit label and walk into the space
+                      your team designed.
+                    </p>
+                  </div>
+                </div>
+                <label>
+                  <span>Wing title</span>
+                  <input
+                    type="text"
+                    [value]="draft().immersiveGallery?.title ?? ''"
+                    (input)="galleryTitleChanged.emit(value($event))"
+                    placeholder="Example: Life Along the Nile — 3D Wing"
+                  />
+                </label>
+                <label>
+                  <span>MetaSteps public embed code or viewer URL</span>
+                  <textarea
+                    rows="7"
+                    [value]="draft().immersiveGallery?.embedUrl ?? ''"
+                    (input)="galleryEmbedChanged.emit(value($event))"
+                    placeholder="Paste the public embed code copied from MetaSteps"
+                    aria-describedby="metasteps-help"
+                  ></textarea>
+                  <small id="metasteps-help">
+                    Use the public viewer embed. Never paste a password or private API key.
+                  </small>
+                </label>
+                <div class="connection-status" [class.connected]="isStepComplete(3)">
+                  <i aria-hidden="true"></i>
+                  <span>
+                    <strong>{{
+                      isStepComplete(3) ? 'Entrance connected' : 'Waiting for a link'
+                    }}</strong>
+                    <small>Test the public view before the final showcase.</small>
+                  </span>
+                </div>
+              </section>
+            }
+
+            @case (4) {
+              <section
+                class="step-sheet video-sheet"
+                data-field-id="video-presentation"
+                aria-label="Curator video presentation"
+              >
+                <div class="recording-plan">
+                  <div class="recording-light"><i></i> Curator recording station</div>
+                  <ol>
+                    <li><span>1</span>Introduce the collection claim.</li>
+                    <li><span>2</span>Use the artifacts as evidence.</li>
+                    <li><span>3</span>Invite visitors to explore the 3D wing.</li>
+                  </ol>
+                </div>
+                @if (draft().videoPresentation?.prototype) {
+                  <p class="prototype-field-note">
+                    <strong>Prototype station:</strong> A demonstration player is standing in for
+                    the final student video. The real presentation can be connected later.
+                  </p>
+                }
+                <label>
+                  <span>Presentation title</span>
+                  <input
+                    type="text"
+                    [value]="draft().videoPresentation?.title ?? ''"
+                    (input)="videoTitleChanged.emit(value($event))"
+                    placeholder="Example: How these artifacts reveal everyday life"
+                  />
+                </label>
+                <label>
+                  <span>Public video URL or iframe code</span>
+                  <textarea
+                    rows="6"
+                    [value]="draft().videoPresentation?.videoUrl ?? ''"
+                    (input)="videoUrlChanged.emit(value($event))"
+                    placeholder="Paste a YouTube, Vimeo, MP4, WebM, or Ogg link"
+                    aria-describedby="video-help"
+                  ></textarea>
+                  <small id="video-help">
+                    Check sharing permissions. Do not include surnames or private information in a
+                    public video.
+                  </small>
+                </label>
+              </section>
+            }
+          }
+        </div>
+
+        <footer class="step-controls">
+          <button
+            type="button"
+            class="back"
+            [disabled]="activeStep() === 0"
+            (click)="goToStep(activeStep() - 1)"
+          >
+            <span aria-hidden="true">←</span> Previous station
+          </button>
+          <div>
+            <span>{{ isStepComplete(activeStep()) ? 'Station ready' : 'Work in progress' }}</span>
+            <small>Step {{ activeStep() + 1 }} of {{ steps.length }}</small>
+          </div>
+          <button type="button" class="next" (click)="goToStep(activeStep() + 1)">
+            {{ activeStep() === editingStepCount - 1 ? 'Open full review' : 'Next station' }}
+            <span aria-hidden="true">→</span>
+          </button>
+        </footer>
+      </form>
+
+      <aside class="studio-sidecar field-view" aria-label="Live preview of the current build step">
+        <div class="field-view-heading">
+          <span>Curator field view</span>
+          <strong>Live station preview</strong>
+          <small>Updates automatically while you work.</small>
+        </div>
+
+        <div class="partial-preview">
+          @switch (activeStep()) {
+            @case (0) {
+              <article class="live-story">
+                <span>Nile Life Curators presents</span>
+                <h3>{{ draft().title || 'Your exhibit title' }}</h3>
+                <p>{{ draft().centralClaim || 'Your collection claim will appear here.' }}</p>
+                <small>Entrance story</small>
+              </article>
+            }
+            @case (1) {
+              <div class="live-labels">
+                @for (object of draft().objects; track object.id; let index = $index) {
+                  <article>
+                    <span>{{ index + 1 }}</span>
+                    <div>
+                      <h3>{{ object.title || 'Untitled artifact' }}</h3>
+                      <p>{{ object.description || 'Artifact description' }}</p>
+                      <strong>Why it matters</strong>
+                      <small>{{ object.evidenceConnection || 'Connection to the claim' }}</small>
+                    </div>
+                  </article>
+                }
+              </div>
+            }
+            @case (2) {
+              <article class="live-sources">
+                <span>Research trail</span>
+                <h3>Sources visitors can follow</h3>
+                <ol>
+                  @for (source of draft().sources; track source.id) {
+                    <li>{{ source.citation || 'Source citation needed' }}</li>
+                  }
+                </ol>
+              </article>
+            }
+            @case (3) {
+              <article class="live-gallery">
+                <div class="mini-door" aria-hidden="true"><span>3D</span><i></i></div>
+                <span>MetaSteps entrance</span>
+                <h3>{{ draft().immersiveGallery?.title || 'Name the 3D wing' }}</h3>
+                <p>
+                  {{
+                    isStepComplete(3)
+                      ? 'The public entrance is connected and ready to test.'
+                      : 'Paste the public viewer link to connect this entrance.'
+                  }}
+                </p>
+                <strong [class.connected]="isStepComplete(3)">
+                  {{ isStepComplete(3) ? 'Connected' : 'Not connected' }}
+                </strong>
+              </article>
+            }
+            @case (4) {
+              <article class="live-video">
+                <div class="video-screen">
+                  <span>{{ draft().videoPresentation?.presenterLabel || 'Student curators' }}</span>
+                  <i aria-hidden="true">▶</i>
+                </div>
+                <span>Curator presentation</span>
+                <h3>{{ draft().videoPresentation?.title || 'Name the presentation' }}</h3>
+                <p>
+                  {{
+                    draft().videoPresentation?.prototype
+                      ? 'Prototype player—the final recording can be connected later.'
+                      : 'Public presentation link ready for visitors.'
+                  }}
+                </p>
+              </article>
+            }
+          }
+        </div>
+
+        <div class="field-prompts">
+          <strong>Check this station</strong>
+          <ul>
+            @for (prompt of currentStep().prompts; track prompt) {
+              <li><span aria-hidden="true">□</span>{{ prompt }}</li>
+            }
+          </ul>
+        </div>
+
+        <div class="guide-status" [class.complete]="isStepComplete(activeStep())">
+          <i aria-hidden="true"></i>
+          <span>
+            <strong>{{
+              isStepComplete(activeStep()) ? 'This station is ready' : 'Keep working here'
+            }}</strong>
+            <small>The field view reflects the current draft.</small>
+          </span>
+        </div>
+      </aside>
+    } @else {
+      <main class="review-experience" aria-label="Complete visitor exhibit review">
+        <div class="review-stage-heading">
+          <span>Visitor-ready snapshot</span>
+          <strong>{{ draft().title || 'Untitled exhibit' }}</strong>
+          <small>Review the complete reading order, 3D entrance, video station, and sources.</small>
+        </div>
+        <div class="full-preview">
+          <app-exhibit-render-host [snapshot]="previewSnapshot()" mode="preview" />
+        </div>
+      </main>
+
+      <aside class="review-inspector" aria-label="Final review checklist">
+        <span>Final inspection</span>
+        <h2 #stepHeading tabindex="-1">
+          {{ validation().valid ? 'Ready for visitors' : 'Finish these pieces' }}
+        </h2>
+        <p>
+          {{
+            validation().valid
+              ? 'Every required exhibit part is present.'
+              : 'Return to the marked station and complete the missing work.'
+          }}
+        </p>
+        <ol>
+          @for (step of steps.slice(0, 5); track step.shortLabel; let index = $index) {
+            <li [class.complete]="isStepComplete(index)">
+              <span>{{ isStepComplete(index) ? '✓' : index + 1 }}</span>
+              <div>
+                <strong>{{ step.shortLabel }}</strong
+                ><small>{{ step.title }}</small>
+              </div>
+              <button type="button" (click)="goToStep(index)">
+                {{ isStepComplete(index) ? 'Edit' : 'Finish' }}
+              </button>
+            </li>
+          }
+        </ol>
+        @if (validation().errors.length) {
+          <div class="validation-errors" role="alert">
+            <strong>Fix before showcasing</strong>
+            <ul>
+              @for (error of validation().errors; track error.fieldId) {
+                <li>{{ error.message }}</li>
+              }
+            </ul>
+          </div>
+        }
+        @if (validation().warnings.length) {
+          <div class="warnings">
+            @for (warning of validation().warnings; track warning.message) {
+              <p>{{ warning.message }}</p>
+            }
+          </div>
+        }
+        <button type="button" class="back-review" (click)="backToEditing()">
+          <span aria-hidden="true">←</span> Back to editing
+        </button>
+      </aside>
+    }
+  </div>
+</section>

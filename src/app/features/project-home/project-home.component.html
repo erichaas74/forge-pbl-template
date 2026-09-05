@@ -49,9 +49,19 @@
             </ul>
             <footer>
               <span>{{ project.projectType }}</span>
-              <a [routerLink]="project.route" [attr.aria-label]="'Open ' + project.title"
-                >Open project <b aria-hidden="true">→</b></a
-              >
+              <div class="project-links">
+                @if (project.builderRoute) {
+                  <a
+                    class="builder-link"
+                    [routerLink]="project.builderRoute"
+                    [attr.aria-label]="'Open builder information for ' + project.title"
+                    >Builder info</a
+                  >
+                }
+                <a [routerLink]="project.route" [attr.aria-label]="'Open ' + project.title"
+                  >Open project <b aria-hidden="true">→</b></a
+                >
+              </div>
             </footer>
           </div>
         </article>

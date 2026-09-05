@@ -1,0 +1,328 @@
+<main class="showcase" [style.--chamber-image]="'url(' + runtime.config.chamberImageUrl + ')'">
+  @switch (runtime.state().room) {
+    @case ('premiere') {
+      <section class="premiere" aria-labelledby="premiere-title">
+        <header class="broadcast-order">
+          <button type="button" (click)="runtime.enterRoom('chamber')">← Return to chamber</button>
+          <div>
+            <span>{{ runtime.config.sessionDateLabel }}</span
+            ><strong>{{ runtime.config.title }}</strong>
+          </div>
+          <p
+            [class.ready]="
+              runtime.session().status === 'premiere' ||
+              runtime.session().status === 'premiere-ready'
+            "
+          >
+            {{
+              runtime.session().status === 'premiere' ||
+              runtime.session().status === 'premiere-ready'
+                ? 'Senate session ready'
+                : 'Record-in-progress preview'
+            }}
+          </p>
+        </header>
+
+        <div
+          class="broadcast-stage"
+          [class.crossfire]="runtime.activeSegment().roundLabel === 'Crossfire'"
+        >
+          <div class="braziers" aria-hidden="true"><i></i><i></i></div>
+          <div class="audience-silhouettes" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+
+          <aside class="broadcast-docket" aria-label="Assembled debate program">
+            <span>The Senate broadcast</span>
+            <ol>
+              @for (segment of runtime.program(); track segment.id; let index = $index) {
+                <li
+                  [class.active]="runtime.state().activeSegmentIndex === index"
+                  [class.heard]="runtime.state().activeSegmentIndex > index"
+                >
+                  <b>{{ (index + 1).toString().padStart(2, '0') }}</b>
+                  <div>
+                    <small>{{ segment.roundLabel }}</small
+                    ><strong>{{ segment.speakerDisplayName ?? segment.title }}</strong>
+                  </div>
+                </li>
+              }
+            </ol>
+          </aside>
+
+          @if (runtime.activeSegment(); as segment) {
+            <article class="live-floor" [class.faction-floor]="segment.kind === 'student'">
+              @if (
+                segment.kind === 'ceremony' ||
+                segment.kind === 'round-title' ||
+                segment.kind === 'decision'
+              ) {
+                <div class="title-ceremony">
+                  <span>{{ segment.roundLabel }}</span>
+                  <h1 id="premiere-title">{{ segment.title }}</h1>
+                  <p>{{ segment.transcript }}</p>
+                </div>
+              } @else if (segment.kind === 'moderator') {
+                <div class="moderator-broadcast">
+                  <span class="moderator-seal">{{ runtime.config.moderator.initials }}</span>
+                  <small>{{ runtime.config.moderator.displayName }}</small>
+                  <h2>{{ runtime.config.moderator.title }}</h2>
+                  <blockquote>“{{ segment.transcript }}”</blockquote>
+                </div>
+              } @else {
+                <header class="speaker-title">
+                  <span>{{ segment.roundLabel }}</span>
+                  <h2>{{ segment.speakerDisplayName }}</h2>
+                  <p>{{ runtime.faction(segment.factionId)?.name }} · Student Senator</p>
+                </header>
+                <div class="student-broadcast">
+                  @if (segment.recording?.kind === 'video') {
+                    <video
+                      controls
+                      [autoplay]="runtime.sessionPlaying()"
+                      [src]="segment.recording.downloadUrl"
+                      (ended)="runtime.recordedSegmentEnded()"
+                      aria-label="Filed student debate video"
+                    ></video>
+                  } @else if (segment.recording?.kind === 'audio') {
+                    <div class="audio-address">
+                      <span>{{ runtime.faction(segment.factionId)?.emblem }}</span>
+                      <audio
+                        controls
+                        [autoplay]="runtime.sessionPlaying()"
+                        [src]="segment.recording.downloadUrl"
+                        (ended)="runtime.recordedSegmentEnded()"
+                        aria-label="Filed student debate audio"
+                      ></audio>
+                    </div>
+                  } @else {
+                    <div class="transcript-address">
+                      <span>{{ runtime.faction(segment.factionId)?.emblem }}</span>
+                      <p>Filed transcript contribution</p>
+                    </div>
+                  }
+                  <blockquote>“{{ segment.transcript }}”</blockquote>
+                </div>
+                <aside class="evidence-projection">
+                  <span>Evidence entered</span>
+                  @for (evidenceId of segment.evidenceIds; track evidenceId) {
+                    <strong>{{ runtime.evidenceTitle(evidenceId) }}</strong>
+                  }
+                </aside>
+              }
+              <div class="segment-timer">
+                <i
+                  [style.width.%]="
+                    (runtime.segmentSecondsRemaining() / runtime.segmentDuration(segment)) * 100
+                  "
+                ></i
+                ><span>{{ runtime.formatTime(runtime.segmentSecondsRemaining()) }}</span>
+              </div>
+            </article>
+          }
+        </div>
+
+        <footer class="session-controls">
+          <button
+            type="button"
+            [disabled]="runtime.state().activeSegmentIndex === 0"
+            (click)="runtime.previousSegment()"
+          >
+            ← Prior entry
+          </button>
+          @if (!runtime.sessionPlaying()) {
+            <button
+              class="convene"
+              type="button"
+              [disabled]="!runtime.premiereCanPlay()"
+              (click)="runtime.playSession()"
+            >
+              <span aria-hidden="true">▶</span>
+              {{
+                !runtime.premiereCanPlay()
+                  ? 'Awaiting the teacher'
+                  : runtime.state().activeSegmentIndex === 0
+                    ? 'Convene the Senate'
+                    : 'Continue proceeding'
+              }}
+            </button>
+          } @else {
+            <button class="convene" type="button" (click)="runtime.pauseSession()">
+              <span aria-hidden="true">Ⅱ</span> Hold the floor
+            </button>
+          }
+          <button type="button" (click)="runtime.nextSegment()">
+            {{
+              runtime.state().activeSegmentIndex === runtime.program().length - 1
+                ? 'Close the record'
+                : 'Call next entry'
+            }}
+            →
+          </button>
+          @if (runtime.session().status === 'voting' || runtime.session().status === 'complete') {
+            <button class="urn" type="button" (click)="runtime.openBallot()">
+              Open voting urns
+            </button>
+          }
+        </footer>
+      </section>
+    }
+
+    @case ('ballot') {
+      <section class="ballot-chamber" aria-labelledby="ballot-title">
+        <header>
+          <span>The complete student debate has ended</span>
+          <h1 id="ballot-title">The Judgment of the Senate</h1>
+          <p>Cast a private post-debate opinion, then place one clay token for each judgment.</p>
+        </header>
+
+        <fieldset class="opinion-vote">
+          <legend>
+            <strong>Post-Debate Senate Opinion</strong
+            ><small>Did the debate change your view?</small>
+          </legend>
+          <div>
+            @for (option of runtime.config.opinionOptions; track option.id) {
+              <button
+                type="button"
+                [class.selected]="runtime.postOpinion() === option.id"
+                (click)="runtime.castPostOpinion(option.id)"
+              >
+                <span>◆</span>{{ option.label }}
+              </button>
+            }
+          </div>
+        </fieldset>
+
+        <div class="ballot-table">
+          @for (category of runtime.config.voteCategories; track category.id; let index = $index) {
+            <fieldset>
+              <legend>
+                <span>{{ (index + 1).toString().padStart(2, '0') }}</span
+                ><strong>{{ category.label }}</strong
+                ><small>{{ category.prompt }}</small>
+              </legend>
+              <div class="token-options">
+                @for (option of runtime.voteOptions(category); track option.id) {
+                  <button
+                    type="button"
+                    [class.selected]="runtime.state().categorySelections[category.id] === option.id"
+                    [attr.aria-pressed]="
+                      runtime.state().categorySelections[category.id] === option.id
+                    "
+                    (click)="runtime.castCategory(category.id, option.id)"
+                  >
+                    <span>{{ option.emblem ?? '◆' }}</span
+                    ><strong>{{ option.label }}</strong
+                    ><small>{{ option.detail }}</small>
+                  </button>
+                }
+              </div>
+            </fieldset>
+          }
+        </div>
+
+        <label class="reflection-tablet">
+          <span>Reflection · required individual record</span>
+          <strong>What argument most changed, challenged, or strengthened your thinking?</strong>
+          <textarea
+            rows="4"
+            [value]="runtime.state().reflection"
+            (input)="updateReflection($event)"
+          ></textarea>
+          <button
+            type="button"
+            [disabled]="runtime.state().reflection.trim().length < 20"
+            (click)="runtime.submitReflection()"
+          >
+            Enter reflection into my record
+          </button>
+        </label>
+
+        <button
+          class="seal-urn"
+          type="button"
+          [disabled]="!runtime.ballotComplete()"
+          (click)="runtime.sealBallot()"
+        >
+          <span aria-hidden="true">◆</span> Seal the voting urn
+        </button>
+      </section>
+    }
+
+    @case ('verdict') {
+      <section class="verdict-chamber" aria-labelledby="verdict-title">
+        <header>
+          <span>The seals are broken before the class</span>
+          <h1 id="verdict-title">Did the Debate Move the Senate?</h1>
+          <p>
+            Initial opinion is compared with the judgment entered after the authentic student
+            exchange.
+          </p>
+        </header>
+
+        <div class="persuasion-shift">
+          @for (result of runtime.persuasionResults(); track result.option.id) {
+            <article>
+              <strong>{{ result.option.label }}</strong>
+              <div>
+                <span>Before · {{ result.before }}</span
+                ><i><b [style.width.%]="result.before * 8"></b></i>
+              </div>
+              <div>
+                <span>After · {{ result.after }}</span
+                ><i><b [style.width.%]="result.after * 8"></b></i>
+              </div>
+              <em [class.positive]="result.change > 0"
+                >{{ result.change > 0 ? '+' : '' }}{{ result.change }}</em
+              >
+            </article>
+          }
+        </div>
+
+        <div class="verdict-results">
+          @for (category of runtime.config.voteCategories; track category.id; let index = $index) {
+            @if (runtime.state().verdictStep > index) {
+              <article>
+                <span>{{ category.label }}</span>
+                <h2>{{ choiceLabel(category, runtime.winningChoice(category.id)) }}</h2>
+                @for (option of runtime.voteOptions(category); track option.id) {
+                  <div class="vote-line">
+                    <small>{{ option.label }} · {{ tally(category.id, option.id) }}</small
+                    ><i><b [style.width.%]="percentage(category.id, option.id)"></b></i
+                    ><span>{{ percentage(category.id, option.id) }}%</span>
+                  </div>
+                }
+              </article>
+            }
+          }
+        </div>
+
+        @if (runtime.state().verdictStep > runtime.config.voteCategories.length) {
+          <article class="final-verdict">
+            <span>The official record remains</span>
+            <h2>{{ runtime.config.title }}</h2>
+            <p>
+              The Senate can now see not only which argument prevailed, but whether the class
+              changed its mind.
+            </p>
+            <div>
+              <button type="button" (click)="runtime.enterRoom('chamber')">Return to chamber</button
+              ><a routerLink="/projects">Leave the Senate</a>
+            </div>
+          </article>
+        } @else {
+          <button class="reveal-seal" type="button" (click)="runtime.revealNext()">
+            {{
+              runtime.state().verdictStep === 0
+                ? 'Break the first seal'
+                : runtime.state().verdictStep === runtime.config.voteCategories.length
+                  ? 'Reveal the persuasion shift'
+                  : 'Break the next seal'
+            }}
+          </button>
+        }
+      </section>
+    }
+  }
+</main>

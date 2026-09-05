@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.spec.json",
+  "include": [
+    "src/**/*.d.ts",
+    "src/app/templates/history-live/**/*.spec.ts",
+    "src/app/infrastructure/storage/indexeddb-asset-storage.adapter.spec.ts"
+  ]
+}

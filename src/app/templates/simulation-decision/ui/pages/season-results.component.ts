@@ -35,6 +35,21 @@ export class SimulationSeasonResultsComponent {
   readonly profitableTrades = computed(
     () => this.saleDecisions().filter((decision) => decision.profitCents > 0).length,
   );
+  readonly routeForecast = computed(() =>
+    [...this.runtime.state().routeHistory].reverse().find((route) => route.forecast !== undefined)
+      ?.forecast,
+  );
+  readonly actualTripProfitCents = computed(
+    () =>
+      this.runtime.results().salesRevenueCents -
+      (this.routeForecast()?.goodsCostCents ?? this.runtime.results().goodsPurchasedCents) -
+      this.runtime.results().supplyCostsCents -
+      this.runtime.results().eventExpensesCents +
+      this.runtime.results().eventIncomeCents,
+  );
+  readonly forecastDifferenceCents = computed(
+    () => this.actualTripProfitCents() - (this.routeForecast()?.expectedTripProfitCents ?? 0),
+  );
 
   goodName(entry: LedgerEntry): string {
     return (

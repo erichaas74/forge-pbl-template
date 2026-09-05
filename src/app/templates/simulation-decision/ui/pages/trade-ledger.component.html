@@ -36,11 +36,11 @@
     <section class="ledger-book page-card">
       <header>
         <div>
-          <span class="eyebrow">Immutable financial and decision history</span>
-          <h1>Trade Ledger</h1>
+          <span class="eyebrow">Every dollar earned and spent</span>
+          <h1>Money Record</h1>
         </div>
         <span class="reconcile" [class.warning]="!runtime.reconciled()">{{
-          runtime.reconciled() ? '✓ Ledger verified' : '! Reconciliation warning'
+          runtime.reconciled() ? '✓ Money records match' : '! Check the money records'
         }}</span>
       </header>
       <nav aria-label="Filter ledger entries">
@@ -50,7 +50,7 @@
             { id: 'trades', label: 'Trades' },
             { id: 'travel', label: 'Travel' },
             { id: 'events', label: 'Events' },
-            { id: 'pinned', label: 'Evidence pinned' },
+            { id: 'pinned', label: 'Saved records' },
           ];
           track option.id
         ) {
@@ -75,7 +75,7 @@
         >
       </nav>
 
-      <div class="ledger-table desktop-table" role="table" aria-label="Chronological trade ledger">
+      <div class="ledger-table desktop-table" role="table" aria-label="Money changes in time order">
         <div class="table-head" role="row">
           <span role="columnheader">Day</span><span role="columnheader">Location</span
           ><span role="columnheader">Type</span><span role="columnheader">Description</span
@@ -134,12 +134,12 @@
                   $event.stopPropagation(); isPinned(entry.id) ? unpin(entry.id) : pin(entry.id)
                 "
               >
-                {{ isPinned(entry.id) ? 'Remove evidence pin' : 'Pin as report evidence' }}
+                  {{ isPinned(entry.id) ? 'Remove saved record' : 'Save for my reflection' }}
               </button>
             </section>
           }
         } @empty {
-          <p class="empty">No ledger entries match this filter.</p>
+          <p class="empty">No money records match this filter.</p>
         }
       </div>
 
@@ -174,7 +174,7 @@
                   type="button"
                   (click)="isPinned(entry.id) ? unpin(entry.id) : pin(entry.id)"
                 >
-                  {{ isPinned(entry.id) ? 'Unpin evidence' : 'Pin as evidence' }}
+                  {{ isPinned(entry.id) ? 'Remove saved record' : 'Save for my reflection' }}
                 </button>
               </div>
             }
@@ -186,10 +186,10 @@
     <aside class="evidence-tray page-card">
       <header>
         <div>
-          <span class="eyebrow">Final report sources</span>
-          <h2>Evidence Tray</h2>
+          <span class="eyebrow">For your reflection</span>
+          <h2>Saved Records</h2>
         </div>
-        <span>{{ runtime.state().evidence.length }} pinned</span>
+        <span>{{ runtime.state().evidence.length }} saved</span>
       </header>
       <p>Pin strong records that show what you decided, what the math showed, and what happened.</p>
       <ol>
@@ -202,21 +202,21 @@
             </div>
             <button
               type="button"
-              aria-label="Remove evidence pin"
+              aria-label="Remove saved record"
               (click)="runtime.unpinEvidence(evidence.id)"
             >
               ×
             </button>
           </li>
         } @empty {
-          <li class="tray-empty">No evidence pinned yet. Expand a ledger row to begin.</li>
+          <li class="tray-empty">No records saved yet. Open a money row to choose one.</li>
         }
       </ol>
       <section>
-        <strong>Reconciliation rule</strong>
+        <strong>How the money check works</strong>
         <p>
-          Current cash always equals starting capital plus every signed ledger change. Inventory
-          losses never create a second cash charge.
+          Current cash equals starting money plus every gain and minus every cost. Lost goods do not
+          charge your cash a second time.
         </p>
       </section>
     </aside>

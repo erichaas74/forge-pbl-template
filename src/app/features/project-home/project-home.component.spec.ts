@@ -5,7 +5,7 @@ import { By } from '@angular/platform-browser';
 import { ProjectHomeComponent } from './project-home.component';
 
 describe('ProjectHomeComponent', () => {
-  it('renders links to both configured projects', async () => {
+  it('renders links to every configured project', async () => {
     await TestBed.configureTestingModule({
       imports: [ProjectHomeComponent],
       providers: [provideRouter([])],
@@ -16,7 +16,11 @@ describe('ProjectHomeComponent', () => {
     const links = fixture.debugElement.queryAll(By.css('.project-card a'));
     expect(links.map((link) => link.attributes['href'])).toEqual([
       '/mystery-substance',
+      '/frontier-trading/builder-info',
       '/frontier-trading',
+      '/class-exhibit-hall',
+      '/history-live',
+      '/debate-studio',
     ]);
   });
 });

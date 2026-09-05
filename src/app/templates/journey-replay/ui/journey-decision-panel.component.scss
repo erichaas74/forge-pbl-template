@@ -1,0 +1,49 @@
+:host { display: block; }
+* { box-sizing: border-box; }
+.decision-panel { color: #2c271d; }
+header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; border-bottom: 1px solid #b7a47c; padding-bottom: 0.8rem; }
+header span,
+.journey-complete > span { color: #8d532e; font: 850 0.68rem ui-sans-serif, sans-serif; letter-spacing: 0.12em; text-transform: uppercase; }
+h2, h3, p { margin: 0; }
+h2, h3 { font-family: Georgia, 'Times New Roman', serif; }
+h2 { margin-top: 0.2rem; font-size: clamp(1.35rem, 2vw, 1.8rem); line-height: 1.1; }
+header small { border: 1px solid #b19a6e; border-radius: 999px; padding: 0.32rem 0.55rem; color: #6a5738; font-weight: 800; white-space: nowrap; }
+.mission { margin: 0.9rem 0; color: #4a4030; font-size: 0.95rem; line-height: 1.55; }
+fieldset { margin: 0; border: 0; padding: 0; }
+legend { margin-bottom: 0.55rem; color: #4f3b22; font-weight: 850; }
+.choices { display: grid; gap: 0.5rem; }
+.choices button { display: grid; gap: 0.2rem; width: 100%; min-height: 4.4rem; border: 1px solid #b8a477; border-radius: 0.35rem; padding: 0.7rem; color: #392f21; background: #f3e7c8; text-align: left; cursor: pointer; }
+.choices button:hover,
+.choices button.selected { border-color: #245e62; background: #dfe9dc; box-shadow: inset 0.3rem 0 #2d7372; }
+.choices span { font: 800 0.9rem Georgia, serif; }
+.choices small { color: #665b45; font-size: 0.74rem; line-height: 1.35; }
+.reasoning { margin-top: 1rem; border-top: 3px double #a38b5d; padding-top: 0.9rem; }
+.evidence-strip { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 0.7rem; }
+.evidence-strip > span { width: 100%; color: #78512d; font-size: 0.68rem; font-weight: 850; text-transform: uppercase; }
+details { flex: 1 1 11rem; border: 1px solid #bca87e; border-radius: 0.3rem; padding: 0.45rem; background: #fff8e4; }
+summary { color: #433522; font-size: 0.76rem; font-weight: 800; cursor: pointer; }
+details small { display: block; margin-top: 0.4rem; color: #806b4b; }
+details p { margin-top: 0.25rem; color: #594b35; font-size: 0.76rem; line-height: 1.4; }
+.hint { border-left: 0.22rem solid #ad7d40; padding: 0.45rem 0.6rem; color: #605035; background: #efe0b8; font-size: 0.78rem; line-height: 1.45; }
+h3 { margin-top: 0.8rem; font-size: 1.1rem; }
+.question { margin: 0.25rem 0 0.65rem; color: #3f3528; font-weight: 650; line-height: 1.45; }
+.response-modes { display: inline-flex; gap: 0.25rem; margin-bottom: 0.55rem; border: 1px solid #9c895f; border-radius: 0.35rem; padding: 0.2rem; background: #d9c69c; }
+.response-modes button { min-height: 2.2rem; border: 0; border-radius: 0.25rem; padding: 0.4rem 0.75rem; color: #4b3e29; background: transparent; font-weight: 800; cursor: pointer; }
+.response-modes button[aria-pressed='true'] { color: #f6ecd3; background: #2b5a57; }
+label { display: block; margin-bottom: 0.3rem; color: #4e3b25; font-size: 0.75rem; font-weight: 800; }
+textarea { width: 100%; resize: vertical; border: 1px solid #a58f65; border-radius: 0.35rem; padding: 0.7rem; color: #2c2b27; background: #fffdf3; font: 1rem/1.5 ui-sans-serif, system-ui, sans-serif; }
+textarea:focus-visible,
+button:focus-visible,
+.file-button:focus-within { outline: 3px solid #238d94; outline-offset: 2px; }
+.audio-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 0.5rem; }
+.audio-actions button,
+.file-button { min-height: 2.55rem; border: 1px solid #9d7144; border-radius: 0.35rem; padding: 0.55rem 0.7rem; color: #fff4d9; background: #77432f; font-size: 0.75rem; font-weight: 800; cursor: pointer; }
+.audio-actions .stop { background: #9a352e; }
+.file-button { display: inline-flex; align-items: center; margin: 0; color: #3f3527; background: #ebdbb7; }
+.file-button input { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
+.audio-actions span { color: #665b47; font-size: 0.72rem; }
+audio { width: 100%; margin-bottom: 0.55rem; }
+.continue { display: flex; width: 100%; min-height: 3.1rem; align-items: center; justify-content: center; gap: 0.6rem; margin-top: 0.75rem; border: 1px solid #184f50; border-radius: 0.35rem; color: #f9f1da; background: linear-gradient(#397b73, #225a58); font-weight: 850; cursor: pointer; }
+.continue:disabled { border-color: #aaa084; color: #817861; background: #d7ccb0; cursor: not-allowed; }
+.journey-complete { display: grid; min-height: 18rem; align-content: center; gap: 0.6rem; text-align: center; }
+.journey-complete p { color: #62543d; line-height: 1.5; }

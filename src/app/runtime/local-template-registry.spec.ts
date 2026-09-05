@@ -6,7 +6,12 @@ import {
 } from '../testing/simple-project-package.fixture';
 import { FixedClock } from '../testing/runtime-test-helpers';
 import { LocalInvestigationRuntime } from './local-investigation-runtime';
+import { LocalSimulationDecisionRuntime } from './local-simulation-decision-runtime';
 import { createLocalTemplateRegistry } from './local-template-registry';
+import {
+  simpleSimulationDecisionLocation,
+  simpleSimulationDecisionPackage,
+} from '../testing/simple-simulation-decision-package.fixture';
 
 describe('local template composition', () => {
   it('registers Investigation and creates its runtime through the generic registry', async () => {
@@ -15,9 +20,10 @@ describe('local template composition', () => {
     });
     const registry = createLocalTemplateRegistry(source, new FixedClock());
 
-    const resolved = await new ProjectTemplateResolverService(source, registry).resolve<
-      LocalInvestigationRuntime
-    >(simpleProjectLocation);
+    const resolved = await new ProjectTemplateResolverService(
+      source,
+      registry,
+    ).resolve<LocalInvestigationRuntime>(simpleProjectLocation);
 
     expect(resolved).toMatchObject({
       ok: true,
@@ -38,6 +44,39 @@ describe('local template composition', () => {
     expect(loaded.graph?.manifest.template).toEqual({
       id: 'investigation',
       version: '1.0',
+    });
+  });
+
+  it('registers simulation-decision and loads its package through the generic registry', async () => {
+    const source = new InMemoryProjectPackageSource({
+      [simpleSimulationDecisionLocation.reference]: simpleSimulationDecisionPackage,
+    });
+    const registry = createLocalTemplateRegistry(source, new FixedClock());
+
+    const resolved = await new ProjectTemplateResolverService(
+      source,
+      registry,
+    ).resolve<LocalSimulationDecisionRuntime>(simpleSimulationDecisionLocation);
+
+    expect(resolved).toMatchObject({
+      ok: true,
+      value: {
+        registration: {
+          id: 'simulation-decision',
+          version: '1.0.0',
+          projectTypes: ['simulation-decision'],
+        },
+      },
+    });
+    if (!resolved.ok) {
+      throw new Error(resolved.error.message);
+    }
+    const loaded = await resolved.value.runtime.loadProject(simpleSimulationDecisionLocation);
+    expect(resolved.value.runtime).toBeInstanceOf(LocalSimulationDecisionRuntime);
+    expect(loaded.issues).toEqual([]);
+    expect(loaded.graph?.manifest.template).toEqual({
+      id: 'simulation-decision',
+      version: '1.1',
     });
   });
 

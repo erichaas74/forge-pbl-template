@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/journey-replay-spec",
+    "types": ["vitest/globals"]
+  },
+  "include": [
+    "src/**/*.d.ts",
+    "src/app/templates/journey-replay/**/*.spec.ts",
+    "src/app/infrastructure/journey-replay/**/*.spec.ts",
+    "src/app/runtime/journey-replay-registration.spec.ts",
+    "src/app/projects/project-catalog.spec.ts"
+  ]
+}

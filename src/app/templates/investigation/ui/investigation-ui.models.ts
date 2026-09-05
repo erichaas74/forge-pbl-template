@@ -1,7 +1,7 @@
 import type { ActivityRuntimeState, EvidenceRuntimeStatus } from '../domain/runtime-state';
 
 export type InvestigationWorkspacePair =
-  'evidence-analysis' | 'analysis-theory' | 'theory-investigate' | 'final-investigation';
+  'bench' | 'evidence-analysis' | 'analysis-theory' | 'theory-investigate' | 'final-investigation';
 
 export type AnalysisClassification = 'supports' | 'uncertain' | 'contradicts';
 

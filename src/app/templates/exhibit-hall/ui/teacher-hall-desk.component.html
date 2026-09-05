@@ -1,0 +1,140 @@
+<aside class="teacher-desk" [class.collapsed]="collapsed()" aria-label="Teacher hall desk">
+  <header>
+    <div class="desk-seal" aria-hidden="true">T</div>
+    @if (!collapsed()) {
+      <div>
+        <span>Live control</span>
+        <h2>Teacher hall desk</h2>
+      </div>
+    }
+    <button
+      type="button"
+      (click)="collapsedChanged.emit(!collapsed())"
+      [attr.aria-label]="collapsed() ? 'Open teacher hall desk' : 'Collapse teacher hall desk'"
+    >
+      {{ collapsed() ? '›' : '‹' }}
+    </button>
+  </header>
+
+  @if (!collapsed()) {
+    <div class="desk-status">
+      <span><i class="live"></i>{{ state().hallPhase.replaceAll('_', ' ') }}</span>
+      <span>Revision {{ state().openingSession.revision }}</span>
+    </div>
+
+    <section>
+      <h3>Opening phase</h3>
+      <div class="phase-grid">
+        <button
+          type="button"
+          [class.active]="state().hallPhase === 'async_walk'"
+          (click)="phaseChanged.emit('async_walk')"
+        >
+          Release to walk
+        </button>
+        <button
+          type="button"
+          [class.active]="state().hallPhase === 'live_opening'"
+          (click)="phaseChanged.emit('live_opening')"
+        >
+          Start live opening
+        </button>
+        <button
+          type="button"
+          [class.active]="state().hallPhase === 'closed_readable'"
+          (click)="phaseChanged.emit('closed_readable')"
+        >
+          Close, keep readable
+        </button>
+      </div>
+    </section>
+
+    <section>
+      <h3>Class focus</h3>
+      <div class="focus-list">
+        @for (location of locations(); track location.locationId) {
+          @if (location.hanging && location.snapshot) {
+            <button
+              type="button"
+              [class.active]="state().openingSession.currentHangingId === location.hanging.id"
+              (click)="pointed.emit(location.hanging.id)"
+            >
+              <span>{{ location.position + 1 }}</span>
+              <span
+                ><strong>{{ location.snapshot.accessibleData.title }}</strong
+                ><small>{{ location.team.displayName }}</small></span
+              >
+            </button>
+          }
+        }
+      </div>
+      <div class="mode-toggle" role="group" aria-label="Navigation mode">
+        <button
+          type="button"
+          [class.active]="state().hall.controls.navigationMode === 'independent'"
+          (click)="navigationChanged.emit('independent')"
+        >
+          Independent
+        </button>
+        <button
+          type="button"
+          [class.active]="state().hall.controls.navigationMode === 'teacher_follow'"
+          (click)="navigationChanged.emit('teacher_follow')"
+        >
+          Teacher follow
+        </button>
+      </div>
+    </section>
+
+    <section>
+      <h3>Presenter plate</h3>
+      <label>
+        <span>Presenting team</span>
+        <select (change)="docentsSelected.emit(readSelect($event))">
+          <option value="">Select docents…</option>
+          @for (location of locations(); track location.locationId) {
+            @if (location.hanging) {
+              <option [value]="location.team.id">{{ location.team.displayName }}</option>
+            }
+          }
+        </select>
+      </label>
+    </section>
+
+    <section>
+      <h3>Hall switches</h3>
+      <button type="button" class="switch" (click)="controlToggled.emit('peerResponsesEnabled')">
+        <span><strong>Question cards</strong><small>Post and moderate</small></span>
+        <i [class.on]="state().hall.controls.peerResponsesEnabled">{{
+          state().hall.controls.peerResponsesEnabled ? 'On' : 'Off'
+        }}</i>
+      </button>
+      <button type="button" class="switch" (click)="controlToggled.emit('submissionLocked')">
+        <span><strong>Submissions</strong><small>Hang or rehang</small></span>
+        <i [class.on]="!state().hall.controls.submissionLocked">{{
+          state().hall.controls.submissionLocked ? 'Locked' : 'Open'
+        }}</i>
+      </button>
+      <button type="button" class="switch" (click)="controlToggled.emit('familyViewEnabled')">
+        <span><strong>Family view</strong><small>Approved snapshots only</small></span>
+        <i [class.on]="state().hall.controls.familyViewEnabled">{{
+          state().hall.controls.familyViewEnabled ? 'On' : 'Off'
+        }}</i>
+      </button>
+    </section>
+
+    @if (unpublishedTeams().length) {
+      <section class="not-ready">
+        <h3>Not yet published</h3>
+        @for (team of unpublishedTeams(); track team.id) {
+          <span>{{ team.displayName }}</span>
+        }
+      </section>
+    }
+
+    <footer>
+      <button type="button" (click)="resetRequested.emit()">Reset demo data</button>
+      <small>High-impact controls are recorded by the runtime.</small>
+    </footer>
+  }
+</aside>

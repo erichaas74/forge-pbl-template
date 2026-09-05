@@ -1,0 +1,31 @@
+{
+  "race-around-the-world@1.0.0": {
+    "steps": [
+      {
+        "id": "step-sponsor",
+        "choiceIds": ["mission-trade", "mission-mapping", "mission-influence"],
+        "masteryTags": ["Evidence-based claim"]
+      },
+      {
+        "id": "step-supplies",
+        "choiceIds": ["supply-water", "supply-navigation", "supply-repair"],
+        "masteryTags": ["Resource reasoning", "Technology knowledge"]
+      },
+      {
+        "id": "step-route",
+        "choiceIds": ["route-choice-coastal", "route-choice-islands", "route-choice-direct"],
+        "masteryTags": ["Geographic reasoning", "Map interpretation"]
+      },
+      {
+        "id": "step-storm",
+        "choiceIds": ["storm-west", "storm-south"],
+        "masteryTags": ["Evidence-based decision", "Cause and consequence"]
+      },
+      {
+        "id": "step-encounter",
+        "choiceIds": ["encounter-negotiate", "encounter-seize", "encounter-withdraw"],
+        "masteryTags": ["Source perspective", "Ethical reasoning"]
+      }
+    ]
+  }
+}

@@ -9,7 +9,16 @@ export type SimulationStatus =
   | 'needs_revision';
 
 export type SimulationView =
-  'setup' | 'market' | 'route' | 'cargo' | 'events' | 'ledger' | 'results' | 'report' | 'teacher';
+  | 'setup'
+  | 'market'
+  | 'route'
+  | 'cargo'
+  | 'events'
+  | 'ledger'
+  | 'results'
+  | 'report'
+  | 'showcase'
+  | 'teacher';
 
 export type RiskLevel = 'low' | 'moderate' | 'high';
 export type LedgerEntryType =
@@ -42,6 +51,7 @@ export interface GoodDefinition {
   baseBuyPriceCents: number;
   unitCargo: number;
   description: string;
+  cargoPackage?: 'sack' | 'crate' | 'bale' | 'coil';
 }
 
 export interface LocationDefinition {
@@ -77,6 +87,8 @@ export interface MarketStallDefinition {
   merchantName: string;
   merchantRole: string;
   icon: string;
+  buildingStyle?: 'mercantile' | 'forge' | 'warehouse' | 'notice-office';
+  interiorSceneAsset?: string;
   categories: readonly string[];
   greeting: string;
   rumor: string;
@@ -88,11 +100,14 @@ export interface LocationSceneDefinition {
   environment: 'plains' | 'river' | 'mountain' | 'fort' | 'camp';
   weather: string;
   arrivalText: string;
+  streetSceneAsset?: string;
   stalls: readonly MarketStallDefinition[];
 }
 
 export interface SimulationWorldDefinition {
   travelAnimationMs: number;
+  setupSceneAsset?: string;
+  mapSceneAsset?: string;
   locations: readonly LocationSceneDefinition[];
 }
 
@@ -147,6 +162,49 @@ export interface ReportSectionDefinition {
   calculationRequired?: boolean;
 }
 
+export interface ChoiceProgressionRequirement {
+  minimumDiscoveredStalls?: number;
+  minimumPurchasedGoodTypes?: number;
+}
+
+export interface ChoiceProgressionStageDefinition {
+  id: string;
+  title: string;
+  description: string;
+  requirements?: ChoiceProgressionRequirement;
+  availableGoodIds: readonly string[];
+  availableRouteIds: readonly string[];
+}
+
+/** Optional ordered stages that gradually expose planning choices. */
+export interface ChoiceProgressionDefinition {
+  stages: readonly ChoiceProgressionStageDefinition[];
+}
+
+/** Optional multi-step money forecast completed after the basic load is built. */
+export interface RouteForecastChallengeDefinition {
+  requiredBeforeDeparture: boolean;
+  toleranceCents: number;
+}
+
+/** Optional presentation settings for the read-only final showcase workspace. */
+export interface FinalShowcaseDefinition {
+  title: string;
+  pitchSeconds: number;
+  audiencePrompts: readonly string[];
+}
+
+export interface PurchaseDiscountTierDefinition {
+  minimumQuantity: number;
+  discountPercent: number;
+}
+
+/** Optional transaction calculation gate and bulk purchase pricing. */
+export interface TransactionMathDefinition {
+  answerRequired: boolean;
+  purchaseDiscountTiers: readonly PurchaseDiscountTierDefinition[];
+}
+
 export interface SimulationDecisionConfig {
   schemaVersion: string;
   template: { id: 'simulation-decision'; version: string };
@@ -156,11 +214,16 @@ export interface SimulationDecisionConfig {
   subtitle: string;
   gradeLabel: string;
   mission: string;
+  companyNameSuggestions?: readonly string[];
   startingCashCents: number;
   reserveTargetCents: number;
   profitTargetCents: number;
   startingLocationId: string;
   maxSeasonDays: number;
+  choiceProgression?: ChoiceProgressionDefinition;
+  routeForecastChallenge?: RouteForecastChallengeDefinition;
+  finalShowcase?: FinalShowcaseDefinition;
+  transactionMath?: TransactionMathDefinition;
   emblems: readonly { id: string; label: string; symbol: string }[];
   transports: readonly TransportDefinition[];
   goods: readonly GoodDefinition[];
@@ -190,6 +253,9 @@ export interface LedgerLineDetail {
   goodId?: string;
   quantity?: number;
   unitPriceCents?: number;
+  postedUnitPriceCents?: number;
+  discountPercent?: number;
+  studentTotalCents?: number;
   costBasisCents?: number;
 }
 
@@ -214,6 +280,29 @@ export interface RouteHistoryEntry {
   rationale: string;
   knownInfoSnapshot: RouteDefinition;
   eventIdsTriggered: readonly string[];
+  forecast?: RouteForecastRecord;
+}
+
+export interface RouteForecastRecord {
+  expectedSalesRevenueCents: number;
+  expectedTripProfitCents: number;
+  goodsCostCents: number;
+  studentSalesRevenueCents: number;
+  studentTripProfitCents: number;
+  salesRevenueCorrect: boolean;
+  tripProfitCorrect: boolean;
+}
+
+export interface RouteProfitForecast {
+  expectedSalesRevenueCents: number;
+  goodsCostCents: number;
+  travelCostCents: number;
+  expectedTripProfitCents: number;
+}
+
+export interface RouteForecastAnswer {
+  salesRevenueCents: number;
+  tripProfitCents: number;
 }
 
 export interface EventHistoryEntry {
@@ -295,6 +384,7 @@ export interface TradeLineInput {
   goodId: string;
   direction: 'buy' | 'sell';
   quantity: number;
+  studentTotalCents?: number;
 }
 
 export interface TradePreview {
@@ -322,6 +412,9 @@ export interface TradingSeasonResults {
   unsoldInventoryValueCents: number;
   distanceTraveled: number;
   tradeCount: number;
+  tradingScore: number;
+  mathScore: number;
+  explanationScore: number;
   score: number;
   performanceLabel: string;
 }
@@ -331,7 +424,12 @@ export type SimulationDecisionAction =
   | { type: 'company.started'; companyName: string; emblemId: string; transportId: string }
   | { type: 'trade.committed'; lines: readonly TradeLineInput[] }
   | { type: 'market.stallInspected'; stallId: string }
-  | { type: 'route.committed'; routeId: string; rationale: string }
+  | {
+      type: 'route.committed';
+      routeId: string;
+      rationale: string;
+      forecast?: RouteForecastAnswer;
+    }
   | { type: 'travel.advanced' }
   | {
       type: 'event.resolved';

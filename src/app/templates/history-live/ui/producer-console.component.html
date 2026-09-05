@@ -1,0 +1,166 @@
+<section class="producer-room" aria-labelledby="producer-title">
+  <header class="producer-header">
+    <div>
+      <span>TEACHER PRODUCER CONSOLE · {{ runtime.viewer.classLabel }}</span>
+      <h1 id="producer-title">{{ runtime.config.event }} rundown</h1>
+      <p>Alternate perspectives, check readiness, then take the class broadcast live.</p>
+    </div>
+    <div class="show-summary">
+      <span
+        ><strong>{{ runtime.state().schedule.length }}</strong> segments</span
+      ><span
+        ><strong>{{ totalRuntime() }}</strong> runtime</span
+      ><button
+        type="button"
+        [disabled]="!runtime.canProduce() || runtime.busy() || !runtime.state().schedule.length"
+        (click)="runtime.startShow()"
+      >
+        <i></i> Start show
+      </button>
+    </div>
+  </header>
+  @if (runtime.canProduce()) {
+    <section class="review-panel" aria-labelledby="review-title">
+      <h2 id="review-title">Review {{ runtime.viewer.studentDisplayName }}’s report</h2>
+      <h3>{{ runtime.state().pitch.headline }}</h3>
+      <p>{{ runtime.state().pitch.storyQuestion }}</p>
+      <p>As of {{ runtime.state().pitch.asOfDate }} · {{ runtime.state().pitch.reportingMode }}</p>
+      <p>Initial prediction: {{ runtime.state().pitch.initialPrediction }}</p>
+      <p>Opposing challenge: {{ runtime.state().pitch.opposingChallenge }}</p>
+      <label
+        >Producer feedback<textarea
+          rows="3"
+          [value]="feedback()"
+          (input)="feedback.set($any($event.target).value)"
+        ></textarea>
+      </label>
+      <p>
+        Pitch: {{ runtime.state().pitch.status }} · Package:
+        {{ runtime.state().packageStatus || 'draft' }}
+      </p>
+      @if (runtime.state().pitch.status === 'submitted') {
+        <button type="button" (click)="runtime.reviewPitch('approved', feedback())">
+          Approve pitch</button
+        ><button type="button" (click)="runtime.reviewPitch('revise', feedback())">
+          Request pitch revision
+        </button>
+      }
+      @if (runtime.state().pitch.status === 'approved') {
+        <button type="button" (click)="runtime.reopenPitch()">Reopen pitch / network choice</button>
+      }
+      @if (runtime.state().packageStatus === 'submitted') {
+        <button type="button" (click)="runtime.goTo('broadcast')">Inspect submitted package</button
+        ><button type="button" (click)="runtime.reviewPackage('approved', feedback())">
+          Clear reviewed package</button
+        ><button type="button" (click)="runtime.reviewPackage('revise', feedback())">
+          Request package revision
+        </button>
+      }
+      <details>
+        <summary>Evidence and reasoning</summary>
+        @for (claim of runtime.state().claims; track claim.id) {
+          <h3>{{ claim.text }}</h3>
+          <p>{{ claim.status }} · {{ claim.reasoning }}</p>
+          <p>{{ claim.uncertainty }}</p>
+          @for (link of claim.evidence || []; track link.sourceId) {
+            <p>{{ link.sourceId }} · {{ link.relationship }} · {{ link.passage }}</p>
+          }
+        }
+      </details>
+      <details>
+        <summary>Review history</summary>
+        @for (review of runtime.state().reviewHistory || []; track $index) {
+          <p>
+            {{ review.timestamp }} · {{ review.target }} · {{ review.decision }} ·
+            {{ review.feedback }}
+          </p>
+        }
+      </details>
+    </section>
+  }
+  <div class="producer-grid">
+    <div class="rundown">
+      <header>
+        <span>ORDER</span><span>SEGMENT</span><span>NETWORK</span><span>TIME</span
+        ><span>STATUS</span><span>MOVE</span>
+      </header>
+      @for (segment of runtime.state().schedule; track segment.id; let index = $index) {
+        <article [class]="segment.side">
+          <strong>{{ (index + 1).toString().padStart(2, '0') }}</strong>
+          <div>
+            <span>{{ segment.desk }}</span>
+            <h2>{{ segment.headline }}</h2>
+            <p>{{ segment.reporter }} · {{ segment.visualLabel }}</p>
+          </div>
+          <span class="network">{{ segment.side === 'patriot' ? 'Continental' : 'Crown' }}</span
+          ><span
+            >{{ segment.startLabel }}<small>{{ segment.durationSeconds }} sec</small></span
+          ><span class="ready"><i></i>{{ segment.ready ? 'Ready' : 'Review' }}</span>
+          <div class="move">
+            @if (runtime.canProduce()) {
+              <button
+                type="button"
+                (click)="runtime.moveSegment(index, -1)"
+                [disabled]="index === 0"
+                aria-label="Move segment earlier"
+              >
+                ↑</button
+              ><button
+                type="button"
+                (click)="runtime.moveSegment(index, 1)"
+                [disabled]="index === runtime.state().schedule.length - 1"
+                aria-label="Move segment later"
+              >
+                ↓
+              </button>
+            }
+          </div>
+        </article>
+      }
+    </div>
+    <aside class="control-stack">
+      <section class="live-next">
+        <span>LIVE / NEXT</span>
+        <div>
+          <small>OPENING</small><strong>History Live Headlines</strong>
+          <p>Studio Wide · Class intro</p>
+        </div>
+        <div>
+          <small>NEXT</small><strong>{{ runtime.state().schedule[0]?.headline }}</strong>
+          <p>{{ runtime.state().schedule[0]?.reporter }}</p>
+        </div>
+      </section>
+      <section>
+        <span>RUN OF SHOW</span>
+        <dl>
+          <div>
+            <dt>Perspective balance</dt>
+            <dd>{{ sideCount('patriot') }} / {{ sideCount('british') }}</dd>
+          </div>
+          <div>
+            <dt>Packages ready</dt>
+            <dd>{{ runtime.state().schedule.length }} / {{ runtime.state().schedule.length }}</dd>
+          </div>
+          <div>
+            <dt>Mode</dt>
+            <dd>Reviewed packages</dd>
+          </div>
+        </dl>
+      </section>
+      <section class="producer-note">
+        <span>PRODUCER NOTE</span>
+        <p>
+          The schedule starts interleaved automatically. Reorder only when a clear historical
+          connection makes the transition stronger.
+        </p>
+      </section>
+      @if (runtime.isDemo && runtime.canProduce()) {
+        <details>
+          <summary>Reset this demo workspace</summary>
+          <p>Export your work first. Reset removes the current draft.</p>
+          <button class="reset" type="button" (click)="runtime.resetDemo()">Confirm reset</button>
+        </details>
+      }
+    </aside>
+  </div>
+</section>
