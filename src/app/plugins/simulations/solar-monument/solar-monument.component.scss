@@ -19,7 +19,8 @@
   margin: 4px 0 0;
 }
 button,
-select {
+select,
+input {
   font: inherit;
   min-height: 42px;
   border: 1px solid #c4b699;
@@ -36,7 +37,8 @@ button:disabled {
   cursor: default;
 }
 button:focus-visible,
-select:focus-visible {
+select:focus-visible,
+input:focus-visible {
   outline: 3px solid #be7920;
   outline-offset: 3px;
 }
@@ -192,3 +194,123 @@ summary {
     height: 920px;
   }
 }
+
+.toolbar-controls {
+  display: contents;
+}
+.toolbar-controls button,
+.toolbar-controls select,
+.toolbar-menu > summary,
+.standalone-header > button {
+  min-height: 36px;
+  padding: 7px 10px;
+  font-size: 13px;
+}
+.event-select {
+  width: 160px;
+}
+.observation {
+  font-size: 12px;
+  white-space: nowrap;
+  padding: 0 4px;
+}
+.play {
+  background: #e9ce91;
+}
+.toolbar-menu {
+  position: relative;
+}
+.toolbar-menu > summary {
+  list-style: none;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  border: 1px solid #c4b699;
+  border-radius: 6px;
+  background: #fffdf7;
+  font-weight: 400;
+}
+.popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 225px;
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid #bba984;
+  border-radius: 8px;
+  box-shadow: 0 12px 32px #322d2533;
+  background: #fffdf7;
+  z-index: 50;
+}
+.popover button {
+  text-align: left;
+}
+.header-timeline {
+  flex: 1 0 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 10px;
+  font-weight: 400;
+}
+.header-timeline span {
+  white-space: nowrap;
+}
+.header-timeline input {
+  flex: 1;
+  width: 0;
+  min-height: 16px;
+  padding: 0;
+  margin: 0;
+  accent-color: #9b762f;
+}
+.standalone-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  background: #f7f3e8;
+  border: 1px solid #c2b69d;
+}
+.standalone-guide {
+  padding: 16px;
+  border: 1px solid #c2b69d;
+  background: #fffaf0;
+}
+.guide-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.demonstration > summary {
+  font-size: 13px;
+  font-weight: 650;
+}
+iframe {
+  border: 0;
+  border-radius: 6px;
+  background: #f3efe5;
+}
+@media (max-width: 600px) {
+  .toolbar-controls button,
+  .toolbar-controls select,
+  .toolbar-menu > summary {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+  .event-select {
+    width: 145px;
+  }
+  .observation {
+    font-size: 11px;
+  }
+  .header-timeline {
+    gap: 6px;
+    font-size: 9px;
+  }
+}
+
+@media(max-width:600px) { .popover { position:fixed; top:120px; right:8px; max-width:calc(100vw - 32px); max-height:calc(100dvh - 140px); overflow:auto; } }

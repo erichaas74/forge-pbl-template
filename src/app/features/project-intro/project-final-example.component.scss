@@ -366,3 +366,15 @@ dialog::backdrop {
 .native-presentation {
   --presentation-available-height: calc(100dvh - 165px);
 }
+
+.example-page.integrated-example {
+  padding: 0 8px 8px;
+  max-width: 1800px;
+}
+.integrated-example .native-presentation {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}

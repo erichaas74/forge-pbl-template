@@ -26,6 +26,22 @@ export interface EngineeringDesignConfig {
   readonly exhibitPrompts: readonly string[];
   readonly starterDesign: BlockDesign;
   readonly designSamples?: readonly EngineeringDesignSample[];
+  readonly learningSequence?: {
+    readonly practiceDesign: BlockDesign;
+    readonly steps: readonly EngineeringLearningStep[];
+  };
+}
+/** Ordered curriculum prompts; the installed simulation owns each activity's behavior. */
+export interface EngineeringLearningStep {
+  readonly id: string;
+  readonly title: string;
+  readonly introduction: string;
+  readonly instructions: readonly string[];
+  readonly workspace: 'practice' | 'project';
+  readonly activity: string;
+  readonly question?: { readonly researchId: string; readonly prompt: string };
+  readonly explanation?: string;
+  readonly showGuides?: boolean;
 }
 export interface EngineeringDesignSample {
   readonly id: string;
@@ -36,6 +52,8 @@ export interface EngineeringDesignSample {
 export interface EngineeringSnapshot {
   readonly schemaVersion: '1.0';
   readonly revision: number;
+  readonly learningStepId?: string;
+  readonly practiceDesign?: BlockDesign;
   readonly design: BlockDesign;
   readonly research: Readonly<Record<string, string>>;
   readonly prediction: string;
@@ -99,6 +117,37 @@ export function requireEngineeringConfig(v: unknown, projectId: string): Enginee
     throw new Error('CONFIG_INVALID: Invalid sample design library.');
   if (new Set(config.research.map((r) => r.id)).size !== config.research.length)
     throw new Error('CONFIG_INVALID: Research IDs must be unique.');
+  const validStep = (step: unknown): boolean => {
+    if (!record(step)) return false;
+    const question = step['question'];
+    return (
+      ['id', 'title', 'introduction', 'activity'].every((k) => text(step[k])) &&
+      ['practice', 'project'].includes(String(step['workspace'])) &&
+      Array.isArray(step['instructions']) &&
+      step['instructions'].length > 0 &&
+      step['instructions'].length <= 8 &&
+      step['instructions'].every(text) &&
+      (step['explanation'] === undefined || text(step['explanation'])) &&
+      (step['showGuides'] === undefined || typeof step['showGuides'] === 'boolean') &&
+      (question === undefined ||
+        (record(question) &&
+          text(question['prompt']) &&
+          config.research.some((r) => r.id === question['researchId'])))
+    );
+  };
+  const sequence = config.learningSequence;
+  if (
+    sequence !== undefined &&
+    (!record(sequence) ||
+      !isBlockDesign(sequence.practiceDesign) ||
+      !Array.isArray(sequence.steps) ||
+      !sequence.steps.length ||
+      sequence.steps.length > 10 ||
+      !sequence.steps.every(validStep) ||
+      new Set(sequence.steps.map((step) => step.id)).size !== sequence.steps.length ||
+      sequence.steps[sequence.steps.length - 1].workspace !== 'project')
+  )
+    throw new Error('CONFIG_INVALID: Invalid engineering learning sequence.');
   return config;
 }
 export function isEngineeringSnapshot(v: unknown): v is EngineeringSnapshot {
@@ -107,6 +156,8 @@ export function isEngineeringSnapshot(v: unknown): v is EngineeringSnapshot {
     v['schemaVersion'] === '1.0' &&
     Number.isInteger(v['revision']) &&
     (v['revision'] as number) >= 0 &&
+    (v['learningStepId'] === undefined || text(v['learningStepId'])) &&
+    (v['practiceDesign'] === undefined || isBlockDesign(v['practiceDesign'])) &&
     isBlockDesign(v['design']) &&
     record(v['research']) &&
     Object.keys(v['research']).length <= 30 &&

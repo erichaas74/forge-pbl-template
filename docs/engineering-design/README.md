@@ -70,3 +70,17 @@ Initial integration:
 Added measured cylindrical openings, colored glass/jewel inserts, a central sculpture library with real directional/material lighting, colored target expectations and face samples in final seasonal evidence. The 3D canvas remains the main workspace. See [contracts, physics, validation, classroom reproduction and remaining optics scope](OPTICS_AND_SCULPTURE.md).
 
 Validation: production build; 17 Angular engineering/plugin tests; four Node geometry/scene/season/optics scripts, including 2,394 independent mesh-ray comparisons; browser four-season color comparison and reload. Existing unrelated SCSS budget warnings remain. No new package, backend, deployment or project-specific behavior was introduced. Three built-in sculpture models are available; refracting/focusing lenses and arbitrary imported models remain a documented future capability.
+
+# Monument appearance
+
+See [Monument graphics](MONUMENT_GRAPHICS.md) for the carved stone court, stone/glass finishes, scientific boundaries and validation of the graphics upgrade.
+
+# Build, Show Sun, and Play day
+
+The canvas now includes traced sunlight, improved shadow-side framing and zoom, a sunrise-to-sunset cycle, optional Earth tilt/orbit explanation, configurable final observation times and nearby-date checks. See [implementation, contracts, validation and remaining physical limits](SUN_DAY_AND_LEARNING.md).
+
+# Start with a sundial
+
+The learning sequence now begins with a student-built vertical-post dial and Play day. Fixed time marks reveal a seasonal surprise before the Earth-tilt explanation; students then mark both equinoxes and solstices on their dial. The creative Sun monument is the final challenge. Practice and final designs save separately. See [the five lessons, scientific basis, compatible contracts and passing checks](SUNDIAL_LEARNING_SEQUENCE.md).
+
+The follow-up [compact layout](SIMPLIFIED_LAB_LAYOUT.md) puts navigation and Sun events in one header, with clickable Guide, samples, notebook and comparison panels. It replaces the earlier stacked headings throughout the lab and final example.

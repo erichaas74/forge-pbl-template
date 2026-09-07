@@ -1,64 +1,186 @@
-<div class="lab-toolbar">
-  <div>
-    <strong>{{
-      presentation() ? 'Your monument · four special dates' : 'Your monument & its shadow'
-    }}</strong>
-    <p>
-      {{
-        presentation()
-          ? 'One design, one location, four seasonal tests at solar noon.'
-          : 'Build, change the Sun’s position, and test an alignment.'
-      }}
-    </p>
-  </div>
-  @if (!readOnly() && !presentation()) {
-    <button
-      (click)="capture()"
-      [disabled]="!ready() || busy() || (!design().blocks.length && !design().displayObject)"
-    >
-      {{ busy() ? 'Recording…' : 'Record this test' }}
+<ng-template #toolbar>
+  <div class="toolbar-controls">
+    @if (!presentation() && !readOnly()) {
+      @if (activity() === 'sundial-build') {
+        <details class="toolbar-menu" #postMenu>
+          <summary>Build</summary>
+          <div class="popover">
+            <label
+              >Post height (cm)<input
+                #post
+                type="number"
+                min="10"
+                max="200"
+                step="1"
+                [value]="ui().height"
+            /></label>
+            <button (click)="command('post', +post.value); postMenu.open = false">
+              Build sundial
+            </button>
+          </div>
+        </details>
+      } @else if (!activity().startsWith('sundial-')) {
+        <button (click)="command('buildMode')" [disabled]="!ready()">Build</button>
+      }
+    }
+    <button (click)="command('showSun')" [class.current]="ui().sun" [disabled]="!ready()">
+      ☀ Sun
     </button>
-  }
-</div>
-@if (presentation()) {
-  <nav class="season-steps" aria-label="Special dates">
-    @for (item of cases; track item.id; let i = $index) {
+    @if (!presentation()) {
+      <button class="play" (click)="command('playBtn')" [disabled]="!ready() || !ui().canPlay">
+        {{ ui().play }}
+      </button>
+      @if (!readOnly() && (activity() === 'sundial-build' || activity() === 'sundial-calendar')) {
+        <button (click)="command('markDial')" [disabled]="!ready()">
+          {{ activity() === 'sundial-calendar' ? 'Mark date' : 'Mark time' }}
+        </button>
+      }
+    }
+    <select
+      class="event-select"
+      [attr.aria-label]="presentation() ? 'Special date' : 'Sun events'"
+      [disabled]="!ready()"
+      [ngModel]="eventSelection()"
+      (ngModelChange)="event($event)"
+    >
+      @if (!presentation()) {
+        <option value="">Events & time</option>
+      }
+      @if (activity() !== 'sundial-build') {
+        @for (item of cases; track item.id) {
+          <option [value]="item.id">{{ item.label }}</option>
+        }
+      }
+      @if (!presentation()) {
+        <optgroup label="Time of day">
+          <option value="dayStart">Sunrise</option>
+          <option value="dialMorning">9 AM</option>
+          <option value="noonBtn">Solar noon</option>
+          <option value="dialAfternoon">3 PM</option>
+          <option value="dayEnd">Sunset</option>
+        </optgroup>
+        @if (activity() === 'sundial-calendar') {
+          <optgroup label="Nearby dates">
+            <option value="dialWeekBefore">A week before</option>
+            <option value="dialWeekAfter">A week after</option>
+          </optgroup>
+        }
+      }
+      @if (presentation()) {
+        <optgroup label="Nearby dates">
+          <option value="nearby-before">A week before</option>
+          <option value="special-return">Back to special date</option>
+          <option value="nearby-after">A week after</option>
+        </optgroup>
+      }
+      <option value="controlsToggle">Place & date…</option>
+    </select>
+    <output class="observation" aria-label="Current observation"
+      >{{ ui().date }} <strong>{{ ui().clock }}</strong></output
+    >
+    @if (presentation()) {
+      <button (click)="reviewOpen.set(!reviewOpen())" [attr.aria-expanded]="reviewOpen()">
+        Compare {{ matches() }}/4
+      </button>
+      @if (!readOnly()) {
+        <button (click)="recordReview()" [disabled]="!configured() || recorded() || reviewing()">
+          {{ recorded() ? 'Saved' : 'Save comparison' }}
+        </button>
+      }
+    } @else if (!readOnly()) {
       <button
-        [class.current]="selected() === i"
-        [attr.aria-current]="selected() === i ? 'step' : null"
-        [disabled]="!results().length"
-        (click)="viewCase(i)"
+        (click)="capture()"
+        [disabled]="!ready() || busy() || (!design().blocks.length && !design().displayObject)"
       >
-        <span>{{ i + 1 }} · {{ item.label }}</span
-        ><small>{{ reviewing() ? 'Calculating…' : resultLabel(results()[i]) }}</small>
+        {{ busy() ? 'Saving…' : 'Save test' }}
       </button>
     }
-  </nav>
+    <details class="toolbar-menu" #viewMenu>
+      <summary>Tools</summary>
+      <div class="popover">
+        <button (click)="command('shadowView'); viewMenu.open = false">See shadows</button>
+        <button (click)="command('topView'); viewMenu.open = false">View from above</button>
+        <button (click)="command('fitView'); viewMenu.open = false">Fit model</button>
+        @if (activity().startsWith('sundial-')) {
+          <button
+            (click)="command('returnDial'); viewMenu.open = false"
+            [disabled]="!ui().canReturn"
+          >
+            Return to marking day
+          </button>
+          @if (activity() === 'sundial-build' || activity() === 'sundial-calendar') {
+            <button
+              (click)="command('undoDial'); viewMenu.open = false"
+              [disabled]="readOnly() || !ui().canUndo"
+            >
+              Remove last mark
+            </button>
+          }
+        }
+        @if (!presentation()) {
+          <label
+            >Playback speed<select
+              aria-label="Playback speed"
+              (change)="command('speed', $any($event.target).value)"
+            >
+              <option value="0.5">Slow</option>
+              <option value="1" selected>Normal</option>
+              <option value="2">Fast</option>
+            </select></label
+          >
+        }
+        @if (presentation()) {
+          <button (click)="runReview(); viewMenu.open = false" [disabled]="!ready() || reviewing()">
+            Recheck four dates
+          </button>
+        }
+      </div>
+    </details>
+    @if (!presentation()) {
+      <label class="header-timeline"
+        ><span>{{ ui().startLabel }}</span
+        ><input
+          type="range"
+          aria-label="Time from sunrise to sunset"
+          [min]="ui().start"
+          [max]="ui().end"
+          step="any"
+          [value]="ui().minutes"
+          [disabled]="!ready() || !ui().canPlay"
+          (input)="command('minutes', +$any($event.target).value)"
+        /><span>{{ ui().endLabel }}</span></label
+      >
+    }
+  </div>
+</ng-template>
+@if (!onChrome) {
+  <header class="standalone-header" aria-label="Simulation controls">
+    <ng-container *ngTemplateOutlet="toolbar" /><button
+      (click)="toolsOpen.set(!toolsOpen())"
+      [attr.aria-expanded]="toolsOpen()"
+    >
+      Guide
+    </button>
+  </header>
+  @if (toolsOpen()) {
+    <aside class="standalone-guide"><ng-container *ngTemplateOutlet="guide" /></aside>
+  }
 }
 <iframe
   #frame
   title="Interactive globe, Sun and Moon paths, and monument shadows"
   src="/simulations/solar-monument/index.html"
+  [style.height.px]="frameHeight()"
   (load)="connect()"
 ></iframe>
 @if (presentation()) {
-  <section class="demonstration" aria-label="Seasonal demonstration">
-    <div class="step-heading">
-      <button (click)="viewCase(selected() - 1)" [disabled]="!results().length">← Previous</button>
-      <div>
-        <h3>{{ cases[selected()].label }}</h3>
-        <p>{{ measurement(current(), 'Observation') }}</p>
-      </div>
-      <button (click)="viewCase(selected() + 1)" [disabled]="!results().length">
-        Next special date →
-      </button>
-    </div>
+  <section class="demonstration" [hidden]="!reviewOpen()" aria-label="Comparison and expectations">
     <div class="expectation">
       <label
         >Target for this date<select
           [disabled]="readOnly()"
-          [value]="checkFor(cases[selected()].id)?.targetId || ''"
-          (change)="changeCheck(cases[selected()].id, 'targetId', $any($event.target).value)"
+          [ngModel]="checkFor(cases[selected()].id)?.targetId || ''"
+          (ngModelChange)="changeCheck(cases[selected()].id, 'targetId', $event)"
         >
           <option value="">Choose a ground target</option>
           @for (target of design().targets; track target.id) {
@@ -69,8 +191,8 @@
       <label
         >What should happen?<select
           [disabled]="readOnly()"
-          [value]="checkFor(cases[selected()].id)?.expectedValue || 'shadow'"
-          (change)="changeCheck(cases[selected()].id, 'expectedValue', $any($event.target).value)"
+          [ngModel]="checkFor(cases[selected()].id)?.expectedValue || 'shadow'"
+          (ngModelChange)="changeCheck(cases[selected()].id, 'expectedValue', $event)"
         >
           <option value="shadow">Target centre is in shadow</option>
           <option value="sunlight">Target centre receives sunlight</option>
@@ -94,6 +216,43 @@
     @if (!design().targets.length) {
       <p>Add ground targets with the block tools to define what your monument should do.</p>
     }
+    @if (checkFor(cases[selected()].id); as check) {
+      <div class="expectation">
+        <label
+          >When to test<select
+            [disabled]="readOnly()"
+            [ngModel]="check.settings?.['observationRule'] || 'noon'"
+            (ngModelChange)="changeTime(check.scenarioId, $event)"
+          >
+            <option value="noon">Solar noon · highest Sun</option>
+            <option value="morning">30 minutes after sunrise</option>
+            <option value="evening">30 minutes before sunset</option>
+            <option value="clock">Choose a clock time</option>
+          </select></label
+        >
+        @if (check.settings?.['observationRule'] === 'clock') {
+          <label
+            >Local clock time<input
+              type="time"
+              [disabled]="readOnly()"
+              [value]="clockFor(check.scenarioId)"
+              (change)="changeTime(check.scenarioId, 'clock', $any($event.target).value)"
+          /></label>
+        }
+      </div>
+    }
+    <details class="model-note">
+      <summary>Does it mark this date precisely?</summary>
+      <p>
+        Use the same time rule a week before and after. If all three dates match, the monument marks
+        a range of dates.
+      </p>
+      <p>
+        One week before: <strong>{{ measurement(current(), '7 days before') }}</strong
+        >. One week after: <strong>{{ measurement(current(), '7 days after') }}</strong
+        >.
+      </p>
+    </details>
     @if (design().displayObject) {
       <p>
         <strong>Sculpture at this Sun angle:</strong>
@@ -110,6 +269,7 @@
           <tr>
             <th>Special date</th>
             <th>Sun altitude</th>
+            <th>Observation</th>
             <th>Shadow reference</th>
             <th>Target</th>
             <th>Expected</th>
@@ -121,9 +281,10 @@
           @for (result of results(); track result.id; let i = $index) {
             <tr [class.selected]="selected() === i">
               <th>
-                <button (click)="viewCase(i)">{{ cases[i].label }}</button>
+                {{ cases[i].label }}
               </th>
               <td>{{ measurement(result, 'Sun altitude') }}</td>
+              <td>{{ measurement(result, 'Observation') }}</td>
               <td>{{ measurement(result, 'Height-only shadow reference') }}</td>
               <td>{{ measurement(result, 'Target') }}</td>
               <td>{{ measurement(result, 'Expected') }}</td>
@@ -139,29 +300,47 @@
         {{ matches() }}/4 expectations match. A match tests the target centre; nearby-date tests
         show how precisely your monument marks the calendar.
       </p>
-      <button (click)="runReview()" [disabled]="!ready() || reviewing()">
-        Recheck all four dates
-      </button>
-      @if (!readOnly()) {
-        <button (click)="recordReview()" [disabled]="!configured() || recorded() || reviewing()">
-          {{ recorded() ? 'Comparison recorded' : 'Record final comparison' }}
-        </button>
-      }
     </div>
   </section>
 }
-<p class="status" role="status">{{ status() }}</p>
-<details class="model-note">
-  <summary>How to interpret the model</summary>
+@if (
+  status().includes('could not') ||
+  status().includes('did not') ||
+  status().includes('Trial added') ||
+  status().includes('recorded') ||
+  status().includes('STATE_')
+) {
+  <p class="status" role="status">{{ status() }}</p>
+}
+@if (ui().message) {
+  <p class="status" role="status">{{ ui().message }}</p>
+}
+<ng-template #guide>
+  <h3>Canvas guide</h3>
   <p>
-    Level ground, true north and direct sunlight. Each target checks its centre. A longer shadow may
-    cover several markers, so test nearby dates too. Trees, terrain, clouds and block stability are
-    not simulated. Compare with an outdoor build before claiming a physical accuracy tolerance.
-    Cylindrical holes have their measured depth. Glass and jewel inserts filter parallel sunlight;
-    displayed colors are illustrative RGB transmission. Lens focusing, refraction, prism rainbows,
-    the Sun’s finite disk and soft shadow edges are not modeled. Sculpture shapes and materials are
-    selectable built-in models, and the saved design includes their dimensions and orientation.
-    The stone court has decorative compass carvings; its rings are not calibrated seasonal markers.
-    Surface texture adds the look of shallow carving while the measured floor stays level.
+    {{ presentation() ? 'Choose a special date in the header, then try a week before or after it.' : 'Play a day, pause, and follow the shadow.' }} Drag to turn the scene; scroll or use + / − to zoom.
   </p>
-</details>
+  <div class="guide-actions">
+    @if (!['sundial-build', 'sundial-seasons'].includes(activity())) {
+      <button (click)="command('earthToggle')">Earth’s tilt</button>
+    }
+    <button (click)="command('extras')">Views & measurements</button>
+  </div>
+  <details class="model-note">
+    <summary>How to interpret the model</summary>
+    <p>
+      Level ground, true north and direct sunlight. Each target checks its centre. A longer shadow
+      may cover several markers, so test nearby dates too. Trees, terrain, clouds and block
+      stability are not simulated. Compare with an outdoor build before claiming a physical accuracy
+      tolerance. Cylindrical holes have their measured depth. Glass and jewel inserts filter
+      parallel sunlight; displayed colors are illustrative RGB transmission. Lens focusing,
+      refraction, prism rainbows, the Sun’s finite disk and soft shadow edges are not modeled.
+      Sculpture shapes and materials are selectable built-in models, and the saved design includes
+      their dimensions and orientation. The stone court has decorative compass carvings; its rings
+      are not calibrated seasonal markers. Surface texture adds the look of shallow carving while
+      the measured floor stays level. Sunrise and sunset labels use the apparent horizon; direct
+      rays use the Sun’s centre above the geometric horizon. Very long shadows can extend beyond the
+      view near sunrise and sunset.
+    </p>
+  </details>
+</ng-template>

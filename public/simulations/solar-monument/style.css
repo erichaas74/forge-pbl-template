@@ -40,6 +40,20 @@
 .first-investigation summary { cursor: pointer; font-weight: 700; }
 .first-investigation ol { padding-left: 20px; }
 [hidden] { display: none !important; }
+.sundial-tools { margin: 0 0 10px; padding: 12px 16px; border: 1px solid #baab89; border-radius: 10px; background: #f4ead2; color: #443d2d; }
+.sundial-tools button { border: 1px solid #b6a580; background: #fff9ec; color: #423821; padding: 8px 12px; border-radius: 6px; font: inherit; cursor: pointer; }
+.sundial-tools button:disabled { opacity: .5; cursor: default; }
+.sundial-tools input { width: 72px; padding: 6px; }
+.sundial-tools p, .sundial-tools span, .sundial-tools li { font-size: 12px; line-height: 1.5; }
+.sundial-tools p { margin: 6px 0; }
+.sundial-tools #sundialBuild, .dial-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.dial-actions { margin-top: 8px; }
+.sundial-tools summary { font-size: 12px; cursor: pointer; }
+#dialLegend { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 6px 0; }
+#dialLegend span { padding: 2px 6px; background: #fffaed; border-radius: 5px; }
+.sundial-tools ul { display: flex; flex-wrap: wrap; gap: 6px 24px; padding-left: 16px; }
+#markDial, #buildSundial { background: #ead098; font-weight: 700; }
+.sundial-lesson .first-investigation, .sundial-lesson [aria-labelledby="layersTitle"] { display: none; }
 .scene-tools .shadow-info { position: static; font-size: 12px; max-width: none; margin: 0 0 10px; padding: 10px; background: #102d35; color: white; columns: 2; font-weight: 400; }
 @media(max-width:700px) { .app-shell { grid-template-columns: 1fr !important; } .control-panel { max-height: 330px; } }
 @media(prefers-reduced-motion:reduce) { * { transition: none !important; } }
@@ -663,3 +677,91 @@ button:hover { background: #f5ecd8; border-color: #aa8550; }
 .tab.active { background: #e9dec5; color: #453c29; }
 .status-chip { background: #ebe5d7; border-color: #c7bba2; color: #514c3e; }
 .canvas-panel { border-color: #9b8c70; box-shadow: inset 0 0 0 1px #e6d9b94d; }
+
+/* Child-friendly demonstration: one canvas, a day strip, optional explanations. */
+html, body { min-height: 0; }
+.workspace { display: block; min-height: 0; }
+.workspace-bar { display: flex; gap: 8px; flex-direction: row; }
+.workspace-bar button { padding: 9px 14px; }
+.workspace-bar button[aria-pressed="true"] { background: #47523f; color: #fff9e7; border-color: #47523f; }
+.workspace-bar .show-sun { background: #f1ca71; border-color: #b78c3d; }
+.workspace-bar #controlsToggle { margin-left: auto; font-size: 12px; }
+.day-controls { padding: 9px 14px 4px; border-bottom: 1px solid #c7b899; background: #faf5e9; }
+.day-heading { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 13px; }
+#dayClock { font-weight: 750; color: #72501e; min-width: 72px; }
+.day-heading button { min-height: 30px; font-size: 12px; padding: 4px 9px; }
+.day-heading button[aria-pressed="true"] { background: #e6ddbf; }
+.speed-label { display: flex; align-items: center; gap: 5px; margin-left: auto; font-size: 11px; }
+.speed-label select { min-height: 28px; width: auto; margin: 0; padding: 2px 5px; }
+.day-controls .season-grid { display: flex; gap: 6px; margin: 8px 0 3px; }
+.day-controls .season-grid button { flex: 1; min-height: 32px; font-size: 12px; }
+.day-controls .season-grid [aria-pressed="true"] { background: #efe0b4; border-color: #a6853f; }
+.day-range { display: block; }
+.day-range input { width: 100%; min-height: 18px; margin: 3px 0; accent-color: #b48226; }
+.day-endpoints { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 11px; color: #655b46; }
+.day-endpoints button { background: transparent; border: 0; min-height: 30px; padding: 2px; font-size: 11px; }
+#dayMessage { text-align: center; }
+.stage { min-height: 0 !important; height: auto; overflow: visible; }
+.horizon-layout.active, .horizon-layout.sky-mode { position: relative; inset: auto; grid-template-rows: 450px auto !important; padding: 10px; }
+.horizon-layout.show-chart { grid-template-rows: 220px 450px auto !important; }
+.canvas-panel { min-height: 0; position: relative; }
+#shadowCanvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+#shadowCanvas:active { cursor: grabbing; }
+#shadowCanvas:focus-visible { outline: 3px solid #c78627; outline-offset: -4px; }
+.sun-badge { position: absolute; top: 47px; left: 12px; border: 1px solid #b59b62; border-radius: 18px; padding: 7px 12px; background: #fff4d5ed; color: #654e22; font-size: 12px; font-weight: 650; pointer-events: none; }
+.quick-camera { position: absolute; bottom: 12px; right: 12px; display: flex; gap: 5px; background: #f7f0e5ed; padding: 5px; border-radius: 9px; border: 1px solid #b9a789; }
+.quick-camera button { padding: 4px 9px; min-height: 34px; font-size: 12px; }
+.quick-camera button:first-child, .quick-camera button:nth-child(2) { min-width: 34px; font-size: 19px; }
+.frame-notice { position: absolute; left: 12px; bottom: 12px; max-width: 45%; margin: 0; color: #fff8df; background: #383d32d9; font-size: 11px; border-radius: 5px; padding: 5px 8px; pointer-events: none; }
+.frame-notice:empty { display: none; }
+.scene-tools { padding: 8px 12px; }
+.ray-inspector { display: grid; grid-template-columns: 200px 1fr; align-items: center; gap: 3px 12px; }
+.ray-inspector label { font-size: 11px; display: flex; align-items: center; gap: 5px; }
+.ray-inspector select { min-height: 30px; margin: 0; padding: 3px; min-width: 0; flex: 1; font-size: 11px; }
+.ray-inspector p { margin: 0; font-size: 12px; }
+#rayMeasure { grid-column: 1 / -1; color: #775d36; font-size: 11px; }
+.camera-hint { color: #766c58; font-size: 11px !important; margin: 5px 0 !important; }
+#moreViews summary { cursor: pointer; font-size: 12px; padding: 7px 0; }
+.earth-guide { display: grid; grid-template-columns: minmax(230px, .8fr) 1fr; gap: 20px; padding: 16px; background: #f5efe0; border-top: 1px solid #c7b899; }
+#earthCanvas { display: block; width: 100%; height: 245px; background: #23323b; border-radius: 10px; }
+.earth-guide h2 { font: 700 20px Georgia, serif; margin: 0 0 10px; }
+.earth-guide p { font-size: 12px; line-height: 1.55; margin: 5px 0; }
+#seasonGraph { display: block; width: 100%; max-height: 145px; margin-top: 8px; }
+#seasonGraph text { fill: #554a36; font: 11px system-ui; }
+#globeView.active { position: relative; inset: auto; height: 550px; }
+.presenting #buildMode, .presenting #playBtn,
+.presenting .day-controls .season-grid, .presenting .day-controls .day-range,
+.presenting .day-controls .day-endpoints, .presenting .day-heading button,
+.presenting .speed-label { display: none; }
+.presenting .day-controls { padding-bottom: 9px; }
+.build-mode .ray-inspector { display: none; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+@media (max-width: 700px) {
+  .workspace-bar { gap: 5px; padding: 8px; }
+  .workspace-bar button { padding: 7px 9px; font-size: 12px; }
+  .workspace-bar #controlsToggle { margin-left: 0; }
+  .horizon-layout.active, .horizon-layout.sky-mode { grid-template-rows: 390px auto !important; padding: 6px; }
+  .horizon-layout.show-chart { grid-template-rows: 200px 390px auto !important; }
+  .ray-inspector { grid-template-columns: 1fr; }
+  .ray-inspector label { max-width: 250px; }
+  .earth-guide { grid-template-columns: 1fr; }
+  #earthCanvas { height: 220px; }
+  #dayMessage { display: none; }
+  .day-heading { gap: 6px; }
+  .sun-badge { max-width: calc(100% - 24px); font-size: 11px; padding: 5px 8px; }
+  .frame-notice { bottom: 63px; max-width: 85%; }
+}
+
+/* The Angular workspace supplies one composed header; the iframe contributes only the scene. */
+.hosted-chrome .workspace-bar, .hosted-chrome .day-controls, .hosted-chrome #sundialTools,
+.hosted-chrome .scene-tools, .hosted-chrome .overlay-label { display:none !important; }
+.hosted-chrome .workspace, .hosted-chrome .app-shell { min-height:0; }
+.hosted-chrome .horizon-layout.active, .hosted-chrome .horizon-layout.sky-mode { grid-template-rows:clamp(460px,55vw,740px) !important; padding:4px; gap:0; }
+.hosted-chrome .horizon-layout.show-chart { grid-template-rows:220px clamp(460px,55vw,740px) !important; }
+.hosted-chrome.extra-tools .scene-tools { display:block !important; }
+.hosted-chrome.extra-tools .horizon-layout.active { grid-template-rows:clamp(460px,55vw,740px) auto !important; }
+.hosted-chrome.extra-tools .horizon-layout.show-chart { grid-template-rows:220px clamp(460px,55vw,740px) auto !important; }
+.hosted-chrome .sun-badge { top:12px; }
+.hosted-chrome #dialLegend { position:absolute; left:12px; bottom:12px; max-width:55%; gap:3px 6px; margin:0; pointer-events:none; }
+.hosted-chrome #dialLegend span { font-size:11px; padding:3px 6px; background:#fff8e5ed; border:1px solid #ae956666; }
+.hosted-chrome .control-panel { top:8px; }

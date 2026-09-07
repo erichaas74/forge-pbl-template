@@ -1,71 +1,51 @@
 <main class="design-studio">
-  <header class="mission">
-    <div>
-      <p class="eyebrow">DESIGN · BUILD · PROVE IT</p>
-      <h1>{{ config.title }}</h1>
-    </div>
-    <button (click)="exportNotebook()">Export notebook & blueprint ↓</button>
-  </header>
-  <nav aria-label="Project workspace">
-    <button
-      [class.active]="!presenting() && !panel()"
-      (click)="presenting.set(false); panel.set('')"
-    >
-      Monument lab
-    </button>
-    <button
-      [disabled]="!!preview()"
-      [attr.aria-expanded]="panel() === 'build'"
-      (click)="togglePanel('build')"
-    >
-      Blocks & targets
-    </button>
-    <button [attr.aria-expanded]="panel() === 'research'" (click)="togglePanel('research')">
-      Learn & guides
-    </button>
-    <button [attr.aria-expanded]="panel() === 'trials'" (click)="togglePanel('trials')">
-      Evidence · {{ runtime.snapshot().trials.length }}
-    </button>
-    <button [class.active]="presenting()" (click)="presenting.set(true); panel.set('')">
-      Final demonstration →
-    </button>
-    @if (presenting()) {
-      <button [attr.aria-expanded]="panel() === 'explain'" (click)="togglePanel('explain')">
-        My explanation
+  <header class="lab-header" aria-label="Lab navigation and controls">
+    <div class="workspace-navigation">
+      @if (learningStep(); as step) {
+        <select aria-label="Lab step" [ngModel]="step.id" (ngModelChange)="selectStep($event)">
+          @for (item of learningSteps; track item.id; let i = $index) {
+            <option [value]="item.id">{{ i + 1 }} · {{ item.title }}</option>
+          }
+        </select>
+      } @else {
+        <h1>{{ config.title }}</h1>
+      }
+      <button [attr.aria-expanded]="panel() === 'guide'" (click)="togglePanel('guide')">
+        Guide
       </button>
-    }
-  </nav>
-  @if (config.designSamples?.length && !presenting()) {
-    <app-design-sample-gallery
-      [samples]="config.designSamples!"
-      [selectedId]="sampleId()"
-      (preview)="previewSample($event)"
-    />
-  }
-  @if (preview(); as sample) {
-    <section class="sample-notice" aria-label="Sample preview">
-      <div>
-        <strong>Exploring: {{ sample.title }}</strong>
-        <p>{{ sample.description }}</p>
-        <small
-          >Change the date, time, or camera below. Use this model to edit it and record your
-          tests.</small
-        >
-      </div>
-      <div class="sample-actions">
-        <button class="active" (click)="useSample()">Use this model & edit</button
-        ><button (click)="stopPreview()">Back to my design</button>
-      </div>
-    </section>
-  } @else if (runtime.snapshot().designBackup) {
-    <div class="sample-notice">
-      <p>Your previous design is saved, along with its seasonal expectations.</p>
-      <button (click)="restorePreviousDesign()">Restore previous design</button>
+      <details class="workspace-menu" #menu>
+        <summary aria-label="Workspace menu">•••</summary>
+        <div class="menu-items" (click)="menu.open = false">
+          @if (!practicing()) {
+            <button (click)="togglePanel('samples')">Sample models</button>
+            <button (click)="presenting.set(!presenting()); panel.set('')">
+              {{ presenting() ? 'Back to building' : 'Final demonstration' }}
+            </button>
+            <button (click)="togglePanel('explain')">My explanation</button>
+          }
+          <button (click)="togglePanel('trials')">
+            Notebook · {{ runtime.snapshot().trials.length }}
+          </button>
+          <button (click)="exportNotebook()">Export notebook & blueprint</button>
+          <a [routerLink]="['/projects', config.projectId]">Project opening</a>
+          <a [routerLink]="['/projects', config.projectId, 'final-demo']">Example</a>
+          <a routerLink="/projects">All projects</a>
+        </div>
+      </details>
     </div>
-  }
+    <ng-container *ngTemplateOutlet="chrome()?.toolbar ?? null" />
+    @if (preview(); as sample) {
+      <div class="preview-actions">
+        <span>Preview: {{ sample.title }}</span> <button (click)="useSample()">Use model</button
+        ><button (click)="stopPreview()">My design</button>
+      </div>
+    }
+  </header>
   <div class="workspace" [class.with-panel]="!!panel()">
     <section #canvasRegion class="simulation" tabindex="-1" aria-label="Monument canvas workspace">
-      <ng-container *ngComponentOutlet="simulation; inputs: simulationInputs()" />
+      <ng-container
+        *ngComponentOutlet="simulation; inputs: simulationInputs(); injector: simulationInjector"
+      />
     </section>
     @if (panel()) {
       <aside
@@ -82,24 +62,46 @@
             <summary>Design brief</summary>
             <p>{{ config.designBrief }}</p>
           </details>
-          <app-block-builder
-            [design]="runtime.snapshot().design"
-            (changed)="runtime.saveDesign($event)"
-          />
-          <label for="prediction">What do you predict?</label>
-          <textarea
-            id="prediction"
-            rows="3"
-            maxlength="10000"
-            [ngModel]="runtime.snapshot().prediction"
-            (change)="runtime.saveText('prediction', $any($event.target).value)"
-            placeholder="On this date, I expect…"
-          ></textarea>
+          <app-block-builder [design]="activeDesign()" (changed)="saveActiveDesign($event)" />
         }
-        @if (panel() === 'research') {
-          <h2>Learn & guides</h2>
-          <p>{{ config.mission }}</p>
-          <details open>
+        @if (panel() === 'guide') {
+          @if (learningStep(); as step) {
+            <app-engineering-learning-guide
+              [steps]="learningSteps"
+              [step]="step"
+              [index]="stepIndex()"
+              [answer]="runtime.snapshot().research[step.question?.researchId || ''] || ''"
+              (answered)="answerStep($event)"
+            />
+          }
+          <ng-container *ngTemplateOutlet="chrome()?.guide ?? null" />
+          @if (!practicing()) {
+            <label for="prediction">My prediction</label>
+            <textarea
+              id="prediction"
+              rows="3"
+              maxlength="10000"
+              [ngModel]="runtime.snapshot().prediction"
+              (change)="runtime.saveText('prediction', $any($event.target).value)"
+              placeholder="On this date, I expect…"
+            ></textarea>
+          }
+        }
+        @if (panel() === 'samples') {
+          <h2>Sample models</h2>
+          <app-design-sample-gallery
+            [samples]="config.designSamples ?? []"
+            [selectedId]="sampleId()"
+            (preview)="previewSample($event)"
+          />
+          @if (runtime.snapshot().designBackup) {
+            <button (click)="restorePreviousDesign()">Restore previous design</button>
+          }
+        }
+        @if (panel() === 'guide' && learningStep()?.showGuides !== false) {
+          <h2>More to explore</h2>
+
+          <details>
             <summary>How to test your monument</summary>
             <ol>
               @for (instruction of config.testInstructions; track instruction) {
@@ -131,7 +133,11 @@
           <p>Each record keeps its own design, prediction and measurements.</p>
           @for (trial of runtime.snapshot().trials; track trial.id; let i = $index) {
             <details>
-              <summary>Test {{ i + 1 }} · {{ trial.settings['localDate'] }}</summary>
+              <summary>
+                Test {{ i + 1 }} ·
+                {{ trial.settings['workspace'] === 'practice' ? 'Sundial' : 'Monument' }} ·
+                {{ trial.settings['localDate'] }}
+              </summary>
               <p>{{ trial.prediction || 'No prediction recorded.' }}</p>
               <dl>
                 @for (m of trial.measurements; track m.label) {

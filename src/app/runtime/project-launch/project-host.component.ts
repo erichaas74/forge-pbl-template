@@ -59,8 +59,11 @@ export class ProjectHostComponent implements OnDestroy {
   readonly error = signal<string | undefined>(undefined);
   readonly isActivity = signal(false);
   readonly hasIntro = signal(false);
+  readonly integratedHeader = signal(false);
   readonly usesIntegratedActivityHeader = computed(
-    () => this.isActivity() && this.project()?.template.id === 'journey-replay',
+    () =>
+      this.isActivity() &&
+      (this.integratedHeader() || this.project()?.template.id === 'journey-replay'),
   );
 
   constructor() {
@@ -83,6 +86,7 @@ export class ProjectHostComponent implements OnDestroy {
   private async load(): Promise<void> {
     const generation = ++this.generation;
     this.loading.set(true);
+    this.integratedHeader.set(false);
     this.error.set(undefined);
     this.component.set(null);
     this.projectInjector()?.destroy();
@@ -153,6 +157,7 @@ export class ProjectHostComponent implements OnDestroy {
         });
       }
       if (generation !== this.generation) return;
+      this.integratedHeader.set(target.integratedHeader === true);
       const injector = createEnvironmentInjector(
         [
           { provide: PROJECT_CATALOG_ENTRY, useValue: project },

@@ -35,22 +35,58 @@
     // Obelisk: half-width tapers from 1 at the base to .45 at the top.
     return [[1, .275, 0, .725], [-1, .275, 0, .725], [0, .275, 1, .725], [0, .275, -1, .725], [0, 1, 0, 1], [0, -1, 0, 1]];
   }
-  function objectBlocks(point, direction, object) {
-    if (!object) return false;
+  function objectInterval(point, direction, object) {
+    if (!object) return null;
     const h = [object.width / 2, object.height / 2, object.width / 2];
     const p = local(point, object).map((v, i) => v / h[i]), d = local(direction, object, true).map((v, i) => v / h[i]);
     if (object.model === 'sphere') {
       const a = d.reduce((s, v) => s + v * v, 0), b = p.reduce((s, v, i) => s + v * d[i], 0), c = p.reduce((s, v) => s + v * v, -1), disc = b * b - a * c;
-      return disc >= 0 && (-b + Math.sqrt(disc)) / a > 1e-5;
+      if (disc < 0 || (-b + Math.sqrt(disc)) / a <= 1e-5) return null;
+      return [Math.max(0, (-b - Math.sqrt(disc)) / a), (-b + Math.sqrt(disc)) / a];
     }
     let near = 0, far = Infinity;
     for (const plane of planes(object.model)) {
       const distance = plane[3] - p.reduce((s, v, i) => s + v * plane[i], 0), slope = d.reduce((s, v, i) => s + v * plane[i], 0);
-      if (Math.abs(slope) < 1e-10) { if (distance < 0) return false; }
+      if (Math.abs(slope) < 1e-10) { if (distance < 0) return null; }
       else if (slope > 0) far = Math.min(far, distance / slope);
       else near = Math.max(near, distance / slope);
     }
-    return far > Math.max(near, 1e-5);
+    return far > Math.max(near, 1e-5) ? [near, far] : null;
+  }
+  function objectBlocks(point, direction, object) { return !!objectInterval(point, direction, object); }
+
+  // Ordered interactions along a visible incoming ray, sharing the same local solids.
+  function inspect(design, origin, travel, length) {
+    const events = [], pointAt = t => ({ x: origin.x + travel.x * t, y: origin.y + travel.y * t, z: origin.z + travel.z * t });
+    for (const b of design.blocks) {
+      const p = local(origin, b), d = local(travel, b, true), range = interval(p, d, [b.width / 2, b.height / 2, b.depth / 2]);
+      if (!range || range[0] > length) continue;
+      const [near, far] = range, a = b.aperture;
+      let hit = near;
+      if (a) {
+        const axis = axes.indexOf(a.axis), radial = [0, 1, 2].filter(i => i !== axis), radius2 = (a.diameter / 2) ** 2;
+        if (radial.reduce((s, i) => s + (p[i] + d[i] * near) ** 2, 0) <= radius2 + 1e-12) {
+          const A = radial.reduce((s, i) => s + d[i] ** 2, 0), B = radial.reduce((s, i) => s + p[i] * d[i], 0), C = radial.reduce((s, i) => s + p[i] ** 2, -radius2);
+          const leave = A < 1e-14 ? Infinity : (-B + Math.sqrt(Math.max(0, B * B - A * C))) / A;
+          hit = leave < far - 1e-8 ? leave : Infinity;
+        }
+        const insert = Math.abs(d[axis]) > 1e-10 ? -p[axis] / d[axis] : Infinity;
+        if (a.insert !== 'open' && insert >= near && insert <= far && insert < hit && insert <= length) events.push({ t: insert, color: a.color, id: b.id });
+      }
+      if (hit <= length) events.push({ t: hit, blocked: true, id: b.id });
+    }
+    const object = objectInterval(origin, travel, design.displayObject);
+    if (object && object[0] <= length) events.push({ t: object[0], blocked: true, id: 'sculpture' });
+    events.sort((a, b) => a.t - b.t || Number(!!b.blocked) - Number(!!a.blocked));
+    let previous = 0, rgb = [1, 1, 1]; const segments = [], filters = [];
+    for (const event of events) {
+      if (event.t > previous + 1e-8) segments.push({ from: pointAt(previous), to: pointAt(event.t), rgb: [...rgb] });
+      previous = event.t;
+      if (event.blocked) return { segments, blocked: true, hit: pointAt(event.t), id: event.id, filters };
+      rgb = rgb.map((v, i) => v * colors[event.color][i]); filters.push(event.color);
+    }
+    if (length > previous) segments.push({ from: pointAt(previous), to: pointAt(length), rgb });
+    return { segments, blocked: false, hit: pointAt(length), filters };
   }
   function trace(design, point, direction, skipObject = false) {
     if (direction.y <= 0) return { value: 'unavailable', rgb: [0, 0, 0] };
@@ -81,7 +117,9 @@
       const [nx, ny, nz] = sample.n;
       const incidence = ((c * nx + s * nz) * direction.x + ny * direction.y + (-s * nx + c * nz) * direction.z) / Math.hypot(nx, ny, nz);
       const light = direction.y <= 0 ? 'no Sun' : incidence <= 0 ? 'faces away' : trace(design, p, direction, true).value;
-      return `${sample.label}: ${light}`;
+      const worldBearing = (Math.atan2(c * nx + s * nz, -(-s * nx + c * nz)) * 180 / Math.PI + 360) % 360;
+      const faceName = o.model === 'crystal' ? sample.label : `${['North', 'Northeast', 'East', 'Southeast', 'South', 'Southwest', 'West', 'Northwest'][Math.round(worldBearing / 45) % 8]} side`;
+      return `${faceName}: ${direction.y > 0 && Math.abs(incidence) < 1e-6 ? 'edge-on to Sun' : light}`;
     }).join('; ');
   }
   function validDesign(v) {
@@ -96,7 +134,8 @@
     };
     if (!v || !Array.isArray(v.blocks) || !Array.isArray(v.targets) || v.blocks.length > 100 || v.targets.length > 12 ||
       !v.blocks.every(b => solid(b) && text(b.id) && aperture(b)) ||
-      !v.targets.every(t => t && text(t.id) && text(t.label, 80) && finite(t.x, -12, 12) && finite(t.z, -12, 12)) ||
+      !v.targets.every(t => t && text(t.id) && text(t.label, 80) && finite(t.x, -12, 12) && finite(t.z, -12, 12) &&
+        (t.settings === undefined || (t.settings && typeof t.settings === 'object' && !Array.isArray(t.settings) && Object.entries(t.settings).length <= 8 && Object.entries(t.settings).every(([k, value]) => text(k, 40) && (typeof value === 'string' ? text(value, 80) : finite(value, -100000, 100000)))))) ||
       new Set(v.blocks.map(b => b.id)).size !== v.blocks.length || new Set(v.targets.map(t => t.id)).size !== v.targets.length) return false;
     const solids = [...v.blocks];
     if (v.displayObject !== undefined) {
@@ -112,5 +151,5 @@
         a.width / 2 * Math.abs(dot(axis, aa[0])) + a.depth / 2 * Math.abs(dot(axis, aa[1])) + b.width / 2 * Math.abs(dot(axis, bb[0])) + b.depth / 2 * Math.abs(dot(axis, bb[1])) - 1e-8);
     }));
   }
-  window.SolarOptics = Object.freeze({ colors, local, interval, planes, blockPass, objectBlocks, trace, objectReadings, validDesign });
+  window.SolarOptics = Object.freeze({ colors, local, interval, planes, blockPass, objectBlocks, trace, inspect, objectReadings, validDesign });
 })();

@@ -3,6 +3,8 @@ import type { SampleGuide } from '../../shared/project-intro/completed-sample-gu
 
 /** Every provider belongs to one disposable, fictional curriculum preview. */
 export interface CompletedSample extends SampleGuide {
+  /** Renderer supplies its own compact navigation and exposes the hostGuide callback. */
+  integratedHeader?: boolean;
   component: Type<unknown>;
   providers: Provider[];
   inputs?: Record<string, unknown>;

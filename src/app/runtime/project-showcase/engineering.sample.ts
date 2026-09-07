@@ -10,6 +10,7 @@ export function loadSample(): CompletedSample {
   const registry = new DesignSimulationRegistry();
   registry.register('simulation.solar-monument', SolarMonumentComponent);
   return {
+    integratedHeader: true,
     title: 'The Three-Marker Tower',
     subtitle: 'An interactive seasonal demonstration of a fictional, measured block monument.',
     audience: 'Classmates and families',
@@ -41,6 +42,7 @@ export function loadSample(): CompletedSample {
     component: EngineeringFinalDemoComponent,
     providers: [{ provide: DESIGN_SIMULATIONS, useValue: registry }],
     inputs: {
+      projectId: 'calendar-monument',
       title: 'The Three-Marker Tower',
       snapshot: structuredClone(calendarMonumentSample),
       simulationId: 'simulation.solar-monument',

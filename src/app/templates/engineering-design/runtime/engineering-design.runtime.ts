@@ -32,6 +32,7 @@ export const engineeringEvents = {
   exhibit: 'engineering.exhibitSaved',
   trial: 'activity.completed',
   checks: 'engineering.checksSaved',
+  step: 'engineering.learningStepSelected',
 } as const;
 
 @Injectable()
@@ -63,10 +64,21 @@ export class EngineeringDesignRuntime {
       );
     }
   }
-  saveDesign(design: BlockDesign): void {
+  saveDesign(design: BlockDesign, workspace: 'practice' | 'project' = 'project'): void {
     if (!isBlockDesign(design))
       throw new Error('STATE_INVALID: Check block dimensions and positions.');
-    this.commit(engineeringEvents.design, { design });
+    if (workspace === 'practice' && !this.config.learningSequence)
+      throw new Error('STATE_INVALID: This project has no practice workspace.');
+    this.commit(
+      engineeringEvents.design,
+      workspace === 'practice' ? { practiceDesign: design } : { design },
+    );
+  }
+  selectLearningStep(id: string): void {
+    if (!this.config.learningSequence?.steps.some((step) => step.id === id))
+      throw new Error('STATE_INVALID: Unknown learning step.');
+    if (this.snapshot().learningStepId !== id)
+      this.commit(engineeringEvents.step, { learningStepId: id });
   }
   useDesignSample(id: string): void {
     const sample = this.config.designSamples?.find((s) => s.id === id);
@@ -125,7 +137,7 @@ export class EngineeringDesignRuntime {
           ...state.trials,
           ...fresh.map((capture) => ({
             ...structuredClone(capture),
-            prediction: state.prediction,
+            prediction: capture.settings['workspace'] === 'practice' ? '' : state.prediction,
           })),
         ],
       },

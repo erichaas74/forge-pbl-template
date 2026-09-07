@@ -1,4 +1,4 @@
-import { InjectionToken, type Type } from '@angular/core';
+import { InjectionToken, type Type, type TemplateRef } from '@angular/core';
 
 /** Platform-owned renderers. Curriculum can select an ID, never an executable URL. */
 export class DesignSimulationRegistry {
@@ -25,3 +25,20 @@ export const DESIGN_CAPTURE_BATCH = new InjectionToken<
 export const DESIGN_CHECKS_CHANGE = new InjectionToken<
   (checks: readonly import('./block-design').DesignCheck[]) => void
 >('DESIGN_CHECKS_CHANGE');
+/** Local navigation only; this callback never changes saved learner work. */
+export const DESIGN_VIEW_REQUEST = new InjectionToken<(view: 'build' | 'observe') => void>(
+  'DESIGN_VIEW_REQUEST',
+);
+/** Validated design changes requested by an installed simulation, saved by the runtime. */
+export const DESIGN_CHANGE = new InjectionToken<
+  (design: import('./block-design').BlockDesign) => void
+>('DESIGN_CHANGE');
+
+/** Optional local composition: installed renderers contribute controls to one workspace header. */
+export interface DesignChrome {
+  readonly toolbar: TemplateRef<unknown>;
+  readonly guide: TemplateRef<unknown>;
+}
+export const DESIGN_CHROME = new InjectionToken<(chrome: DesignChrome | undefined) => void>(
+  'DESIGN_CHROME',
+);

@@ -1,38 +1,42 @@
-<main class="example-page">
-  <nav class="showcase-nav" aria-label="Showcase navigation">
-    <a [routerLink]="['/projects', config.projectId]">← Project launch</a>
-    <a class="wordmark" routerLink="/projects">FORGE <span>PBL</span></a>
-    <span>COMPLETED SAMPLE</span>
-  </nav>
+<main class="example-page" [class.integrated-example]="sample()?.integratedHeader">
+  @if (!sample()?.integratedHeader) {
+    <nav class="showcase-nav" aria-label="Showcase navigation">
+      <a [routerLink]="['/projects', config.projectId]">← Project launch</a>
+      <a class="wordmark" routerLink="/projects">FORGE <span>PBL</span></a>
+      <span>COMPLETED SAMPLE</span>
+    </nav>
+  }
   @if (sample(); as current) {
-    <header class="showcase-header">
-      <div class="heading-copy">
-        <p class="eyebrow">Completed example <span>•</span> Fictional student work</p>
-        <h1 #sampleHeading tabindex="-1">{{ current.title }}</h1>
-        <details class="sample-context">
-          <summary>About this example</summary>
-          <p>{{ current.subtitle }}</p>
-          <div class="sample-meta">
-            <span>{{ current.audience }}</span
-            ><span>{{ current.duration }}</span
-            ><span>Read only</span>
-          </div>
-        </details>
-      </div>
-      <div class="showcase-actions">
-        <button
-          type="button"
-          class="primary"
-          [attr.aria-expanded]="reviewOpen()"
-          aria-controls="teacher-review"
-          (click)="toggleReview()"
-        >
-          {{ reviewOpen() ? 'Close teacher guide' : 'See the learning behind it' }}
-          <span aria-hidden="true">↗</span>
-        </button>
-        <button type="button" (click)="restart()">↺ Restart sample</button>
-      </div>
-    </header>
+    @if (!current.integratedHeader) {
+      <header class="showcase-header">
+        <div class="heading-copy">
+          <p class="eyebrow">Completed example <span>•</span> Fictional student work</p>
+          <h1 #sampleHeading tabindex="-1">{{ current.title }}</h1>
+          <details class="sample-context">
+            <summary>About this example</summary>
+            <p>{{ current.subtitle }}</p>
+            <div class="sample-meta">
+              <span>{{ current.audience }}</span
+              ><span>{{ current.duration }}</span
+              ><span>Read only</span>
+            </div>
+          </details>
+        </div>
+        <div class="showcase-actions">
+          <button
+            type="button"
+            class="primary"
+            [attr.aria-expanded]="reviewOpen()"
+            aria-controls="teacher-review"
+            (click)="toggleReview()"
+          >
+            {{ reviewOpen() ? 'Close teacher guide' : 'See the learning behind it' }}
+            <span aria-hidden="true">↗</span>
+          </button>
+          <button type="button" (click)="restart()">↺ Restart sample</button>
+        </div>
+      </header>
+    }
     <dialog
       #reviewDialog
       class="teacher-review"
@@ -90,7 +94,7 @@
       <ng-container
         *ngComponentOutlet="
           current.component;
-          inputs: current.inputs;
+          inputs: sampleInputs();
           environmentInjector: previewInjector()
         "
       />

@@ -38,6 +38,10 @@ for (const axis of ['x', 'y', 'z']) for (const rotation of [0, 37, 90]) {
     const hits = new THREE.Raycaster(origin, new THREE.Vector3(direction.x, direction.y, direction.z)).intersectObject(mesh);
     const analytic = O.blockPass(origin, direction, b);
     assert.equal(!!hits.length, !analytic, `Bore ${axis}, rotation ${rotation}, altitude ${altitude}, azimuth ${azimuth}, sample ${j}`);
+    const incoming = new THREE.Vector3(direction.x, direction.y, direction.z), from = origin.clone().addScaledVector(incoming, 100);
+    const inspected = O.inspect({ blocks: [b], targets: [] }, from, incoming.clone().negate(), 100);
+    assert.equal(inspected.blocked, !!hits.length, 'The visible incoming ray must stop wherever the independent mesh blocks light.');
+    if (!inspected.blocked && analytic) assert.ok(inspected.segments.at(-1).rgb.every((v, i) => Math.abs(v - analytic.rgb[i]) < 1e-10));
     comparisons++;
   }
   mesh.geometry.dispose();
@@ -49,6 +53,8 @@ for (const model of ['sphere', 'crystal', 'obelisk']) for (const rotation of [0,
     const dir = G.sunDirection(altitude, azimuth), origin = new THREE.Vector3(j * .217, .00001, -.57);
     const hits = new THREE.Raycaster(origin, new THREE.Vector3(dir.x, dir.y, dir.z)).intersectObject(mesh);
     assert.equal(!!hits.length, O.objectBlocks(origin, dir, o), `Object ${model}, rotation ${rotation}, sample ${j}`);
+    const incoming = new THREE.Vector3(dir.x, dir.y, dir.z);
+    assert.equal(O.inspect({ blocks: [], targets: [], displayObject: o }, origin.clone().addScaledVector(incoming, 100), incoming.clone().negate(), 100).blocked, !!hits.length);
     comparisons++;
   }
   mesh.geometry.dispose(); mesh.material.dispose();

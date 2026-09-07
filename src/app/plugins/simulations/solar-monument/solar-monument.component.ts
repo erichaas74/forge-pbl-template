@@ -7,15 +7,23 @@ import {
   inject,
   input,
   signal,
+  untracked,
   viewChild,
+  TemplateRef,
 } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import {
   DESIGN_CAPTURE,
   DESIGN_CAPTURE_BATCH,
   DESIGN_CHECKS_CHANGE,
+  DESIGN_VIEW_REQUEST,
+  DESIGN_CHANGE,
+  DESIGN_CHROME,
 } from '../../../shared/engineering/design-simulation.registry';
 import {
   isDesignCapture,
+  isBlockDesign,
   type BlockDesign,
   type DesignCapture,
   type DesignCheck,
@@ -23,6 +31,7 @@ import {
 
 @Component({
   selector: 'app-solar-monument',
+  imports: [FormsModule, NgTemplateOutlet],
   templateUrl: './solar-monument.component.html',
   styleUrl: './solar-monument.component.scss',
 })
@@ -33,11 +42,42 @@ export class SolarMonumentComponent {
   readonly active = input(true);
   readonly presentation = input(false);
   readonly readOnly = input(false);
+  readonly building = input(false);
+  readonly activity = input('');
+  readonly frameHeight = signal(850);
+  readonly onChrome = inject(DESIGN_CHROME, { optional: true });
+  private readonly toolbar = viewChild<TemplateRef<unknown>>('toolbar');
+  private readonly guide = viewChild<TemplateRef<unknown>>('guide');
+  readonly toolsOpen = signal(false);
+  readonly reviewOpen = signal(false);
+  readonly eventSelection = signal('');
+  readonly ui = signal({
+    date: '',
+    clock: '',
+    minutes: 720,
+    start: 0,
+    end: 1440,
+    play: 'Play day',
+    canPlay: true,
+    noon: true,
+    sun: true,
+    season: '',
+    height: 60,
+    marks: 0,
+    canUndo: false,
+    canReturn: false,
+    message: '',
+    startLabel: 'Sunrise',
+    endLabel: 'Sunset',
+  });
   private readonly onCapture = inject(DESIGN_CAPTURE, { optional: true });
   private readonly onBatch = inject(DESIGN_CAPTURE_BATCH, { optional: true });
   private readonly onChecks = inject(DESIGN_CHECKS_CHANGE, { optional: true });
+  private readonly onView = inject(DESIGN_VIEW_REQUEST, { optional: true });
+  private readonly onDesign = inject(DESIGN_CHANGE, { optional: true });
   private readonly frame = viewChild<ElementRef<HTMLIFrameElement>>('frame');
   readonly ready = signal(false);
+  private readonly connection = signal(0);
   readonly busy = signal(false);
   readonly reviewing = signal(false);
   readonly status = signal('Loading the monument…');
@@ -75,34 +115,93 @@ export class SolarMonumentComponent {
       window.removeEventListener('message', listener);
       clearTimeout(this.timer);
       clearTimeout(this.reviewTimer);
+      this.onChrome?.(undefined);
+    });
+    effect(() => {
+      const toolbar = this.toolbar(),
+        guide = this.guide();
+      if (toolbar && guide) this.onChrome?.({ toolbar, guide });
+    });
+    effect(() => {
+      if (this.connected()) this.send({ type: 'hosted-chrome', active: true });
     });
     effect(() => {
       const design = this.design();
-      if (this.ready()) this.send({ type: 'design', design });
+      if (this.connected()) this.send({ type: 'design', design });
     });
     effect(() => {
       const capture = this.restore();
-      if (this.ready() && capture) this.send({ type: 'restore', capture });
+      if (this.connected() && capture) this.send({ type: 'restore', capture });
     });
     effect(() => {
       const active = this.active();
-      if (this.ready()) this.send({ type: 'visibility', active });
+      if (this.connected()) this.send({ type: 'visibility', active });
+    });
+    effect(() => {
+      const activity = this.activity();
+      this.eventSelection.set('');
+      if (!this.connected()) return;
+      clearTimeout(this.timer);
+      clearTimeout(this.reviewTimer);
+      this.pendingId = '';
+      this.reviewId = '';
+      this.busy.set(false);
+      this.reviewing.set(false);
+      this.send({ type: 'design', design: untracked(this.design) });
+      this.send({ type: 'lesson', activity });
+      const capture = untracked(this.restore);
+      if (capture) this.send({ type: 'restore', capture });
+      this.status.set(
+        activity.startsWith('sundial-')
+          ? 'Play day to follow your post’s shadow. Your sundial and its marks save automatically.'
+          : 'Build your monument, then Show Sun. Play day follows sunrise to sunset.',
+      );
+    });
+    effect(() => {
+      const readOnly = this.readOnly(),
+        building = this.building();
+      if (this.connected()) {
+        this.send({ type: 'view-policy', readOnly });
+        this.send({ type: 'build-view', building: building && !readOnly });
+      }
     });
     effect(() => {
       this.design();
       this.checks();
       const presenting = this.presentation(),
-        ready = this.ready();
+        ready = this.connected();
       this.results.set([]);
       if (ready) this.send({ type: 'presentation', active: presenting });
       if (presenting && ready) this.runReview();
     });
   }
+  private connected(): boolean {
+    this.connection();
+    return this.ready();
+  }
   connect(): void {
     this.send({ type: 'connect' });
   }
+  command(action: string, value?: number | string): void {
+    if (!this.ready()) return;
+    this.send({ type: 'toolbar-action', action, value });
+  }
+  event(value: string): void {
+    this.eventSelection.set(value);
+    if (
+      this.presentation() &&
+      ['nearby-before', 'nearby-after', 'special-return'].includes(value)
+    ) {
+      if (value === 'special-return') this.viewCase(this.selected());
+      else this.viewNearby(value === 'nearby-before' ? -7 : 7);
+    } else if (this.presentation() && this.cases.some((c) => c.id === value)) {
+      this.viewCase(this.cases.findIndex((c) => c.id === value));
+    } else this.command(value);
+    if (!this.presentation()) queueMicrotask(() => this.eventSelection.set(''));
+  }
   capture(): void {
     if (this.busy() || !this.ready() || this.readOnly() || !this.onCapture) return;
+    this.onView?.('observe');
     this.pendingId = crypto.randomUUID();
     this.busy.set(true);
     this.send({ type: 'capture', id: this.pendingId, design: this.design() });
@@ -129,6 +228,7 @@ export class SolarMonumentComponent {
   }
   viewCase(index: number): void {
     this.selected.set((index + 4) % 4);
+    this.eventSelection.set(this.cases[this.selected()].id);
     const capture = this.results()[this.selected()];
     if (capture) this.send({ type: 'restore', capture });
   }
@@ -146,6 +246,36 @@ export class SolarMonumentComponent {
     };
     const checks = this.checks().filter((item) => item.scenarioId !== id);
     this.onChecks(check.targetId ? [...checks, check] : checks);
+  }
+  changeTime(id: string, rule: string, clock?: string): void {
+    if (
+      this.readOnly() ||
+      !this.onChecks ||
+      !['noon', 'morning', 'evening', 'clock'].includes(rule)
+    )
+      return;
+    const existing = this.checkFor(id);
+    if (!existing) return;
+    const parts = clock?.split(':').map(Number);
+    const minutes = parts
+      ? parts[0] * 60 + parts[1]
+      : Number(existing.settings?.['minutes'] ?? 720);
+    if (!Number.isFinite(minutes) || minutes < 0 || minutes >= 1440) return;
+    this.onChecks(
+      this.checks().map((check) =>
+        check.scenarioId === id
+          ? { ...check, settings: { observationRule: rule, minutes } }
+          : check,
+      ),
+    );
+  }
+  clockFor(id: string): string {
+    const minutes = Number(this.checkFor(id)?.settings?.['minutes'] ?? 720);
+    return `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
+  }
+  viewNearby(offset: number): void {
+    const capture = this.current();
+    if (capture) this.send({ type: 'nearby', capture, offset });
   }
   resultLabel(result: DesignCapture | undefined): string {
     switch (result?.settings['outcome']) {
@@ -192,10 +322,60 @@ export class SolarMonumentComponent {
       return;
     const data = event.data as Record<string, unknown>;
     if (data['channel'] !== 'forge.design-simulation.v1') return;
+    if (data['type'] === 'toolbar-state') {
+      const s = data['state'] as Record<string, unknown> | undefined;
+      if (
+        s &&
+        ['date', 'clock', 'play', 'season', 'message', 'startLabel', 'endLabel'].every(
+          (k) => typeof s[k] === 'string' && (s[k] as string).length <= 300,
+        ) &&
+        ['minutes', 'start', 'end', 'height', 'marks'].every(
+          (k) =>
+            typeof s[k] === 'number' && Number.isFinite(s[k]) && Math.abs(s[k] as number) <= 3000,
+        ) &&
+        ['canPlay', 'noon', 'sun', 'canUndo', 'canReturn'].every(
+          (k) => typeof s[k] === 'boolean',
+        ) &&
+        Number(s['end']) >= Number(s['start'])
+      ) {
+        this.ui.set(s as unknown as ReturnType<typeof this.ui>);
+      }
+      return;
+    }
+    if (
+      data['type'] === 'design-change' &&
+      data['activity'] === this.activity() &&
+      !this.readOnly() &&
+      ['sundial-build', 'sundial-calendar'].includes(this.activity()) &&
+      isBlockDesign(data['design'])
+    ) {
+      try {
+        this.onDesign?.(data['design']);
+      } catch (error) {
+        this.status.set(error instanceof Error ? error.message : 'The sundial could not be saved.');
+      }
+      return;
+    }
+    if (
+      data['type'] === 'size' &&
+      typeof data['height'] === 'number' &&
+      Number.isFinite(data['height'])
+    ) {
+      this.frameHeight.set(Math.ceil(Math.min(2200, Math.max(500, data['height']))) + 2);
+    }
+    if (
+      data['type'] === 'view-request' &&
+      (data['view'] === 'observe' || (data['view'] === 'build' && !this.readOnly()))
+    ) {
+      this.onView?.(data['view']);
+    }
     if (data['type'] === 'ready') {
       this.ready.set(true);
+      this.connection.update(value => value + 1);
       this.status.set(
-        'Use Place & time to choose your site. Build your monument and watch its shadow.',
+        this.activity().startsWith('sundial-')
+          ? 'Play day to test your sundial. Your post and marks save automatically.'
+          : 'Build your monument, then Show Sun. Play day follows the Sun from sunrise to sunset.',
       );
       this.send({ type: 'design', design: this.design() });
     }

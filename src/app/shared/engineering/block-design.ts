@@ -32,6 +32,8 @@ export interface DesignTarget {
   readonly label: string;
   readonly x: number;
   readonly z: number;
+  /** Optional observation context for a learner-placed reference mark. */
+  readonly settings?: Readonly<Record<string, string | number>>;
 }
 export interface BlockDesign {
   readonly blocks: readonly DesignBlock[];
@@ -51,6 +53,8 @@ export interface DesignCheck {
   readonly scenarioId: string;
   readonly targetId: string;
   readonly expectedValue: string;
+  /** Optional bounded parameters whose meaning is owned by the installed simulation. */
+  readonly settings?: Readonly<Record<string, string | number>>;
 }
 export function isDesignChecks(value: unknown): value is readonly DesignCheck[] {
   return (
@@ -61,7 +65,14 @@ export function isDesignChecks(value: unknown): value is readonly DesignCheck[] 
         record(entry) &&
         text(entry['scenarioId'], 80) &&
         text(entry['targetId']) &&
-        text(entry['expectedValue'], 80),
+        text(entry['expectedValue'], 80) &&
+        (entry['settings'] === undefined ||
+          (record(entry['settings']) &&
+            Object.entries(entry['settings']).length <= 4 &&
+            Object.entries(entry['settings']).every(
+              ([key, value]) =>
+                text(key, 40) && (text(value, 80) || finite(value, -100000, 100000)),
+            ))),
     ) &&
     new Set(value.map((entry: DesignCheck) => entry.scenarioId)).size === value.length
   );
@@ -99,7 +110,13 @@ export function isBlockDesign(v: unknown): v is BlockDesign {
         text(t['id']) &&
         text(t['label'], 80) &&
         finite(t['x'], -12, 12) &&
-        finite(t['z'], -12, 12),
+        finite(t['z'], -12, 12) &&
+        (t['settings'] === undefined ||
+          (record(t['settings']) &&
+            Object.entries(t['settings']).length <= 8 &&
+            Object.entries(t['settings']).every(
+              ([k, v]) => text(k, 40) && (text(v, 80) || finite(v, -100000, 100000)),
+            ))),
     ) &&
     new Set(blocks.map((b: DesignBlock) => b.id)).size === blocks.length &&
     new Set(targets.map((t: DesignTarget) => t.id)).size === targets.length &&

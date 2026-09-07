@@ -1,16 +1,42 @@
 import type { EngineeringDesignConfig } from '../../templates/engineering-design/domain/engineering-design.models';
 import { calendarMonumentDesignSamples } from './calendar-monument.design-samples';
+import { calendarMonumentLearning } from './calendar-monument.learning';
 export const calendarMonumentConfig: EngineeringDesignConfig = {
   schemaVersion: '1.0',
   projectId: 'calendar-monument',
   version: '1.0.0',
   template: { id: 'engineering-design', version: '1.0' },
-  title: 'Build a Calendar Monument',
+  title: 'From Sundial to Sun Monument',
   mission:
-    'How can a monument use sunlight and shadows to mark an equinox or solstice? Research the sky, build with measured blocks, and test your evidence.',
+    'Build a sundial, investigate its changing seasonal shadows, and use Earth’s tilt to explain them. Then design a monument that marks special dates with shadow and light.',
   simulationId: 'simulation.solar-monument',
   designSamples: calendarMonumentDesignSamples,
+  learningSequence: calendarMonumentLearning,
   research: [
+    {
+      id: 'season-noticing',
+      title: 'The sundial surprise',
+      explanation:
+        'Keep your first explanation so you can compare it with your thinking after exploring the Earth model.',
+      prompt:
+        'Your sundial did not move. Why did its shadow tip miss old marks when the season changed?',
+      source: {
+        label: 'Explore a sundial · NASA',
+        url: 'https://pwg.gsfc.nasa.gov/stargaze/Sdial1.htm',
+      },
+    },
+    {
+      id: 'dial-calendar',
+      title: 'A sundial that marks the year',
+      explanation:
+        'A shadow tip can show a daily pattern and a yearly pattern. Two dates can have similar shadow positions; a marker alone does not always identify one unique date.',
+      prompt:
+        'Compare your sundial’s four solar-noon marks and nearby dates. Which dates are hardest to distinguish?',
+      source: {
+        label: 'How sundials use Earth’s axis · Royal Museums Greenwich',
+        url: 'https://www.rmg.co.uk/stories/time/sundials',
+      },
+    },
     {
       id: 'daily-sun',
       title: 'A shadow moves',
@@ -73,13 +99,13 @@ export const calendarMonumentConfig: EngineeringDesignConfig = {
     'Start with the ten-block tower, or change it to match your classroom blocks. Add ground markers for the two solstices and the shared equinox alignment. Build the same design on a level physical base, with matching dimensions and true-north orientation. An advanced design can use two pillars and a lintel to frame a patch of sunlight.',
   testInstructions: [
     'Choose your actual location on the globe or enter its latitude and longitude. Keep this location fixed for your first comparison.',
-    'Keep the 3D monument and its shadow in view. Open Place & time to compare June and December at Solar Noon. Use Sky guide or Sun path guide when you want to explain the angles.',
+    'Build your monument, make a prediction, then choose Show Sun. Use See shadows to look behind the stones. Play day follows this date from sunrise to sunset; pause when a pattern appears.',
     'Choose March equinox, then Solar Noon. Solar noon is not always 12:00 on a clock. Predict the result, then save a trial.',
     'Repeat for June solstice, September equinox, and December solstice. Select Solar Noon again after changing the date.',
     'Place target rings using measured coordinates. The trial records whether the centre of each ring receives sunlight or is shaded by your blocks.',
-    'Try Shape the light in Blocks & targets: add a supported light window, choose a colored glass or jewel insert, and place a sculpture behind it. Use Inspect sculpture and turn the camera to see the face catching the light.',
+    'Try Shape the light in Build: add a supported light window, choose a colored glass or jewel insert, and place a sculpture behind it. Use Inspect sculpture and turn the camera to see the face catching the light.',
     'Measure the opening diameter, its axis, and the block depth. Rotate the block to aim the tunnel. Change the date and time to find when colored light reaches a ground target or sculpture face. Colored filters in this model do not focus light like a curved lens.',
-    'Test a week before and after an event. Does your marker identify one day or a range of days? Shadows change slowly near a solstice.',
+    'Choose Solar noon, then compare June and December. Open Why seasons? to connect the changing shadow to Earth’s fixed tilt and orbit. In Final demonstration, choose a target, expectation and time for each date. Test a week before and after: does the marker identify one day or a range? Shadows change slowly near a solstice.',
     'Revise the design and record another trial. Earlier designs remain in the evidence notebook.',
     'Open Final demonstration. Choose a target and expected sunlight, shadow, or colored light for each equinox and solstice. Walk through all four dates on the same 3D model, compare the target outcomes and sculpture surface samples, then record the final comparison.',
     'Check the physical model outdoors today at the matching time. Measure its shadow, compare with the simulation, and record differences. Observe shadows; never look directly at the Sun.',

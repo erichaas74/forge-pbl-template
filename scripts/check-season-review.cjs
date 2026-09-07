@@ -6,7 +6,7 @@ const root = path.resolve(__dirname, '../public/simulations/solar-monument');
 const sandbox = { structuredClone, console };
 sandbox.window = sandbox;
 const context = vm.createContext(sandbox);
-for (const file of ['vendor/suncalc.js', 'vendor/luxon.min.js', 'geometry.js', 'optics.js', 'seasons.js', 'season-review.js']) vm.runInContext(fs.readFileSync(path.join(root, file), 'utf8'), context);
+for (const file of ['vendor/suncalc.js', 'vendor/luxon.min.js', 'geometry.js', 'solar-day.js', 'monument-camera.js', 'optics.js', 'seasons.js', 'season-review.js']) vm.runInContext(fs.readFileSync(path.join(root, file), 'utf8'), context);
 const design = { blocks: [{ id: 'tower', x: 0, y: 0, z: 0, width: .1, depth: .1, height: 1, rotation: 0 }], targets: [{ id: 'marker', label: 'North marker', x: 0, z: -.8 }] };
 const checks = ['march', 'june', 'sept', 'dec'].map(scenarioId => ({ scenarioId, targetId: 'marker', expectedValue: 'shadow' }));
 const settings = { latitude: 38.83, longitude: -104.82, zone: 'America/Denver', localDate: '2026-09-07' };
@@ -48,4 +48,24 @@ const small = structuredClone(design); small.blocks[0].height = .1;
 assert.equal(evaluate({ design: small })[3].settings.outcome, 'missed');
 assert.equal(results[3].design.blocks[0].height, 1, 'Earlier comparisons preserve their design.');
 assert.throws(() => evaluate({ settings: { ...settings, localDate: '2040-01-01' } }));
+for (const observationRule of ['morning', 'evening', 'clock']) {
+  const timed = evaluate({ checks: checks.map(c => ({ ...c, settings: { observationRule, minutes: 571 } })) });
+  for (const result of timed) {
+    const resolved = context.SolarDay.observe(result.settings, observationRule, 571);
+    assert.ok(Math.abs(new Date(result.settings.utcInstant) - resolved.date) < 2, 'Final tests use the exact live observation rule.');
+    assert.equal(result.settings.observationRule, observationRule);
+    for (const offset of [-7, 7]) {
+      const label = offset < 0 ? '7 days before' : '7 days after';
+      const localDate = context.luxon.DateTime.fromISO(result.settings.localDate, { zone: settings.zone }).plus({ days: offset }).toISODate();
+      const nearby = context.SolarDay.observe({ ...settings, localDate }, observationRule, 571);
+      const p = context.SunCalc.getPosition(nearby.date, settings.latitude, settings.longitude);
+      const actual = context.SolarOptics.trace(design, design.targets[0], context.SolarGeometry.sunDirection(p.altitude * 180 / Math.PI, p.azimuth * 180 / Math.PI + 180)).value;
+      assert.ok(result.measurements.find(m => m.label === label).value.startsWith(`${localDate}: ${actual}`));
+    }
+    assert.ok(Object.keys(result.settings).length <= 20, 'Extended captures fit the shared bounded record.');
+  }
+}
+const polarMorning = evaluate({ settings: { ...settings, latitude: 89 }, checks: checks.map(c => ({ ...c, settings: { observationRule: 'morning' } })) });
+assert.ok([polarMorning[1], polarMorning[3]].every(c => c.settings.outcome === 'unavailable' && c.settings.observationAvailable === 0));
+assert.throws(() => evaluate({ checks: checks.map(c => ({ ...c, settings: { observationRule: 'unsupported' } })) }));
 console.log('Seasonal review: four events, pass/miss, sunlight, missing/deleted targets, empty blocks, polar night, local-day precision, revised designs and unsupported years passed.');

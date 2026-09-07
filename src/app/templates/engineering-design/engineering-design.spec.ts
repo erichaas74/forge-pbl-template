@@ -23,6 +23,8 @@ import {
 import {
   DESIGN_SIMULATIONS,
   DesignSimulationRegistry,
+  DESIGN_CHANGE,
+  DESIGN_CAPTURE,
 } from '../../shared/engineering/design-simulation.registry';
 import { BrowserEngineeringDesignAdapter } from '../../infrastructure/persistence/browser-engineering-design.adapter';
 import { createLocalPreviewSession } from '../../core/context/project-session-context';
@@ -118,12 +120,13 @@ describe('engineering design template', () => {
     TestBed.overrideComponent(EngineeringDesignPageComponent, { set: { template: '' } });
     const fixture = TestBed.createComponent(EngineeringDesignPageComponent),
       page = fixture.componentInstance;
+    page.selectStep('sun-monument');
     const before = structuredClone(page.runtime.snapshot());
     page.previewSample('round-portal');
     expect(page.simulationInputs().design.blocks[0].aperture?.diameter).toBe(0.8);
     expect(page.simulationInputs().readOnly).toBe(true);
     expect(page.runtime.snapshot()).toEqual(before);
-    expect(saved).toBeUndefined();
+    expect(saved).toEqual(before);
     page.stopPreview();
     expect(page.simulationInputs().design).toEqual(before.design);
     expect(page.simulationInputs().readOnly).toBe(false);
@@ -151,6 +154,97 @@ describe('engineering design template', () => {
     expect(
       isEngineeringSnapshot({ ...loaded.snapshot(), designBackup: { design: {}, checks: [] } }),
     ).toBe(false);
+  });
+  it('validates optional learning steps and preserves packages with no sequence', () => {
+    const learningSequence = calendarMonumentConfig.learningSequence!;
+    expect(
+      requireEngineeringConfig(
+        { ...calendarMonumentConfig, learningSequence: undefined },
+        'calendar-monument',
+      ),
+    ).toBeTruthy();
+    for (const steps of [
+      [],
+      [null],
+      [learningSequence.steps[0]],
+      [learningSequence.steps[4], learningSequence.steps[4]],
+      [{ ...learningSequence.steps[4], question: { researchId: 'missing', prompt: 'Why?' } }],
+      [{ ...learningSequence.steps[4], showGuides: 'yes' }],
+    ]) {
+      expect(() =>
+        requireEngineeringConfig(
+          { ...calendarMonumentConfig, learningSequence: { ...learningSequence, steps } },
+          'calendar-monument',
+        ),
+      ).toThrow('CONFIG_INVALID');
+    }
+  });
+  it('keeps sundial practice, monument, and first/revised explanations separate after reload', () => {
+    const runtime = TestBed.inject(EngineeringDesignRuntime),
+      final = structuredClone(runtime.snapshot().design);
+    const practice = {
+      ...calendarMonumentConfig.learningSequence!.practiceDesign,
+      targets: [
+        {
+          id: 'time',
+          label: '9 AM',
+          x: -0.3,
+          z: 0.2,
+          settings: { markerKind: 'hour', localDate: '2026-06-21', minutes: 540 },
+        },
+      ],
+    };
+    runtime.saveDesign(practice, 'practice');
+    runtime.selectLearningStep('season-surprise');
+    runtime.saveResearch('season-noticing', 'My first idea');
+    runtime.saveResearch('seasons', 'My revised explanation');
+    const loaded = TestBed.runInInjectionContext(() => new EngineeringDesignRuntime());
+    expect(loaded.snapshot().practiceDesign).toEqual(practice);
+    expect(loaded.snapshot().design).toEqual(final);
+    expect(loaded.snapshot().learningStepId).toBe('season-surprise');
+    expect(loaded.snapshot().research['season-noticing']).toBe('My first idea');
+    expect(loaded.snapshot().research['seasons']).toBe('My revised explanation');
+    expect(() => loaded.selectLearningStep('unknown')).toThrow('STATE_INVALID');
+    expect(
+      isBlockDesign({
+        ...practice,
+        targets: [{ ...practice.targets[0], settings: { minutes: NaN } }],
+      }),
+    ).toBe(false);
+    expect(isEngineeringSnapshot({ ...loaded.snapshot(), practiceDesign: {} })).toBe(false);
+  });
+  it('routes simulation edits, captures and replay to the practice workspace without replacing the monument', () => {
+    const registry = new DesignSimulationRegistry();
+    registry.register(calendarMonumentConfig.simulationId, ExampleSimulation);
+    TestBed.configureTestingModule({
+      providers: [{ provide: DESIGN_SIMULATIONS, useValue: registry }],
+    });
+    TestBed.overrideComponent(EngineeringDesignPageComponent, { set: { template: '' } });
+    const fixture = TestBed.createComponent(EngineeringDesignPageComponent),
+      page = fixture.componentInstance;
+    const final = structuredClone(page.runtime.snapshot().design),
+      practice = page.activeDesign();
+    expect(page.simulationInputs().activity).toBe('sundial-build');
+    page.previewSample('round-portal');
+    expect(page.preview()).toBeUndefined();
+    page.simulationInjector.get(DESIGN_CHANGE)({
+      ...practice,
+      blocks: [{ ...practice.blocks[0], height: 0.9 }],
+    });
+    page.simulationInjector.get(DESIGN_CAPTURE)({
+      ...calendarMonumentSample.trials[0],
+      design: page.activeDesign(),
+      id: 'dial-test',
+    });
+    const trial = page.runtime.snapshot().trials[0];
+    expect(trial.settings['workspace']).toBe('practice');
+    expect(trial.settings['learningStepId']).toBe('make-a-sundial');
+    page.selectStep('sun-monument');
+    expect(page.activeDesign()).toEqual(final);
+    page.replay(trial);
+    expect(page.activeDesign().blocks[0].height).toBe(0.9);
+    expect(page.runtime.snapshot().design).toEqual(final);
+    expect(page.restore()).toEqual(trial);
   });
   const opticalDesign: BlockDesign = {
     blocks: [
@@ -307,7 +401,14 @@ describe('engineering design template', () => {
   });
   it('saves learner expectations and records a whole comparison once without changing older designs', () => {
     const runtime = TestBed.inject(EngineeringDesignRuntime);
-    const checks = [{ scenarioId: 'march', targetId: 'marker', expectedValue: 'shadow' }];
+    const checks = [
+      {
+        scenarioId: 'march',
+        targetId: 'marker',
+        expectedValue: 'shadow',
+        settings: { observationRule: 'clock', minutes: 557 },
+      },
+    ];
     runtime.saveChecks(checks);
     checks[0].expectedValue = 'sunlight';
     expect(runtime.snapshot().checks?.[0].expectedValue).toBe('shadow');
@@ -319,6 +420,13 @@ describe('engineering design template', () => {
     expect(runtime.snapshot().trials[0].design.blocks).toHaveLength(10);
     const loaded = TestBed.runInInjectionContext(() => new EngineeringDesignRuntime());
     expect(loaded.snapshot().checks).toEqual(runtime.snapshot().checks);
+    expect(loaded.snapshot().checks?.[0].settings).toEqual({
+      observationRule: 'clock',
+      minutes: 557,
+    });
+    expect(() => runtime.saveChecks([{ ...checks[0], settings: { minutes: NaN } }])).toThrow(
+      'STATE_INVALID',
+    );
     expect(() =>
       runtime.saveChecks([
         { scenarioId: 'x', targetId: 'a', expectedValue: 'shadow' },

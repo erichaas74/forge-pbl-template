@@ -7,6 +7,7 @@
   if (!window.SunCalc) missingDependencies.push('SunCalc');
   if (!window.luxon || !window.luxon.DateTime) missingDependencies.push('Luxon');
   if (!window.tzLookup && !window.tzlookup) missingDependencies.push('tz-lookup');
+  if (!window.SolarDay || !window.MonumentCamera || !window.createSunDemonstration || !window.createEarthExplanation) missingDependencies.push('Sun demonstration');
   if (!window.SolarGeometry || !window.createSolarSky) missingDependencies.push('solar geometry and sky model');
 
   if (missingDependencies.length) {
@@ -27,7 +28,7 @@
     selectedZone: 'America/Denver',
     localDateISO: '2026-06-21',
     minutes: 720,
-    showMoon: true,
+    showMoon: false,
     compareSeasons: false,
     showLabels: true,
     showBelow: true,
@@ -101,6 +102,23 @@
   let cameraMode = 'angle';
   let lastPublishedContext = '';
   let solarSky;
+  let sunDemonstration;
+  let earthExplanation;
+  let lessonActivity = '', sundialGuide, dialReadOnly = false, calendarDate = '';
+  let hostedChrome = false, toolbarFeedback = '', toolbarKey = '';
+  let sunMode = false;
+  let observationRule = 'noon';
+  let dayCache, dayKey = '';
+  let graphKey = '';
+  let lastTick = 0;
+  let cameraIncludesShadow = true;
+  let cameraFrame;
+  let frameKey = '';
+  let rayChoice = 'auto';
+  let pausedDay = '';
+  let playbackFrame = null;
+  let reviewFrame = null;
+  let reviewingCamera = false;
   let skyPathKey = '';
   let skyTracks = [];
   let hostActive = window.parent === window;
@@ -115,6 +133,8 @@
     bindEvents();
     initGlobe();
     initShadowScene();
+    bindDemonstration();
+    state.minutes = currentDay().noon;
     updateAll();
     bindMonumentBridge();
     switchView('horizon');
@@ -135,6 +155,7 @@
         state.lat = clamp(Number(btn.dataset.lat), -89.9, 89.9);
         state.lon = normalizeLon(Number(btn.dataset.lon));
         state.selectedZone = getZoneForLocation(state.lat, state.lon);
+        locationChanged();
         syncLocationInputs();
         markActiveLocationPreset();
         updateAll();
@@ -142,13 +163,18 @@
     });
 
     els.dateInput.addEventListener('change', () => {
+      stopDay();
       state.localDateISO = normalizeDateInput(els.dateInput.value, state.localDateISO);
       els.dateInput.value = state.localDateISO;
+      if (observationRule === 'noon') state.minutes = currentDay().noon;
+      frameKey = '';
       updateAll();
     });
 
     els.timeSlider.addEventListener('input', () => {
+      stopDay(); observationRule = 'clock';
       state.minutes = Number(els.timeSlider.value);
+      setSunMode(true);
       updateAll();
     });
 
@@ -182,10 +208,14 @@
 
     els.seasonBtns.forEach(btn => {
       btn.addEventListener('click', () => {
+        stopDay();
         const season = seasons[btn.dataset.season];
         if (!season) return;
         state.localDateISO = seasonISO(season, getSelectedYear());
         els.dateInput.value = state.localDateISO;
+        if (observationRule === 'noon') state.minutes = currentDay().noon;
+        frameKey = '';
+        setSunMode(true);
         updateAll();
       });
     });
@@ -211,8 +241,15 @@
     state.lat = clamp(Number(els.latInput.value) || 0, -89.9, 89.9);
     state.lon = normalizeLon(Number(els.lonInput.value) || 0);
     state.selectedZone = getZoneForLocation(state.lat, state.lon);
+    locationChanged();
     syncLocationInputs();
     markActiveLocationPreset();
+  }
+
+  function locationChanged() {
+    stopDay(); pausedDay = ''; reviewFrame = null;
+    if (observationRule === 'noon') state.minutes = currentDay().noon;
+    frameKey = '';
   }
 
   function syncLocationInputs() {
@@ -230,12 +267,13 @@
   }
 
   function setTimeFromSolarEvent(key) {
-    const times = SunCalc.getTimes(getSelectedJSDate(720), state.lat, state.lon);
-    const eventTime = times[key];
-    if (!validDate(eventTime)) return;
-    const localEventTime = DateTime.fromJSDate(eventTime, { zone: state.selectedZone });
-    state.minutes = localEventTime.hour * 60 + localEventTime.minute;
+    stopDay(true);
+    const day = currentDay();
+    if (key !== 'solarNoon' && day.kind !== 'normal') return;
+    observationRule = key === 'solarNoon' ? 'noon' : 'clock';
+    state.minutes = key === 'solarNoon' ? day.noon : key === 'sunrise' ? day.start : day.end;
     els.timeSlider.value = state.minutes;
+    setSunMode(true);
     updateAll();
   }
 
@@ -272,6 +310,7 @@
         state.lat = clamp(lat, -89.9, 89.9);
         state.lon = normalizeLon(lng);
         state.selectedZone = getZoneForLocation(state.lat, state.lon);
+        locationChanged();
         syncLocationInputs();
         markActiveLocationPreset();
         updateAll();
@@ -318,6 +357,7 @@
     shadow.scene.add(shadow.sunLight);
     solarSky = window.createSolarSky(THREE, shadow.scene, makeTextSprite);
     solarOptics = window.createSolarOpticsRenderer(THREE);
+    sunDemonstration = window.createSunDemonstration(THREE, shadow.scene);
 
     const groundGeo = new THREE.PlaneGeometry(2000, 2000);
     const groundMat = solarOptics.floorMaterial();
@@ -362,12 +402,13 @@
     });
   }
 
-  function makeTextSprite(text) {
+  function makeTextSprite(text, badge = false) {
     const canvas = document.createElement('canvas');
     canvas.width = 256;
     canvas.height = 128;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (badge) { ctx.fillStyle = '#443e2d'; ctx.beginPath(); ctx.arc(128, 66, 43, 0, Math.PI * 2); ctx.fill(); }
     const caption = text.length > 22 ? text.slice(0, 21) + '…' : text;
     let fontSize = 64;
     ctx.font = `bold ${fontSize}px Inter, Arial`;
@@ -395,6 +436,147 @@
     updateShadowScene();
     updateReadout();
     publishContext();
+    updateSundial();
+    publishToolbar();
+  }
+
+  function publishToolbar() {
+    if (!hostedChrome) return;
+    const day = currentDay(), post = window.SundialLab.post(monumentDesign);
+    const ui = {
+      date: formatDateShortISO(state.localDateISO), clock: document.getElementById('dayClock').textContent,
+      minutes: state.minutes, start: day.start, end: day.end, play: els.playBtn.textContent,
+      canPlay: !els.playBtn.disabled, noon: observationRule === 'noon', sun: sunMode,
+      season: Object.keys(seasons).find(key => seasonISO(seasons[key], getSelectedYear()) === state.localDateISO) ?? '',
+      height: post ? post.height * 100 : 60, marks: monumentDesign.targets.length,
+      canUndo: monumentDesign.targets.some(editableDialMark), canReturn: !!window.SundialLab.reference(monumentDesign),
+      message: toolbarFeedback || (day.kind === 'polar-night' ? 'No daylight at this place today.' : day.kind === 'polar-day' ? '24-hour daylight at this place.' : ''),
+      startLabel: document.getElementById('dayStart').textContent, endLabel: document.getElementById('dayEnd').textContent,
+    };
+    const key = JSON.stringify(ui); if (key === toolbarKey) return; toolbarKey = key;
+    window.parent.postMessage({ channel: 'forge.design-simulation.v1', type: 'toolbar-state', state: ui }, window.location.origin);
+  }
+  function toolbarAction(action, value) {
+    if (!hostedChrome || typeof action !== 'string') return;
+    toolbarFeedback = '';
+    const presenting = document.body.classList.contains('presenting');
+    const dateActions = ['dayStart', 'dayEnd', 'noonBtn', 'dialMorning', 'dialAfternoon', 'dialWeekBefore', 'dialWeekAfter', 'minutes', 'playBtn', 'march', 'june', 'sept', 'dec'];
+    if (presenting && dateActions.includes(action)) return;
+    if (['post','markDial','undoDial','buildMode'].includes(action) && dialReadOnly) return;
+    if (action === 'post') {
+      if (lessonActivity !== 'sundial-build' || !Number.isFinite(value)) return;
+      document.getElementById('postHeight').value = String(value); document.getElementById('buildSundial').click();
+    } else if (action === 'minutes') {
+      const day = currentDay(); if (!Number.isFinite(value) || value < day.start || value > day.end || day.kind === 'polar-night') return;
+      stopDay(); observationRule = 'clock'; state.minutes = value; setSunMode(true); updateAll();
+    } else if (action === 'speed') {
+      if (![.5, 1, 2].includes(Number(value))) return;
+      document.getElementById('daySpeed').value = String(value);
+    } else if (Object.hasOwn(seasons, action)) {
+      document.getElementById(action + 'Btn').click();
+    } else if (action === 'extras') {
+      document.body.classList.toggle('extra-tools'); document.getElementById('moreViews').open = true;
+      if (document.body.classList.contains('extra-tools')) document.getElementById('moreViews').scrollIntoView({ block: 'nearest' });
+    } else if (['showSun','playBtn','buildMode','dayStart','dayEnd','noonBtn','dialMorning','dialAfternoon','dialWeekBefore','dialWeekAfter','markDial','undoDial','returnDial','controlsToggle','earthToggle','shadowView','topView','fitView'].includes(action)) {
+      if (action === 'earthToggle' && ['sundial-build', 'sundial-seasons'].includes(lessonActivity)) return;
+      document.getElementById(action).click();
+    }
+    publishToolbar();
+  }
+
+  function isSundial() { return window.SundialLab.activities.includes(lessonActivity); }
+  function dialSun() {
+    const sun = getSunPosition(getSelectedJSDate(), state.lat, state.lon);
+    return window.SolarGeometry.sunDirection(sun.altitudeDeg, sun.compassDeg);
+  }
+  function dialObserve(settings, noon = true) {
+    stopDay();
+    state.lat = clamp(settings.latitude ?? state.lat, -89.9, 89.9);
+    state.lon = normalizeLon(settings.longitude ?? state.lon);
+    state.selectedZone = getZoneForLocation(state.lat, state.lon);
+    state.localDateISO = normalizeDateInput(settings.localDate, state.localDateISO);
+    observationRule = noon ? 'noon' : 'clock';
+    state.minutes = noon ? currentDay().noon : settings.minutes;
+    syncLocationInputs(); els.dateInput.value = state.localDateISO;
+    frameKey = ''; setSunMode(true); updateAll();
+  }
+  function applyLesson(activity) {
+    if (!['', 'monument', ...window.SundialLab.activities].includes(activity) || activity === lessonActivity) return;
+    stopDay(); lessonActivity = activity; calendarDate = ''; toolbarFeedback = '';
+    const practice = isSundial(), first = activity === 'sundial-build', surprise = activity === 'sundial-seasons', calendar = activity === 'sundial-calendar';
+    document.body.classList.toggle('sundial-lesson', practice);
+    document.getElementById('sundialTools').hidden = !practice;
+    document.getElementById('sundialBuild').hidden = !first;
+    document.getElementById('dialTimes').hidden = !first;
+    document.getElementById('markDial').hidden = !(first || calendar);
+    document.getElementById('markDial').textContent = calendar ? 'Mark this date' : 'Mark this time';
+    document.getElementById('undoDial').hidden = !(first || calendar);
+    document.getElementById('dialNearby').hidden = !calendar;
+    document.querySelector('.season-grid').hidden = first;
+    document.getElementById('buildMode').hidden = practice;
+    document.getElementById('earthToggle').hidden = first || surprise;
+    document.getElementById('earthGuide').hidden = hostedChrome || activity !== 'sundial-tilt';
+    document.getElementById('earthToggle').setAttribute('aria-expanded', String(!document.getElementById('earthGuide').hidden));
+    document.getElementById('dialStatus').textContent = first ? 'Place marks at the shadow tip. Gold lines keep your original measurements.' : 'Your original marks stay fixed. Compare where the shadow tip lands now.';
+    if (!practice) { frameKey = ''; updateAll(); return; }
+    const ref = window.SundialLab.reference(monumentDesign), year = ref ? Number(ref.localDate.slice(0, 4)) : getSelectedYear();
+    if (!first && !ref) document.getElementById('dialStatus').textContent = 'For the clearest comparison, return to Build a sundial and make a few time marks first.';
+    let localDate = first && ref ? ref.localDate : seasonISO(seasons.june, year);
+    if (surprise || activity === 'sundial-tilt') localDate = seasonISO(Number((ref?.localDate ?? localDate).slice(5, 7)) >= 10 || Number((ref?.localDate ?? localDate).slice(5, 7)) <= 2 ? seasons.june : seasons.dec, year);
+    if (calendar) localDate = seasonISO(seasons.march, year);
+    dialObserve({ ...(ref ?? observationSettings()), localDate });
+  }
+  function updateSundial() {
+    if (!shadow.scene) return;
+    sundialGuide ||= window.SundialLab.createGuide(THREE, shadow.scene);
+    sundialGuide.update(monumentDesign, dialSun(), isSundial() && sunMode);
+    document.getElementById('dialLegend').hidden = !isSundial();
+    if (!isSundial()) return;
+    const point = window.SundialLab.tip(monumentDesign, dialSun());
+    document.getElementById('dialTip').textContent = point ? `Shadow tip: ${Math.hypot(point.x, point.z).toFixed(2)} m from the post. The glowing ring follows the tip; your marks stay fixed.` : 'No shadow tip while the Sun is below the horizon.';
+    document.getElementById('returnDial').disabled = !window.SundialLab.reference(monumentDesign);
+    document.getElementById('markDial').disabled = dialReadOnly;
+    document.getElementById('undoDial').disabled = dialReadOnly || !monumentDesign.targets.some(editableDialMark);
+  }
+  function editableDialMark(target) {
+    const kind = target.settings?.markerKind;
+    return lessonActivity === 'sundial-build' ? kind === 'hour' : lessonActivity === 'sundial-calendar' && Object.hasOwn(window.SundialLab.labels, kind);
+  }
+  function bindSundial() {
+    const request = make => {
+      if (!isSundial() || dialReadOnly) return;
+      stopDay();
+      try {
+        const design = make();
+        if (!validMonument(design)) throw Error('Check the post and mark measurements.');
+        window.parent.postMessage({ channel: 'forge.design-simulation.v1', type: 'design-change', activity: lessonActivity, design }, window.location.origin);
+        document.getElementById('dialStatus').textContent = 'Sundial updated. Play the day again to test your marks.';
+      } catch (error) { document.getElementById('dialStatus').textContent = error.message; toolbarFeedback = error.message; }
+      updateAll();
+    };
+    document.getElementById('buildSundial').addEventListener('click', () => request(() => window.SundialLab.build(monumentDesign, Number(document.getElementById('postHeight').value))));
+    document.getElementById('markDial').addEventListener('click', () => request(() => {
+      let kind = 'hour';
+      if (lessonActivity === 'sundial-calendar') {
+        kind = Object.keys(seasons).find(key => seasonISO(seasons[key], getSelectedYear()) === state.localDateISO);
+        if (!kind) throw Error('Choose an equinox or solstice button, then mark that date at solar noon.');
+        calendarDate = state.localDateISO; observationRule = 'noon'; state.minutes = currentDay().noon;
+      }
+      return window.SundialLab.mark(monumentDesign, dialSun(), { ...observationSettings(), observationRule }, kind, observationRule === 'noon' ? 'Solar noon' : formatTime(getSelectedJSDate()));
+    }));
+    document.getElementById('undoDial').addEventListener('click', () => request(() => {
+      const index = monumentDesign.targets.findLastIndex(editableDialMark);
+      return { ...monumentDesign, targets: monumentDesign.targets.filter((_, i) => i !== index) };
+    }));
+    document.getElementById('returnDial').addEventListener('click', () => { const ref = window.SundialLab.reference(monumentDesign); if (ref) dialObserve(ref); });
+    for (const [id, minutes] of [['dialMorning', 540], ['dialAfternoon', 900]]) document.getElementById(id).addEventListener('click', () => dialObserve({ ...observationSettings(), minutes }, false));
+    for (const [id, days] of [['dialWeekBefore', -7], ['dialWeekAfter', 7]]) document.getElementById(id).addEventListener('click', () => {
+      const special = Object.keys(seasons).find(key => seasonISO(seasons[key], getSelectedYear()) === state.localDateISO);
+      if (special) calendarDate = state.localDateISO;
+      if (!calendarDate) { document.getElementById('dialStatus').textContent = 'Choose a special date first.'; return; }
+      dialObserve({ localDate: DateTime.fromISO(calendarDate).plus({ days }).toISODate() });
+      document.getElementById('dialStatus').textContent = `Comparing ${days < 0 ? 'a week before' : 'a week after'} ${calendarDate}. The marks stay fixed.`;
+    });
   }
 
   function observationSettings() {
@@ -418,6 +600,7 @@
     els.diagnosticLocalTime.textContent = localDateTime.toFormat('MMM d, yyyy h:mm a');
     els.diagnosticUTC.textContent = dateTime.toISOString();
     els.diagnosticZone.textContent = state.selectedZone;
+    updateDayControls();
   }
 
   function updateGlobeMarker() {
@@ -515,6 +698,7 @@
   }
 
   function drawHorizon() {
+    if (!els.horizonView.classList.contains('show-chart')) return;
     const canvas = els.horizonCanvas;
     const ctx = canvas.getContext('2d');
     resizeCanvasToDisplaySize(canvas);
@@ -788,12 +972,13 @@
     shadow.sunLight.target.updateMatrixWorld();
 
     const visible = sun.altitudeDeg > 0;
-    shadow.sunLight.intensity = visible ? 2.6 : 0;
-    shadow.ambient.intensity = visible ? 0.72 : 0.18;
+    shadow.sunLight.intensity = visible && sunMode ? 2.6 : 0;
+    shadow.ambient.intensity = !sunMode ? 1.15 : visible ? .8 : .18;
     renderMonumentShadows(sun);
     updateSolarSky(sun);
     // Every design/time change needs a new frame, including when the sky guide is closed.
     updateMonumentCamera();
+    updateDemonstration(sun, direction);
 
     const shadowBearing = (sun.compassDeg + 180) % 360;
     const shadowLength = visible ? state.objectHeight / Math.tan(altRad) : Infinity;
@@ -852,21 +1037,161 @@
   }
 
   function togglePlay() {
-    state.playing = !state.playing;
-    els.playBtn.classList.toggle('active', state.playing);
-    els.playBtn.textContent = state.playing ? 'Pause Day' : 'Play Day';
+    if (state.playing) { stopDay(); updateDayControls(); return; }
+    const day = currentDay();
+    if (day.kind === 'polar-night') return;
+    const resume = pausedDay === dayKey && state.minutes > day.start && state.minutes < day.end;
+    playbackFrame = cameraFrame;
+    if (!resume) state.minutes = day.start;
+    observationRule = 'clock'; setSunMode(true, true);
+    pausedDay = dayKey;
+    state.playing = true; lastTick = performance.now();
+    frameKey = ''; updateAll();
+    playTimer = window.setInterval(() => {
+      const now = performance.now(), elapsed = Math.min(500, now - lastTick); lastTick = now;
+      state.minutes = Math.min(day.end, state.minutes + elapsed / 45000 * (day.end - day.start) * Number(document.getElementById('daySpeed').value));
+      els.timeSlider.value = state.minutes;
+      if (state.minutes >= day.end) stopDay();
+      updateAll();
+    }, 80);
+  }
 
-    if (state.playing) {
-      playTimer = window.setInterval(() => {
-        state.minutes = (state.minutes + 10) % 1440;
-        els.timeSlider.value = state.minutes;
-        updateAll();
-      }, 90);
-    } else {
-      window.clearInterval(playTimer);
-      playTimer = null;
+  function stopDay(reset = false) {
+    if (reset) { pausedDay = ''; playbackFrame = null; }
+    state.playing = false;
+    window.clearInterval(playTimer); playTimer = null;
+  }
+
+  function currentDay() {
+    const key = [state.localDateISO, state.lat, state.lon, state.selectedZone].join('|');
+    if (key !== dayKey) { dayKey = key; dayCache = window.SolarDay.day(observationSettings()); }
+    return dayCache;
+  }
+
+  function setSunMode(value, notify = false) {
+    sunMode = value;
+    if (!value) stopDay(true);
+    document.body.classList.toggle('build-mode', !value);
+    document.getElementById('buildMode').setAttribute('aria-pressed', String(!value));
+    document.getElementById('showSun').setAttribute('aria-pressed', String(value));
+    document.getElementById('rayInspector').hidden = !value;
+    if (notify) window.parent.postMessage({ channel: 'forge.design-simulation.v1', type: 'view-request', view: value ? 'observe' : 'build' }, window.location.origin);
+  }
+
+  function updateDayControls() {
+    const day = currentDay(), slider = document.getElementById('daySlider');
+    slider.min = String(day.start); slider.max = String(day.end); slider.value = String(state.minutes);
+    slider.disabled = day.kind === 'polar-night';
+    document.getElementById('dayDate').textContent = formatDateShortISO(state.localDateISO);
+    document.getElementById('dayClock').textContent = formatTime(getSelectedJSDate()) + (state.minutes >= 1440 ? ' (+1 day)' : state.minutes < 0 ? ' (previous day)' : '');
+    document.getElementById('noonBtn').setAttribute('aria-pressed', String(observationRule === 'noon'));
+    document.getElementById('dayStart').textContent = day.kind === 'normal' ? `Sunrise ${formatTime(day.at(day.start))}` : 'Start of day';
+    document.getElementById('dayEnd').textContent = day.kind === 'normal' ? `Sunset ${formatTime(day.at(day.end))}${day.end >= 1440 ? ' (+1 day)' : ''}` : 'End of day';
+    document.getElementById('dayMessage').textContent = day.kind === 'polar-night' ? 'The Sun stays below the horizon today.' : day.kind === 'polar-day' ? '24-hour daylight at this place.' : observationRule === 'noon' ? 'Same solar-noon rule when you change seasons' : 'Slide through this day, or choose Solar noon';
+    els.playBtn.textContent = state.playing ? 'Ⅱ Pause day' : state.minutes >= day.end - .1 ? '↻ Replay day' : pausedDay === dayKey ? '▶ Resume day' : '▶ Play day';
+    els.playBtn.disabled = day.kind === 'polar-night' || document.body.classList.contains('presenting');
+    for (const button of els.seasonBtns) button.setAttribute('aria-pressed', String(state.localDateISO === seasonISO(seasons[button.dataset.season], getSelectedYear())));
+    publishToolbar();
+  }
+
+  function updateDemonstration(sun, direction) {
+    const result = sunDemonstration.update(monumentDesign, direction, rayChoice, sunMode && cameraMode !== 'sky');
+    document.getElementById('rayCaption').textContent = result.caption;
+    document.getElementById('rayMeasure').textContent = result.reference === null ? '' : result.referenceVisible ? `Gold arc = Sun height. Dashed ruler = ${result.reference.toFixed(2)} m for the selected top height (not the full footprint).` : 'Low Sun: the height-only shadow ruler extends beyond this view.';
+    const compass = ['north', 'northeast', 'east', 'southeast', 'south', 'southwest', 'west', 'northwest'][Math.round(sun.compassDeg / 45) % 8];
+    document.getElementById('sunBadge').textContent = !sunMode ? 'Build lighting · press Show Sun to test' : sun.altitudeDeg <= 0 ? '☀ Sun at / below the horizon' : `☀ Sun in the ${compass} · ${sun.altitudeDeg.toFixed(1)}° high`;
+    if (!document.getElementById('earthGuide').hidden) {
+      earthExplanation ||= window.createEarthExplanation(THREE, document.getElementById('earthCanvas'));
+      earthExplanation.update(getSelectedJSDate(), state.lat, state.lon);
+      document.getElementById('earthReading').textContent = `At your site now: Sun ${sun.altitudeDeg.toFixed(1)}° above the horizon. ${currentDay().kind === 'polar-night' ? 'No daylight today.' : currentDay().kind === 'polar-day' ? 'Daylight lasts all day.' : `Daylight lasts ${((currentDay().end - currentDay().start) / 60).toFixed(1)} hours.`} Change the time to turn Earth; change the date to follow its orbit.`;
+      updateSeasonGraph();
     }
   }
+
+  function updateSeasonGraph() {
+    const height = Math.max(.1, state.objectHeight), key = [dayKey, height].join('|');
+    if (key === graphKey) return; graphKey = key;
+    const results = Object.values(seasons).map(season => {
+      const settings = { ...observationSettings(), localDate: seasonISO(season, getSelectedYear()) };
+      const observation = window.SolarDay.observe(settings);
+      const angle = getSunPosition(observation.date, state.lat, state.lon).altitudeDeg;
+      return { label: season.name.split(' ')[0], value: angle > 0 ? height / Math.tan(degToRad(angle)) : null };
+    });
+    const max = Math.max(.1, ...results.map(r => r.value || 0));
+    const svg = document.getElementById('seasonGraph'), ns = 'http://www.w3.org/2000/svg';
+    svg.replaceChildren();
+    results.forEach((r, i) => {
+      const rect = document.createElementNS(ns, 'rect'), label = document.createElementNS(ns, 'text'), value = document.createElementNS(ns, 'text');
+      const h = r.value === null ? 0 : r.value / max * 76, x = 20 + i * 78;
+      for (const [name, val] of Object.entries({ x, y: 98 - h, width: 42, height: h, rx: 3, fill: ['#72877b', '#b88a36', '#b2794c', '#708b9e'][i] })) rect.setAttribute(name, String(val));
+      label.setAttribute('x', String(x + 21)); label.setAttribute('y', '117'); label.setAttribute('text-anchor', 'middle'); label.textContent = r.label;
+      value.setAttribute('x', String(x + 21)); value.setAttribute('y', String(90 - h)); value.setAttribute('text-anchor', 'middle'); value.textContent = r.value === null ? 'No Sun' : `${r.value.toFixed(2)}m`;
+      svg.append(rect, label, value);
+    });
+    document.getElementById('graphCaption').textContent = `Solar-noon reference shadows for a ${height.toFixed(2)} m upright height at this location. Shorter shadow means a higher Sun. These bars are not the full monument footprint.`;
+  }
+
+  function bindDemonstration() {
+    setSunMode(false);
+    document.getElementById('buildMode').addEventListener('click', () => { setSunMode(false, true); updateAll(); });
+    document.getElementById('showSun').addEventListener('click', () => { setSunMode(true, true); switchView('horizon'); if (cameraMode === 'sky') cameraMode = 'angle'; fitCamera(); setCameraMode(cameraMode); });
+    document.getElementById('dayStart').addEventListener('click', () => { stopDay(); observationRule = 'clock'; state.minutes = currentDay().start; setSunMode(true); updateAll(); });
+    document.getElementById('dayEnd').addEventListener('click', () => { stopDay(); observationRule = 'clock'; state.minutes = currentDay().end; setSunMode(true); updateAll(); });
+    document.getElementById('daySlider').addEventListener('input', event => { stopDay(); observationRule = 'clock'; state.minutes = Number(event.target.value); els.timeSlider.value = state.minutes; setSunMode(true); updateAll(); });
+    document.getElementById('earthToggle').addEventListener('click', event => {
+      const panel = document.getElementById('earthGuide'); panel.hidden = !panel.hidden;
+      event.currentTarget.setAttribute('aria-expanded', String(!panel.hidden)); updateAll();
+      if (!panel.hidden) panel.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+    });
+    document.getElementById('rayTarget').addEventListener('change', event => { rayChoice = event.target.value; updateAll(); });
+    document.getElementById('fitView').addEventListener('click', () => { fitCamera(); updateAll(); });
+    document.getElementById('shadowView').addEventListener('click', () => {
+      const sun = getSunPosition(getSelectedJSDate(), state.lat, state.lon);
+      document.getElementById('cameraBearing').value = String((sun.compassDeg + 215) % 360);
+      document.getElementById('cameraElevation').value = '55'; cameraMode = 'angle'; fitCamera(); setCameraMode('angle');
+    });
+    const zoom = factor => { const input = document.getElementById('cameraZoom'); input.value = String(clamp(Number(input.value) * factor, .3, 4)); updateMonumentCamera(); };
+    document.getElementById('zoomIn').addEventListener('click', () => zoom(1.2));
+    document.getElementById('zoomOut').addEventListener('click', () => zoom(1 / 1.2));
+    els.shadowCanvas.tabIndex = 0;
+    els.shadowCanvas.addEventListener('wheel', event => { event.preventDefault(); zoom(event.deltaY < 0 ? 1.12 : 1 / 1.12); }, { passive: false });
+    els.shadowCanvas.addEventListener('keydown', event => {
+      if (['+', '=', '-'].includes(event.key)) { event.preventDefault(); zoom(event.key === '-' ? 1 / 1.2 : 1.2); }
+      if (event.key.startsWith('Arrow')) {
+        event.preventDefault(); const bearing = document.getElementById('cameraBearing'), elevation = document.getElementById('cameraElevation');
+        bearing.value = String((Number(bearing.value) + (event.key === 'ArrowRight' ? 5 : event.key === 'ArrowLeft' ? -5 : 0) + 360) % 360);
+        elevation.value = String(clamp(Number(elevation.value) + (event.key === 'ArrowUp' ? 5 : event.key === 'ArrowDown' ? -5 : 0), 5, 80)); updateMonumentCamera();
+      }
+    });
+    let drag;
+    els.shadowCanvas.addEventListener('pointerdown', event => {
+      if (event.button !== 0) return;
+      drag = { x: event.clientX, y: event.clientY, moved: false }; els.shadowCanvas.setPointerCapture(event.pointerId);
+    });
+    els.shadowCanvas.addEventListener('pointermove', event => {
+      if (!drag) return; const dx = event.clientX - drag.x, dy = event.clientY - drag.y;
+      if (Math.abs(dx) + Math.abs(dy) > 2) drag.moved = true;
+      const bearing = document.getElementById('cameraBearing'), elevation = document.getElementById('cameraElevation');
+      bearing.value = String((Number(bearing.value) - dx * .45 + 360) % 360);
+      elevation.value = String(clamp(Number(elevation.value) + dy * .35, 5, 80)); drag.x = event.clientX; drag.y = event.clientY; updateMonumentCamera();
+    });
+    els.shadowCanvas.addEventListener('pointerup', event => {
+      if (drag && !drag.moved && sunMode) {
+        const rect = els.shadowCanvas.getBoundingClientRect(), ray = new THREE.Raycaster();
+        ray.setFromCamera(new THREE.Vector2((event.clientX - rect.left) / rect.width * 2 - 1, -(event.clientY - rect.top) / rect.height * 2 + 1), shadow.camera);
+        const hit = ray.intersectObjects(shadow.objectGroup.children, false)[0];
+        if (hit?.object.name.startsWith('design-block:')) { rayChoice = 'block:' + hit.object.name.slice(13); document.getElementById('rayTarget').value = rayChoice; updateAll(); }
+      }
+      drag = null;
+    });
+    els.shadowCanvas.addEventListener('pointercancel', () => { drag = null; });
+    const size = () => { const height = Math.ceil(document.querySelector('.app-shell').getBoundingClientRect().height); window.parent.postMessage({ channel: 'forge.design-simulation.v1', type: 'size', height }, window.location.origin); };
+    if (window.ResizeObserver) new ResizeObserver(size).observe(document.querySelector('.app-shell'));
+    document.getElementById('moreViews').addEventListener('toggle', () => { resizeShadowRenderer(); size(); });
+    size();
+  }
+
+  function fitCamera() { playbackFrame = null; cameraIncludesShadow = true; frameKey = ''; document.getElementById('cameraZoom').value = '1'; }
 
   function samplePath(kind, isoDate, zone, lat, lon, stepMinutes) {
     const points = [];
@@ -1036,26 +1361,10 @@
   }
 
   function getLocalDateTimeAtMinutes(date, minutes, zone) {
-    const wholeMinutes = Math.floor(minutes);
-    const fractionalMinutes = minutes - wholeMinutes;
-
-    if (wholeMinutes >= 1440) {
-      return DateTime.fromObject({
-        year: date.year,
-        month: date.month,
-        day: date.day,
-        hour: 0,
-        minute: 0
-      }, { zone }).plus({ days: 1, minutes: wholeMinutes - 1440 + fractionalMinutes });
-    }
-
-    return DateTime.fromObject({
-      year: date.year,
-      month: date.month,
-      day: date.day,
-      hour: Math.floor(wholeMinutes / 60),
-      minute: wholeMinutes % 60
-    }, { zone }).plus({ minutes: fractionalMinutes });
+    const whole = Math.floor(minutes), offset = Math.floor(whole / 1440), within = whole - offset * 1440;
+    return DateTime.fromObject({ year: date.year, month: date.month, day: date.day }, { zone })
+      .plus({ days: offset }).set({ hour: Math.floor(within / 60), minute: within % 60 })
+      .plus({ milliseconds: (minutes - whole) * 60000 });
   }
 
   function getJSDateAtMinutes(date, minutes) {
@@ -1174,6 +1483,7 @@
 
   function rebuildMonument() {
     if (!shadow.scene) return;
+    frameKey = '';
     solarOptics.setDesign(monumentDesign);
     disposeGroup(shadow.objectGroup);
     shadow.objectGroup = new THREE.Group();
@@ -1198,17 +1508,36 @@
     camera.updateProjectionMatrix();
     disposeGroup(targetMarkers);
     targetMarkers = new THREE.Group();
-    for (const target of monumentDesign.targets) {
-      const ring = new THREE.Mesh(new THREE.RingGeometry(.025, .04, 32), new THREE.MeshBasicMaterial({ color: 0xffd469, side: THREE.DoubleSide }));
+    for (const [index, target] of monumentDesign.targets.entries()) {
+      const color = { march: 0x75c79a, june: 0xf7cc61, sept: 0xf79664, dec: 0x83bced }[target.settings?.markerKind] ?? 0xffd469;
+      const ring = new THREE.Mesh(new THREE.RingGeometry(.025, .04, 32), new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide }));
       ring.rotation.x = -Math.PI / 2;
       ring.position.set(target.x, .005, target.z);
       targetMarkers.add(ring);
-      const label = makeTextSprite(target.label);
-      label.position.set(target.x, .13, target.z);
+      const label = makeTextSprite(target.settings?.markerKind ? String(index + 1) : target.label, !!target.settings?.markerKind);
+      const neighbours = monumentDesign.targets.slice(0, index).filter(t => Math.hypot(t.x - target.x, t.z - target.z) < .2).length;
+      label.position.set(target.x, .13 + neighbours * .18, target.z);
       label.scale.set(.65, .325, 1);
+      if (target.settings?.markerKind) label.scale.set(.42, .21, 1);
       targetMarkers.add(label);
     }
     shadow.scene.add(targetMarkers);
+    const list = document.getElementById('dialMarks'), legend = document.getElementById('dialLegend'); list.replaceChildren(); legend.replaceChildren();
+    monumentDesign.targets.forEach((target, index) => {
+      const chip = document.createElement('span'); chip.textContent = `${index + 1} · ${target.label}`; legend.append(chip);
+      const item = document.createElement('li'); item.textContent = `${index + 1} · ${target.label} · ${target.settings?.localDate ?? ''} · x ${target.x.toFixed(2)}, z ${target.z.toFixed(2)} m`;
+      list.append(item);
+    });
+    document.getElementById('dialMarkSummary').textContent = `My fixed marks · ${monumentDesign.targets.length}`;
+    const post = window.SundialLab.post(monumentDesign);
+    if (post) document.getElementById('postHeight').value = String(Math.round(post.height * 100));
+    const choices = document.getElementById('rayTarget');
+    choices.replaceChildren();
+    for (const [value, label] of [['auto', 'Through the model'], ...monumentDesign.blocks.map((b, i) => ['block:' + b.id, `Stone ${i + 1}${b.aperture ? ' · opening' : ''}`]), ...monumentDesign.targets.map(t => ['target:' + t.id, t.label])]) {
+      const option = document.createElement('option'); option.value = value; option.textContent = label; choices.append(option);
+    }
+    if (![...choices.options].some(option => option.value === rayChoice)) rayChoice = 'auto';
+    choices.value = rayChoice;
     if (!monumentDesign.displayObject && cameraMode === 'sculpture') setCameraMode('angle');
   }
 
@@ -1223,33 +1552,39 @@
   }
 
   function updateMonumentCamera() {
+    if (!shadow.camera) return;
     sceneDirty = true;
-    const span = Number(document.getElementById('cameraZoom').value);
-    shadow.camera.up.set(0, 1, 0);
+    const bearing = Number(document.getElementById('cameraBearing').value);
+    const elevation = Number(document.getElementById('cameraElevation').value);
+    const zoom = Number(document.getElementById('cameraZoom').value);
     const o = monumentDesign.displayObject;
     targetMarkers?.children.forEach(marker => { if (marker.isSprite) marker.visible = cameraMode !== 'sculpture'; });
-    const focus = cameraMode === 'sculpture' && o ? new THREE.Vector3(o.x, o.y + o.height / 2, o.z) : new THREE.Vector3();
+    const sun = getSunPosition(getSelectedJSDate(), state.lat, state.lon);
+    const direction = window.SolarGeometry.sunDirection(sun.altitudeDeg, sun.compassDeg);
+    shadow.camera.up.set(0, 1, 0);
     if (cameraMode === 'sky') {
-      const bearing = Number(document.getElementById('cameraBearing').value);
-      const elevation = Number(document.getElementById('cameraElevation').value);
-      const direction = window.SolarGeometry.sunDirection(elevation, bearing);
-      const distance = skyRadius() * 3.1 / Math.min(1, shadow.camera.aspect);
-      shadow.camera.position.set(direction.x * distance, direction.y * distance, direction.z * distance);
-      document.getElementById('cameraBearingLabel').textContent = `${bearing}°${bearing === 0 || bearing === 360 ? ' (north)' : ''}`;
-      document.getElementById('cameraElevationLabel').textContent = `${elevation}°`;
+      const view = window.SolarGeometry.sunDirection(elevation, bearing);
+      const distance = skyRadius() * 3.1 / Math.min(1, shadow.camera.aspect) / zoom;
+      const frame = window.MonumentCamera.bounds(monumentDesign, direction, false);
+      shadow.camera.position.set(frame.centre.x + view.x * distance, frame.centre.y + view.y * distance, frame.centre.z + view.z * distance);
+      shadow.camera.lookAt(frame.centre.x, frame.centre.y, frame.centre.z);
+    } else {
+      const design = cameraMode === 'sculpture' && o ? { blocks: [], targets: [], displayObject: o } : monumentDesign;
+      const key = [cameraMode, state.localDateISO, state.minutes, sunMode, cameraIncludesShadow].join('|');
+      if (key !== frameKey) {
+        frameKey = key;
+        cameraFrame = (reviewingCamera && reviewFrame && cameraMode !== 'sculpture' ? reviewFrame : pausedDay === dayKey && playbackFrame ? playbackFrame : null) || window.MonumentCamera.bounds(design, direction, cameraMode !== 'sculpture' && cameraIncludesShadow && sunMode);
+      }
+      const fitted = window.MonumentCamera.fit(THREE, cameraFrame, cameraMode === 'top' ? 0 : bearing, cameraMode === 'top' ? 89.999 : elevation, shadow.camera.aspect, zoom);
+      shadow.camera.position.copy(fitted.position);
+      if (cameraMode === 'top') shadow.camera.up.set(0, 0, -1);
+      shadow.camera.lookAt(fitted.centre);
+      document.getElementById('frameNotice').textContent = (cameraFrame.clipped || (state.playing && sun.altitudeDeg > 0 && sun.altitudeDeg < 12)) && sunMode ? 'Low Sun: shadows may continue beyond this view. Use Fit or zoom out.' : '';
     }
-    else if (cameraMode === 'top') { shadow.camera.position.set(0, span * 2, .001); shadow.camera.up.set(0, 0, -1); }
-    else {
-      const direction = window.SolarGeometry.sunDirection(Number(document.getElementById('cameraElevation').value), Number(document.getElementById('cameraBearing').value));
-      const distance = cameraMode === 'sculpture' && o ? Math.max(o.width, o.height) * 2.6 / Math.min(1, shadow.camera.aspect) : span * 2.2;
-      shadow.camera.position.set(focus.x + direction.x * distance, focus.y + direction.y * distance, focus.z + direction.z * distance);
-    }
-    document.getElementById('cameraBearingLabel').textContent = `${document.getElementById('cameraBearing').value}°`;
-    document.getElementById('cameraElevationLabel').textContent = `${document.getElementById('cameraElevation').value}°`;
-    shadow.camera.lookAt(focus);
+    document.getElementById('cameraBearingLabel').textContent = `${bearing.toFixed(0)}°`;
+    document.getElementById('cameraElevationLabel').textContent = `${elevation.toFixed(0)}°`;
     shadow.camera.updateProjectionMatrix();
   }
-
   function skyRadius() {
     return Math.max(3, ...monumentDesign.blocks.map(b => 1.35 * Math.hypot(Math.abs(b.x) + b.width / 2 + b.depth / 2, b.y + b.height, Math.abs(b.z) + b.width / 2 + b.depth / 2)), ...monumentDesign.targets.map(t => Math.hypot(t.x, t.z) * 1.2));
   }
@@ -1286,7 +1621,7 @@
       document.getElementById(id).setAttribute('aria-pressed', String(mode === value));
     }
     document.getElementById('orbitControls').hidden = mode === 'top';
-    document.getElementById('zoomControl').hidden = mode === 'sky' || mode === 'sculpture';
+    document.getElementById('zoomControl').hidden = false;
     document.getElementById('skyLegend').hidden = mode !== 'sky';
     document.getElementById('skyDescription').hidden = mode !== 'sky';
     updateSceneLabel();
@@ -1312,9 +1647,9 @@
     const direction = window.SolarGeometry.sunDirection(sun.altitudeDeg, sun.compassDeg);
     return {
       id, pluginId: 'simulation.solar-monument', capturedAt: new Date().toISOString(), design: structuredClone(monumentDesign),
-      settings: { latitude: state.lat, longitude: state.lon, localDate: state.localDateISO, minutes: state.minutes, zone: state.selectedZone, utcInstant: date.toISOString(), modelVersion: 'solar-optics-2.0' },
+      settings: { latitude: state.lat, longitude: state.lon, localDate: state.localDateISO, minutes: state.minutes, zone: state.selectedZone, utcInstant: date.toISOString(), modelVersion: 'solar-optics-2.0', observationRule },
       measurements: [
-        { label: 'Local observation', value: `${state.localDateISO} ${formatTime(date)} (${state.selectedZone})` },
+        { label: 'Local observation', value: `${getSelectedLocalDateTime().toISODate()} ${formatTime(date)} (${state.selectedZone})` },
         { label: 'Location', value: `${state.lat.toFixed(4)}, ${state.lon.toFixed(4)}` },
         { label: 'Sun altitude', value: `${sun.altitudeDeg.toFixed(2)}°` },
         { label: 'Sun direction', value: `${sun.compassDeg.toFixed(2)}° clockwise from north` },
@@ -1322,12 +1657,15 @@
         { label: 'Height-only shadow reference', value: sun.altitudeDeg > 0 ? `${(state.objectHeight / Math.tan(degToRad(sun.altitudeDeg))).toFixed(3)} m` : 'No direct sunlight' },
         { label: 'Moon', value: `${phaseName(illumination.phase)} · ${Math.round(illumination.fraction * 100)}% illuminated · altitude ${moon.altitudeDeg.toFixed(1)}° · direction ${moon.compassDeg.toFixed(1)}°` },
         { label: 'Sculpture surface samples', value: window.SolarOptics.objectReadings(monumentDesign, direction) },
-        ...monumentDesign.targets.map((target, i) => ({ label: `Target ${i + 1}: ${target.label}`, value: window.SolarOptics.trace(monumentDesign, target, direction).value })),
+        ...monumentDesign.targets.map((target, i) => ({ label: `Target ${i + 1}: ${target.label}`, value: isSundial()
+          ? (() => { const tip = window.SundialLab.tip(monumentDesign, direction); return tip ? `${(Math.hypot(target.x - tip.x, target.z - tip.z) * 100).toFixed(1)} cm from the shadow tip` : 'No direct Sun'; })()
+          : window.SolarOptics.trace(monumentDesign, target, direction).value })),
       ],
     };
   }
 
   function bindMonumentBridge() {
+    bindSundial();
     const send = (payload) => window.parent.postMessage({ channel: 'forge.design-simulation.v1', ...payload }, window.location.origin);
     const toggleControls = (open, returnFocus = false) => {
       document.getElementById('labControls').hidden = !open;
@@ -1353,17 +1691,38 @@
     window.addEventListener('message', (event) => {
       if (event.origin !== window.location.origin || event.source !== window.parent || event.data?.channel !== 'forge.design-simulation.v1') return;
       const data = event.data;
+      // A fresh iframe renegotiates its host-owned controls; the parent retains saved designs.
+      if (data.type === 'hosted-chrome' && data.active === true) {
+        hostedChrome = true; document.body.classList.add('hosted-chrome');
+        els.shadowCanvas.parentElement.append(document.getElementById('dialLegend'));
+        document.getElementById('earthGuide').hidden = true; document.getElementById('earthToggle').setAttribute('aria-expanded', 'false');
+        resizeCanvases(); resizeShadowRenderer(); updateAll(); return;
+      }
+      if (data.type === 'toolbar-action') { toolbarAction(data.action, data.value); return; }
       if (data.type === 'connect') { send({ type: 'ready' }); publishContext(true); return; }
+      if (data.type === 'lesson') { applyLesson(data.activity); return; }
+      if (data.type === 'view-policy') { dialReadOnly = data.readOnly === true; document.getElementById('buildSundial').disabled = dialReadOnly; document.getElementById('buildMode').disabled = dialReadOnly; if (data.readOnly) { setSunMode(true); } updateAll(); return; }
+      if (data.type === 'build-view') { setSunMode(data.building !== true); frameKey = ''; updateAll(); return; }
       if (data.type === 'presentation') {
+        reviewingCamera = data.active === true;
+        if (!reviewingCamera) reviewFrame = null;
         document.body.classList.toggle('presenting', data.active === true);
-        document.getElementById('controlsToggle').textContent = data.active ? 'Location' : 'Place & time';
+        document.getElementById('controlsToggle').textContent = data.active ? 'Location' : 'Place & date';
         if (data.active && state.playing) togglePlay();
-        if (data.active) { toggleControls(false); switchView('horizon'); }
+        if (data.active) { setSunMode(true); toggleControls(false); switchView('horizon'); if (cameraMode === 'sky') setCameraMode('angle'); }
+        updateDayControls();
         return;
       }
       if (data.type === 'review' && typeof data.id === 'string' && data.id.length <= 80 && validMonument(data.design) && Array.isArray(data.checks) && data.checks.length <= 20) {
         try {
           const captures = window.SolarReview.evaluate({ design: data.design, checks: data.checks, settings: observationSettings(), id: data.id });
+          const frames = captures.map(c => {
+            const p = SunCalc.getPosition(new Date(c.settings.utcInstant), c.settings.latitude, c.settings.longitude);
+            return window.MonumentCamera.bounds(data.design, window.SolarGeometry.sunDirection(radToDeg(p.altitude), radToDeg(p.azimuth) + 180), true);
+          });
+          reviewFrame = { ...frames[0], points: frames.flatMap(f => f.points), clipped: frames.some(f => f.clipped) };
+          reviewFrame.centre = Object.fromEntries(['x','y','z'].map(k => [k, (Math.min(...reviewFrame.points.map(p => p[k])) + Math.max(...reviewFrame.points.map(p => p[k]))) / 2]));
+          frameKey = '';
           send({ type: 'review', id: data.id, captures });
         } catch { send({ type: 'review-error', id: data.id }); }
         return;
@@ -1375,16 +1734,28 @@
         else globe.pauseAnimation?.();
         return;
       }
+      if (data.type === 'nearby' && [-7, 7].includes(data.offset) && validMonument(data.capture?.design)) {
+        const settings = data.capture.settings;
+        if (!settings || typeof settings.localDate !== 'string') return;
+        const localDate = DateTime.fromISO(settings.localDate, { zone: settings.zone }).plus({ days: data.offset }).toISODate();
+        const observation = window.SolarDay.observe({ ...settings, localDate }, settings.observationRule ?? 'noon', settings.clockMinutes ?? 720);
+        if (!observation) { document.getElementById('sunBadge').textContent = 'No observation at this time rule on the nearby date.'; return; }
+        data.type = 'restore'; data.capture = { ...data.capture, settings: { ...settings, localDate, minutes: observation.minutes } };
+      }
       const design = data.type === 'restore' ? data.capture?.design : data.design;
       if (!validMonument(design)) return;
+      if (data.type === 'capture') { stopDay(); setSunMode(true); }
       monumentDesign = structuredClone(design);
       if (data.type === 'restore') {
+        setSunMode(true);
         const settings = data.capture.settings;
         if (!settings || !Number.isFinite(settings.latitude) || !Number.isFinite(settings.longitude) || !Number.isFinite(settings.minutes) || typeof settings.localDate !== 'string') return;
         state.lat = clamp(settings.latitude, -89.9, 89.9); state.lon = normalizeLon(settings.longitude);
         state.selectedZone = getZoneForLocation(state.lat, state.lon);
         state.localDateISO = normalizeDateInput(settings.localDate, state.localDateISO);
-        state.minutes = clamp(settings.minutes, 0, 1439);
+        state.minutes = clamp(settings.minutes, -1440, 2879.999);
+        observationRule = settings.observationRule === 'noon' ? 'noon' : 'clock';
+        pausedDay = '';
         if (state.playing) togglePlay();
         syncLocationInputs(); els.dateInput.value = state.localDateISO; els.timeSlider.value = state.minutes;
       }

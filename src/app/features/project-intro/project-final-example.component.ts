@@ -3,6 +3,7 @@ import { PresentationExamplesComponent } from '../../shared/media/presentation-e
 import {
   afterNextRender,
   Component,
+  computed,
   createEnvironmentInjector,
   DestroyRef,
   ElementRef,
@@ -29,6 +30,10 @@ export class ProjectFinalExampleComponent {
   readonly previewInjector = signal<EnvironmentInjector | undefined>(undefined);
   readonly error = signal('');
   readonly reviewOpen = signal(false);
+  readonly sampleInputs = computed(() => ({
+    ...this.sample()?.inputs,
+    ...(this.sample()?.integratedHeader ? { hostGuide: () => this.toggleReview() } : {}),
+  }));
   private readonly reviewDialog = viewChild<ElementRef<HTMLDialogElement>>('reviewDialog');
   private readonly parent = inject(EnvironmentInjector);
   private readonly injector = inject(Injector);

@@ -20,7 +20,7 @@ import type {
         This adds three measured blocks in a free space. Select its upper block to change the
         insert.
       </p>
-      <details open>
+      <details>
         <summary>Cylindrical hole &amp; colored insert</summary>
         @if (selectedId()) {
           <label
@@ -70,7 +70,7 @@ import type {
           simulated.
         </p>
       </details>
-      <details open>
+      <details>
         <summary>Central 3D sculpture</summary>
         <p>
           Build around a sculpture. Compare its lit faces, cast shadow and colored light at each

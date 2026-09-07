@@ -11,6 +11,7 @@ export interface ProjectLaunchRequest {
 }
 
 export interface ProjectLaunchTarget {
+  readonly integratedHeader?: boolean;
   readonly component: Type<unknown>;
   readonly providers: readonly (Provider | EnvironmentProviders)[];
 }

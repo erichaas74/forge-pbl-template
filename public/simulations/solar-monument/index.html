@@ -12,11 +12,16 @@
   <script defer src="vendor/tz.js"></script>
   <script defer src="seasons.js"></script>
   <script defer src="geometry.js"></script>
+  <script defer src="solar-day.js"></script>
+  <script defer src="monument-camera.js"></script>
   <script defer src="optics.js"></script>
   <script defer src="monument-surfaces.js"></script>
   <script defer src="optics-renderer.js"></script>
   <script defer src="sky-model.js"></script>
+  <script defer src="sun-demonstration.js"></script>
+  <script defer src="earth-explanation.js"></script>
   <script defer src="season-review.js"></script>
+  <script defer src="sundial-lab.js"></script>
   <script defer src="game.js"></script>
 </head>
 <body>
@@ -27,7 +32,7 @@
         <summary>Start here: one tower, two seasons</summary>
         <ol>
           <li>Choose your school’s location.</li>
-          <li>Choose June Sol., then Solar Noon. Notice the Sun and shadow.</li>
+          <li>Choose Show Sun, then Play day. Pause to follow a ray and its shadow.</li>
           <li>Predict December’s shadow. Choose Dec. Sol., then Solar Noon.</li>
         </ol>
         <p class="microcopy">Keep the blocks fixed. Turn on Compare Seasons to see the paths together. Use the camera controls to look around.</p>
@@ -69,12 +74,7 @@
           Date
           <input id="dateInput" type="date" min="2025-01-01" max="2030-12-31" />
         </label>
-        <div class="season-grid" aria-label="Season shortcuts">
-          <button id="marchBtn" class="btn compact" type="button" data-season="march">March Eq.</button>
-          <button id="juneBtn" class="btn compact" type="button" data-season="june">June Sol.</button>
-          <button id="septBtn" class="btn compact" type="button" data-season="sept">Sept. Eq.</button>
-          <button id="decBtn" class="btn compact" type="button" data-season="dec">Dec. Sol.</button>
-        </div>
+
         <p class="microcopy">Season dates: US Naval Observatory, 2025–2030, converted to this location’s calendar date.</p>
         <label class="range-label" for="timeSlider">
           <span>Time of day</span>
@@ -82,8 +82,8 @@
         </label>
         <input id="timeSlider" type="range" min="0" max="1439" step="1" value="720" />
         <div class="button-grid two">
-          <button id="playBtn" class="btn" type="button">Play Day</button>
-          <button id="noonBtn" class="btn" type="button">Solar Noon</button>
+
+
           <button id="sunriseBtn" class="btn" type="button">Sunrise</button>
           <button id="sunsetBtn" class="btn" type="button">Sunset</button>
         </div>
@@ -106,7 +106,7 @@
       <section class="panel" aria-labelledby="layersTitle">
         <h2 id="layersTitle">Layers</h2>
         <div class="toggle-grid">
-          <button id="moonToggle" class="toggle active" type="button" aria-pressed="true">Moon Path</button>
+          <button id="moonToggle" class="toggle" type="button" aria-pressed="false">Moon Path</button>
           <button id="seasonToggle" class="toggle" type="button" aria-pressed="false">Compare Seasons</button>
           <button id="labelsToggle" class="toggle active" type="button" aria-pressed="true">Path Labels</button>
           <button id="belowToggle" class="toggle active" type="button" aria-pressed="true">Chart Below Horizon</button>
@@ -141,17 +141,44 @@
 
     <main class="workspace">
       <header class="workspace-bar">
-        <button id="controlsToggle" type="button" aria-expanded="false" aria-controls="labControls">Place & time</button>
-        <button id="chartToggle" type="button" aria-pressed="false">Sun path guide</button>
-        <div class="tabs" role="tablist" aria-label="Lab views">
-          <button id="globeTab" class="tab active" type="button" role="tab" aria-selected="true">Globe</button>
-          <button id="horizonTab" class="tab" type="button" role="tab" aria-selected="false">Sun + Monument</button>
-        </div>
-        <div class="status-group" aria-live="polite">
-          <span id="statusText" class="status-chip">Ready</span>
-          <span id="sunSummary" class="status-chip warm">Sun data loading</span>
-        </div>
+        <button id="buildMode" type="button" aria-pressed="false">Build</button>
+        <button id="showSun" class="show-sun" type="button" aria-pressed="false">☀ Show Sun</button>
+        <button id="playBtn" type="button">▶ Play day</button>
+        <button id="earthToggle" type="button" aria-expanded="false" aria-controls="earthGuide">Why seasons?</button>
+        <button id="controlsToggle" type="button" aria-expanded="false" aria-controls="labControls">Place & date</button>
       </header>
+      <section id="sundialTools" class="sundial-tools" aria-label="Build and mark your sundial" hidden>
+        <div id="sundialBuild">
+          <label>Post height (cm) <input id="postHeight" type="number" min="10" max="200" step="1" value="60" /></label>
+          <button id="buildSundial" type="button">Build my sundial</button>
+          <span>A vertical post on a level dial. Old marks stay if you change its height.</span>
+        </div>
+        <div class="dial-actions">
+          <span id="dialTimes"><button id="dialMorning" type="button">9 AM</button><button id="dialAfternoon" type="button">3 PM</button></span>
+          <button id="markDial" type="button">Mark this time</button>
+          <button id="undoDial" type="button">Remove last mark</button>
+          <button id="returnDial" type="button">Return to marking day & place</button>
+          <span id="dialNearby" hidden><button id="dialWeekBefore" type="button">A week before</button><button id="dialWeekAfter" type="button">A week after</button></span>
+        </div>
+        <p id="dialStatus" role="status"></p>
+        <p id="dialTip"></p>
+        <div id="dialLegend" aria-label="Numbers on your dial"></div>
+        <details><summary id="dialMarkSummary">My fixed marks · 0</summary><ul id="dialMarks"></ul></details>
+      </section>
+      <section class="day-controls" aria-label="Sunrise to sunset">
+        <div class="day-heading"><strong id="dayDate">Today</strong><span id="dayClock">12:00 PM</span>
+          <button id="noonBtn" type="button" aria-pressed="true">Solar noon</button>
+          <label class="speed-label">Speed <select id="daySpeed"><option value="0.5">Slow</option><option value="1" selected>Normal</option><option value="2">Fast</option></select></label>
+        </div>
+        <div class="season-grid" aria-label="Season shortcuts">
+          <button id="marchBtn" class="btn compact" type="button" data-season="march">March Eq.</button>
+          <button id="juneBtn" class="btn compact" type="button" data-season="june">June Sol.</button>
+          <button id="septBtn" class="btn compact" type="button" data-season="sept">Sept. Eq.</button>
+          <button id="decBtn" class="btn compact" type="button" data-season="dec">Dec. Sol.</button>
+        </div>
+        <label class="day-range"><span class="sr-only">Time from sunrise to sunset</span><input id="daySlider" type="range" min="0" max="1439" step="0.1" value="720" /></label>
+        <div class="day-endpoints"><button id="dayStart" type="button">Sunrise</button><span id="dayMessage">Choose a date. Play its whole day.</span><button id="dayEnd" type="button">Sunset</button></div>
+      </section>
 
       <section class="stage" aria-label="Interactive simulation area">
         <div id="dependencyWarning" class="dependency-warning" hidden>
@@ -173,8 +200,22 @@
           <section class="canvas-panel">
             <canvas id="shadowCanvas" aria-label="3D Sun path and measured monument shadows" aria-describedby="skyDescription"></canvas>
             <div class="overlay-label" id="sceneLabel">Carved stone court · true north</div>
+            <div id="sunBadge" class="sun-badge" aria-live="off"></div>
+            <p id="frameNotice" class="frame-notice"></p>
+            <div class="quick-camera" role="group" aria-label="Canvas camera">
+              <button id="zoomOut" type="button" aria-label="Zoom out">−</button>
+              <button id="zoomIn" type="button" aria-label="Zoom in">+</button>
+              <button id="fitView" type="button">Fit all</button>
+              <button id="shadowView" type="button">See shadows</button>
+            </div>
           </section>
           <div class="scene-tools">
+            <div class="ray-inspector" id="rayInspector" hidden>
+              <label>Follow a ray <select id="rayTarget"><option value="auto">Through the model</option></select></label>
+              <p id="rayCaption"></p><span id="rayMeasure"></span>
+            </div>
+            <p class="camera-hint">Drag the scene to turn it · scroll or use + / − to zoom</p>
+            <details id="moreViews"><summary>More views & measurements</summary>
             <div id="shadowInfo" class="shadow-info">Shadow info</div>
             <p id="opticsReadout" class="optics-readout" aria-label="Light at targets and sculpture"></p>
             <div class="camera-controls" role="group" aria-label="Camera view">
@@ -183,16 +224,24 @@
               <button id="sculptureView" type="button" aria-pressed="false" disabled>Inspect sculpture</button>
               <button id="topView" type="button" aria-pressed="false">Plan view</button>
               <button id="gridToggle" type="button" aria-pressed="false">Metre grid</button>
-              <label id="zoomControl">View size<input id="cameraZoom" type="range" min="1" max="40" step="0.5" value="3" /></label>
+              <label id="zoomControl">Zoom<input id="cameraZoom" type="range" min="0.3" max="4" step="0.05" value="1" /></label>
             </div>
             <div class="orbit-controls" id="orbitControls">
-              <label>View from bearing <output id="cameraBearingLabel">145°</output><input id="cameraBearing" aria-label="Camera bearing, degrees clockwise from north" type="range" min="0" max="360" step="5" value="145" /></label>
-              <label>Look from above <output id="cameraElevationLabel">35°</output><input id="cameraElevation" aria-label="Camera elevation, degrees above the ground" type="range" min="5" max="80" step="5" value="35" /></label>
+              <label>View from bearing <output id="cameraBearingLabel">145°</output><input id="cameraBearing" aria-label="Camera bearing, degrees clockwise from north" type="range" min="0" max="360" step="1" value="315" /></label>
+              <label>Look from above <output id="cameraElevationLabel">35°</output><input id="cameraElevation" aria-label="Camera elevation, degrees above the ground" type="range" min="5" max="80" step="1" value="50" /></label>
             </div>
             <p id="skyDescription">Calculated sky angles; sky distance and Sun/Moon sizes are illustrative. The line shows the Sun’s direction toward the ground origin. Only the camera moves; your monument stays aligned to true north.</p>
             <div id="skyLegend" class="sky-legend" aria-label="Sky path legend"></div>
+            <button id="chartToggle" type="button" aria-pressed="false">Sun & Moon path chart</button>
+            <div class="tabs" role="tablist" aria-label="Lab views"><button id="globeTab" class="tab" type="button" role="tab" aria-selected="false">Choose place on globe</button><button id="horizonTab" class="tab active" type="button" role="tab" aria-selected="true">Back to monument</button></div>
+            <div class="status-group"><span id="statusText" class="status-chip"></span><span id="sunSummary" class="status-chip"></span></div>
+            </details>
           </div>
         </div>
+      </section>
+      <section id="earthGuide" class="earth-guide" aria-label="Why the Sun angle changes" hidden>
+        <div><canvas id="earthCanvas" aria-label="Earth orbit, tilted axis, selected site and sunlight"></canvas><p class="microcopy">Earth close-up & orbit · red dot = your site · gold ring = equator. The gold axis tilts 23.4° from the gray upright line.<br>Sizes and distances enlarged to explain the angles.</p></div>
+        <div><h2>One Earth. Two movements.</h2><p><strong>A day:</strong> Earth turns. Your site moves into and out of sunlight.</p><p><strong>A year:</strong> Earth travels around the Sun. Its tilted axis keeps pointing the same way.</p><p id="earthReading"></p><svg id="seasonGraph" viewBox="0 0 320 130" role="img" aria-label="Solar noon shadow lengths across four seasonal dates"></svg><p class="microcopy" id="graphCaption"></p></div>
       </section>
     </main>
   </div>

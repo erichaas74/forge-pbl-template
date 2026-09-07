@@ -10,9 +10,9 @@ export const calendarMonumentIntro: ProjectIntroConfig = {
   image,
   imageAlt: alt,
   kicker: 'A calendar made of sunlight',
-  headline: 'Can your monument read the seasons?',
+  headline: 'Can a shadow tell time—and the season?',
   story:
-    'Your class has been asked to design a monument that marks time without a screen or clock. Your materials are simple blocks. Your measuring tool is a moving shadow.',
+    'Start with a post and a moving shadow. Build a sundial, play a whole day, and mark the shadow tip. Then change the season: why does the same dial make different shadows? Your discoveries will help you build a monument to the Sun.',
   hook: 'The same tower makes a different shadow in winter. How could you turn that pattern into a calendar?',
   role: 'Sky researcher and monument designer',
   teaser: {
@@ -64,17 +64,18 @@ export const calendarMonumentIntro: ProjectIntroConfig = {
       },
     ],
     mission: {
-      title: 'Build a Calendar Monument',
+      title: 'From Sundial to Sun Monument',
       invitation: 'Turn a pattern in the sky into a design you can test.',
       image,
       imageAlt: alt,
-      deliverable: 'A physical block monument and a matching 3D demonstration of all four seasonal dates.',
+      deliverable:
+        'A physical block monument and a matching 3D demonstration of all four seasonal dates.',
       steps: [
-        'Research Sun and Moon patterns.',
-        'Build and test seasonal alignments.',
-        'Explain your design with evidence.',
+        'Build a sundial and mark one day.',
+        'Change seasons, explain the tilt, and mark the equinoxes and solstices.',
+        'Create a Sun monument and demonstrate your evidence.',
       ],
-      finishButton: 'Open my research notebook',
+      finishButton: 'Build my first sundial',
     },
   },
   challenge: {
@@ -117,11 +118,11 @@ export const calendarMonumentIntro: ProjectIntroConfig = {
     questionHint: 'Ask something your research or simulation can investigate.',
   },
   mission: [
-    'Research Earth’s tilt and Sun and Moon patterns.',
-    'Build matching physical and digital block monuments.',
-    'Test seasonal dates, revise, and exhibit your evidence.',
+    'Build a sundial, play a day, then investigate its changing seasonal shadows.',
+    'Explain Earth’s tilt and make your sundial mark the four special dates.',
+    'Finally, build a Sun monument and test its shadow and colored-light displays.',
   ],
-  action: 'Open the design studio',
+  action: 'Start with a sundial',
   finalExample: {
     button: 'Explore a monument example',
     format: 'Interactive 3D seasonal demonstration',
