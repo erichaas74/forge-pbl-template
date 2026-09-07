@@ -1,4 +1,14 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  Injector,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { AutomationRuntimeService } from '../runtime/automation-runtime.service';
 import { RobotReplayService } from '../runtime/robot-replay.service';
@@ -29,6 +39,14 @@ export class AutomationLabComponent {
   readonly mobilePane = signal('course');
   readonly trace = signal(true);
   readonly replayMode = signal(false);
+  private readonly injector = inject(Injector);
+  readonly mathPanel = viewChild<ElementRef<HTMLElement>>('mathPanel');
+  readonly courseView = viewChild<RobotCourseComponent, ElementRef<HTMLElement>>('courseView', {
+    read: ElementRef,
+  });
+  readonly replayFinished = computed(
+    () => !!this.replay.trial() && this.replay.timeMs() >= this.replay.duration(),
+  );
   readonly shownCourse = computed(() =>
     this.replayMode() && this.replay.trial()
       ? this.replay.trial()!.version.course
@@ -41,6 +59,10 @@ export class AutomationLabComponent {
   );
   readonly pose = computed(() => this.replay.current() ?? this.shownCourse().startPose);
   constructor() {
+    effect(() => {
+      const trial = this.replay.trial();
+      if (trial && this.replayFinished()) this.runtime.observeTrial(trial.id);
+    });
     if (this.runtime.sample) {
       const trial = this.runtime.currentTrials().at(-1);
       if (trial) {
@@ -52,6 +74,7 @@ export class AutomationLabComponent {
   }
   choose(id: string): void {
     this.edit();
+    this.mobilePane.set('course');
     this.runtime.selectChallenge(id);
     if (this.runtime.sample) {
       const trial = this.runtime.currentTrials().at(-1);
@@ -66,6 +89,27 @@ export class AutomationLabComponent {
     const trial = this.runtime.runPractice();
     if (trial) this.showTrial(trial);
   }
+  openReasoning(): void {
+    this.runtime.openReasoning();
+    if (!this.runtime.reasoningOpened()) return;
+    this.edit();
+    this.mobilePane.set('math');
+    afterNextRender(
+      () => {
+        const panel = this.mathPanel()?.nativeElement;
+        panel?.querySelector('h2')?.scrollIntoView({ block: 'nearest' });
+        panel?.focus({ preventScroll: true });
+      },
+      { injector: this.injector },
+    );
+  }
+  watchLatest(): void {
+    const trial = this.runtime
+      .currentTrials()
+      .filter((t) => t.mode === 'practice')
+      .at(-1);
+    if (trial) this.showTrial(trial);
+  }
   showTrial(trial: RobotTrial): void {
     if (this.runtime.challenge().id !== trial.challengeId)
       this.runtime.selectChallenge(trial.challengeId);
@@ -76,9 +120,18 @@ export class AutomationLabComponent {
     );
     this.panel.set('workspace');
     this.mobilePane.set('course');
+    afterNextRender(
+      () => {
+        const course = this.courseView()?.nativeElement;
+        course?.scrollIntoView({ block: 'nearest' });
+        course?.focus({ preventScroll: true });
+      },
+      { injector: this.injector },
+    );
   }
   edit(): void {
     this.replay.pause();
+    this.replay.timeMs.set(0);
     this.replay.trial.set(undefined);
     this.replayMode.set(false);
   }

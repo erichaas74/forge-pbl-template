@@ -112,6 +112,19 @@
   font-size: 12px;
   color: #526e7b;
 }
+.workspace.guess-stage {
+  grid-template-columns: minmax(0, 1.25fr) minmax(320px, 1fr);
+}
+.discovery-next {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid #3c7382;
+  border-radius: 10px;
+  background: #102e40;
+  color: #dcf4fa;
+  font-size: 13px;
+  line-height: 1.6;
+}
 .workspace {
   display: grid;
   grid-template-columns: minmax(350px, 1.4fr) minmax(285px, 0.9fr) minmax(240px, 0.7fr);
@@ -124,7 +137,79 @@
   min-width: 0;
 }
 .course-panel {
-  background: #fff;
+  background: linear-gradient(160deg, #172f41, #102335);
+  color: #dfedf1;
+}
+.course-panel .section-top small {
+  color: #73cdbf;
+}
+.course-panel .section-top h2 {
+  color: #f1f8fa;
+}
+.course-panel .live-badge {
+  color: #94f4cc;
+  background: #1c4945;
+  border-color: #41766f;
+}
+.course-panel .course-toolbar label,
+.course-panel .run-controls label {
+  color: #b5cdd8;
+}
+.course-panel select {
+  color: #e2eef3;
+  background: #213e52;
+  border-color: #4c6a7c;
+}
+.course-panel button {
+  color: #d6e9ed;
+  background: #264556;
+  border-color: #456777;
+}
+.course-panel .run {
+  color: #082c2e;
+  background: linear-gradient(#83ecd1, #38bba9);
+  border-color: #8aefda;
+  box-shadow:
+    0 3px 0 #0a6f6c,
+    0 0 18px #44d8b725;
+}
+.course-panel .telemetry {
+  border-color: #375364;
+  margin-top: 4px;
+}
+.course-panel .telemetry small {
+  color: #92afbf;
+}
+.course-panel .telemetry strong {
+  color: #abf3dc;
+}
+.course-panel .telemetry em {
+  color: #a4c1cd;
+}
+.course-panel .scrubber,
+.course-panel .events {
+  color: #b0c7d3;
+}
+.course-panel .first-steps {
+  color: #b6d6dc;
+  background: #1b3c4a;
+  border-color: #385e6c;
+}
+.course-panel .run-result {
+  color: #f5d7a0;
+  background: #3a352c;
+  border-color: #7a6741;
+}
+.course-panel .run-result strong {
+  color: #ffe3ac;
+}
+.course-panel .run-result.success {
+  color: #b4e5d0;
+  background: #173f3d;
+  border-color: #387466;
+}
+.course-panel .run-result.success strong {
+  color: #94f3c5;
 }
 .code-panel {
   border-left: 1px solid #d7e3e8;

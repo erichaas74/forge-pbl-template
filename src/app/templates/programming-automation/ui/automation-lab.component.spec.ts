@@ -7,6 +7,8 @@ import { AutomationRuntimeService } from '../runtime/automation-runtime.service'
 import { AUTOMATION_CONFIG, AUTOMATION_SESSION } from '../runtime/automation.tokens';
 import { AUTOMATION_PERSISTENCE } from '../persistence/automation.persistence';
 import { loadSample } from '../../../runtime/project-showcase/automation.sample';
+import { By } from '@angular/platform-browser';
+import { MathWorkbenchComponent } from './math-workbench.component';
 describe('Robot lab student workspace', () => {
   afterEach(() => TestBed.resetTestingModule());
   it('renders a fresh course and lets students edit commands without revealing calculation answers', async () => {
@@ -27,10 +29,44 @@ describe('Robot lab student workspace', () => {
     expect(fixture.nativeElement.textContent).toContain('Precision parking bay');
     expect(fixture.nativeElement.textContent).not.toContain('Expected:');
     expect(fixture.nativeElement.querySelector('#robot-mission').value).toBe('precision-parking');
+    expect(fixture.nativeElement.querySelector('[aria-label="Math calculation"]')).toBeNull();
+    expect(fixture.nativeElement.textContent).not.toContain('Link a calculation');
+    const runtime = TestBed.inject(AutomationRuntimeService);
+    expect(fixture.nativeElement.querySelector('[aria-label="Move rotations value"]').value).toBe(
+      '3',
+    );
+    fixture.componentInstance.run();
+    fixture.componentInstance.replay.pause();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Watch what your guess does');
+    expect(fixture.nativeElement.querySelector('app-math-workbench')).toBeNull();
+    expect(runtime.reasoningOpened()).toBe(false);
+    fixture.componentInstance.replay.seek(fixture.componentInstance.replay.duration());
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('A failed attempt is a clue.');
+    expect(fixture.nativeElement.querySelector('app-math-workbench')).toBeNull();
+    fixture.componentInstance.openReasoning();
+    fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('[aria-label="Math calculation"]').value).toBe(
       'distance-rotations',
     );
-    const runtime = TestBed.inject(AutomationRuntimeService);
+    expect(fixture.nativeElement.querySelector('[aria-label="Your math answer"]').value).toBe('');
+    const math: MathWorkbenchComponent = fixture.debugElement.query(
+      By.directive(MathWorkbenchComponent),
+    ).componentInstance;
+    math.setValue(0, '120');
+    math.setValue(1, '24');
+    math.answer.set('4');
+    math.explanation.set('My estimate used the distance.');
+    math.check();
+    fixture.detectChanges();
+    expect(math.result()?.status).toBe('needs-revision');
+    expect(fixture.nativeElement.textContent).not.toContain('Expected:');
+    expect(fixture.nativeElement.textContent).toContain('Check which quantities');
+    fixture.componentInstance.choose('variable-upgrade');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('app-math-workbench')).toBeNull();
+    expect(runtime.draft().program.commands).toEqual([]);
     runtime.addCommand('move-distance');
     runtime.addCommand('wait');
     fixture.detectChanges();

@@ -131,6 +131,13 @@ export interface RobotChallenge {
   batteryCapacity?: number;
   skills: readonly string[];
   hint: string;
+  discovery?: {
+    starterCommands: readonly RobotCommand[];
+    focusCommandId: string;
+    instructions: string;
+    reasoningPrompt: string;
+    mathTool: MathTool;
+  };
 }
 export interface AutomationProjectConfig {
   schemaVersion: '1.0';
@@ -219,6 +226,8 @@ export interface ChallengeDraft {
   reflection: string;
   completedAt?: string;
   lockedVersionId?: string;
+  observedTrialId?: string;
+  reasoningOpened?: boolean;
 }
 export interface ChampionshipState {
   revealed: boolean;

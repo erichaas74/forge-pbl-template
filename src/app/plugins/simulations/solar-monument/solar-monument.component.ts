@@ -2,128 +2,79 @@ import {
   Component,
   DestroyRef,
   ElementRef,
+  computed,
   effect,
   inject,
   input,
   signal,
   viewChild,
 } from '@angular/core';
-import { DESIGN_CAPTURE } from '../../../shared/engineering/design-simulation.registry';
+import {
+  DESIGN_CAPTURE,
+  DESIGN_CAPTURE_BATCH,
+  DESIGN_CHECKS_CHANGE,
+} from '../../../shared/engineering/design-simulation.registry';
 import {
   isDesignCapture,
   type BlockDesign,
   type DesignCapture,
+  type DesignCheck,
 } from '../../../shared/engineering/block-design';
 
 @Component({
   selector: 'app-solar-monument',
-  template: `<div class="lab-toolbar">
-      <div>
-        <strong>Sun, Moon & shadow laboratory</strong>
-        <p>Match the place, date, time, and dimensions of your physical model.</p>
-      </div>
-      <button (click)="capture()" [disabled]="!ready() || busy() || !design().blocks.length">
-        {{ busy() ? 'Recording…' : 'Save trial to notebook' }}
-      </button>
-    </div>
-    <p class="status" role="status">{{ status() }}</p>
-    <iframe
-      #frame
-      title="Interactive globe, Sun and Moon paths, and monument shadows"
-      src="/simulations/solar-monument/index.html"
-      (load)="connect()"
-    ></iframe>
-    <p class="model-note">
-      Model: level ground, true north, direct sunlight. Target readings test the centre of each
-      ring. Trees, terrain, clouds, and block stability are not simulated. Very low Sun angles are
-      less reliable; compare your design with a real outdoor shadow.
-    </p>`,
-  styles: [
-    `
-      :host {
-        display: block;
-      }
-      .lab-toolbar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 16px;
-        padding: 18px;
-        background: #163e39;
-        color: white;
-        border-radius: 12px 12px 0 0;
-      }
-      .lab-toolbar p {
-        font-size: 13px;
-        margin: 5px 0 0;
-      }
-      button {
-        min-height: 44px;
-        padding: 10px 18px;
-        background: #f4c363;
-        color: #173c36;
-        border: 0;
-        border-radius: 8px;
-        font: inherit;
-        cursor: pointer;
-      }
-      button:disabled {
-        opacity: 0.5;
-        cursor: default;
-      }
-      button:focus-visible {
-        outline: 3px solid white;
-        outline-offset: 3px;
-      }
-      iframe {
-        width: 100%;
-        height: 780px;
-        border: 1px solid #bccac0;
-        box-sizing: border-box;
-        background: #07131a;
-      }
-      .status,
-      .model-note {
-        font-size: 13px;
-        line-height: 1.5;
-      }
-      .status {
-        min-height: 20px;
-      }
-      .model-note {
-        color: #52685e;
-      }
-      @media (max-width: 700px) {
-        iframe {
-          height: 1100px;
-        }
-        .lab-toolbar {
-          display: block;
-        }
-        .lab-toolbar button {
-          margin-top: 10px;
-        }
-      }
-    `,
-  ],
+  templateUrl: './solar-monument.component.html',
+  styleUrl: './solar-monument.component.scss',
 })
 export class SolarMonumentComponent {
   readonly design = input.required<BlockDesign>();
   readonly restore = input<DesignCapture>();
+  readonly checks = input<readonly DesignCheck[]>([]);
   readonly active = input(true);
-  private readonly onCapture = inject(DESIGN_CAPTURE);
+  readonly presentation = input(false);
+  readonly readOnly = input(false);
+  private readonly onCapture = inject(DESIGN_CAPTURE, { optional: true });
+  private readonly onBatch = inject(DESIGN_CAPTURE_BATCH, { optional: true });
+  private readonly onChecks = inject(DESIGN_CHECKS_CHANGE, { optional: true });
   private readonly frame = viewChild<ElementRef<HTMLIFrameElement>>('frame');
   readonly ready = signal(false);
   readonly busy = signal(false);
-  readonly status = signal('Loading the lab…');
+  readonly reviewing = signal(false);
+  readonly status = signal('Loading the monument…');
+  readonly results = signal<readonly DesignCapture[]>([]);
+  readonly selected = signal(0);
+  readonly savedReview = signal('');
+  readonly cases = [
+    { id: 'march', label: 'March equinox' },
+    { id: 'june', label: 'June solstice' },
+    { id: 'sept', label: 'September equinox' },
+    { id: 'dec', label: 'December solstice' },
+  ];
+  readonly current = computed<DesignCapture | undefined>(() => this.results()[this.selected()]);
+  readonly outcome = computed(() => this.current()?.settings['outcome'] ?? 'unconfigured');
+  readonly matches = computed(
+    () => this.results().filter((r) => r.settings['outcome'] === 'met').length,
+  );
+  readonly configured = computed(
+    () =>
+      this.results().length === 4 &&
+      this.results().every((r) => r.settings['outcome'] !== 'unconfigured'),
+  );
+  readonly recorded = computed(
+    () => !!this.results().length && this.savedReview() === this.results()[0].settings['reviewId'],
+  );
   private pendingId = '';
+  private reviewId = '';
+  private contextKey = '';
   private timer?: ReturnType<typeof setTimeout>;
+  private reviewTimer?: ReturnType<typeof setTimeout>;
   constructor() {
     const listener = (event: MessageEvent<unknown>) => this.receive(event);
     window.addEventListener('message', listener);
     inject(DestroyRef).onDestroy(() => {
       window.removeEventListener('message', listener);
       clearTimeout(this.timer);
+      clearTimeout(this.reviewTimer);
     });
     effect(() => {
       const design = this.design();
@@ -137,20 +88,93 @@ export class SolarMonumentComponent {
       const active = this.active();
       if (this.ready()) this.send({ type: 'visibility', active });
     });
+    effect(() => {
+      this.design();
+      this.checks();
+      const presenting = this.presentation(),
+        ready = this.ready();
+      this.results.set([]);
+      if (ready) this.send({ type: 'presentation', active: presenting });
+      if (presenting && ready) this.runReview();
+    });
   }
   connect(): void {
     this.send({ type: 'connect' });
   }
   capture(): void {
-    if (this.busy() || !this.ready()) return;
+    if (this.busy() || !this.ready() || this.readOnly() || !this.onCapture) return;
     this.pendingId = crypto.randomUUID();
     this.busy.set(true);
     this.send({ type: 'capture', id: this.pendingId, design: this.design() });
     this.timer = setTimeout(() => {
       this.busy.set(false);
-      this.status.set('The lab did not return a trial. Check that it loaded, then try again.');
       this.pendingId = '';
+      this.status.set('The lab did not return a trial. Try again once the canvas has loaded.');
     }, 10000);
+  }
+  runReview(): void {
+    if (!this.ready()) return;
+    clearTimeout(this.reviewTimer);
+    this.reviewId = crypto.randomUUID();
+    this.results.set([]);
+    this.reviewing.set(true);
+    this.send({ type: 'review', id: this.reviewId, design: this.design(), checks: this.checks() });
+    this.reviewTimer = setTimeout(() => {
+      this.reviewing.set(false);
+      this.reviewId = '';
+      this.status.set(
+        'The seasonal comparison did not load. Select Recheck all four dates to try again.',
+      );
+    }, 10000);
+  }
+  viewCase(index: number): void {
+    this.selected.set((index + 4) % 4);
+    const capture = this.results()[this.selected()];
+    if (capture) this.send({ type: 'restore', capture });
+  }
+  checkFor(id: string): DesignCheck | undefined {
+    return this.checks().find((check) => check.scenarioId === id);
+  }
+  changeCheck(id: string, field: 'targetId' | 'expectedValue', value: string): void {
+    if (this.readOnly() || !this.onChecks) return;
+    const check = {
+      scenarioId: id,
+      targetId: '',
+      expectedValue: 'shadow',
+      ...this.checkFor(id),
+      [field]: value,
+    };
+    const checks = this.checks().filter((item) => item.scenarioId !== id);
+    this.onChecks(check.targetId ? [...checks, check] : checks);
+  }
+  resultLabel(result: DesignCapture | undefined): string {
+    switch (result?.settings['outcome']) {
+      case 'met':
+        return 'Matches expectation';
+      case 'missed':
+        return 'Does not match yet';
+      case 'unavailable':
+        return 'No direct Sun / no design';
+      default:
+        return 'Choose a target';
+    }
+  }
+  measurement(result: DesignCapture | undefined, label: string): string {
+    return result?.measurements.find((m) => m.label === label)?.value ?? '—';
+  }
+  recordReview(): void {
+    if (!this.configured() || this.recorded() || this.readOnly() || !this.onBatch) return;
+    try {
+      this.onBatch(this.results());
+      this.savedReview.set(String(this.results()[0].settings['reviewId']));
+      this.status.set(
+        'Four seasonal tests added to your evidence notebook, with this design and its expectations.',
+      );
+    } catch (error) {
+      this.status.set(
+        error instanceof Error ? error.message : 'The comparison could not be recorded.',
+      );
+    }
   }
   private send(payload: Record<string, unknown>): void {
     this.frame()?.nativeElement.contentWindow?.postMessage(
@@ -170,8 +194,48 @@ export class SolarMonumentComponent {
     if (data['channel'] !== 'forge.design-simulation.v1') return;
     if (data['type'] === 'ready') {
       this.ready.set(true);
-      this.status.set('Lab ready. Choose a seasonal date, then Solar Noon, and save your trial.');
+      this.status.set(
+        'Use Place & time to choose your site. Build your monument and watch its shadow.',
+      );
       this.send({ type: 'design', design: this.design() });
+    }
+    if (
+      data['type'] === 'context' &&
+      typeof data['key'] === 'string' &&
+      data['key'] !== this.contextKey
+    ) {
+      this.contextKey = data['key'];
+      this.results.set([]);
+      if (this.presentation() && this.ready()) this.runReview();
+    }
+    if (data['type'] === 'review-error' && data['id'] === this.reviewId) {
+      clearTimeout(this.reviewTimer);
+      this.reviewing.set(false);
+      this.status.set(
+        'The comparison could not be calculated. Check the location and year, then recheck.',
+      );
+    }
+    if (
+      data['type'] === 'review' &&
+      data['id'] === this.reviewId &&
+      Array.isArray(data['captures']) &&
+      data['captures'].length === 4 &&
+      data['captures'].every(
+        (capture: unknown, i: number) =>
+          isDesignCapture(capture) &&
+          capture.pluginId === 'simulation.solar-monument' &&
+          capture.id === this.reviewId + ':' + this.cases[i].id &&
+          capture.settings['scenarioId'] === this.cases[i].id &&
+          ['met', 'missed', 'unavailable', 'unconfigured'].includes(
+            String(capture.settings['outcome']),
+          ) &&
+          JSON.stringify(capture.design) === JSON.stringify(this.design()),
+      )
+    ) {
+      clearTimeout(this.reviewTimer);
+      this.reviewing.set(false);
+      this.results.set(data['captures'] as DesignCapture[]);
+      this.viewCase(this.selected());
     }
     if (
       data['type'] === 'capture' &&
@@ -182,10 +246,12 @@ export class SolarMonumentComponent {
       this.busy.set(false);
       this.pendingId = '';
       try {
-        this.onCapture(data['capture']);
-        this.status.set('Trial saved. Open Evidence to compare your tests.');
+        this.onCapture?.(data['capture']);
+        this.status.set('Trial added to your evidence notebook.');
       } catch (error) {
-        this.status.set(error instanceof Error ? error.message : 'This trial could not be saved.');
+        this.status.set(
+          error instanceof Error ? error.message : 'This trial could not be recorded.',
+        );
       }
     }
   }

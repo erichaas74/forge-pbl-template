@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { AutomationRuntimeService } from '../runtime/automation-runtime.service';
 import { calculate, decimalAndFraction, expectedMath, mathTools } from '../core/automation-math';
 import type { MathEvidence, MathTool } from '../domain/automation.models';
@@ -7,7 +7,35 @@ import type { MathEvidence, MathTool } from '../domain/automation.models';
   template: `
     <small>REASON</small>
     <h2>Math workbench</h2>
-    <p class="intro">Predict a value. Show your thinking. Then connect your math to a command.</p>
+    <p class="intro">
+      Use your run as evidence. Work out a new number, explain it, then test again.
+    </p>
+    @if (!runtime.sample) {
+      <div class="result">
+        <strong>What did you notice?</strong>
+        @if (runtime.observedTrial(); as trial) {
+          <p>
+            Your first observed run: {{ format(trial.distanceCm) }} cm travelled.
+            {{ trial.stoppedReason }}.
+          </p>
+        }
+        <p>
+          {{
+            runtime.challenge().discovery?.reasoningPrompt ??
+              'Which command first took the robot away from your plan? Should its number increase or decrease? Use the course measurements and trial results to explain a new estimate.'
+          }}
+        </p>
+        <label
+          >My observation<textarea
+            aria-label="My observation"
+            rows="2"
+            placeholder="The robot… so my next number should…"
+            [value]="runtime.draft().diagnosis"
+            (input)="runtime.updateDraft({ diagnosis: $any($event.target).value })"
+          ></textarea>
+        </label>
+      </div>
+    }
     @if (selectedEvidence(); as selected) {
       <div class="result correct">
         <strong>Linked to your selected command</strong>
@@ -27,7 +55,11 @@ import type { MathEvidence, MathTool } from '../domain/automation.models';
           }
         </select></label
       >
-      <p class="formula">{{ tool().formula }}</p>
+      <details>
+        <summary>Need a math hint?</summary>
+        <p class="formula">{{ tool().formula }}</p>
+        <p>{{ runtime.challenge().hint }}</p>
+      </details>
       @for (label of tool().inputs; track $index; let i = $index) {
         <label
           >{{ label
@@ -66,9 +98,19 @@ import type { MathEvidence, MathTool } from '../domain/automation.models';
           <strong>{{
             evidence.status === 'correct' ? '✓ Calculation supported' : 'Revise your calculation'
           }}</strong>
-          <p>Expected: {{ format(evidence.expected) }} {{ evidence.unit }}</p>
+          @if (evidence.status === 'needs-revision') {
+            <p>
+              Check which quantities you used, their units, and the operation. Use the hint if you
+              need another starting point, then try your own calculation again.
+            </p>
+          }
           <p>Your answer: {{ format(evidence.answer) }} {{ evidence.unit }}</p>
-          @if (runtime.selectedCommand() && runtime.canEdit() && allowLink()) {
+          @if (
+            evidence.status === 'correct' &&
+            runtime.selectedCommand() &&
+            runtime.canEdit() &&
+            allowLink()
+          ) {
             <button (click)="link(evidence.id)">Link to selected command</button>
           }
         </div>
@@ -85,7 +127,12 @@ import type { MathEvidence, MathTool } from '../domain/automation.models';
           </p>
           <p>{{ evidence.explanation }}</p>
           <button
-            [disabled]="!runtime.selectedCommand() || !runtime.canEdit() || !allowLink()"
+            [disabled]="
+              evidence.status !== 'correct' ||
+              !runtime.selectedCommand() ||
+              !runtime.canEdit() ||
+              !allowLink()
+            "
             (click)="link(evidence.id)"
           >
             Link to selected command
@@ -261,6 +308,15 @@ export class MathWorkbenchComponent {
   readonly feedback = signal('');
   readonly tool = computed(() => mathTools.find((t) => t.id === this.toolId())!);
   readonly format = decimalAndFraction;
+  constructor() {
+    effect(() => {
+      const challenge = this.runtime.challenge();
+      this.choose(
+        challenge.discovery?.mathTool ?? challenge.requiredMath[0] ?? 'distance-rotations',
+      );
+      this.explanation.set('');
+    });
+  }
   link(id: string): void {
     if (this.allowLink()) this.runtime.linkEvidence(id);
   }

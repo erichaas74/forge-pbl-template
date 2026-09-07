@@ -1,4 +1,13 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Injector,
+  afterNextRender,
+  computed,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { NgComponentOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -19,32 +28,43 @@ export class EngineeringDesignPageComponent {
   readonly config = inject(ENGINEERING_CONFIG);
   readonly runtime = inject(EngineeringDesignRuntime);
   readonly simulation = inject(DESIGN_SIMULATIONS).require(this.config.simulationId);
-  readonly tab = signal('research');
-  readonly restore = signal<DesignCapture | undefined>(undefined);
-  readonly tabs = [
-    { id: 'research', label: '1 · Research' },
-    { id: 'build', label: '2 · Build & test' },
-    { id: 'trials', label: '3 · Evidence' },
-    { id: 'exhibit', label: '4 · Exhibit' },
-  ];
+  readonly panel = signal('');
+  readonly presenting = signal(false);
+  private readonly injector = inject(Injector);
+  private readonly supportPanel = viewChild<ElementRef<HTMLElement>>('supportPanel');
+  private readonly canvasRegion = viewChild<ElementRef<HTMLElement>>('canvasRegion');
+  readonly restore = signal<DesignCapture | undefined>(this.savedContext());
   readonly simulationInputs = computed(() => ({
     design: this.runtime.snapshot().design,
     restore: this.restore(),
-    active: this.tab() === 'build',
+    active: true,
+    presentation: this.presenting(),
+    checks: this.runtime.snapshot().checks ?? [],
   }));
   readonly researchCount = computed(
     () => this.config.research.filter((r) => this.runtime.snapshot().research[r.id]?.trim()).length,
   );
-  readonly ready = computed(
-    () =>
-      this.researchCount() === this.config.research.length &&
-      this.runtime.snapshot().trials.length >= 4 &&
-      !!this.runtime.snapshot().exhibit.trim(),
-  );
+  togglePanel(panel: string): void {
+    this.panel.set(this.panel() === panel ? '' : panel);
+    afterNextRender(
+      () => {
+        const element = (this.panel() ? this.supportPanel() : this.canvasRegion())?.nativeElement;
+        element?.scrollIntoView({ block: 'nearest' });
+        element?.focus({ preventScroll: true });
+      },
+      { injector: this.injector },
+    );
+  }
+  private savedContext(): DesignCapture | undefined {
+    const snapshot = this.runtime.snapshot();
+    const last = snapshot.trials[snapshot.trials.length - 1];
+    return last ? { ...last, design: snapshot.design } : undefined;
+  }
   replay(trial: DesignCapture): void {
     this.runtime.saveDesign(trial.design);
     this.restore.set(trial);
-    this.tab.set('build');
+    this.presenting.set(false);
+    this.panel.set('');
   }
   exportNotebook(): void {
     const blob = new Blob(

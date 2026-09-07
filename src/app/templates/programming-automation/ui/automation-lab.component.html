@@ -44,20 +44,25 @@
       </div>
       <div>
         <p>{{ runtime.challenge().mission }}</p>
-        <details>
-          <summary>Need a starting point?</summary>
-          <p>{{ runtime.challenge().hint }}</p>
-        </details>
+        @if (runtime.reasoningOpened()) {
+          <details>
+            <summary>Need a starting point?</summary>
+            <p>{{ runtime.challenge().hint }}</p>
+          </details>
+        }
       </div>
     </section>
     <nav class="mobile-nav" aria-label="Workspace panes">
-      @for (pane of ['course', 'code', 'math']; track pane) {
+      @for (
+        pane of runtime.reasoningOpened() ? ['course', 'code', 'math'] : ['course', 'code'];
+        track pane
+      ) {
         <button [class.active]="mobilePane() === pane" (click)="mobilePane.set(pane)">
           {{ pane === 'course' ? 'Course' : pane === 'code' ? 'Code' : 'Math' }}
         </button>
       }
     </nav>
-    <div class="workspace">
+    <div class="workspace" [class.guess-stage]="!runtime.reasoningOpened()">
       <section class="course-panel" [class.mobile-hidden]="mobilePane() !== 'course'">
         <div class="section-top">
           <div>
@@ -122,6 +127,8 @@
           >
         </div>
         <app-robot-course
+          #courseView
+          tabindex="-1"
           [course]="shownCourse()"
           [targetIndex]="shownTarget()"
           [sample]="replay.current()"
@@ -169,32 +176,69 @@
           /></label>
         }
         @if (replay.trial(); as trial) {
-          <div class="run-result" [class.success]="trial.completedMission">
-            <strong>{{
-              trial.completedMission ? '✓ Mission complete' : 'Review your result'
-            }}</strong>
-            <p>{{ trial.stoppedReason }}</p>
-            <div>
-              {{ trial.distanceCm | number: '1.0-1' }} cm travelled ·
-              {{ trial.stoppingErrorCm | number: '1.0-1' }} cm parking error ·
-              {{ trial.deliveriesCompleted }} deliveries · {{ trial.collisions }} collisions
-            </div>
-            <button (click)="panel.set('evidence')">Compare trials & explain your changes →</button>
-          </div>
-          <details class="events">
-            <summary>Command results</summary>
-            @for (event of trial.events; track $index) {
-              <button (click)="replay.seek(event.timeMs); runtime.selectCommand(event.commandId)">
-                {{ event.timeMs / 1000 | number: '1.1-1' }} s · {{ event.message }}
+          @if (replayFinished() || runtime.reasoningOpened()) {
+            <div class="run-result" [class.success]="trial.completedMission">
+              <strong>{{
+                trial.completedMission ? '✓ Mission complete' : 'Review your result'
+              }}</strong>
+              <p>{{ trial.stoppedReason }}</p>
+              <div>
+                {{ trial.distanceCm | number: '1.0-1' }} cm travelled ·
+                {{ trial.stoppingErrorCm | number: '1.0-1' }} cm parking error ·
+                {{ trial.deliveriesCompleted }} deliveries · {{ trial.collisions }} collisions
+              </div>
+              <button (click)="panel.set('evidence')">
+                Compare trials & explain your changes →
               </button>
-            }
-          </details>
+            </div>
+            <details class="events">
+              <summary>Command results</summary>
+              @for (event of trial.events; track $index) {
+                <button (click)="replay.seek(event.timeMs); runtime.selectCommand(event.commandId)">
+                  {{ event.timeMs / 1000 | number: '1.1-1' }} s · {{ event.message }}
+                </button>
+              }
+            </details>
+          } @else {
+            <div class="first-steps" role="status">
+              <strong>Watch what your guess does</strong>
+              <p>
+                Notice where the robot stops and which way it faces. You can pause or step through
+                the code.
+              </p>
+            </div>
+          }
         } @else {
           <div class="first-steps">
-            <strong>01 Calculate → 02 Code → 03 Test</strong>
+            <strong>01 Guess → 02 Run & watch → 03 Reason & revise</strong>
             <p>
-              Start by choosing a command in Your program. The robot follows exactly what you write.
+              {{
+                runtime.challenge().discovery
+                  ? 'The starter is ready to run. Try its number or enter your own guess.'
+                  : 'Build your code using the command instructions. Start with a number you think could work, then test it.'
+              }}
             </p>
+          </div>
+        }
+        @if (!runtime.reasoningOpened()) {
+          <div class="discovery-next">
+            @if (runtime.observedTrial(); as observed) {
+              <strong>{{
+                observed.completedMission
+                  ? 'Your guess worked. Explain why.'
+                  : 'A failed attempt is a clue.'
+              }}</strong>
+              <p>
+                Use what you noticed to reason about your next number. The math section gives you
+                questions and hints to work through.
+              </p>
+              <button class="run" (click)="openReasoning()">Open reasoning & math →</button>
+            } @else if (runtime.currentTrials().length && !replayMode()) {
+              <p>Watch your recorded attempt to unlock reasoning.</p>
+              <button (click)="watchLatest()">Watch latest attempt</button>
+            } @else {
+              <p>Reasoning & math unlocks after you run your code and watch the result.</p>
+            }
           </div>
         }
       </section>
@@ -204,9 +248,17 @@
           [activeId]="replay.current()?.activeCommandId ?? ''"
         />
       </section>
-      <section class="math-panel" [class.mobile-hidden]="mobilePane() !== 'math'">
-        <app-math-workbench [allowLink]="!replayMode()" />
-      </section>
+      @if (runtime.reasoningOpened()) {
+        <section
+          #mathPanel
+          tabindex="-1"
+          aria-label="Reasoning and math"
+          class="math-panel"
+          [class.mobile-hidden]="mobilePane() !== 'math'"
+        >
+          <app-math-workbench [allowLink]="!replayMode()" />
+        </section>
+      }
     </div>
   } @else if (panel() === 'evidence') {
     <section class="wide-panel"><app-automation-evidence (replay)="showTrial($event)" /></section>

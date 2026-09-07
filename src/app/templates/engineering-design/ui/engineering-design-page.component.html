@@ -1,155 +1,145 @@
 <main class="design-studio">
   <header class="mission">
     <div>
-      <p class="eyebrow">ENGINEERING DESIGN · RESEARCH / BUILD / TEST</p>
+      <p class="eyebrow">DESIGN · BUILD · PROVE IT</p>
       <h1>{{ config.title }}</h1>
-      <p>{{ config.mission }}</p>
     </div>
     <button (click)="exportNotebook()">Export notebook & blueprint ↓</button>
   </header>
   <nav aria-label="Project workspace">
-    @for (item of tabs; track item.id) {
-      <button
-        [class.active]="tab() === item.id"
-        [attr.aria-current]="tab() === item.id ? 'step' : null"
-        (click)="tab.set(item.id)"
-      >
-        {{ item.label }}
+    <button
+      [class.active]="!presenting() && !panel()"
+      (click)="presenting.set(false); panel.set('')"
+    >
+      Monument lab
+    </button>
+    <button [attr.aria-expanded]="panel() === 'build'" (click)="togglePanel('build')">
+      Blocks & targets
+    </button>
+    <button [attr.aria-expanded]="panel() === 'research'" (click)="togglePanel('research')">
+      Learn & guides
+    </button>
+    <button [attr.aria-expanded]="panel() === 'trials'" (click)="togglePanel('trials')">
+      Evidence · {{ runtime.snapshot().trials.length }}
+    </button>
+    <button [class.active]="presenting()" (click)="presenting.set(true); panel.set('')">
+      Final demonstration →
+    </button>
+    @if (presenting()) {
+      <button [attr.aria-expanded]="panel() === 'explain'" (click)="togglePanel('explain')">
+        My explanation
       </button>
     }
   </nav>
-  <p class="save-status" role="status">
-    {{ runtime.saveStatus() }} · {{ researchCount() }}/{{ config.research.length }} research notes ·
-    {{ runtime.snapshot().trials.length }} trials
-  </p>
-  @if (tab() === 'research') {
-    <section class="research">
-      <div class="section-heading">
-        <h2>Read the sky. Find a pattern.</h2>
-        <p>
-          Observe a real shadow, investigate the sources, then explain the science in your own
-          words.
-        </p>
-      </div>
-      <div class="research-grid">
-        @for (item of config.research; track item.id; let i = $index) {
-          <article>
-            <span class="number">0{{ i + 1 }}</span>
-            <h3>{{ item.title }}</h3>
-            <p>{{ item.explanation }}</p>
-            <a [href]="item.source.url" target="_blank" rel="noopener noreferrer"
-              >{{ item.source.label }} ↗</a
-            ><label [for]="'research-' + item.id">{{ item.prompt }}</label
-            ><textarea
-              [id]="'research-' + item.id"
-              rows="5"
-              maxlength="10000"
-              [ngModel]="runtime.snapshot().research[item.id] || ''"
-              (ngModelChange)="(null)"
-              (change)="runtime.saveResearch(item.id, $any($event.target).value)"
-              placeholder="My observations, explanation, and source…"
-            ></textarea>
-          </article>
-        }
-      </div>
-      <button class="primary" (click)="tab.set('build')">
-        Take my ideas to the building table →
-      </button>
+  <div class="workspace" [class.with-panel]="!!panel()">
+    <section #canvasRegion class="simulation" tabindex="-1" aria-label="Monument canvas workspace">
+      <ng-container *ngComponentOutlet="simulation; inputs: simulationInputs()" />
     </section>
-  }
-  <section [hidden]="tab() !== 'build'" aria-label="Build and test workspace">
-    <div class="build-brief">
-      <h2>Your building table</h2>
-      <p>{{ config.designBrief }}</p>
-    </div>
-    <div class="workbench">
-      <div class="construction">
-        <details class="builder" open>
-          <summary>Blocks & ground targets</summary>
+    @if (panel()) {
+      <aside
+        #supportPanel
+        class="support-panel"
+        tabindex="-1"
+        aria-label="Project tools and guides"
+        (keydown.escape)="togglePanel(panel())"
+      >
+        <button class="close" (click)="togglePanel(panel())">Close panel ×</button>
+        @if (panel() === 'build') {
+          <h2>Blocks & targets</h2>
+          <details>
+            <summary>Design brief</summary>
+            <p>{{ config.designBrief }}</p>
+          </details>
           <app-block-builder
             [design]="runtime.snapshot().design"
             (changed)="runtime.saveDesign($event)"
           />
-        </details>
-        <div class="prediction">
-          <label for="prediction">Before saving a trial: what do you predict?</label
-          ><textarea
+          <label for="prediction">What do you predict?</label>
+          <textarea
             id="prediction"
-            rows="2"
+            rows="3"
             maxlength="10000"
             [ngModel]="runtime.snapshot().prediction"
             (change)="runtime.saveText('prediction', $any($event.target).value)"
-            placeholder="On this date and at this time, I predict…"
+            placeholder="On this date, I expect…"
           ></textarea>
-        </div>
-      </div>
-      <div class="simulation">
-        <ng-container *ngComponentOutlet="simulation; inputs: simulationInputs()" />
-      </div>
-    </div>
-    <details class="instructions">
-      <summary>How to run a fair test</summary>
-      <ol>
-        @for (instruction of config.testInstructions; track instruction) {
-          <li>{{ instruction }}</li>
         }
-      </ol>
-    </details>
-  </section>
-  @if (tab() === 'trials') {
-    <section>
-      <h2>Your evidence notebook</h2>
-      <p>
-        Every trial keeps its own design, prediction, location, time, and measurements. Compare all
-        four seasonal dates, then test nearby dates and revise.
-      </p>
-      <div class="trial-grid">
-        @for (trial of runtime.snapshot().trials; track trial.id; let i = $index) {
-          <article>
-            <h3>Trial {{ i + 1 }}</h3>
-            <p>{{ trial.prediction || 'No prediction recorded.' }}</p>
-            <dl>
-              @for (m of trial.measurements; track m.label) {
-                <dt>{{ m.label }}</dt>
-                <dd>{{ m.value }}</dd>
+        @if (panel() === 'research') {
+          <h2>Learn & guides</h2>
+          <p>{{ config.mission }}</p>
+          <details open>
+            <summary>How to test your monument</summary>
+            <ol>
+              @for (instruction of config.testInstructions; track instruction) {
+                <li>{{ instruction }}</li>
               }
-            </dl>
-            <button (click)="replay(trial)">Load this design & test again</button>
-          </article>
-        } @empty {
-          <article>
-            <h3>Your first test is waiting</h3>
-            <p>Choose a date and time in the lab, then select Save trial.</p>
-            <button (click)="tab.set('build')">Open the lab →</button>
-          </article>
+            </ol>
+          </details>
+          @for (item of config.research; track item.id; let i = $index) {
+            <details>
+              <summary>{{ i + 1 }} · {{ item.title }}</summary>
+              <p>{{ item.explanation }}</p>
+              <a [href]="item.source.url" target="_blank" rel="noopener noreferrer"
+                >{{ item.source.label }} ↗</a
+              >
+              <label [for]="'research-' + item.id">{{ item.prompt }}</label>
+              <textarea
+                [id]="'research-' + item.id"
+                rows="5"
+                maxlength="10000"
+                [ngModel]="runtime.snapshot().research[item.id] || ''"
+                (change)="runtime.saveResearch(item.id, $any($event.target).value)"
+                placeholder="My observations and explanation…"
+              ></textarea>
+            </details>
+          }
         }
-      </div>
-    </section>
-  }
-  @if (tab() === 'exhibit') {
-    <section>
-      <h2>Tell the story of your monument</h2>
-      <ul>
-        @for (prompt of config.exhibitPrompts; track prompt) {
-          <li>{{ prompt }}</li>
+        @if (panel() === 'trials') {
+          <h2>Evidence notebook</h2>
+          <p>Each record keeps its own design, prediction and measurements.</p>
+          @for (trial of runtime.snapshot().trials; track trial.id; let i = $index) {
+            <details>
+              <summary>Test {{ i + 1 }} · {{ trial.settings['localDate'] }}</summary>
+              <p>{{ trial.prediction || 'No prediction recorded.' }}</p>
+              <dl>
+                @for (m of trial.measurements; track m.label) {
+                  <dt>{{ m.label }}</dt>
+                  <dd>{{ m.value }}</dd>
+                }
+              </dl>
+              <button (click)="replay(trial)">Load this design & test again</button>
+            </details>
+          } @empty {
+            <p>Record a test in the lab, or record all four dates from Final demonstration.</p>
+          }
         }
-      </ul>
-      <label for="exhibit">My design, evidence, and revisions</label
-      ><textarea
-        id="exhibit"
-        rows="6"
-        maxlength="10000"
-        [ngModel]="runtime.snapshot().exhibit"
-        (change)="runtime.saveText('exhibit', $any($event.target).value)"
-      ></textarea>
-      <p>
-        {{
-          ready()
-            ? 'Your draft has research, at least four trials, and an explanation. Check that it covers every seasonal event.'
-            : 'Complete your research, save at least four seasonal trials, and add an explanation.'
-        }}
-      </p>
+        @if (panel() === 'explain') {
+          <h2>Explain your demonstration</h2>
+          <ul>
+            @for (prompt of config.exhibitPrompts; track prompt) {
+              <li>{{ prompt }}</li>
+            }
+          </ul>
+          <label for="exhibit">My design, evidence and revisions</label>
+          <textarea
+            id="exhibit"
+            rows="10"
+            maxlength="10000"
+            [ngModel]="runtime.snapshot().exhibit"
+            (change)="runtime.saveText('exhibit', $any($event.target).value)"
+          ></textarea>
+        }
+      </aside>
+    }
+  </div>
+  <p class="save-status" role="status">
+    {{ runtime.saveStatus() }} · {{ researchCount() }}/{{ config.research.length }} research notes ·
+    {{ runtime.snapshot().trials.length }} recorded tests
+  </p>
+  @if (presenting()) {
+    <details class="supporting-record">
+      <summary>Supporting explanation, blueprint & recorded evidence</summary>
       <app-engineering-exhibit [title]="config.title" [snapshot]="runtime.snapshot()" />
-    </section>
+    </details>
   }
 </main>

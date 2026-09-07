@@ -17,6 +17,12 @@ export const calendarMonumentSample: EngineeringSnapshot = {
       'Earth’s tilted axis changes how high the Sun appears. June solar-noon shadows are shorter here in Colorado Springs.',
     moon: 'Moon phases repeat in about 29.5 days. A lunar phase calendar measures a different pattern from this solar monument.',
   },
+  checks: [
+    { scenarioId: 'march', targetId: 'equinox', expectedValue: 'shadow' },
+    { scenarioId: 'june', targetId: 'june', expectedValue: 'shadow' },
+    { scenarioId: 'sept', targetId: 'equinox', expectedValue: 'shadow' },
+    { scenarioId: 'dec', targetId: 'december', expectedValue: 'shadow' },
+  ],
   prediction:
     'At solar noon, the shadow will point approximately north and reach farther in December.',
   exhibit:

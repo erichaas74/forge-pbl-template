@@ -99,6 +99,8 @@ export function isAutomationState(value: unknown): value is AutomationState {
         program(d['program']) &&
         prediction(d['prediction']) &&
         strings(d, ['diagnosis', 'reflection']) &&
+        (d['observedTrialId'] === undefined || typeof d['observedTrialId'] === 'string') &&
+        (d['reasoningOpened'] === undefined || typeof d['reasoningOpened'] === 'boolean') &&
         Number.isInteger(d['targetIndex']),
     ) &&
     math(item['math']) &&

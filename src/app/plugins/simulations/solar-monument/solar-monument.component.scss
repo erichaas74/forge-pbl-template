@@ -1,0 +1,193 @@
+:host {
+  display: block;
+  min-width: 0;
+  color: #173c36;
+}
+.lab-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  background: #163e39;
+  color: #fff;
+  border-radius: 12px 12px 0 0;
+}
+.lab-toolbar p {
+  font-size: 13px;
+  margin: 4px 0 0;
+}
+button,
+select {
+  font: inherit;
+  min-height: 42px;
+  border: 1px solid #afc1b7;
+  border-radius: 7px;
+  padding: 8px 12px;
+  color: #173c36;
+  background: #fffdf7;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+button:focus-visible,
+select:focus-visible {
+  outline: 3px solid #be7920;
+  outline-offset: 3px;
+}
+.lab-toolbar button,
+.review-actions button:last-child {
+  background: #f4c363;
+}
+iframe {
+  width: 100%;
+  height: 790px;
+  border: 1px solid #bacbc0;
+  box-sizing: border-box;
+  display: block;
+  background: #07131a;
+}
+.season-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  padding: 10px 0;
+}
+.season-steps button {
+  text-align: left;
+}
+.season-steps span,
+.season-steps small {
+  display: block;
+}
+.season-steps small {
+  font-size: 11px;
+  margin-top: 5px;
+}
+.current {
+  background: #1d5b4d;
+  color: white;
+}
+.demonstration {
+  background: #fffdf7;
+  padding: 16px;
+  border: 1px solid #c5d0bd;
+  border-radius: 0 0 12px 12px;
+}
+.step-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+h3 {
+  margin: 0;
+}
+p {
+  line-height: 1.5;
+}
+.step-heading p {
+  font-size: 13px;
+  margin: 5px 0;
+}
+.expectation {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: end;
+  gap: 16px;
+  margin: 16px 0;
+}
+label {
+  display: grid;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 650;
+}
+select {
+  width: 100%;
+}
+.verdict {
+  background: #eee7d1;
+  margin: 0;
+  padding: 12px;
+  border-radius: 7px;
+  font-weight: 700;
+}
+.met {
+  background: #dcedd8;
+}
+.missed {
+  background: #ffe5c5;
+}
+.table-scroll {
+  overflow: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+caption {
+  text-align: left;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 12px 0;
+}
+th,
+td {
+  padding: 10px;
+  border-bottom: 1px solid #d8dfd1;
+}
+th button {
+  padding: 6px;
+  text-align: left;
+  font-size: 13px;
+}
+.selected {
+  background: #eef3e5;
+}
+.review-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+.review-actions p {
+  flex: 1 1 350px;
+  font-size: 13px;
+}
+.status,
+.model-note {
+  font-size: 13px;
+  margin: 10px 0;
+}
+summary {
+  cursor: pointer;
+}
+@media (max-width: 700px) {
+  .season-steps {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .expectation {
+    grid-template-columns: 1fr;
+  }
+  .step-heading {
+    flex-wrap: wrap;
+  }
+  .step-heading > div {
+    order: -1;
+    flex-basis: 100%;
+  }
+  .lab-toolbar {
+    flex-wrap: wrap;
+  }
+  iframe {
+    height: 920px;
+  }
+}

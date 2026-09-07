@@ -6,6 +6,10 @@ The Grade 5 project asks students to research Sun and Moon patterns, compare sea
 
 The first challenge is a tower with three seasonal ground markers. In Colorado Springs, solar-noon shadows are short near June solstice, intermediate near either equinox, and long near December solstice. Students investigate why both equinoxes share an approximate alignment. A lintel opening is an extension. Test nearby dates to discover how precisely a monument identifies an event.
 
+The [Sun-model integration plan](SUN_MODEL_PLAN.md) records the source inspection and outdoor calibration procedure. The lab now opens directly on the **3D monument and shadow canvas**. Block tools, research, and evidence open in supporting panels. Place/time and sky paths are optional guides. The camera moves around a fixed monument.
+
+Choose **Final demonstration** to walk through both equinoxes and both solstices on that same canvas. Define a target and expected shadow/sunlight for each date. The live comparison shows what matches and what needs revision; recording it saves all four tests together. The fictional final example now demonstrates this same interactive final product. Target-centre checks do not establish a unique event date: test nearby dates and compare a physical build too.
+
 ## Implementation map
 
 Added:
@@ -33,6 +37,26 @@ Integrated through existing catalog, intro list, definition source, lazy templat
 Preview scope and model limits are documented in the specification. The next classroom step is an outdoor comparison at matching location, date, time, dimensions, and true-north orientation.
 
 ## Verification results (2026-09-07)
+
+Canvas and final-demonstration update:
+
+- Production build passed; only existing style-budget warnings remain elsewhere.
+- 19 Angular tests passed across the engineering runtime, solar demonstration bridge and teaser registry.
+- Three simulation scripts passed: geometric shadows, scene/controller integration, and the new four-season evaluator.
+- Browser verification in a separate preview origin confirmed full-width canvas, supporting block tools, target creation, seasonal replay, a visible June miss among three matches, atomic recording of four tests, reload persistence, and a read-only example with four calculated comparisons. Test data was kept separate from the user's existing localhost draft.
+- The two existing architecture findings listed below remain; no new engineering boundary finding. `git diff --check` passed.
+
+Added in this update: `season-review.js`, `check-season-review.cjs`, the solar component HTML/SCSS/spec, and `engineering-final-demo.component.ts`. Modified the shared design-check and callback contracts, engineering snapshot/runtime/launcher, workspace layout, astronomy frame/controller, sample renderer/content and regression checks. All behavior remains behind the installed simulation and generic engineering template. No breaking schema changes, specification deviations or unresolved capability gaps for this request. Next phase: outdoor calibration and stronger precision criteria for calendar alignments.
+
+Latest 3D sky update:
+
+- Production build passed; existing style-budget warnings remain elsewhere.
+- 14 Angular tests passed across the engineering-design and teaser-registry suites.
+- Both `check-solar-monument.cjs` and the new `check-solar-scene.cjs` passed. The latter uses the actual controller and CPU Three.js scene with a stub GPU; it checks fixed transforms over 120 frames, camera independence, view switching, capture metadata, shared light direction and night behavior.
+- Chrome checks confirmed the Research entry button, visible seasonal arcs and Sun marker, June/December solar-noon readouts (approximately 0.28 m / 1.90 m for the 1 m reference), keyboard camera rotation, and Plan view. No student trials or research notes were changed during these checks.
+- `git diff --check` passed. The same two repository-wide architecture findings listed below remain outside the astronomy changes.
+
+Initial integration:
 
 - Angular production build passed. Existing SCSS budget warnings remain in other projects.
 - 33 selected tests passed across 7 files: engineering template, project catalog, local template registration, opening registry, teaser registry, project-home component and project-intro component.

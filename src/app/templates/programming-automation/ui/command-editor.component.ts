@@ -26,6 +26,28 @@ export const commandLabels: Record<CommandType, string> = {
       </div>
       <span class="tag">v{{ program().version }}</span>
     </div>
+    @if (!runtime.sample && !runtime.reasoningOpened()) {
+      <div class="guess-guide">
+        <strong>{{
+          runtime.challenge().discovery ? 'Start with a guess' : 'Build it yourself'
+        }}</strong>
+        <p>
+          {{
+            runtime.challenge().discovery?.instructions ??
+              'Use the command instructions to build your route. Enter a number as your first guess, run your code, then use the result to improve it.'
+          }}
+        </p>
+      </div>
+    }
+    <details class="command-reference">
+      <summary>Command instructions</summary>
+      <p>The robot follows blocks from top to bottom. Enter a number in each movement block.</p>
+      @for (type of runtime.challenge().allowedCommands; track type) {
+        <p>
+          <code>{{ instructions[type] }}</code>
+        </p>
+      }
+    </details>
     @if (readOnly()) {
       <p class="notice">
         {{ snapshot() ? 'Recorded program · replay only' : 'This program is locked.' }}
@@ -70,7 +92,11 @@ export const commandLabels: Record<CommandType, string> = {
     }
     @if (!snapshot()) {
       @for (issue of runtime.compiled().issues; track $index) {
-        @if (!issue.commandId && issue.code !== 'PROGRAM_EMPTY') {
+        @if (
+          !issue.commandId &&
+          issue.code !== 'PROGRAM_EMPTY' &&
+          (runtime.reasoningOpened() || issue.code !== 'MATH_EVIDENCE')
+        ) {
           <p class="issue" [class.error]="issue.severity === 'error'">{{ issue.message }}</p>
         }
       }
@@ -84,6 +110,10 @@ export const commandLabels: Record<CommandType, string> = {
             [class.selected]="runtime.selectedCommandId() === command.id"
             [class.active]="activeId() === command.id"
             [class.disabled]="command.disabled"
+            [class.guess-command]="
+              !runtime.reasoningOpened() &&
+              command.id === runtime.challenge().discovery?.focusCommandId
+            "
             [draggable]="!readOnly()"
             (dragstart)="dragged = command.id"
             (dragover)="$event.preventDefault()"
@@ -126,6 +156,12 @@ export const commandLabels: Record<CommandType, string> = {
                 </button>
               </div>
             </div>
+            @if (
+              !runtime.reasoningOpened() &&
+              command.id === runtime.challenge().discovery?.focusCommandId
+            ) {
+              <p class="guess-label">YOUR GUESS · Change this number, then run</p>
+            }
             <div class="fields">
               @if (command.type === 'pick-up' || command.type === 'drop-off') {
                 <label
@@ -187,6 +223,7 @@ export const commandLabels: Record<CommandType, string> = {
                 />Enabled</label
               >
               @if (
+                runtime.reasoningOpened() &&
                 command.type !== 'repeat' &&
                 command.type !== 'pick-up' &&
                 command.type !== 'drop-off'
@@ -197,7 +234,11 @@ export const commandLabels: Record<CommandType, string> = {
               }
             </div>
             @for (issue of runtime.compiled().issues; track $index) {
-              @if (!snapshot() && issue.commandId === command.id) {
+              @if (
+                !snapshot() &&
+                issue.commandId === command.id &&
+                (runtime.reasoningOpened() || issue.code !== 'MATH_EVIDENCE')
+              ) {
                 <p class="issue" [class.error]="issue.severity === 'error'">{{ issue.message }}</p>
               }
             }
@@ -230,8 +271,8 @@ export const commandLabels: Record<CommandType, string> = {
           <li class="empty">
             <strong>Every delivery starts with a command.</strong>
             <p>
-              Choose a movement below. Calculate its value in the math workbench, then test your
-              program.
+              Choose a command below and enter your first number guess. Add the next steps and test
+              your program.
             </p>
           </li>
         }
@@ -267,6 +308,16 @@ export class CommandEditorComponent {
   readonly snapshot = input<RobotProgram>();
   readonly activeId = input('');
   readonly labels = commandLabels;
+  readonly instructions: Record<CommandType, string> = {
+    'move-distance': 'MOVE_DISTANCE(cm) — drive forward that many centimeters.',
+    'move-rotations': 'MOVE_ROTATIONS(rotations) — spin the wheels that many times.',
+    'turn-degrees': 'TURN_DEGREES(angle) — turn left or right in degrees.',
+    'turn-fraction': 'TURN_FRACTION(fraction) — turn part of a full circle.',
+    wait: 'WAIT(seconds) — pause before the next command.',
+    'pick-up': 'PICK_UP(package) — collect a package at your position.',
+    'drop-off': 'DROP_OFF(package) — deliver a package at its matching zone.',
+    repeat: 'REPEAT(times) — run the blocks inside this loop again.',
+  };
   readonly collapsed = signal(new Set<string>());
   dragged = '';
   readonly program = computed(() => this.snapshot() ?? this.runtime.draft().program);

@@ -1,0 +1,159 @@
+<div class="lab-toolbar">
+  <div>
+    <strong>{{
+      presentation() ? 'Your monument · four special dates' : 'Your monument & its shadow'
+    }}</strong>
+    <p>
+      {{
+        presentation()
+          ? 'One design, one location, four seasonal tests at solar noon.'
+          : 'Build, change the Sun’s position, and test an alignment.'
+      }}
+    </p>
+  </div>
+  @if (!readOnly() && !presentation()) {
+    <button (click)="capture()" [disabled]="!ready() || busy() || (!design().blocks.length && !design().displayObject)">
+      {{ busy() ? 'Recording…' : 'Record this test' }}
+    </button>
+  }
+</div>
+@if (presentation()) {
+  <nav class="season-steps" aria-label="Special dates">
+    @for (item of cases; track item.id; let i = $index) {
+      <button
+        [class.current]="selected() === i"
+        [attr.aria-current]="selected() === i ? 'step' : null"
+        [disabled]="!results().length"
+        (click)="viewCase(i)"
+      >
+        <span>{{ i + 1 }} · {{ item.label }}</span
+        ><small>{{ reviewing() ? 'Calculating…' : resultLabel(results()[i]) }}</small>
+      </button>
+    }
+  </nav>
+}
+<iframe
+  #frame
+  title="Interactive globe, Sun and Moon paths, and monument shadows"
+  src="/simulations/solar-monument/index.html"
+  (load)="connect()"
+></iframe>
+@if (presentation()) {
+  <section class="demonstration" aria-label="Seasonal demonstration">
+    <div class="step-heading">
+      <button (click)="viewCase(selected() - 1)" [disabled]="!results().length">← Previous</button>
+      <div>
+        <h3>{{ cases[selected()].label }}</h3>
+        <p>{{ measurement(current(), 'Observation') }}</p>
+      </div>
+      <button (click)="viewCase(selected() + 1)" [disabled]="!results().length">
+        Next special date →
+      </button>
+    </div>
+    <div class="expectation">
+      <label
+        >Target for this date<select
+          [disabled]="readOnly()"
+          [value]="checkFor(cases[selected()].id)?.targetId || ''"
+          (change)="changeCheck(cases[selected()].id, 'targetId', $any($event.target).value)"
+        >
+          <option value="">Choose a ground target</option>
+          @for (target of design().targets; track target.id) {
+            <option [value]="target.id">{{ target.label }}</option>
+          }
+        </select></label
+      >
+      <label
+        >What should happen?<select
+          [disabled]="readOnly()"
+          [value]="checkFor(cases[selected()].id)?.expectedValue || 'shadow'"
+          (change)="changeCheck(cases[selected()].id, 'expectedValue', $any($event.target).value)"
+        >
+          <option value="shadow">Target centre is in shadow</option>
+          <option value="sunlight">Target centre receives sunlight</option>
+          <option value="red light">Ruby red light reaches the target</option>
+          <option value="amber light">Amber light reaches the target</option>
+          <option value="green light">Emerald green light reaches the target</option>
+          <option value="blue light">Sapphire blue light reaches the target</option>
+          <option value="violet light">Amethyst violet light reaches the target</option>
+          <option value="mixed filters">Light passes through multiple colors</option>
+        </select></label
+      >
+      <p
+        class="verdict"
+        [class.met]="outcome() === 'met'"
+        [class.missed]="outcome() === 'missed'"
+        role="status"
+      >
+        {{ reviewing() ? 'Calculating…' : resultLabel(current()) }}
+      </p>
+    </div>
+    @if (!design().targets.length) {
+      <p>Add ground targets with the block tools to define what your monument should do.</p>
+    }
+    @if (design().displayObject) {
+      <p><strong>Sculpture at this Sun angle:</strong> {{ measurement(current(), 'Sculpture surface samples') }}.
+        Samples describe face centres; compare the full illuminated surface in the canvas.</p>
+    }
+    <div class="table-scroll">
+      <table>
+        <caption>
+          Compare the same monument at all four seasonal dates
+        </caption>
+        <thead>
+          <tr>
+            <th>Special date</th>
+            <th>Sun altitude</th>
+            <th>Shadow reference</th>
+            <th>Target</th>
+            <th>Expected</th>
+            <th>Observed</th>
+            <th>Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (result of results(); track result.id; let i = $index) {
+            <tr [class.selected]="selected() === i">
+              <th>
+                <button (click)="viewCase(i)">{{ cases[i].label }}</button>
+              </th>
+              <td>{{ measurement(result, 'Sun altitude') }}</td>
+              <td>{{ measurement(result, 'Height-only shadow reference') }}</td>
+              <td>{{ measurement(result, 'Target') }}</td>
+              <td>{{ measurement(result, 'Expected') }}</td>
+              <td>{{ measurement(result, 'Observed at target centre') }}</td>
+              <td>{{ resultLabel(result) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <div class="review-actions">
+      <p>
+        {{ matches() }}/4 expectations match. A match tests the target centre; nearby-date tests
+        show how precisely your monument marks the calendar.
+      </p>
+      <button (click)="runReview()" [disabled]="!ready() || reviewing()">
+        Recheck all four dates
+      </button>
+      @if (!readOnly()) {
+        <button (click)="recordReview()" [disabled]="!configured() || recorded() || reviewing()">
+          {{ recorded() ? 'Comparison recorded' : 'Record final comparison' }}
+        </button>
+      }
+    </div>
+  </section>
+}
+<p class="status" role="status">{{ status() }}</p>
+<details class="model-note">
+  <summary>How to interpret the model</summary>
+  <p>
+    Level ground, true north and direct sunlight. Each target checks its centre. A longer shadow may
+    cover several markers, so test nearby dates too. Trees, terrain, clouds and block stability are
+    not simulated. Compare with an outdoor build before claiming a physical accuracy tolerance.
+    Cylindrical holes have their measured depth. Glass and jewel inserts filter parallel sunlight;
+    displayed colors are illustrative RGB transmission. Lens focusing, refraction, prism rainbows,
+    the Sun’s finite disk and soft shadow edges are not modeled. Sculpture shapes and materials
+    are selectable built-in models, and the saved design includes their dimensions and orientation.
+  </p>
+</details>

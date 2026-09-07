@@ -1,5 +1,6 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, effect, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { DesignOpticsBuilderComponent } from './design-optics-builder.component';
 import {
   isBlockDesign,
   type BlockDesign,
@@ -8,7 +9,7 @@ import {
 
 @Component({
   selector: 'app-block-builder',
-  imports: [FormsModule],
+  imports: [FormsModule, DesignOpticsBuilderComponent],
   template: ` <section aria-label="Measured block builder">
     <h3>Build with your classroom blocks</h3>
     <p>
@@ -27,12 +28,7 @@ import {
       /></label>
       <label>Base Y (m)<input type="number" min="0" max="10" step="0.05" [(ngModel)]="y" /></label>
       <label
-        >Rotation<select [(ngModel)]="rotation">
-          <option [ngValue]="0">0°</option>
-          <option [ngValue]="90">90°</option>
-          <option [ngValue]="180">180°</option>
-          <option [ngValue]="270">270°</option>
-        </select></label
+        >Rotation (°)<input type="number" min="0" max="359" step="1" [(ngModel)]="rotation" /></label
       >
     </div>
     <div class="actions">
@@ -55,6 +51,7 @@ import {
       {{ design().blocks.length }} / 100 blocks. Check that every block is supported when you build
       the physical model.
     </p>
+    <app-design-optics-builder [design]="design()" [selectedId]="selected()" (changed)="change($event)" (selected)="select($event)" />
     <details>
       <summary>Place ground targets</summary>
       <p>Each small ring marks a point to test for sunlight or shadow.</p>
@@ -165,6 +162,7 @@ export class BlockBuilderComponent {
   targetLabel = 'Season marker';
   targetX = 0;
   targetZ = -1;
+  constructor() { effect(() => this.select(this.selected())); }
   private block(id: string = crypto.randomUUID()): DesignBlock {
     return {
       id,
@@ -177,10 +175,10 @@ export class BlockBuilderComponent {
       rotation: this.rotation,
     };
   }
-  private change(next: BlockDesign): void {
+  change(next: BlockDesign): void {
     if (!isBlockDesign(next)) {
       this.error.set(
-        'Check the dimensions and positions. Blocks must not overlap; move the new block or stack it above an existing block. Targets need a label.',
+        'Check the dimensions and positions. Blocks and the sculpture’s reserved space must not overlap. A hole must fit within 90% of its face, leaving an unbroken rim. Targets need a label.',
       );
       return;
     }
@@ -195,7 +193,7 @@ export class BlockBuilderComponent {
   update(): void {
     this.change({
       ...this.design(),
-      blocks: this.design().blocks.map((b) => (b.id === this.selected() ? this.block(b.id) : b)),
+      blocks: this.design().blocks.map((b) => (b.id === this.selected() ? { ...b, ...this.block(b.id) } : b)),
     });
   }
   select(id: string): void {

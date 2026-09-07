@@ -4,6 +4,8 @@ import { EventRegistry } from '../../../core/registries/specialized-registries';
 import {
   isBlockDesign,
   isDesignCapture,
+  isDesignChecks,
+  type DesignCheck,
   type BlockDesign,
   type DesignCapture,
 } from '../../../shared/engineering/block-design';
@@ -29,6 +31,7 @@ export const engineeringEvents = {
   prediction: 'engineering.predictionSaved',
   exhibit: 'engineering.exhibitSaved',
   trial: 'activity.completed',
+  checks: 'engineering.checksSaved',
 } as const;
 
 @Injectable()
@@ -76,16 +79,42 @@ export class EngineeringDesignRuntime {
     this.commit(engineeringEvents[field], { [field]: value.slice(0, 10000) });
   }
   capture(capture: DesignCapture): void {
-    if (!isDesignCapture(capture) || capture.pluginId !== this.config.simulationId)
+    this.captureBatch([capture]);
+  }
+  saveChecks(checks: readonly DesignCheck[]): void {
+    if (!isDesignChecks(checks)) throw new Error('STATE_INVALID: Invalid design checks.');
+    this.commit(engineeringEvents.checks, { checks });
+  }
+  captureBatch(captures: readonly DesignCapture[]): void {
+    if (
+      !Array.isArray(captures) ||
+      !captures.length ||
+      captures.length > 20 ||
+      captures.some(
+        (capture) => !isDesignCapture(capture) || capture.pluginId !== this.config.simulationId,
+      ) ||
+      new Set(captures.map((c) => c.id)).size !== captures.length
+    )
       throw new Error('STATE_INVALID: The simulation returned an invalid trial.');
     const state = this.snapshot();
-    if (state.trials.some((trial) => trial.id === capture.id)) return;
-    if (state.trials.length >= 40)
+    const fresh = captures.filter(
+      (capture) => !state.trials.some((trial) => trial.id === capture.id),
+    );
+    if (!fresh.length) return;
+    if (state.trials.length + fresh.length > 40)
       throw new Error('TRIAL_LIMIT: Export this notebook before starting another project attempt.');
     this.commit(
       engineeringEvents.trial,
-      { trials: [...state.trials, { ...structuredClone(capture), prediction: state.prediction }] },
-      capture.id,
+      {
+        trials: [
+          ...state.trials,
+          ...fresh.map((capture) => ({
+            ...structuredClone(capture),
+            prediction: state.prediction,
+          })),
+        ],
+      },
+      fresh[0].id,
     );
   }
   private commit(

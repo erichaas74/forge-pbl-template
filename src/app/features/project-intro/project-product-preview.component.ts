@@ -251,6 +251,94 @@ import { ObjectModelViewerComponent } from '../../shared/media/object-model-view
       background: #422e24;
       --product-accent: #dfb87b;
     }
+    .robotics {
+      --product-accent: #79efd1;
+      background: linear-gradient(150deg, #1c3b4f, #0e2133);
+      border: 1px solid #517387;
+      box-shadow:
+        0 25px 65px #020e244f,
+        inset 0 1px 0 #96deed25;
+      padding: 15px;
+    }
+    .robotics .canvas-top {
+      color: #b9d9e4;
+      font-weight: 700;
+    }
+    .robotics .product-world {
+      border: 1px solid #688699;
+      background: #0d2132;
+    }
+    .robotics .world-image {
+      height: auto;
+      aspect-ratio: 3 / 2;
+      object-fit: contain;
+    }
+    .robotics .world-shade {
+      background: linear-gradient(transparent 70%, #081725aa);
+    }
+    .robotics .format-ribbon {
+      top: auto;
+      bottom: 10px;
+      font-size: 9px;
+      background: #0d2637e8;
+      border-color: #71decc70;
+      color: #c0f3e7;
+    }
+    .robotics .artifact-sheets {
+      margin: 0;
+    }
+    .robotics .main-sheet {
+      transform: none;
+      background: transparent;
+      color: #e9f4f8;
+      box-shadow: none;
+      padding: 20px 7px 10px;
+    }
+    .robotics .sheet-masthead {
+      color: #88d9c8;
+    }
+    .robotics h2 {
+      font: 750 clamp(21px, 2vw, 27px)/1.2 system-ui;
+      margin: 10px 0;
+    }
+    .robotics .ink-rule,
+    .robotics .main-sheet footer,
+    .robotics .note-pin,
+    .robotics .note-lines,
+    .robotics .note-signature {
+      display: none;
+    }
+    .robotics .excerpt {
+      font: 12px/1.6 system-ui;
+      color: #b8cfdc;
+    }
+    .robotics .evidence-note {
+      transform: none;
+      box-shadow: none;
+      margin: 5px 7px 0;
+      padding: 12px 0 5px;
+      background: transparent;
+      border-top: 1px solid #496b7a;
+      color: #bad7df;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .robotics .note-label {
+      font-size: 7px;
+      color: #83aaba;
+    }
+    .robotics .evidence-note p {
+      font: 650 11px/1.4 system-ui;
+      margin: 0;
+      color: #a5eed7;
+    }
+    .robotics figcaption {
+      margin: 12px 4px 0;
+      color: #87a9bd;
+      font-size: 9px;
+    }
     .frontier .main-sheet {
       background: repeating-linear-gradient(transparent 0 23px, #876a3912 23px 24px), #fff3da;
     }

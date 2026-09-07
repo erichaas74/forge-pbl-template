@@ -33,6 +33,14 @@ import type { BlockDesign } from '../../../shared/engineering/block-design';
           stroke="#6a593b"
           stroke-width="1"
         />
+        @if (block.aperture; as a) {
+          <circle [attr.cx]="block.x * 100" [attr.cy]="block.z * 100" [attr.r]="a.axis === 'y' ? a.diameter * 50 : 3"
+            fill="#fff6e5" stroke="#9d3653" stroke-width="1"><title>Centered {{ a.axis }} bore, diameter {{ a.diameter }} m; {{ a.insert }} {{ a.color }}</title></circle>
+        }
+      }
+      @if (design().displayObject; as o) {
+        <circle [attr.cx]="o.x * 100" [attr.cy]="o.z * 100" [attr.r]="o.width * 50" fill="#b4cbc8" stroke="#315e60" stroke-width="1" />
+        <text [attr.x]="o.x * 100" [attr.y]="o.z * 100 + 3" text-anchor="middle" font-size="8" fill="#193f36">{{ o.model }}</text>
       }
       @for (target of design().targets; track target.id) {
         <circle [attr.cx]="target.x * 100" [attr.cy]="target.z * 100" r="3" fill="#aa6922" />
@@ -81,6 +89,7 @@ export class BlockPlanComponent {
   readonly bounds = computed(() => {
     const xs = [
       0,
+      ...(this.design().displayObject ? [this.design().displayObject!.x - this.design().displayObject!.width, this.design().displayObject!.x + this.design().displayObject!.width] : []),
       ...this.design().blocks.flatMap((b) => [
         b.x - Math.hypot(b.width, b.depth) / 2,
         b.x + Math.hypot(b.width, b.depth) / 2,
@@ -89,6 +98,7 @@ export class BlockPlanComponent {
     ];
     const zs = [
       0,
+      ...(this.design().displayObject ? [this.design().displayObject!.z - this.design().displayObject!.width, this.design().displayObject!.z + this.design().displayObject!.width] : []),
       ...this.design().blocks.flatMap((b) => [
         b.z - Math.hypot(b.width, b.depth) / 2,
         b.z + Math.hypot(b.width, b.depth) / 2,

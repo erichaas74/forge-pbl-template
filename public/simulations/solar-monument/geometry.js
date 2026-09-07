@@ -31,5 +31,24 @@
     }
     return !(positive && negative);
   }
-  window.SolarGeometry = Object.freeze({ sunDirection, blockShadow, contains });
+  // Independent line segments prevent joining sunset to sunrise across the night.
+  // Clip crossings at the geometric horizon, then return unit direction vectors.
+  function skySegments(path) {
+    const segments = [];
+    for (let i = 1; i < path.length; i++) {
+      let a = sunDirection(path[i - 1].altitudeDeg, path[i - 1].compassDeg);
+      let b = sunDirection(path[i].altitudeDeg, path[i].compassDeg);
+      if (a.y < 0 && b.y < 0) continue;
+      if ((a.y < 0) !== (b.y < 0)) {
+        const t = a.y / (a.y - b.y);
+        const x = a.x + t * (b.x - a.x), z = a.z + t * (b.z - a.z);
+        const length = Math.hypot(x, z);
+        const crossing = { x: x / length, y: 0, z: z / length };
+        if (a.y < 0) a = crossing; else b = crossing;
+      }
+      segments.push(a, b);
+    }
+    return segments;
+  }
+  window.SolarGeometry = Object.freeze({ sunDirection, blockShadow, contains, skySegments });
 })();

@@ -1,0 +1,167 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.arena {
+  position: relative;
+  background: radial-gradient(ellipse at 60% 30%, #203e50, #0b1b2b 80%);
+  border: 1px solid #466273;
+  border-radius: 12px;
+  padding: 13px 10px 10px;
+  box-shadow:
+    inset 0 1px 0 #7297a330,
+    0 9px 25px #08151e22;
+  overflow: hidden;
+}
+.arena-hud,
+.arena-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font:
+    600 9px ui-monospace,
+    monospace;
+  letter-spacing: 1px;
+  color: #97b4c6;
+  padding: 0 5px;
+}
+.arena-hud {
+  padding-bottom: 9px;
+}
+.arena-id {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  color: #d7edf0;
+}
+.arena-id i,
+.robot-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #66e9cb;
+  box-shadow: 0 0 8px #66e9cb;
+}
+.target-distance {
+  font-size: 8px;
+  color: #a7b9c6;
+}
+.target-distance strong {
+  color: #ffce7e;
+  font-size: 10px;
+  letter-spacing: 0;
+  margin-left: 4px;
+}
+.arena-bottom {
+  border-top: 1px solid #54768a40;
+  padding-top: 9px;
+  margin-top: 4px;
+  font-size: 8px;
+  letter-spacing: 0.6px;
+}
+.arena-bottom span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+svg {
+  width: 100%;
+  max-height: 510px;
+  display: block;
+  overflow: visible;
+}
+text {
+  font:
+    7px ui-monospace,
+    monospace;
+  fill: #c5d9e3;
+}
+.ruler {
+  fill: #94b1c4;
+  font-size: 7px;
+}
+.north {
+  font-size: 6px;
+  letter-spacing: 0.8px;
+  fill: #99bbc9;
+}
+.zone-letter {
+  fill: #b3ffce;
+  font: bold 10px system-ui;
+}
+.zone-label {
+  fill: #a1e9be;
+  font-size: 5.5px;
+  letter-spacing: 0.4px;
+}
+.start-label {
+  fill: #91b8c7;
+  font-size: 5.5px;
+  letter-spacing: 0.8px;
+}
+.dock-label {
+  fill: #ffdc98;
+  font:
+    bold 6px ui-monospace,
+    monospace;
+  letter-spacing: 1px;
+}
+.rack-label {
+  fill: #d9e5e9;
+  font-size: 5.5px;
+}
+.package-label {
+  fill: #ffce87;
+  font-size: 7px;
+  font-weight: 700;
+  paint-order: stroke;
+  stroke: #14293a;
+  stroke-width: 2px;
+  stroke-linejoin: round;
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 10px;
+  color: #648291;
+  padding: 12px 2px;
+}
+.legend span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.legend i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+.robot {
+  background: #20af9e;
+}
+.target {
+  background: #e4a54d;
+}
+.trace {
+  background: #32cab7;
+}
+@media (max-width: 700px) {
+  .arena {
+    padding: 10px 6px;
+  }
+  .arena-hud {
+    font-size: 8px;
+    letter-spacing: 0.5px;
+  }
+  .arena-bottom {
+    font-size: 7px;
+  }
+  .legend {
+    font-size: 9px;
+    gap: 8px;
+  }
+}

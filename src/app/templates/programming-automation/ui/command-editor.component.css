@@ -1,3 +1,33 @@
+.guess-guide {
+  background: #e6f5f3;
+  border-left: 4px solid #168982;
+  padding: 12px;
+  margin: 14px 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.command-reference {
+  margin: 14px 0;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.command-reference summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+.command-reference code {
+  white-space: normal;
+}
+.command.guess-command {
+  border: 2px solid #c08720;
+  background: #fff8e7;
+}
+.guess-label {
+  color: #815407;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
 :host {
   display: block;
 }

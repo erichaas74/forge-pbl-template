@@ -12,11 +12,25 @@
   <script defer src="vendor/tz.js"></script>
   <script defer src="seasons.js"></script>
   <script defer src="geometry.js"></script>
+  <script defer src="optics.js"></script>
+  <script defer src="optics-renderer.js"></script>
+  <script defer src="sky-model.js"></script>
+  <script defer src="season-review.js"></script>
   <script defer src="game.js"></script>
 </head>
 <body>
   <div class="app-shell">
-    <aside class="control-panel" aria-label="Lab controls">
+    <aside id="labControls" class="control-panel" aria-label="Lab controls" hidden>
+      <button id="closeControls" type="button">Close place & time controls</button>
+      <details class="panel first-investigation" open>
+        <summary>Start here: one tower, two seasons</summary>
+        <ol>
+          <li>Choose your school’s location.</li>
+          <li>Choose June Sol., then Solar Noon. Notice the Sun and shadow.</li>
+          <li>Predict December’s shadow. Choose Dec. Sol., then Solar Noon.</li>
+        </ol>
+        <p class="microcopy">Keep the blocks fixed. Turn on Compare Seasons to see the paths together. Use the camera controls to look around.</p>
+      </details>
 
       <header class="lesson-header">
         <div class="eyebrow">Earth science lab</div>
@@ -94,7 +108,7 @@
           <button id="moonToggle" class="toggle active" type="button" aria-pressed="true">Moon Path</button>
           <button id="seasonToggle" class="toggle" type="button" aria-pressed="false">Compare Seasons</button>
           <button id="labelsToggle" class="toggle active" type="button" aria-pressed="true">Path Labels</button>
-          <button id="belowToggle" class="toggle active" type="button" aria-pressed="true">Below Horizon</button>
+          <button id="belowToggle" class="toggle active" type="button" aria-pressed="true">Chart Below Horizon</button>
         </div>
       </section>
 
@@ -126,9 +140,11 @@
 
     <main class="workspace">
       <header class="workspace-bar">
+        <button id="controlsToggle" type="button" aria-expanded="false" aria-controls="labControls">Place & time</button>
+        <button id="chartToggle" type="button" aria-pressed="false">Sun path guide</button>
         <div class="tabs" role="tablist" aria-label="Lab views">
           <button id="globeTab" class="tab active" type="button" role="tab" aria-selected="true">Globe</button>
-          <button id="horizonTab" class="tab" type="button" role="tab" aria-selected="false">Horizon + Shadows</button>
+          <button id="horizonTab" class="tab" type="button" role="tab" aria-selected="false">Sun + Monument</button>
         </div>
         <div class="status-group" aria-live="polite">
           <span id="statusText" class="status-chip">Ready</span>
@@ -154,11 +170,26 @@
             <div class="overlay-label">Surface sky view</div>
           </section>
           <section class="canvas-panel">
-            <canvas id="shadowCanvas" aria-label="3D object shadow scene"></canvas>
-            <div class="overlay-label">Measured monument · 1 grid square = 1 metre</div>
-            <div class="camera-controls"><button id="angleView" type="button">3D view</button><button id="topView" type="button">Plan view</button><label>View size<input id="cameraZoom" type="range" min="1" max="40" step="0.5" value="3" /></label></div>
-            <div id="shadowInfo" class="shadow-info">Shadow info</div>
+            <canvas id="shadowCanvas" aria-label="3D Sun path and measured monument shadows" aria-describedby="skyDescription"></canvas>
+            <div class="overlay-label" id="sceneLabel">Measured monument · 1 grid square = 1 metre</div>
           </section>
+          <div class="scene-tools">
+            <div id="shadowInfo" class="shadow-info">Shadow info</div>
+            <p id="opticsReadout" class="optics-readout" aria-label="Light at targets and sculpture"></p>
+            <div class="camera-controls" role="group" aria-label="Camera view">
+              <button id="skyView" type="button" aria-pressed="false">Sky guide</button>
+              <button id="angleView" type="button" aria-pressed="true">3D monument</button>
+              <button id="sculptureView" type="button" aria-pressed="false" disabled>Inspect sculpture</button>
+              <button id="topView" type="button" aria-pressed="false">Plan view</button>
+              <label id="zoomControl">View size<input id="cameraZoom" type="range" min="1" max="40" step="0.5" value="3" /></label>
+            </div>
+            <div class="orbit-controls" id="orbitControls">
+              <label>View from bearing <output id="cameraBearingLabel">145°</output><input id="cameraBearing" aria-label="Camera bearing, degrees clockwise from north" type="range" min="0" max="360" step="5" value="145" /></label>
+              <label>Look from above <output id="cameraElevationLabel">35°</output><input id="cameraElevation" aria-label="Camera elevation, degrees above the ground" type="range" min="5" max="80" step="5" value="35" /></label>
+            </div>
+            <p id="skyDescription">Calculated sky angles; sky distance and Sun/Moon sizes are illustrative. The line shows the Sun’s direction toward the ground origin. Only the camera moves; your monument stays aligned to true north.</p>
+            <div id="skyLegend" class="sky-legend" aria-label="Sky path legend"></div>
+          </div>
         </div>
       </section>
     </main>

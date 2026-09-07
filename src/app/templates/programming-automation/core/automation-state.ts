@@ -4,7 +4,10 @@ import type {
   ChallengeDraft,
   CourseDefinition,
   RobotCommand,
+  RobotChallenge,
 } from '../domain/automation.models';
+import { allCommands, compileProgram } from './automation-compiler';
+import { mathTools } from './automation-math';
 export const emptyPrediction = () => ({
   route: '',
   distance: '',
@@ -23,7 +26,12 @@ export function initialAutomationState(config: AutomationProjectConfig): Automat
       config.challenges.map((challenge) => [
         challenge.id,
         {
-          program: { id: `program-${challenge.id}`, version: 0, commands: [], variables: [] },
+          program: {
+            id: `program-${challenge.id}`,
+            version: 0,
+            commands: structuredClone(challenge.discovery?.starterCommands ?? []),
+            variables: [],
+          },
           targetIndex: 0,
           prediction: emptyPrediction(),
           diagnosis: '',
@@ -103,9 +111,35 @@ export function validateAutomationConfig(config: AutomationProjectConfig): void 
     throw new Error('CONFIG_INVALID: Robot measurements must be positive.');
   if (Math.abs(Object.values(config.scoring).reduce((a, b) => a + b, 0) - 100) > 0.001)
     throw new Error('CONFIG_INVALID: Scoring weights must add to 100.');
-  for (const challenge of config.challenges)
+  for (const challenge of config.challenges as readonly RobotChallenge[]) {
     if (!config.courses.some((course) => course.id === challenge.courseId))
       throw new Error('CONFIG_INVALID: Unknown course.');
+    const discovery = challenge.discovery;
+    if (
+      discovery &&
+      (!Array.isArray(discovery.starterCommands) ||
+        !discovery.instructions?.trim() ||
+        !discovery.reasoningPrompt?.trim() ||
+        !mathTools.some((tool) => tool.id === discovery.mathTool) ||
+        !allCommands(discovery.starterCommands).some(
+          (command) => command.id === discovery.focusCommandId,
+        ) ||
+        compileProgram(
+          {
+            id: 'starter-validation',
+            version: 0,
+            commands: discovery.starterCommands,
+            variables: [],
+          },
+          config.robot,
+          challenge,
+          [],
+        ).issues.some((issue) => issue.severity === 'error'))
+    )
+      throw new Error(
+        'CONFIG_INVALID: Discovery needs runnable starter code, a focus command, and reasoning guidance.',
+      );
+  }
   for (const course of config.courses as readonly CourseDefinition[]) {
     if (
       !course ||
@@ -159,7 +193,11 @@ export function validateAutomationConfig(config: AutomationProjectConfig): void 
     for (const pkg of course.packages)
       if (!course.deliveryZones.some((zone: { id: string }) => zone.id === pkg.deliveryZoneId))
         throw new Error('CONFIG_INVALID: Unknown delivery zone.');
-    if (Object.values(course.battery).some((cost) => typeof cost !== 'number' || !Number.isFinite(cost) || cost < 0))
+    if (
+      Object.values(course.battery).some(
+        (cost) => typeof cost !== 'number' || !Number.isFinite(cost) || cost < 0,
+      )
+    )
       throw new Error('CONFIG_INVALID: Invalid battery costs.');
   }
 }

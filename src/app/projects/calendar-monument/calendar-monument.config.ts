@@ -54,16 +54,27 @@ export const calendarMonumentConfig: EngineeringDesignConfig = {
         url: 'https://www.english-heritage.org.uk/visit/places/stonehenge/history-and-stories/stonehenge-and-solstice/',
       },
     },
+    {
+      id: 'colored-light',
+      title: 'Build with light and color',
+      explanation: 'A hole is a tunnel: a ray must clear both openings to pass through. A colored transparent material transmits some colors of light and absorbs others. A sculpture’s faces look different as the light direction changes.',
+      prompt: 'Compare an empty hole, a colored window, and a deeper hole at the same Sun angle. Predict which sculpture faces will catch the color in March, June, September, and December. Which prediction does your evidence support?',
+      source: { label: 'Color filters absorb parts of white light · Exploratorium', url: 'https://annex.exploratorium.edu/xref/exhibits/color_removal.html' },
+    },
   ],
   designBrief:
     'Start with the ten-block tower, or change it to match your classroom blocks. Add ground markers for the two solstices and the shared equinox alignment. Build the same design on a level physical base, with matching dimensions and true-north orientation. An advanced design can use two pillars and a lintel to frame a patch of sunlight.',
   testInstructions: [
     'Choose your actual location on the globe or enter its latitude and longitude. Keep this location fixed for your first comparison.',
+    'Keep the 3D monument and its shadow in view. Open Place & time to compare June and December at Solar Noon. Use Sky guide or Sun path guide when you want to explain the angles.',
     'Choose March equinox, then Solar Noon. Solar noon is not always 12:00 on a clock. Predict the result, then save a trial.',
     'Repeat for June solstice, September equinox, and December solstice. Select Solar Noon again after changing the date.',
     'Place target rings using measured coordinates. The trial records whether the centre of each ring receives sunlight or is shaded by your blocks.',
+    'Try Shape the light in Blocks & targets: add a supported light window, choose a colored glass or jewel insert, and place a sculpture behind it. Use Inspect sculpture and turn the camera to see the face catching the light.',
+    'Measure the opening diameter, its axis, and the block depth. Rotate the block to aim the tunnel. Change the date and time to find when colored light reaches a ground target or sculpture face. Colored filters in this model do not focus light like a curved lens.',
     'Test a week before and after an event. Does your marker identify one day or a range of days? Shadows change slowly near a solstice.',
     'Revise the design and record another trial. Earlier designs remain in the evidence notebook.',
+    'Open Final demonstration. Choose a target and expected sunlight, shadow, or colored light for each equinox and solstice. Walk through all four dates on the same 3D model, compare the target outcomes and sculpture surface samples, then record the final comparison.',
     'Check the physical model outdoors today at the matching time. Measure its shadow, compare with the simulation, and record differences. Observe shadows; never look directly at the Sun.',
   ],
   exhibitPrompts: [

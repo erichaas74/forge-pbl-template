@@ -19,3 +19,9 @@ export const DESIGN_SIMULATIONS = new InjectionToken<DesignSimulationRegistry>(
 export const DESIGN_CAPTURE = new InjectionToken<
   (capture: import('./block-design').DesignCapture) => void
 >('DESIGN_CAPTURE');
+export const DESIGN_CAPTURE_BATCH = new InjectionToken<
+  (captures: readonly import('./block-design').DesignCapture[]) => void
+>('DESIGN_CAPTURE_BATCH');
+export const DESIGN_CHECKS_CHANGE = new InjectionToken<
+  (checks: readonly import('./block-design').DesignCheck[]) => void
+>('DESIGN_CHECKS_CHANGE');

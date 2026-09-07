@@ -8,6 +8,24 @@ export interface DesignBlock {
   readonly height: number;
   readonly depth: number;
   readonly rotation: number;
+  readonly aperture?: DesignAperture;
+}
+/** One centred cylindrical bore through the chosen local block axis. */
+export interface DesignAperture {
+  readonly axis: 'x' | 'y' | 'z';
+  readonly diameter: number;
+  readonly insert: 'open' | 'glass' | 'jewel';
+  readonly color: 'clear' | 'red' | 'amber' | 'green' | 'blue' | 'violet';
+}
+export interface DesignDisplayObject {
+  readonly model: 'sphere' | 'crystal' | 'obelisk';
+  readonly material: 'limestone' | 'bronze' | 'porcelain';
+  readonly x: number;
+  readonly y: number;
+  readonly z: number;
+  readonly width: number;
+  readonly height: number;
+  readonly rotation: number;
 }
 export interface DesignTarget {
   readonly id: string;
@@ -18,6 +36,7 @@ export interface DesignTarget {
 export interface BlockDesign {
   readonly blocks: readonly DesignBlock[];
   readonly targets: readonly DesignTarget[];
+  readonly displayObject?: DesignDisplayObject;
 }
 export interface DesignCapture {
   readonly id: string;
@@ -26,6 +45,26 @@ export interface DesignCapture {
   readonly design: BlockDesign;
   readonly settings: Readonly<Record<string, string | number>>;
   readonly measurements: readonly { readonly label: string; readonly value: string }[];
+}
+/** Learner-authored expectations; installed simulations define scenario/value semantics. */
+export interface DesignCheck {
+  readonly scenarioId: string;
+  readonly targetId: string;
+  readonly expectedValue: string;
+}
+export function isDesignChecks(value: unknown): value is readonly DesignCheck[] {
+  return (
+    Array.isArray(value) &&
+    value.length <= 20 &&
+    value.every(
+      (entry: unknown) =>
+        record(entry) &&
+        text(entry['scenarioId'], 80) &&
+        text(entry['targetId']) &&
+        text(entry['expectedValue'], 80),
+    ) &&
+    new Set(value.map((entry: DesignCheck) => entry.scenarioId)).size === value.length
+  );
 }
 export const EMPTY_BLOCK_DESIGN: BlockDesign = { blocks: [], targets: [] };
 const record = (v: unknown): v is Record<string, unknown> =>
@@ -51,7 +90,8 @@ export function isBlockDesign(v: unknown): v is BlockDesign {
         finite(b['width'], 0.01, 5) &&
         finite(b['height'], 0.01, 5) &&
         finite(b['depth'], 0.01, 5) &&
-        finite(b['rotation'], 0, 359),
+        finite(b['rotation'], 0, 359) &&
+        (b['aperture'] === undefined || isDesignAperture(b['aperture'], b)),
     ) &&
     targets.every(
       (t: unknown) =>
@@ -65,8 +105,26 @@ export function isBlockDesign(v: unknown): v is BlockDesign {
     new Set(targets.map((t: DesignTarget) => t.id)).size === targets.length &&
     !blocks.some((a: DesignBlock, i: number) =>
       blocks.slice(i + 1).some((b: DesignBlock) => blocksOverlap(a, b)),
-    )
+    ) &&
+    (v['displayObject'] === undefined || (isDesignDisplayObject(v['displayObject']) &&
+      !blocks.some((b: DesignBlock) => blocksOverlap(b, displayObjectEnvelope(v['displayObject'] as DesignDisplayObject)))))
   );
+}
+export function isDesignAperture(a: unknown, b: Record<string, unknown>): a is DesignAperture {
+  if (!record(a) || !['x', 'y', 'z'].includes(String(a['axis']))) return false;
+  const cross = a['axis'] === 'x' ? [b['height'], b['depth']] : a['axis'] === 'y' ? [b['width'], b['depth']] : [b['width'], b['height']];
+  return finite(a['diameter'], .005, Math.min(...cross.map(Number)) * .9) &&
+    ['open', 'glass', 'jewel'].includes(String(a['insert'])) &&
+    ['clear', 'red', 'amber', 'green', 'blue', 'violet'].includes(String(a['color']));
+}
+export function isDesignDisplayObject(v: unknown): v is DesignDisplayObject {
+  return record(v) && ['sphere', 'crystal', 'obelisk'].includes(String(v['model'])) &&
+    ['limestone', 'bronze', 'porcelain'].includes(String(v['material'])) &&
+    finite(v['x'], -12, 12) && finite(v['z'], -12, 12) && finite(v['y'], 0, 10) &&
+    finite(v['width'], .05, 5) && finite(v['height'], .05, 5) && finite(v['rotation'], 0, 359);
+}
+export function displayObjectEnvelope(v: DesignDisplayObject): DesignBlock {
+  return { ...v, id: 'display-object-envelope', depth: v.width };
 }
 /** Separating-axis test for two rotated rectangular solids. Touching faces are allowed. */
 export function blocksOverlap(a: DesignBlock, b: DesignBlock): boolean {

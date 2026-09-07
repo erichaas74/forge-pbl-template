@@ -18,6 +18,62 @@
   --ink: #63442d;
   --tint: #efe4d0;
 }
+.robotics {
+  --accent: #76e6c9;
+  --ink: #e7f4f8;
+  --tint: #213f51;
+  color: #d2e3eb;
+  background: radial-gradient(ellipse at 85% 25%, #254a5a 0, #102638 50%, #0b1e30 100%);
+  font-family: Inter, system-ui, sans-serif;
+}
+.robotics h1 {
+  font:
+    750 clamp(32px, 3.5vw, 54px)/1.1 Inter,
+    system-ui,
+    sans-serif;
+  letter-spacing: -0.035em;
+}
+.robotics .eyebrow {
+  color: #88dfca;
+}
+.robotics .story {
+  color: #b0c9d6;
+}
+.robotics .role-line strong {
+  border-color: #466c7e;
+}
+.robotics .driving-question {
+  font:
+    500 18px/1.6 Inter,
+    system-ui,
+    sans-serif;
+  color: #d3e8ed;
+}
+.robotics .first-task {
+  background: #1a3849;
+  border-color: #4c7080;
+  box-shadow: 0 15px 40px #04131b25;
+}
+.robotics .first-task p,
+.robotics .first-task small {
+  color: #bfd5df;
+}
+.robotics .primary-button {
+  color: #082e31;
+  background: linear-gradient(#97f3d7, #47c5ad);
+  border-color: #93ead9;
+  box-shadow: 0 3px 0 #097975;
+}
+.robotics .demo-link {
+  border-color: #557887;
+  background: #22425380;
+}
+.robotics .path-number {
+  border-color: #729d9f;
+}
+.robotics .creation-path {
+  border-color: #496b7d;
+}
 .museum {
   --ink: #345448;
   --tint: #e7e9dc;

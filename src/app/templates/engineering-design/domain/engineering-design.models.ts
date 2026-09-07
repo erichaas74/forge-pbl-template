@@ -1,6 +1,8 @@
 import {
   isBlockDesign,
   isDesignCapture,
+  isDesignChecks,
+  type DesignCheck,
   type BlockDesign,
   type DesignCapture,
 } from '../../../shared/engineering/block-design';
@@ -31,6 +33,7 @@ export interface EngineeringSnapshot {
   readonly research: Readonly<Record<string, string>>;
   readonly prediction: string;
   readonly exhibit: string;
+  readonly checks?: readonly DesignCheck[];
   readonly trials: readonly (DesignCapture & { readonly prediction: string })[];
   readonly events: readonly {
     readonly id: string;
@@ -89,6 +92,7 @@ export function isEngineeringSnapshot(v: unknown): v is EngineeringSnapshot {
     v['prediction'].length <= 10000 &&
     typeof v['exhibit'] === 'string' &&
     v['exhibit'].length <= 10000 &&
+    (v['checks'] === undefined || isDesignChecks(v['checks'])) &&
     Array.isArray(v['trials']) &&
     v['trials'].length <= 40 &&
     v['trials'].every(

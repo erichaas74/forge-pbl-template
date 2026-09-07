@@ -62,6 +62,33 @@ export class AutomationRuntimeService implements OnDestroy {
   readonly currentTrials = computed(() =>
     this.state().trials.filter((trial) => trial.challengeId === this.challenge().id),
   );
+  readonly observedTrial = computed(() =>
+    this.currentTrials().find(
+      (trial) => trial.id === this.draft().observedTrialId && trial.mode === 'practice',
+    ),
+  );
+  readonly reasoningOpened = computed(
+    () =>
+      this.sample ||
+      !!this.draft().reasoningOpened ||
+      !!this.draft().completedAt ||
+      !!this.draft().lockedVersionId,
+  );
+  observeTrial(id: string): void {
+    if (
+      this.sample ||
+      this.observedTrial() ||
+      !this.currentTrials().some((trial) => trial.id === id && trial.mode === 'practice')
+    )
+      return;
+    this.updateDraft({ observedTrialId: id });
+    this.flush();
+  }
+  openReasoning(): void {
+    if (!this.observedTrial() || this.reasoningOpened()) return;
+    this.updateDraft({ reasoningOpened: true });
+    this.flush();
+  }
   readonly standings = computed(() =>
     this.state()
       .trials.filter(
@@ -390,7 +417,7 @@ export class AutomationRuntimeService implements OnDestroy {
       mode,
     };
     this.patch({ trials: [...this.state().trials, trial] });
-    this.message.set(result.stoppedReason);
+    this.message.set('Run recorded. Watch the robot, then review what happened.');
     this.flush();
     return trial;
   }
@@ -425,7 +452,31 @@ export class AutomationRuntimeService implements OnDestroy {
           );
         })
       )
-        return saved;
+        return {
+          ...saved,
+          drafts: Object.fromEntries(
+            Object.entries(saved.drafts).map(([id, draft]) => {
+              const starter = this.config.challenges.find((c) => c.id === id)?.discovery
+                ?.starterCommands;
+              const untouched =
+                draft.program.version === 0 &&
+                !draft.program.commands.length &&
+                !draft.program.variables.length &&
+                !draft.completedAt &&
+                !draft.lockedVersionId &&
+                !draft.reflection &&
+                !draft.diagnosis &&
+                !Object.values(draft.prediction).some(Boolean) &&
+                !saved.trials.some((trial) => trial.challengeId === id);
+              return [
+                id,
+                starter && untouched
+                  ? { ...draft, program: { ...draft.program, commands: structuredClone(starter) } }
+                  : draft,
+              ];
+            }),
+          ),
+        };
     } catch {
       /* Unavailable storage leaves an editable in-memory draft; flush reports failed saves. */
     }

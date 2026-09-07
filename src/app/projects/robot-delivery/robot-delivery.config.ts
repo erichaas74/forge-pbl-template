@@ -103,6 +103,56 @@ const courses: readonly CourseDefinition[] = [
     ],
   },
 ];
+const discovery: Record<string, RobotChallenge['discovery']> = {
+  'calibration-garage': {
+    starterCommands: [{ id: 'guess-rotations', type: 'move-rotations', value: '2' }],
+    focusCommandId: 'guess-rotations',
+    instructions:
+      'Guess how many wheel rotations will reach the target. Replace the highlighted number, or run the starter guess first.',
+    reasoningPrompt:
+      'Did the robot stop short or go too far? Compare the rotations you entered with the distance it travelled. What could one rotation tell you?',
+    mathTool: 'rotation-distance',
+  },
+  'precision-parking': {
+    starterCommands: [{ id: 'guess-rotations', type: 'move-rotations', value: '3' }],
+    focusCommandId: 'guess-rotations',
+    instructions:
+      'Guess the wheel rotations needed to park on the target. Change the highlighted number, or press Run program to test the starter guess.',
+    reasoningPrompt:
+      'Where did the robot stop compared with the target? Use your trial distance and rotation count to find the travel per rotation. How could that help your next guess?',
+    mathTool: 'distance-rotations',
+  },
+  'turn-training': {
+    starterCommands: [
+      { id: 'approach', type: 'move-distance', value: '100' },
+      { id: 'guess-turn', type: 'turn-degrees', value: '45', direction: 'right' },
+      { id: 'finish', type: 'move-distance', value: '100' },
+    ],
+    focusCommandId: 'guess-turn',
+    instructions:
+      'The movement blocks are ready. Guess the turn angle in the highlighted block, then watch the direction the robot takes.',
+    reasoningPrompt:
+      'Was the turn too small or too large? Sketch the direction before and after the turn. What fraction of a full turn connects them?',
+    mathTool: 'fraction-turn',
+  },
+  'coordinate-courier': {
+    starterCommands: [
+      { id: 'approach', type: 'move-distance', value: '75' },
+      { id: 'collect', type: 'pick-up', value: '', packageId: 'parcel-a' },
+      { id: 'turn-east', type: 'turn-degrees', value: '90', direction: 'right' },
+      { id: 'guess-crossing', type: 'move-distance', value: '50' },
+      { id: 'deliver', type: 'drop-off', value: '', packageId: 'parcel-a' },
+      { id: 'turn-south', type: 'turn-degrees', value: '90', direction: 'right' },
+      { id: 'park', type: 'move-distance', value: '75' },
+    ],
+    focusCommandId: 'guess-crossing',
+    instructions:
+      'Guess the distance across to delivery zone A. Change the highlighted Move distance block, then run the delivery code.',
+    reasoningPrompt:
+      'Did the robot reach the delivery zone before dropping the package? Count the horizontal grid spaces between pickup and delivery. How do spaces become centimeters?',
+    mathTool: 'grid-distance',
+  },
+};
 const challenge = (
   id: string,
   title: string,
@@ -122,6 +172,7 @@ const challenge = (
   requiredMath,
   skills: requiredMath,
   hint,
+  discovery: discovery[id],
 });
 export const robotDeliveryConfig: AutomationProjectConfig = {
   schemaVersion: '1.0',
@@ -163,7 +214,7 @@ export const robotDeliveryConfig: AutomationProjectConfig = {
       'Precision Parking',
       1,
       'parking',
-      'Park the center of your robot on the selected target. Calculate the rotations before running.',
+      'Park the center of your robot on the selected target. Try a rotation guess, watch the run, then use evidence to improve it.',
       movement,
       ['circumference', 'distance-rotations'],
       'Find the distance from the start to your target. Divide it by the measured travel per wheel rotation.',

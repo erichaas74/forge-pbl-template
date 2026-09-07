@@ -68,7 +68,7 @@ export const calendarMonumentIntro: ProjectIntroConfig = {
       invitation: 'Turn a pattern in the sky into a design you can test.',
       image,
       imageAlt: alt,
-      deliverable: 'A physical block monument, matching digital model, and evidence exhibit.',
+      deliverable: 'A physical block monument and a matching 3D demonstration of all four seasonal dates.',
       steps: [
         'Research Sun and Moon patterns.',
         'Build and test seasonal alignments.',
@@ -124,7 +124,7 @@ export const calendarMonumentIntro: ProjectIntroConfig = {
   action: 'Open the design studio',
   finalExample: {
     button: 'Explore a monument example',
-    format: 'Measured design and evidence exhibit',
+    format: 'Interactive 3D seasonal demonstration',
     title: 'The Three-Marker Tower',
     introduction:
       'An illustrative student design for Colorado Springs uses a tower and three seasonal markers.',
@@ -146,9 +146,9 @@ export const calendarMonumentIntro: ProjectIntroConfig = {
       },
       {
         label: '03 · Evidence',
-        title: 'Test, revise, explain',
+        title: 'Demonstrate all four special dates',
         studentWork:
-          'The equinoxes share a marker. I test nearby dates to understand how precisely it works.',
+          'I show the Sun and shadow on the same 3D monument at each equinox and solstice, and compare the results with my target expectations.',
         evidence: 'Four seasonal comparisons and a documented revision.',
         teacherNote: 'Assess the evidence and uncertainty, not decorative complexity.',
       },

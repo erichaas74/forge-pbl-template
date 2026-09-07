@@ -34,7 +34,7 @@ export const projectCatalog: readonly ProjectCatalogEntry[] = [
     subject: 'Mathematics & Computing', projectType: 'Programming & Automation',
     description: 'Calibrate a delivery robot, turn calculations into code, test eight missions, and defend your final design in a Robot Command Championship.',
     learningGoals: ['Fractions, decimals & measurement', 'Variables & repeat loops', 'Testing & mathematical reasoning'],
-    symbol: '⌘', coverImage: '/robot-delivery/mission-control.svg', studentInvitation: 'Code a delivery robot', theme: 'robotics', status: 'Preview',
+    symbol: '⌘', coverImage: '/robot-delivery/arena-launch-v2.png', studentInvitation: 'Code a delivery robot', theme: 'robotics', status: 'Preview',
   },
   {
     id: 'mystery-substance',

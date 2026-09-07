@@ -3,7 +3,11 @@ import { robotDeliveryConfig as config } from '../../../projects/robot-delivery/
 import { calculate, expectedMath } from './automation-math';
 import { compileProgram } from './automation-compiler';
 import { executeRobot } from './robot-execution';
-import { emptyPrediction, validateAutomationConfig } from './automation-state';
+import {
+  emptyPrediction,
+  initialAutomationState,
+  validateAutomationConfig,
+} from './automation-state';
 import { createRobotSampleState } from '../../../projects/robot-delivery/robot-delivery.sample';
 const challenge = config.challenges.find((item) => item.id === 'precision-parking')!;
 const course = config.courses.find((item) => item.id === challenge.courseId)!;
@@ -14,6 +18,32 @@ const program = {
   commands: [{ id: 'move', type: 'move-rotations' as const, value: '5' }],
 };
 describe('Programming and automation vertical slice', () => {
+  it('provides four valid but unsuccessful starter guesses and blank later programs', () => {
+    const state = initialAutomationState(config);
+    expect(config.challenges.filter((c) => c.discovery)).toHaveLength(4);
+    for (const mission of config.challenges) {
+      const program = state.drafts[mission.id].program;
+      if (!mission.discovery) {
+        expect(program.commands).toEqual([]);
+        continue;
+      }
+      expect(program.commands).not.toBe(mission.discovery.starterCommands);
+      const compiled = compileProgram(program, config.robot, mission, []);
+      expect(compiled.issues.filter((i) => i.severity === 'error')).toEqual([]);
+      const course = config.courses.find((c) => c.id === mission.courseId)!;
+      const result = executeRobot(
+        compiled.commands,
+        course,
+        config.robot,
+        mission,
+        0,
+        emptyPrediction(),
+        config.scoring,
+      );
+      expect(result.completedMission, mission.id).toBe(false);
+      expect(result.distanceCm).toBeGreaterThan(0);
+    }
+  });
   it('executes every finished example mission and preserves a failed championship trial', () => {
     const sample = createRobotSampleState();
     expect(sample.trials.filter((t) => t.completedMission).length).toBe(10);
@@ -60,6 +90,11 @@ describe('Programming and automation vertical slice', () => {
   });
   it('validates the reusable project config', () =>
     expect(() => validateAutomationConfig(config)).not.toThrow());
+  it('rejects a discovery starter with a missing highlighted command', () => {
+    const invalid = structuredClone(config);
+    invalid.challenges[0].discovery!.focusCommandId = 'missing';
+    expect(() => validateAutomationConfig(invalid)).toThrow('CONFIG_INVALID');
+  });
   it('supports fractions and variables without executing source code', () => {
     expect(calculate('2 1/4 * SIDE', { SIDE: 24 })).toBe(54);
     expect(() => calculate('window.alert(1)')).toThrow();

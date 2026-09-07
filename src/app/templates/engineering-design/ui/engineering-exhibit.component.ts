@@ -31,6 +31,7 @@ import type { EngineeringSnapshot } from '../domain/engineering-design.models';
             <th>Width × height × depth</th>
             <th>X / Y / Z</th>
             <th>Rotation</th>
+            <th>Centered hole / insert</th>
           </tr>
         </thead>
         <tbody>
@@ -46,11 +47,16 @@ import type { EngineeringSnapshot } from '../domain/engineering-design.models';
                 {{ b.z | number: '1.0-3' }}
               </td>
               <td>{{ b.rotation }}°</td>
+              <td>@if (b.aperture; as a) { {{ a.axis.toUpperCase() }} axis · Ø {{ a.diameter | number:'1.0-3' }} m · {{ a.insert }} / {{ a.insert === 'open' ? 'unfiltered' : a.color }} } @else { Solid }</td>
             </tr>
           }
         </tbody>
       </table>
     </div>
+    @if (snapshot().design.displayObject; as o) {
+      <p><strong>Central sculpture:</strong> {{ o.model }} · {{ o.material }} · width {{ o.width }} m,
+        height {{ o.height }} m · X {{ o.x }}, base Y {{ o.y }}, Z {{ o.z }} m · rotation {{ o.rotation }}°.</p>
+    }
     @for (target of snapshot().design.targets; track target.id) {
       <p>
         <strong>{{ target.label }}</strong

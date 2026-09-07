@@ -62,16 +62,48 @@ function setup(state = initialAutomationState(config), sample = false, student =
 }
 describe('Automation runtime evidence and championship', () => {
   afterEach(() => TestBed.resetTestingModule());
-  it('starts in Precision Parking with an empty student program and saves edits', () => {
+  it('starts with a runnable guess and saves the student revision', () => {
     const { runtime, saved } = setup();
     expect(runtime.challenge().id).toBe('precision-parking');
-    expect(runtime.draft().program.commands).toEqual([]);
-    runtime.addCommand('move-rotations');
-    runtime.editCommand(runtime.selectedCommandId(), { value: '5' });
+    expect(runtime.draft().program.commands[0].value).toBe('3');
+    expect(runtime.runPractice()?.completedMission).toBe(false);
+    runtime.editCommand(runtime.draft().program.commands[0].id, { value: '5' });
     runtime.runPractice();
     runtime.flush();
-    expect(saved()?.trials[0].completedMission).toBe(true);
+    expect(saved()?.trials.at(-1)?.completedMission).toBe(true);
     expect(saved()?.drafts['precision-parking'].program.commands[0].value).toBe('5');
+  });
+  it('unlocks reasoning per challenge after observation, including a successful first guess', () => {
+    const { runtime, saved } = setup();
+    runtime.openReasoning();
+    expect(runtime.reasoningOpened()).toBe(false);
+    runtime.editCommand('guess-rotations', { value: '5' });
+    const trial = runtime.runPractice()!;
+    expect(trial.completedMission).toBe(true);
+    runtime.openReasoning();
+    expect(runtime.reasoningOpened()).toBe(false);
+    runtime.observeTrial('missing');
+    expect(runtime.observedTrial()).toBeUndefined();
+    runtime.observeTrial(trial.id);
+    runtime.openReasoning();
+    expect(saved()?.drafts['precision-parking'].reasoningOpened).toBe(true);
+    runtime.selectChallenge('turn-training');
+    runtime.observeTrial(trial.id);
+    expect(runtime.reasoningOpened()).toBe(false);
+    expect(runtime.observedTrial()).toBeUndefined();
+    runtime.selectChallenge('precision-parking');
+    expect(runtime.reasoningOpened()).toBe(true);
+  });
+  it('seeds only untouched legacy drafts and preserves edited work', () => {
+    const state = structuredClone(initialAutomationState(config));
+    state.drafts['precision-parking'].program.commands = [];
+    state.drafts['turn-training'].program = { id: 'mine', version: 2, commands: [], variables: [] };
+    const { runtime } = setup(state);
+    expect(runtime.draft().program.commands[0].value).toBe('3');
+    expect(runtime.state().drafts['turn-training'].program).toEqual(
+      state.drafts['turn-training'].program,
+    );
+    expect(state.drafts['precision-parking'].program.commands).toEqual([]);
   });
   it('locks an immutable tested version, preserves it after unlock, and requires a new successful test after editing', () => {
     const { runtime } = setup(readyState());

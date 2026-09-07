@@ -7,6 +7,7 @@
   if (!window.SunCalc) missingDependencies.push('SunCalc');
   if (!window.luxon || !window.luxon.DateTime) missingDependencies.push('Luxon');
   if (!window.tzLookup && !window.tzlookup) missingDependencies.push('tz-lookup');
+  if (!window.SolarGeometry || !window.createSolarSky) missingDependencies.push('solar geometry and sky model');
 
   if (missingDependencies.length) {
     const warning = document.getElementById('dependencyWarning');
@@ -94,9 +95,14 @@
   let playTimer = null;
   let _starCache = null;
   let monumentDesign = { blocks: [], targets: [] };
-  let groundShadows = null;
+  let solarOptics;
+  let sceneDirty = true;
   let targetMarkers = null;
   let cameraMode = 'angle';
+  let lastPublishedContext = '';
+  let solarSky;
+  let skyPathKey = '';
+  let skyTracks = [];
   let hostActive = window.parent === window;
 
   init();
@@ -280,7 +286,7 @@
     const canvas = els.shadowCanvas;
     shadow.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     shadow.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    shadow.renderer.shadowMap.enabled = true;
+    shadow.renderer.shadowMap.enabled = false;
     shadow.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     shadow.scene = new THREE.Scene();
@@ -310,21 +316,24 @@
     shadow.scene.add(shadow.target);
     shadow.sunLight.target = shadow.target;
     shadow.scene.add(shadow.sunLight);
+    solarSky = window.createSolarSky(THREE, shadow.scene, makeTextSprite);
+    solarOptics = window.createSolarOpticsRenderer(THREE);
 
     const groundGeo = new THREE.PlaneGeometry(2000, 2000);
-    const groundMat = new THREE.MeshStandardMaterial({
-      color: 0x31462f,
+    const groundMat = solarOptics.material({
+      color: 0xc9c3b1,
       roughness: 0.95,
       metalness: 0
     });
     shadow.ground = new THREE.Mesh(groundGeo, groundMat);
     shadow.ground.rotation.x = -Math.PI / 2;
-    // Exact projected polygons render ground shadows, independent of shadow-map resolution.
+    // Analytic rays resolve holes, filters and object occlusion at each visible surface point.
     shadow.ground.receiveShadow = false;
     shadow.scene.add(shadow.ground);
 
     const grid = new THREE.GridHelper(28, 28, 0xa9be8b, 0x57734b);
-    grid.material.opacity = 0.34;
+    grid.position.y = .003;
+    grid.material.opacity = 0.65;
     grid.material.transparent = true;
     shadow.scene.add(grid);
 
@@ -334,6 +343,8 @@
   }
 
   function addCompassMarkers() {
+    shadow.compass = new THREE.Group();
+    shadow.scene.add(shadow.compass);
     [
       { label: 'N', x: 0, z: -6.5 },
       { label: 'E', x: 6.5, z: 0 },
@@ -343,7 +354,7 @@
       const sprite = makeTextSprite(marker.label);
       sprite.position.set(marker.x, 0.05, marker.z);
       sprite.scale.set(0.9, 0.45, 1);
-      shadow.scene.add(sprite);
+      shadow.compass.add(sprite);
     });
   }
 
@@ -353,11 +364,17 @@
     canvas.height = 128;
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.font = 'bold 64px Inter, Arial';
+    const caption = text.length > 22 ? text.slice(0, 21) + '…' : text;
+    let fontSize = 64;
+    ctx.font = `bold ${fontSize}px Inter, Arial`;
+    while (ctx.measureText(caption).width > 240 && fontSize > 18) {
+      fontSize -= 2;
+      ctx.font = `bold ${fontSize}px Inter, Arial`;
+    }
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = 'rgba(255,255,255,0.92)';
-    ctx.fillText(text, 128, 70);
+    ctx.fillText(caption, 128, 70);
     const texture = new THREE.CanvasTexture(canvas);
     const material = new THREE.SpriteMaterial({ map: texture, transparent: true, depthWrite: false });
     return new THREE.Sprite(material);
@@ -373,6 +390,17 @@
     drawHorizon();
     updateShadowScene();
     updateReadout();
+    publishContext();
+  }
+
+  function observationSettings() {
+    return { latitude: state.lat, longitude: state.lon, zone: state.selectedZone, localDate: state.localDateISO, minutes: state.minutes };
+  }
+  function publishContext(force = false) {
+    const key = [state.lat, state.lon, state.selectedZone, getSelectedYear()].join('|');
+    if (!force && key === lastPublishedContext) return;
+    lastPublishedContext = key;
+    window.parent.postMessage({ channel: 'forge.design-simulation.v1', type: 'context', key, settings: observationSettings() }, window.location.origin);
   }
 
   function updateControlText() {
@@ -747,22 +775,19 @@
     const dateTime = getSelectedJSDate();
     const sun = getSunPosition(dateTime, state.lat, state.lon);
     const altRad = degToRad(sun.altitudeDeg);
-    const azRad = degToRad(sun.compassDeg);
     const dist = 600;
-    const horizontal = Math.cos(altRad);
-    const east = Math.sin(azRad) * horizontal;
-    const north = Math.cos(azRad) * horizontal;
-    const up = Math.sin(altRad);
+    const direction = window.SolarGeometry.sunDirection(sun.altitudeDeg, sun.compassDeg);
 
     // Scene convention: x = east, z = south. Compass north maps to negative z.
-    shadow.sunLight.position.set(east * dist, up * dist, -north * dist);
+    shadow.sunLight.position.set(direction.x * dist, direction.y * dist, direction.z * dist);
     shadow.sunLight.target.position.set(0, 0, 0);
     shadow.sunLight.target.updateMatrixWorld();
 
     const visible = sun.altitudeDeg > 0;
     shadow.sunLight.intensity = visible ? 2.6 : 0;
-    shadow.ambient.intensity = visible ? 0.52 : 0.18;
+    shadow.ambient.intensity = visible ? 0.38 : 0.18;
     renderMonumentShadows(sun);
+    updateSolarSky(sun);
 
     const shadowBearing = (sun.compassDeg + 180) % 360;
     const shadowLength = visible ? state.objectHeight / Math.tan(altRad) : Infinity;
@@ -813,9 +838,9 @@
   }
 
   function animationLoop() {
-    if (hostActive && shadow.renderer && shadow.scene && shadow.camera) {
-      if (shadow.objectGroup) shadow.objectGroup.rotation.y += 0.002;
+    if (hostActive && sceneDirty && shadow.renderer && shadow.scene && shadow.camera) {
       shadow.renderer.render(shadow.scene, shadow.camera);
+      sceneDirty = false;
     }
     requestAnimationFrame(animationLoop);
   }
@@ -976,7 +1001,7 @@
     const height = Math.max(1, Math.floor(rect.height));
     shadow.renderer.setSize(width, height, false);
     shadow.camera.aspect = width / height;
-    shadow.camera.updateProjectionMatrix();
+    updateMonumentCamera();
   }
 
   function resizeGlobe() {
@@ -1143,20 +1168,26 @@
 
   function rebuildMonument() {
     if (!shadow.scene) return;
+    solarOptics.setDesign(monumentDesign);
     disposeGroup(shadow.objectGroup);
     shadow.objectGroup = new THREE.Group();
     for (const block of monumentDesign.blocks) {
-      const mesh = new THREE.Mesh(new THREE.BoxGeometry(block.width, block.height, block.depth), new THREE.MeshStandardMaterial({ color: 0xe9d5ab, roughness: .9 }));
+      const mesh = new THREE.Mesh(solarOptics.blockGeometry(block), solarOptics.material({ color: 0xe9d5ab, roughness: .9 }));
+      mesh.name = `design-block:${block.id}`;
       mesh.position.set(block.x, block.y + block.height / 2, block.z);
       mesh.rotation.y = degToRad(block.rotation);
       mesh.castShadow = true;
-      mesh.receiveShadow = true;
+      mesh.receiveShadow = false;
+      const insert = solarOptics.insertMesh(block);
+      if (insert) mesh.add(insert);
       shadow.objectGroup.add(mesh);
       const edges = new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry), new THREE.LineBasicMaterial({ color: 0x66583f }));
       mesh.add(edges);
     }
+    if (monumentDesign.displayObject) shadow.objectGroup.add(solarOptics.objectMesh(monumentDesign.displayObject));
+    document.getElementById('sculptureView').disabled = !monumentDesign.displayObject;
     shadow.scene.add(shadow.objectGroup);
-    state.objectHeight = Math.max(0, ...monumentDesign.blocks.map((b) => b.y + b.height));
+    state.objectHeight = Math.max(monumentDesign.displayObject ? monumentDesign.displayObject.y + monumentDesign.displayObject.height : 0, ...monumentDesign.blocks.map((b) => b.y + b.height));
     const camera = shadow.sunLight.shadow.camera;
     camera.left = camera.bottom = -24;
     camera.right = camera.top = 24;
@@ -1170,42 +1201,95 @@
       targetMarkers.add(ring);
       const label = makeTextSprite(target.label);
       label.position.set(target.x, .13, target.z);
-      label.scale.set(.6, .24, 1);
+      label.scale.set(1.2, .6, 1);
       targetMarkers.add(label);
     }
     shadow.scene.add(targetMarkers);
   }
 
   function renderMonumentShadows(sun) {
-    disposeGroup(groundShadows);
-    groundShadows = new THREE.Group();
     const direction = window.SolarGeometry.sunDirection(sun.altitudeDeg, sun.compassDeg);
-    for (const block of monumentDesign.blocks) {
-      const polygon = window.SolarGeometry.blockShadow(block, direction);
-      if (polygon.length < 3) continue;
-      const shape = new THREE.Shape(polygon.map((p) => new THREE.Vector2(p.x, -p.z)));
-      const mesh = new THREE.Mesh(new THREE.ShapeGeometry(shape), new THREE.MeshBasicMaterial({ color: 0x152727, side: THREE.DoubleSide, depthWrite: false }));
-      mesh.rotation.x = -Math.PI / 2;
-      mesh.position.y = .002;
-      groundShadows.add(mesh);
-    }
-    shadow.scene.add(groundShadows);
+    solarOptics.setSun(direction);
+    const readings = document.getElementById('opticsReadout');
+    if (readings) readings.textContent = [
+      ...monumentDesign.targets.map(t => `${t.label}: ${window.SolarOptics.trace(monumentDesign, t, direction).value}`),
+      ...(monumentDesign.displayObject ? [window.SolarOptics.objectReadings(monumentDesign, direction)] : []),
+    ].join(' · ');
   }
 
   function updateMonumentCamera() {
+    sceneDirty = true;
     const span = Number(document.getElementById('cameraZoom').value);
     shadow.camera.up.set(0, 1, 0);
-    if (cameraMode === 'top') { shadow.camera.position.set(0, span * 2, .001); shadow.camera.up.set(0, 0, -1); }
-    else shadow.camera.position.set(span * 1.1, span, span * 1.6);
-    shadow.camera.lookAt(0, 0, 0);
+    const o = monumentDesign.displayObject;
+    const focus = cameraMode === 'sculpture' && o ? new THREE.Vector3(o.x, o.y + o.height / 2, o.z) : new THREE.Vector3();
+    if (cameraMode === 'sky') {
+      const bearing = Number(document.getElementById('cameraBearing').value);
+      const elevation = Number(document.getElementById('cameraElevation').value);
+      const direction = window.SolarGeometry.sunDirection(elevation, bearing);
+      const distance = skyRadius() * 3.1 / Math.min(1, shadow.camera.aspect);
+      shadow.camera.position.set(direction.x * distance, direction.y * distance, direction.z * distance);
+      document.getElementById('cameraBearingLabel').textContent = `${bearing}°${bearing === 0 || bearing === 360 ? ' (north)' : ''}`;
+      document.getElementById('cameraElevationLabel').textContent = `${elevation}°`;
+    }
+    else if (cameraMode === 'top') { shadow.camera.position.set(0, span * 2, .001); shadow.camera.up.set(0, 0, -1); }
+    else {
+      const direction = window.SolarGeometry.sunDirection(Number(document.getElementById('cameraElevation').value), Number(document.getElementById('cameraBearing').value));
+      const distance = cameraMode === 'sculpture' && o ? Math.max(o.width, o.height) * 2.6 / Math.min(1, shadow.camera.aspect) : span * 2.2;
+      shadow.camera.position.set(focus.x + direction.x * distance, focus.y + direction.y * distance, focus.z + direction.z * distance);
+    }
+    document.getElementById('cameraBearingLabel').textContent = `${document.getElementById('cameraBearing').value}°`;
+    document.getElementById('cameraElevationLabel').textContent = `${document.getElementById('cameraElevation').value}°`;
+    shadow.camera.lookAt(focus);
     shadow.camera.updateProjectionMatrix();
   }
 
+  function skyRadius() {
+    return Math.max(3, ...monumentDesign.blocks.map(b => 1.35 * Math.hypot(Math.abs(b.x) + b.width / 2 + b.depth / 2, b.y + b.height, Math.abs(b.z) + b.width / 2 + b.depth / 2)), ...monumentDesign.targets.map(t => Math.hypot(t.x, t.z) * 1.2));
+  }
+
+  function updateSolarSky(sun) {
+    if (!solarSky) return;
+    solarSky.setVisible(cameraMode === 'sky');
+    if (cameraMode !== 'sky') return;
+    const key = [state.lat, state.lon, state.localDateISO, state.selectedZone, state.showMoon, state.compareSeasons, state.showLabels, skyRadius()].join('|');
+    if (key !== skyPathKey) {
+      skyPathKey = key;
+      skyTracks = [{ label: 'Selected day · Sun', color: '#ffe28a', points: samplePath('sun', state.localDateISO, state.selectedZone, state.lat, state.lon, 10) }];
+      if (state.showMoon) skyTracks.push({ label: 'Selected day · Moon', color: '#dbe9ff', points: samplePath('moon', state.localDateISO, state.selectedZone, state.lat, state.lon, 10) });
+      if (state.compareSeasons) for (const season of Object.values(seasons)) {
+        skyTracks.push({ label: season.name, color: season.color, points: samplePath('sun', seasonISO(season, getSelectedYear()), state.selectedZone, state.lat, state.lon, 10) });
+      }
+      const legend = document.getElementById('skyLegend');
+      legend.replaceChildren(...skyTracks.map(track => {
+        const item = document.createElement('span');
+        const dot = document.createElement('i');
+        dot.style.background = track.color;
+        item.append(dot, document.createTextNode(track.label));
+        return item;
+      }));
+    }
+    solarSky.update({ radius: skyRadius(), key, tracks: skyTracks, sunPosition: sun, moonPosition: getMoonPosition(getSelectedJSDate(), state.lat, state.lon), showMoon: state.showMoon, showLabels: state.showLabels });
+    updateMonumentCamera();
+  }
+
+  function setCameraMode(mode) {
+    cameraMode = mode;
+    shadow.compass.visible = mode !== 'sky';
+    els.horizonView.classList.toggle('sky-mode', mode === 'sky');
+    for (const [id, value] of [['skyView', 'sky'], ['angleView', 'angle'], ['topView', 'top'], ['sculptureView', 'sculpture']]) {
+      document.getElementById(id).setAttribute('aria-pressed', String(mode === value));
+    }
+    document.getElementById('orbitControls').hidden = mode === 'top';
+    document.getElementById('zoomControl').hidden = mode === 'sky' || mode === 'sculpture';
+    document.getElementById('skyLegend').hidden = mode !== 'sky';
+    document.getElementById('skyDescription').hidden = mode !== 'sky';
+    document.getElementById('sceneLabel').textContent = mode === 'sky' ? 'Your local sky · north stays fixed' : 'Measured monument · 1 grid square = 1 metre';
+    resizeCanvases(); resizeShadowRenderer(); updateAll();
+  }
+
   function validMonument(design) {
-    const finite = (value, min, max) => typeof value === 'number' && Number.isFinite(value) && value >= min && value <= max;
-    return design && Array.isArray(design.blocks) && Array.isArray(design.targets) && design.blocks.length <= 100 && design.targets.length <= 12 &&
-      design.blocks.every((b) => b && typeof b.id === 'string' && finite(b.x, -12, 12) && finite(b.z, -12, 12) && finite(b.y, 0, 10) && ['width', 'height', 'depth'].every((k) => finite(b[k], .01, 5)) && finite(b.rotation, 0, 359)) &&
-      design.targets.every((t) => t && typeof t.id === 'string' && typeof t.label === 'string' && t.label.length <= 80 && finite(t.x, -12, 12) && finite(t.z, -12, 12));
+    return window.SolarOptics.validDesign(design);
   }
 
   function captureMonument(id) {
@@ -1214,10 +1298,9 @@
     const moon = getMoonPosition(date, state.lat, state.lon);
     const illumination = SunCalc.getMoonIllumination(date);
     const direction = window.SolarGeometry.sunDirection(sun.altitudeDeg, sun.compassDeg);
-    const polygons = monumentDesign.blocks.map((block) => window.SolarGeometry.blockShadow(block, direction));
     return {
       id, pluginId: 'simulation.solar-monument', capturedAt: new Date().toISOString(), design: structuredClone(monumentDesign),
-      settings: { latitude: state.lat, longitude: state.lon, localDate: state.localDateISO, minutes: state.minutes, zone: state.selectedZone },
+      settings: { latitude: state.lat, longitude: state.lon, localDate: state.localDateISO, minutes: state.minutes, zone: state.selectedZone, utcInstant: date.toISOString(), modelVersion: 'solar-optics-2.0' },
       measurements: [
         { label: 'Local observation', value: `${state.localDateISO} ${formatTime(date)} (${state.selectedZone})` },
         { label: 'Location', value: `${state.lat.toFixed(4)}, ${state.lon.toFixed(4)}` },
@@ -1226,21 +1309,53 @@
         { label: 'Shadow bearing', value: sun.altitudeDeg > 0 ? `${((sun.compassDeg + 180) % 360).toFixed(2)}°` : 'No direct sunlight' },
         { label: 'Height-only shadow reference', value: sun.altitudeDeg > 0 ? `${(state.objectHeight / Math.tan(degToRad(sun.altitudeDeg))).toFixed(3)} m` : 'No direct sunlight' },
         { label: 'Moon', value: `${phaseName(illumination.phase)} · ${Math.round(illumination.fraction * 100)}% illuminated · altitude ${moon.altitudeDeg.toFixed(1)}° · direction ${moon.compassDeg.toFixed(1)}°` },
-        ...monumentDesign.targets.map((target, i) => ({ label: `Target ${i + 1}: ${target.label}`, value: sun.altitudeDeg <= 0 ? 'No direct sunlight' : polygons.some((polygon) => window.SolarGeometry.contains(polygon, target)) ? 'Centre is in shadow' : 'Centre is sunlit' })),
+        { label: 'Sculpture surface samples', value: window.SolarOptics.objectReadings(monumentDesign, direction) },
+        ...monumentDesign.targets.map((target, i) => ({ label: `Target ${i + 1}: ${target.label}`, value: window.SolarOptics.trace(monumentDesign, target, direction).value })),
       ],
     };
   }
 
   function bindMonumentBridge() {
     const send = (payload) => window.parent.postMessage({ channel: 'forge.design-simulation.v1', ...payload }, window.location.origin);
-    document.getElementById('topView').addEventListener('click', () => { cameraMode = 'top'; updateMonumentCamera(); });
-    document.getElementById('angleView').addEventListener('click', () => { cameraMode = 'angle'; updateMonumentCamera(); });
+    const toggleControls = (open, returnFocus = false) => {
+      document.getElementById('labControls').hidden = !open;
+      document.getElementById('controlsToggle').setAttribute('aria-expanded', String(open));
+      if (!open && returnFocus) document.getElementById('controlsToggle').focus();
+    };
+    document.getElementById('controlsToggle').addEventListener('click', () => toggleControls(document.getElementById('labControls').hidden));
+    document.getElementById('closeControls').addEventListener('click', () => toggleControls(false, true));
+    document.addEventListener('keydown', event => { if (event.key === 'Escape' && !document.getElementById('labControls').hidden) toggleControls(false, true); });
+    document.getElementById('chartToggle').addEventListener('click', event => {
+      const open = els.horizonView.classList.toggle('show-chart');
+      event.currentTarget.setAttribute('aria-pressed', String(open));
+      switchView('horizon');
+    });
+    document.getElementById('topView').addEventListener('click', () => setCameraMode('top'));
+    document.getElementById('angleView').addEventListener('click', () => setCameraMode('angle'));
+    document.getElementById('sculptureView').addEventListener('click', () => setCameraMode('sculpture'));
+    document.getElementById('skyView').addEventListener('click', () => setCameraMode('sky'));
+    document.getElementById('cameraBearing').addEventListener('input', updateMonumentCamera);
+    document.getElementById('cameraElevation').addEventListener('input', updateMonumentCamera);
     document.getElementById('cameraZoom').addEventListener('input', updateMonumentCamera);
-    updateMonumentCamera();
+    setCameraMode(cameraMode);
     window.addEventListener('message', (event) => {
       if (event.origin !== window.location.origin || event.source !== window.parent || event.data?.channel !== 'forge.design-simulation.v1') return;
       const data = event.data;
-      if (data.type === 'connect') { send({ type: 'ready' }); return; }
+      if (data.type === 'connect') { send({ type: 'ready' }); publishContext(true); return; }
+      if (data.type === 'presentation') {
+        document.body.classList.toggle('presenting', data.active === true);
+        document.getElementById('controlsToggle').textContent = data.active ? 'Location' : 'Place & time';
+        if (data.active && state.playing) togglePlay();
+        if (data.active) { toggleControls(false); switchView('horizon'); }
+        return;
+      }
+      if (data.type === 'review' && typeof data.id === 'string' && data.id.length <= 80 && validMonument(data.design) && Array.isArray(data.checks) && data.checks.length <= 20) {
+        try {
+          const captures = window.SolarReview.evaluate({ design: data.design, checks: data.checks, settings: observationSettings(), id: data.id });
+          send({ type: 'review', id: data.id, captures });
+        } catch { send({ type: 'review-error', id: data.id }); }
+        return;
+      }
       if (data.type === 'visibility') {
         hostActive = data.active === true;
         if (!hostActive && state.playing) togglePlay();
