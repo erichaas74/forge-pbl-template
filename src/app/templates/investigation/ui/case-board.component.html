@@ -1,0 +1,37 @@
+<section class="case-board" [class]="'case-board layout-' + model().config.layoutMode">
+  @for (section of sections(); track section.id) {
+    <article class="board-section" [attr.data-section-type]="section.type">
+      <header>
+        <h3>{{ section.id }}</h3>
+        <span>{{ section.evidence.length + section.hypotheses.length }} items</span>
+      </header>
+      <div class="board-items">
+        @for (item of section.evidence; track item.definition.id) {
+          <button type="button" class="board-card" (click)="itemSelected.emit(item.definition.id)">
+            <small>{{ item.definition.evidenceType }}</small>
+            <strong>{{ item.definition.title }}</strong>
+            <span>{{ item.runtime.status }}</span>
+          </button>
+          @if (model().permissions.canMoveItems) {
+            <label class="move-control">
+              Move
+              <select (change)="move(item.definition.id, $event)">
+                <option value="">Choose section</option>
+                @for (target of model().config.sections; track target.id) {
+                  <option [value]="target.id">{{ target.id }}</option>
+                }
+              </select>
+            </label>
+          }
+        }
+        @for (hypothesis of section.hypotheses; track hypothesis.id) {
+          <button type="button" class="board-card hypothesis" (click)="itemSelected.emit(hypothesis.id)">
+            <small>Hypothesis</small>
+            <strong>{{ hypothesis.label || hypothesis.statement }}</strong>
+            <span>Confidence {{ hypothesis.confidence ?? 0 }}%</span>
+          </button>
+        }
+      </div>
+    </article>
+  }
+</section>

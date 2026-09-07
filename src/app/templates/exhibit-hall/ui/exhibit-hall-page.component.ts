@@ -1,5 +1,6 @@
-import { Component, computed, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ObjectModelViewerComponent } from '../../../shared/media/object-model-viewer.component';
+import { TaskGuideComponent } from '../../../shared/learning/task-guide.component';
+import { Component, computed, inject, signal } from '@angular/core';
 
 import type { ExhibitSnapshot, MuseumBoardSnapshotData } from '../domain/exhibit-types';
 import { ExhibitHallRuntimeService } from '../runtime/exhibit-hall-runtime.service';
@@ -14,7 +15,8 @@ import { TeacherHallDeskComponent } from './teacher-hall-desk.component';
 @Component({
   selector: 'app-exhibit-hall-page',
   imports: [
-    RouterLink,
+    ObjectModelViewerComponent,
+    TaskGuideComponent,
     AccessibleGalleryListComponent,
     ArtifactComposerComponent,
     DefensePanelComponent,
@@ -27,6 +29,7 @@ import { TeacherHallDeskComponent } from './teacher-hall-desk.component';
   styleUrl: './exhibit-hall-page.component.scss',
 })
 export class ExhibitHallPageComponent {
+  readonly browsingHall = signal(false);
   readonly runtime = inject(ExhibitHallRuntimeService);
   readonly previewSnapshot = computed<ExhibitSnapshot>(() => ({
     id: 'composer-preview',

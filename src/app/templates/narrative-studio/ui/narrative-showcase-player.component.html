@@ -1,0 +1,110 @@
+<article class="story-player">
+  <header class="story-cover">
+    <img [src]="config().launchImage" [alt]="config().launchImageAlt" />
+    <div class="cover-copy">
+      <p>Completed Grade 5 sample · Playable historical fiction</p>
+      <h1>{{ publication().title }}</h1>
+      <span>by {{ publication().authorDisplayName }}</span>
+    </div>
+  </header>
+
+  @if (historicalSetting(); as setting) {
+    <details class="history-reference">
+      <summary>Historical setting and source</summary>
+      <aside class="history-anchor">
+        <div>
+          <span>Historical anchor</span>
+          <strong>{{ setting.eraLabel }}</strong>
+          <p>{{ setting.historicalEvent }}</p>
+        </div>
+        <p>{{ setting.accuracyBoundary }}</p>
+        <a [href]="setting.sourceUrl" target="_blank" rel="noopener noreferrer"
+          >Check the source ↗</a
+        >
+      </aside>
+    </details>
+  }
+
+  <div class="sample-workspace">
+    <aside class="sample-map">
+      <span class="map-eyebrow">THE COMPLETE ADVENTURE</span>
+      <h2>Every choice opens a new path</h2>
+      <p>
+        {{ storyConfig().nodes.length }} scenes · {{ endingCount() }} endings. Two choices lead to
+        the character’s death; other paths continue toward survival. Select any scene to read it.
+      </p>
+      <app-narrative-story-map
+        [config]="storyConfig()"
+        [scenes]="publication().scenes"
+        [activeNodeId]="currentNode().id"
+        (nodeSelected)="inspectScene($event)"
+      />
+    </aside>
+    <div class="sample-reading">
+      <div class="player-toolbar">
+        <span>Scene {{ pathLength() }} · {{ currentNode().mapLabel }}</span>
+        <div>
+          @if (path().length > 1) {
+            <button type="button" (click)="back()">← Back</button>
+          }
+          <button type="button" (click)="restart()">↺ Start over</button>
+        </div>
+      </div>
+
+      <section class="sample-scene" aria-live="polite">
+        <p class="scene-kind">
+          {{
+            currentNode().kind === 'ending'
+              ? currentNode().endingOutcome === 'death'
+                ? 'Dead end · The character dies'
+                : 'Survival ending'
+              : 'The story continues'
+          }}
+        </p>
+        <h2 tabindex="-1">{{ currentScene().title }}</h2>
+        <p class="reading-hint">
+          Read this scene, then choose a path below. Scroll inside the story if more text remains.
+        </p>
+        <div
+          class="scene-text"
+          role="region"
+          tabindex="0"
+          aria-label="Scene text — scroll to read the full scene"
+        >
+          {{ currentScene().text }}
+        </div>
+
+        @if (currentNode().choices.length) {
+          <div class="sample-choices" aria-label="Choose what happens next">
+            <p>What should the character do next?</p>
+            @for (choice of currentNode().choices; track choice.id) {
+              <button type="button" (click)="choose(choice)">
+                <span>{{ currentScene().choiceLabels[choice.id] }}</span
+                ><b aria-hidden="true">→</b>
+              </button>
+            }
+          </div>
+        } @else {
+          <div class="ending-panel">
+            <span aria-hidden="true">✦</span>
+            <strong>You reached {{ currentNode().mapLabel }}</strong>
+            <p>
+              {{
+                currentNode().endingOutcome === 'death'
+                  ? 'The character has died. This path ends here. Start again and try a different choice.'
+                  : 'The character survives. Start again to discover another path.'
+              }}
+            </p>
+            <button type="button" (click)="restart()">Try another path</button>
+          </div>
+        }
+      </section>
+    </div>
+  </div>
+  @if (publication().authorNote; as note) {
+    <footer class="author-note">
+      <strong>Sample author’s note</strong>
+      <p>{{ note }}</p>
+    </footer>
+  }
+</article>

@@ -7,12 +7,11 @@
 >
   <span class="ground-shadow"></span>
   <div class="wagon-vehicle" [style.transform]="'translateY(' + bodyDrop() + 'px)'">
-    <img
-      class="wagon-photo"
-      src="/frontier-trading/vehicle-scenes/trade-wagon-realistic.webp"
-      alt=""
-      draggable="false"
-    />
+    @if (vehicleImageUrl(); as imageUrl) {
+      <img class="wagon-photo" [src]="imageUrl" [alt]="vehicleImageAlt()" draggable="false" />
+    } @else {
+      <div class="wagon-photo wagon-photo-fallback"></div>
+    }
     @if (visibleCargo().length) {
       <div class="onboard-cargo">
         @for (slot of visibleCargo(); track slot.goodId) {
@@ -25,7 +24,11 @@
           >
             <span class="package-stack">
               @for (piece of slot.pieces; track piece) {
-                <img [src]="slot.asset" alt="" draggable="false" [style.--piece]="piece" />
+                @if (slot.asset) {
+                  <img [src]="slot.asset" alt="" draggable="false" [style.--piece]="piece" />
+                } @else {
+                  <span class="cargo-fallback" [style.--piece]="piece"></span>
+                }
               }
             </span>
             <b

@@ -1,0 +1,121 @@
+:host {
+  display: block;
+  color: #e8f3f5;
+  min-width: 0;
+}
+section {
+  background: #142330;
+  border: 1px solid #415661;
+  border-radius: 12px;
+  padding: 16px;
+}
+header h2 {
+  font-size: 1.1rem;
+  margin: 0 0 6px;
+}
+p {
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: #c6d9df;
+}
+label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.8rem;
+}
+input,
+select {
+  width: 100%;
+  min-width: 0;
+  background: #0b1720;
+  border: 1px solid #637985;
+  border-radius: 6px;
+  color: #f4fafb;
+  padding: 10px;
+  font: inherit;
+  min-height: 44px;
+}
+.filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 12px 0;
+}
+.record-list {
+  display: grid;
+  gap: 6px;
+  max-height: 240px;
+  overflow: auto;
+  scrollbar-gutter: stable;
+}
+button {
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  background: #1e3442;
+  border: 1px solid #526c78;
+  border-radius: 6px;
+  padding: 9px;
+  min-height: 44px;
+}
+.record-list button {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  text-align: left;
+  font-size: 0.84rem;
+}
+.record-list img {
+  width: 42px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+small {
+  display: block;
+  color: #c0d6dc;
+  margin-top: 3px;
+}
+button[aria-pressed='true'] {
+  background: #254e52;
+  border-color: #a6e3dd;
+}
+.selected-record {
+  border-top: 1px solid #4c6874;
+  margin-top: 14px;
+  padding-top: 12px;
+}
+.tool-action {
+  background: #b8e4dc;
+  color: #123638;
+  width: 100%;
+  margin-bottom: 12px;
+}
+.instructions {
+  padding: 10px;
+  background: #203b45;
+  border-left: 3px solid #b8e4dc;
+}
+:host ::ng-deep .selected-record .evidence-content > img {
+  max-height: 180px;
+  width: 100%;
+  object-fit: contain;
+}
+:host ::ng-deep .selected-record .guided-step {
+  padding: 12px 0;
+}
+:host ::ng-deep .selected-record .evidence-detail {
+  min-width: 0;
+}
+@media (max-width: 650px) {
+  .record-list {
+    max-height: 180px;
+  }
+  input,
+  select {
+    font-size: 16px;
+  }
+}
+.record-list.record-list--compact {
+  max-height: 110px;
+}

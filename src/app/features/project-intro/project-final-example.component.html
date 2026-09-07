@@ -1,0 +1,106 @@
+<main class="example-page">
+  <nav class="showcase-nav" aria-label="Showcase navigation">
+    <a [routerLink]="['/projects', config.projectId]">← Project launch</a>
+    <a class="wordmark" routerLink="/projects">FORGE <span>PBL</span></a>
+    <span>COMPLETED SAMPLE</span>
+  </nav>
+  @if (sample(); as current) {
+    <header class="showcase-header">
+      <div class="heading-copy">
+        <p class="eyebrow">Completed example <span>•</span> Fictional student work</p>
+        <h1 #sampleHeading tabindex="-1">{{ current.title }}</h1>
+        <details class="sample-context">
+          <summary>About this example</summary>
+          <p>{{ current.subtitle }}</p>
+          <div class="sample-meta">
+            <span>{{ current.audience }}</span
+            ><span>{{ current.duration }}</span
+            ><span>Read only</span>
+          </div>
+        </details>
+      </div>
+      <div class="showcase-actions">
+        <button
+          type="button"
+          class="primary"
+          [attr.aria-expanded]="reviewOpen()"
+          aria-controls="teacher-review"
+          (click)="toggleReview()"
+        >
+          {{ reviewOpen() ? 'Close teacher guide' : 'See the learning behind it' }}
+          <span aria-hidden="true">↗</span>
+        </button>
+        <button type="button" (click)="restart()">↺ Restart sample</button>
+      </div>
+    </header>
+    <dialog
+      #reviewDialog
+      class="teacher-review"
+      id="teacher-review"
+      aria-label="Teacher and builder guide"
+      (close)="reviewOpen.set(false)"
+    >
+      <form method="dialog" class="guide-close"><button>Close teacher guide</button></form>
+      <header>
+        <p class="eyebrow">From first idea to finished work</p>
+        <h2 #reviewHeading tabindex="-1">The thinking behind the presentation</h2>
+        <p>Follow the decisions and revisions that shaped the completed work.</p>
+      </header>
+      <div class="thinking-trail">
+        @for (step of current.trail; track step.label; let i = $index) {
+          <article>
+            <span class="step-number">0{{ i + 1 }}</span>
+            <div>
+              <p class="eyebrow">{{ step.label }}</p>
+              <h3>{{ step.title }}</h3>
+              <p>{{ step.text }}</p>
+              @if (step.evidence) {
+                <p class="record-link"><strong>In the record</strong> {{ step.evidence }}</p>
+              }
+            </div>
+          </article>
+        }
+      </div>
+      <aside class="review-notes">
+        <div>
+          <p class="eyebrow">Builder guidance example</p>
+          <h3>What a teacher could notice</h3>
+          <p>{{ current.review.strength }}</p>
+        </div>
+        <div>
+          <strong>A useful feedback question</strong>
+          <p>{{ current.review.question }}</p>
+          <strong>Visible revision</strong>
+          <p>{{ current.review.revision }}</p>
+        </div>
+        <div>
+          <strong>Assessment lens</strong>
+          <p>{{ current.review.assessment }}</p>
+          <small
+            >These notes illustrate teacher review. They are not a live grade or an AI
+            assessment.</small
+          >
+        </div>
+      </aside>
+    </dialog>
+    @if (current.videos?.length) {
+      <app-presentation-examples [videos]="current.videos!" />
+    }
+    <section class="native-presentation" aria-label="Completed project presentation">
+      <ng-container
+        *ngComponentOutlet="
+          current.component;
+          inputs: current.inputs;
+          environmentInjector: previewInjector()
+        "
+      />
+    </section>
+  } @else if (error()) {
+    <section class="load-state" role="alert">
+      <h1>{{ error() }}</h1>
+      <button type="button" (click)="restart()">Retry sample</button>
+    </section>
+  } @else {
+    <p class="load-state" role="status">Opening the completed project…</p>
+  }
+</main>

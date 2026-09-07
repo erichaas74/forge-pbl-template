@@ -14,7 +14,14 @@
       @for (object of board.objects; track object.id; let index = $index) {
         <section class="object-card">
           <div class="object-portrait">
-            @if (object.imageAssetId) {
+            @if (object.model) {
+              @if (mode !== 'thumbnail') {
+                <app-object-model-viewer [model]="object.model" />
+              } @else {
+                <span aria-hidden="true">360°</span>
+                <small>Rotatable 3D object · Open wing</small>
+              }
+            } @else if (object.imageAssetId) {
               <img [src]="object.imageAssetId" [alt]="object.imageAlt ?? ''" />
             } @else {
               <span aria-hidden="true">{{ objectMark(index) }}</span>
@@ -27,6 +34,20 @@
               <p>{{ object.description }}</p>
               <strong>Why it matters</strong>
               <p>{{ object.evidenceConnection }}</p>
+              <p class="object-sources">
+                <small>Supporting sources:</small>
+                @for (source of board.sources; track source.id) {
+                  @if (object.sourceIds.includes(source.id)) {
+                    @if (source.url) {
+                      <a [href]="source.url" target="_blank" rel="noreferrer">{{
+                        source.citation
+                      }}</a>
+                    } @else {
+                      <span>{{ source.citation }}</span>
+                    }
+                  }
+                }
+              </p>
             }
           </div>
         </section>

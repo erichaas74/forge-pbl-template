@@ -44,7 +44,7 @@ class TestDebateWorkspacePersistence implements DebateWorkspacePersistenceAdapte
 }
 
 describe('DebateStudioPageComponent', () => {
-  it('keeps both faction records visible and opens an incoming argument in the chamber', async () => {
+  it('keeps both argument archives visible around the persistent debate thread and composer', async () => {
     await TestBed.configureTestingModule({
       imports: [DebateStudioPageComponent],
       providers: [
@@ -70,15 +70,41 @@ describe('DebateStudioPageComponent', () => {
       'Was Julius Caesar a leader Rome needed, or a threat to the Roman Republic?',
     );
     expect((fixture.nativeElement as HTMLElement).textContent).toContain('Shared Senate live');
-    expect((fixture.nativeElement as HTMLElement).textContent).toContain('The Senate Docket');
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Docket');
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Arguing:');
 
-    fixture.debugElement.query(By.css('.hear-now')).nativeElement.click();
+    fixture.componentInstance.runtime.castPreOpinion('unsure');
+    fixture.detectChanges();
+    await fixture.whenStable();
     fixture.detectChanges();
 
-    expect((fixture.nativeElement as HTMLElement).textContent).toContain(
-      'Listen closely, then mark the exact words your faction must address.',
-    );
     expect(fixture.debugElement.queryAll(By.css('app-debate-faction-rail'))).toHaveLength(2);
-    expect(fixture.debugElement.query(By.css('app-debate-workbench'))).toBeTruthy();
+    expect(fixture.debugElement.query(By.css('app-debate-thread'))).toBeTruthy();
+    expect(fixture.debugElement.query(By.css('app-debate-composer-dock'))).toBeTruthy();
+    expect(fixture.debugElement.queryAll(By.css('.speech-bubble')).length).toBeGreaterThan(0);
+    expect(fixture.debugElement.queryAll(By.css('.moderator-break')).length).toBeGreaterThan(0);
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Build the next argument');
+    expect(fixture.debugElement.query(By.css('.detail-actions'))).toBeFalsy();
+    expect(fixture.debugElement.query(By.css('.composer-tabs'))).toBeFalsy();
+
+    fixture.debugElement.query(By.css('.message-summary')).nativeElement.click();
+    fixture.detectChanges();
+
+    expect(fixture.debugElement.query(By.css('.detail-actions'))).toBeTruthy();
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('Evidence presented');
+
+    fixture.debugElement.query(By.css('.review-thread')).nativeElement.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(fixture.debugElement.query(By.css('.speech-bubble.expanded'))).toBeTruthy();
+
+    fixture.debugElement.query(By.css('.builder-toggle')).nativeElement.click();
+    fixture.detectChanges();
+
+    expect(
+      fixture.debugElement.query(By.css('app-debate-composer-dock.composer-expanded')),
+    ).toBeTruthy();
+    expect(fixture.debugElement.query(By.css('.composer-tabs'))).toBeTruthy();
   });
 });

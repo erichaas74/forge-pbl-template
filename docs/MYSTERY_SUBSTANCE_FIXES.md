@@ -1,5 +1,28 @@
 # Mystery Substance — Audit Findings and Fix Plan
 
+## Catalog launch repair — 2026-09-05
+
+The `/projects/mystery-substance/experience` launch requested `mystery-substance`
+but received a manifest declaring `mystery-substance-outbreak`, so package
+validation stopped the investigation before initialization.
+
+- Modified `mystery-substance.package.ts` to export a catalog package with the
+  `mystery-substance` manifest ID, sharing the existing content without changing
+  the original package export or its legacy identity.
+- Modified `local-project-definition.source.ts` to select that catalog export.
+  Package validation, session scopes, persistence keys, and runtime contracts
+  remain unchanged. No saved records are deleted or migrated.
+- Expanded `mystery-investigation.service.spec.ts` with the actual catalog-source
+  and injected-session launch path, event dispatch and save/reopen checks, legacy
+  save preservation, and rejection of an unrelated manifest ID. Tests use an
+  isolated in-memory browser storage stub.
+- No files added. Ten tests pass across the service, runtime, and project-reuse
+  suites. Production Angular build passes with existing stylesheet budget warnings.
+  Browser verification on localhost:4200 shows the experience lab bench and its
+  station controls instead of the unavailable message.
+- No core schema change, specification deviation, new template capability gap,
+  or deployment. Next user check: refresh the existing investigation preview.
+
 **Project:** `projects/mystery-substance-outbreak` — "The Unlabeled Shelf"
 **Audited:** 2026-09-03
 **Goal being measured against:** an escape-room style investigation game, not a

@@ -1,5 +1,6 @@
 import type { RuntimeScope } from '../state/runtime-state-contracts';
 
+/** @deprecated Prefer ProjectSessionContext for new integrations. */
 export interface ProjectContext {
   tenantId: string;
   projectId: string;

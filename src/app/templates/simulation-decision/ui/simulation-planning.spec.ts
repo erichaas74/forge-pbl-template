@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { frontierTradingConfig as frontierTradingProjectConfig } from '../../../projects/frontier-trading/frontier-trading.config';
 import { SimulationDecisionRuntimeService } from '../runtime/simulation-decision-runtime.service';
 import { MemorySimulationDecisionPersistenceAdapter } from '../runtime/simulation-decision.persistence';
@@ -18,6 +19,8 @@ const config = {
 describe('market and route planning regressions', () => {
   let runtime: SimulationDecisionRuntimeService;
   beforeEach(() => {
+    window.matchMedia = vi.fn().mockReturnValue({ matches: true });
+    HTMLElement.prototype.scrollIntoView = vi.fn();
     TestBed.configureTestingModule({
       imports: [SimulationMarketViewComponent, SimulationRouteMapComponent],
       providers: [
@@ -131,8 +134,8 @@ describe('market and route planning regressions', () => {
     component.select('flour', 'buy');
     component.saveSelection();
     const crate = component.visualCargo()[0]!;
-    expect(crate.proposed).toBe(true);
-    component.cargoClick(crate.goodId, crate.proposed);
+    expect(crate.proposedQuantity).toBeGreaterThan(0);
+    component.cargoClick(crate.goodId, crate.proposedQuantity > 0);
     expect(component.direction()).toBe('buy');
     expect(component.editing()).toBe(true);
   });
@@ -201,6 +204,31 @@ describe('market and route planning regressions', () => {
     expect(runtime.planning.at('fort-bridger').draft()).toEqual([]);
     runtime.restart();
     expect(runtime.planning.at(config.startingLocationId).draft()).toEqual([]);
+  });
+
+  it('keeps projected selling prices visible for every route and previews one without committing it', () => {
+    const fixture = TestBed.createComponent(SimulationRouteMapComponent);
+    fixture.detectChanges();
+    const route = fixture.componentInstance;
+    const element = fixture.nativeElement as HTMLElement;
+
+    expect(route.routeOptions()).toHaveLength(config.routes.length);
+    expect(element.querySelectorAll('[data-market-kind="sell"]')).toHaveLength(
+      Object.keys(route.destinationMarkets()).length,
+    );
+    for (const option of route.routeOptions()) {
+      const prices = route.routePriceProjections(option);
+      expect(prices).toHaveLength(config.goods.length);
+      expect(prices.every((price) => price.sellPriceCents > 0)).toBe(true);
+    }
+
+    route.previewRoute('route-river');
+    fixture.detectChanges();
+    expect(route.highlightedRoute()?.id).toBe('route-river');
+    expect(route.selectedRouteId()).toBe('');
+    expect(element.querySelector('.route-prediction')?.textContent).toContain(
+      'Fast water, drifting clouds, and damp roads',
+    );
   });
 
   it('includes drafted trades in the route budget and requires their review before departure', () => {

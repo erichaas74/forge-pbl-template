@@ -10,7 +10,10 @@ import type {
 } from './project-package-contracts';
 
 export class ProjectPackageLoaderService<TGraph, TRegistryView> {
-  private readonly cache = new Map<string, TGraph>();
+  private readonly cache = new Map<
+    string,
+    { readonly graph: TGraph; readonly issues: readonly ValidationIssue[] }
+  >();
 
   constructor(
     private readonly source: ProjectPackageSource,
@@ -26,27 +29,54 @@ export class ProjectPackageLoaderService<TGraph, TRegistryView> {
     const cacheKey = this.cacheKey(location);
     const cached = this.cache.get(cacheKey);
     if (cached !== undefined) {
-      return { graph: cached, issues: [], fromCache: true };
+      return { graph: cached.graph, issues: [...cached.issues], fromCache: true };
     }
 
     const files: Record<string, unknown> = {};
     const issues: ValidationIssue[] = [];
-    for (const fileName of this.descriptor.requiredFiles) {
-      const value = await this.source.read(location, fileName);
-      if (value === undefined) {
+    const required = [...new Set(this.descriptor.requiredFiles)];
+    const optional = [...new Set(this.descriptor.optionalFiles)].filter(
+      (fileName) => !required.includes(fileName),
+    );
+    const entries = await Promise.all(
+      [...required, ...optional].map(async (fileName) => {
+        try {
+          return {
+            fileName,
+            value: await this.source.read(location, fileName),
+            required: required.includes(fileName),
+            error: undefined,
+          };
+        } catch (error: unknown) {
+          return {
+            fileName,
+            value: undefined,
+            required: required.includes(fileName),
+            error,
+          };
+        }
+      }),
+    );
+    for (const { fileName, value, required: isRequired, error } of entries) {
+      if (error !== undefined) {
         issues.push({
-          code: 'REQUIRED_FILE_MISSING',
+          code: 'PACKAGE_FILE_READ_FAILED',
           severity: 'error',
           file: fileName,
-          message: `Required project package file "${fileName}" is missing.`,
+          message: `Project package file "${fileName}" could not be read.`,
         });
-      } else {
-        files[fileName] = value;
+        continue;
       }
-    }
-    for (const fileName of this.descriptor.optionalFiles) {
-      const value = await this.source.read(location, fileName);
-      if (value !== undefined) {
+      if (value === undefined) {
+        if (isRequired) {
+          issues.push({
+            code: 'REQUIRED_FILE_MISSING',
+            severity: 'error',
+            file: fileName,
+            message: `Required project package file "${fileName}" is missing.`,
+          });
+        }
+      } else {
         files[fileName] = value;
       }
     }
@@ -70,7 +100,7 @@ export class ProjectPackageLoaderService<TGraph, TRegistryView> {
     }
 
     const graph = deepFreeze(assembled.graph);
-    this.cache.set(cacheKey, graph);
+    this.cache.set(cacheKey, { graph, issues: Object.freeze([...issues]) });
     return { graph, issues, fromCache: false };
   }
 
@@ -83,7 +113,11 @@ export class ProjectPackageLoaderService<TGraph, TRegistryView> {
   }
 
   private cacheKey(location: ProjectPackageLocation): string {
-    return `${location.tenantId}::${location.projectId}@${location.projectVersion}`;
+    return [
+      location.tenantId,
+      `${location.projectId}@${location.projectVersion}`,
+      location.reference,
+    ].join('::');
   }
 }
 

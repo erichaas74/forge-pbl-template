@@ -1,0 +1,184 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+.story-tree {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.map-scroll {
+  max-height: calc(100dvh - 260px);
+  min-height: 300px;
+  overflow: auto;
+  border: 1px solid #adc8c0;
+  border-radius: 16px;
+  background: #e9f1eb;
+  scrollbar-width: thin;
+}
+.tree-canvas {
+  position: relative;
+  margin: 0 auto;
+  background: radial-gradient(#a6c3b970 1px, transparent 1px) 0 0 / 18px 18px;
+}
+svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.choice-line {
+  fill: none;
+  stroke-width: 3;
+}
+.choice-1 {
+  stroke: #bc644a;
+}
+.choice-2 {
+  stroke: #2b797c;
+}
+.choice-marker {
+  fill: #fffdf5;
+  stroke-width: 2;
+}
+.choice-number {
+  fill: #24494b;
+  font: 800 12px system-ui;
+  text-anchor: middle;
+}
+.tree-node {
+  position: absolute;
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  width: 192px;
+  height: 152px;
+  transform: translate(-50%, -50%);
+  border: 1px solid #83a69a;
+  border-top: 4px solid #658f81;
+  border-radius: 12px;
+  padding: 12px;
+  background: #fffdf5;
+  color: #173c40;
+  box-shadow: 0 4px 10px #254a4112;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+}
+.tree-node:hover {
+  border-color: #1a6763;
+  background: #f4fbf5;
+}
+.tree-node.active {
+  border-color: #166d69;
+  outline: 3px solid #166d6930;
+  background: #f5fff9;
+}
+.tree-node.ending {
+  border-top-color: #bd8041;
+  background: #fff3dc;
+}
+.node-state {
+  color: #3d6c61;
+  font: 800 10px system-ui;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+.ending .node-state {
+  color: #8b5c27;
+}
+.tree-node strong {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font:
+    700 16px/1.2 Georgia,
+    serif;
+}
+.node-options {
+  display: grid;
+  gap: 5px;
+}
+.node-options > span {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  min-width: 0;
+  font: 12px system-ui;
+}
+.node-options > span > span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.node-options i {
+  flex: 0 0 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #f8e6dc;
+  color: #8f432d;
+  text-align: center;
+  font: 700 11px/18px system-ui;
+}
+.node-options > span:nth-child(2) i {
+  color: #206466;
+  background: #dfeeed;
+}
+.node-hint {
+  color: #62786c;
+  font: 12px/1.5 system-ui;
+}
+.tree-node small {
+  margin-top: auto;
+  color: #5b786b;
+  font: 11px system-ui;
+}
+.tree-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  color: #426759;
+  font: 11px system-ui;
+}
+.tree-legend span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.tree-legend i {
+  width: 12px;
+  height: 12px;
+  border: 2px solid #166d69;
+  border-radius: 3px;
+}
+.tree-legend .ending-key {
+  border-color: #bd8041;
+  background: #fff3dc;
+}
+:focus-visible {
+  outline: 3px solid #ba6b19;
+  outline-offset: 3px;
+}
+@media (max-width: 780px) {
+  .map-scroll {
+    max-height: 340px;
+  }
+}
+
+.tree-node.death {
+  border-top-color: #ae534a;
+  background: #fff0eb;
+}
+.death .node-state {
+  color: #98473d;
+}
+.tree-legend .death-key {
+  border-color: #ae534a;
+  background: #fff0eb;
+}

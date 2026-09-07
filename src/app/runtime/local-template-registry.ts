@@ -14,11 +14,19 @@ import { exhibitHallProjectPackageDescriptor } from '../templates/exhibit-hall/p
 import { LocalExhibitHallRuntime } from './local-exhibit-hall-runtime';
 import { journeyReplayProjectPackageDescriptor } from '../templates/journey-replay/package/journey-replay-project-package-assembler';
 import { LocalJourneyReplayRuntime } from './local-journey-replay-runtime';
+import { LocalEngineeringDesignRuntime } from './local-engineering-design-runtime';
+import {
+  LocalProjectConfigRuntime,
+  singleProjectConfigPackageDescriptor,
+} from './local-project-config-runtime';
 
 export const investigationTemplateImplementationVersion = '1.0.0';
 export const simulationDecisionTemplateImplementationVersion = '1.0.0';
 export const exhibitHallTemplateImplementationVersion = '1.0.0';
 export const journeyReplayTemplateImplementationVersion = '1.0.0';
+export const historyLiveTemplateImplementationVersion = '1.1.0';
+export const debateStudioTemplateImplementationVersion = '2.0.0';
+export const narrativeStudioTemplateImplementationVersion = '1.2.0';
 
 export function createInvestigationTemplateRegistration(
   source: ProjectPackageSource,
@@ -102,11 +110,86 @@ export function registerLocalJourneyReplayTemplate(
   return registry.register(createJourneyReplayTemplateRegistration(source));
 }
 
+export function createHistoryLiveTemplateRegistration(
+  source: ProjectPackageSource,
+): ProjectTemplateRegistration<LocalProjectConfigRuntime> {
+  return {
+    id: 'history-live-broadcast',
+    version: historyLiveTemplateImplementationVersion,
+    compatibleTemplateMajorVersions: [1],
+    projectTypes: ['history-live-broadcast'],
+    packageDescriptor: singleProjectConfigPackageDescriptor,
+    createRuntime: () => new LocalProjectConfigRuntime(source, 'history-live-broadcast'),
+  };
+}
+
+export function createDebateStudioTemplateRegistration(
+  source: ProjectPackageSource,
+): ProjectTemplateRegistration<LocalProjectConfigRuntime> {
+  return {
+    id: 'debate-studio',
+    version: debateStudioTemplateImplementationVersion,
+    compatibleTemplateMajorVersions: [2],
+    projectTypes: ['debate-studio'],
+    packageDescriptor: singleProjectConfigPackageDescriptor,
+    createRuntime: () => new LocalProjectConfigRuntime(source, 'debate-studio'),
+  };
+}
+
+export function createNarrativeStudioTemplateRegistration(
+  source: ProjectPackageSource,
+): ProjectTemplateRegistration<LocalProjectConfigRuntime> {
+  return {
+    id: 'narrative-studio',
+    version: narrativeStudioTemplateImplementationVersion,
+    compatibleTemplateMajorVersions: [1],
+    projectTypes: ['narrative-studio'],
+    packageDescriptor: singleProjectConfigPackageDescriptor,
+    createRuntime: () => new LocalProjectConfigRuntime(source, 'narrative-studio'),
+  };
+}
+
+export function registerLocalHistoryLiveTemplate(
+  registry: TemplateRegistry,
+  source: ProjectPackageSource,
+): TemplateRegistryResult<LocalProjectConfigRuntime> {
+  return registry.register(createHistoryLiveTemplateRegistration(source));
+}
+
+export function registerLocalDebateStudioTemplate(
+  registry: TemplateRegistry,
+  source: ProjectPackageSource,
+): TemplateRegistryResult<LocalProjectConfigRuntime> {
+  return registry.register(createDebateStudioTemplateRegistration(source));
+}
+
+export function registerLocalNarrativeStudioTemplate(
+  registry: TemplateRegistry,
+  source: ProjectPackageSource,
+): TemplateRegistryResult<LocalProjectConfigRuntime> {
+  return registry.register(createNarrativeStudioTemplateRegistration(source));
+}
+
 export function createLocalTemplateRegistry(
   source: ProjectPackageSource,
   clock: Clock = new SystemClock(),
 ): TemplateRegistry {
   const registry = new TemplateRegistry();
+  const engineeringResult = registry.register({
+    id: 'engineering-design',
+    version: '1.0.0',
+    compatibleTemplateMajorVersions: [1],
+    projectTypes: ['engineering-design'],
+    packageDescriptor: singleProjectConfigPackageDescriptor,
+    createRuntime: () => new LocalEngineeringDesignRuntime(source),
+  });
+  if (!engineeringResult.ok) throw new Error(engineeringResult.error.message);
+  const automationResult = registry.register({
+    id: 'programming-automation', version: '1.0.0', compatibleTemplateMajorVersions: [1],
+    projectTypes: ['programming-automation'], packageDescriptor: singleProjectConfigPackageDescriptor,
+    createRuntime: () => new LocalProjectConfigRuntime(source, 'programming-automation'),
+  });
+  if (!automationResult.ok) throw new Error(automationResult.error.message);
   const result = registerLocalInvestigationTemplate(registry, source, clock);
   if (!result.ok) {
     throw new Error(result.error.message);
@@ -122,6 +205,18 @@ export function createLocalTemplateRegistry(
   const journeyResult = registerLocalJourneyReplayTemplate(registry, source);
   if (!journeyResult.ok) {
     throw new Error(journeyResult.error.message);
+  }
+  const historyResult = registerLocalHistoryLiveTemplate(registry, source);
+  if (!historyResult.ok) {
+    throw new Error(historyResult.error.message);
+  }
+  const debateResult = registerLocalDebateStudioTemplate(registry, source);
+  if (!debateResult.ok) {
+    throw new Error(debateResult.error.message);
+  }
+  const narrativeResult = registerLocalNarrativeStudioTemplate(registry, source);
+  if (!narrativeResult.ok) {
+    throw new Error(narrativeResult.error.message);
   }
   return registry;
 }

@@ -546,6 +546,16 @@ export const frontierTradingConfig: SimulationDecisionConfig = {
   template: { id: 'simulation-decision', version: '1.4' },
   projectId: 'frontier-trading-company',
   projectVersion: '1.13.0',
+  visualTheme: {
+    vehicleImageUrl: '/frontier-trading/vehicle-scenes/trade-wagon-realistic.webp',
+    vehicleImageAlt: 'A frontier trade wagon carrying the company cargo.',
+    cargoPackageAssets: {
+      sack: '/frontier-trading/cargo-scenes/provisions-sack.png',
+      crate: '/frontier-trading/cargo-scenes/trade-crate.png',
+      bale: '/frontier-trading/cargo-scenes/wrapped-bale.png',
+      coil: '/frontier-trading/cargo-scenes/rope-coil.png',
+    },
+  },
   title: 'Frontier Trading Company',
   subtitle: 'Trading Season Simulation',
   gradeLabel: 'Grade 5 Mathematics PBL',

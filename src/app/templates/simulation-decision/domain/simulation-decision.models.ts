@@ -214,6 +214,13 @@ export interface SimulationDecisionConfig {
   subtitle: string;
   gradeLabel: string;
   mission: string;
+  visualTheme?: {
+    readonly vehicleImageUrl?: string;
+    readonly vehicleImageAlt?: string;
+    readonly cargoPackageAssets?: Partial<
+      Readonly<Record<'sack' | 'crate' | 'bale' | 'coil', string>>
+    >;
+  };
   companyNameSuggestions?: readonly string[];
   startingCashCents: number;
   reserveTargetCents: number;
@@ -355,6 +362,7 @@ export interface SimulationDecisionState {
   simulationId: string;
   projectId: string;
   projectVersion: string;
+  runtimeScope?: RuntimeScope;
   version: number;
   seed: number;
   difficulty: 'support' | 'standard' | 'challenge';
@@ -460,3 +468,4 @@ export interface SimulationDecisionResult {
   state: SimulationDecisionState;
   errors: readonly string[];
 }
+import type { RuntimeScope } from '../../../core/state/runtime-state-contracts';

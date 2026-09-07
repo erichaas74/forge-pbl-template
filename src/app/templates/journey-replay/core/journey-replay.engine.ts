@@ -6,6 +6,7 @@ import type {
   JourneyStepDefinition,
   ReplayScene,
   StudentJourneyRecord,
+  JourneyStudentResponse,
   VoyageIntersection,
   VoyageRoutePoint,
 } from '../domain/journey-replay.models';
@@ -64,10 +65,15 @@ export function selectJourneyChoice(
   if (step === undefined || !step.choices.some((choice) => choice.id === choiceId)) {
     throw new Error('CHOICE_NOT_AVAILABLE');
   }
+  if (record.selectedChoiceId === choiceId) return record;
+  const drafts = { ...record.choiceDrafts };
+  if (record.selectedChoiceId)
+    drafts[`${step.id}:${record.selectedChoiceId}`] = record.responseDraft;
   return {
     ...record,
     selectedChoiceId: choiceId,
-    responseDraft: EMPTY_DRAFT,
+    choiceDrafts: drafts,
+    responseDraft: drafts[`${step.id}:${choiceId}`] ?? EMPTY_DRAFT,
   };
 }
 
@@ -87,7 +93,7 @@ export function completeJourneyStep(
   if (step === undefined) throw new Error('JOURNEY_ALREADY_COMPLETE');
   const choice = step.choices.find((candidate) => candidate.id === record.selectedChoiceId);
   if (choice === undefined) throw new Error('CHOICE_REQUIRED');
-  if (!hasResponse(record.responseDraft)) throw new Error('RESPONSE_REQUIRED');
+  assertResponse(config, choice, record.responseDraft);
 
   const responseId = `response-${step.id}`;
   const sceneId = `scene-${step.id}`;
@@ -96,7 +102,14 @@ export function completeJourneyStep(
   const stepRecord = {
     stepId: step.id,
     choiceId: choice.id,
-    evidenceSelected: [...choice.evidenceIds],
+    evidenceSelected: [
+      ...new Set(record.responseDraft.citations?.map((citation) => citation.evidenceId) ?? []),
+    ],
+    evidenceOffered: [...choice.evidenceIds],
+    evidenceViewed: [...(record.responseDraft.evidenceViewed ?? [])],
+    resourceBefore: { ...record.resources },
+    resourceAfter: { ...resources },
+    responseRevisions: [],
     studentResponse: {
       id: responseId,
       questionText: choice.question,
@@ -106,6 +119,12 @@ export function completeJourneyStep(
       mediaAssetId: record.responseDraft.mediaAssetId,
       masteryTags: [...step.masteryTags],
       useInReplay: true,
+      citations: record.responseDraft.citations ?? [],
+      prediction: record.responseDraft.prediction,
+      tutorTurns: record.responseDraft.tutorTurns ?? [],
+      planningTargetId: record.responseDraft.planningTargetId,
+      planningText: record.responseDraft.planningText?.trim() || undefined,
+      planningSubmitted: record.responseDraft.planningSubmitted,
     },
     consequence: choice.consequence,
     masteryResults: step.masteryTags.map((masteryTag) => ({
@@ -166,7 +185,9 @@ export function selectedChoice(
   config: JourneyProjectConfig,
   record: StudentJourneyRecord,
 ): JourneyChoiceDefinition | undefined {
-  return currentStep(config, record)?.choices.find((choice) => choice.id === record.selectedChoiceId);
+  return currentStep(config, record)?.choices.find(
+    (choice) => choice.id === record.selectedChoiceId,
+  );
 }
 
 export function routeForScene(
@@ -239,12 +260,19 @@ function appendRoute(
       sequence: startSequence + index,
       legId: route.id,
       timestamp: now,
-      locationId: index === route.coordinates.length - 2 ? destination.id : undefined,
+      locationId:
+        index === route.coordinates.length - 2
+          ? destination.id
+          : config.map.locations.find(
+              (location) =>
+                Math.abs(location.latitude - point.latitude) < 0.001 &&
+                Math.abs(location.longitude - point.longitude) < 0.001,
+            )?.id,
       latitude: point.latitude,
       longitude: point.longitude,
       eventId: index === route.coordinates.length - 2 ? `event-${stepId}` : undefined,
       decisionId: choice.id,
-      stateSnapshotId: `revision-${record.revision + 1}`,
+      stateSnapshotId: `decision-${stepId}`,
     })),
   ];
 }
@@ -266,12 +294,105 @@ function applyResourceChanges(
   return next;
 }
 
-function hasResponse(draft: JourneyResponseDraft): boolean {
+export function hasResponse(draft: JourneyResponseDraft): boolean {
   return (
-    draft.text.trim().length >= 12 ||
-    draft.transcript.trim().length >= 12 ||
-    draft.mediaAssetId !== undefined
+    isResponseText(draft.text) ||
+    isResponseText(draft.transcript) ||
+    Boolean(draft.mediaAssetId?.trim())
   );
+}
+
+function isResponseText(text: string): boolean {
+  // Presence/structure only. Tutor and teacher evaluate the reasoning itself.
+  return (
+    text.trim().length >= 12 &&
+    new Set(text.toLowerCase().replace(/\s/g, '')).size >= 4 &&
+    text.trim().split(/\s+/).length >= 3
+  );
+}
+
+export function assertResponse(
+  config: JourneyProjectConfig,
+  choice: JourneyChoiceDefinition,
+  draft: JourneyResponseDraft,
+  phase: 'planning' | 'revision' = 'planning',
+): void {
+  if (phase === 'planning' && choice.planning) {
+    const target = choice.planning.targets.find(
+      (candidate) => candidate.id === draft.planningTargetId,
+    );
+    if (!target) throw new Error('PLANNING_TARGET_REQUIRED');
+    if (choice.planning.planPrompt && !isResponseText(draft.planningText ?? ''))
+      throw new Error('PLANNING_TEXT_REQUIRED');
+    if (!draft.planningSubmitted) throw new Error('PLANNING_SUBMISSION_REQUIRED');
+  }
+  if (!hasResponse(draft)) throw new Error('RESPONSE_REQUIRED');
+  if (
+    phase === 'planning' &&
+    config.learning?.requirePrediction &&
+    !isResponseText(draft.prediction ?? '')
+  )
+    throw new Error('PREDICTION_REQUIRED');
+  const citations = draft.citations ?? [];
+  if (config.learning?.requireCitation && citations.length === 0)
+    throw new Error('CITATION_REQUIRED');
+  for (const citation of citations) {
+    const source = config.evidence.find((item) => item.id === citation.evidenceId);
+    if (
+      !choice.evidenceIds.includes(citation.evidenceId) ||
+      !source?.paragraphs?.some((p) => p.id === citation.paragraphId) ||
+      !isResponseText(citation.explanation)
+    ) {
+      throw new Error('CITATION_INVALID');
+    }
+  }
+}
+
+/** Revise reasoning without rewriting the already experienced route or original answer. */
+export function reviseJourneyResponse(
+  config: JourneyProjectConfig,
+  record: StudentJourneyRecord,
+  stepId: string,
+  draft: JourneyResponseDraft,
+  reason: string,
+  now = new Date().toISOString(),
+): StudentJourneyRecord {
+  const completed = record.completedSteps.find((item) => item.stepId === stepId);
+  const choice = config.steps
+    .find((item) => item.id === stepId)
+    ?.choices.find((item) => item.id === completed?.choiceId);
+  if (!completed || !choice) throw new Error('RECORDED_STEP_REQUIRED');
+  if (reason.trim().length < 3) throw new Error('REVISION_REASON_REQUIRED');
+  assertResponse(config, choice, draft, 'revision');
+  const response: JourneyStudentResponse = {
+    ...completed.studentResponse,
+    responseMode: draft.responseMode,
+    text: draft.text.trim() || undefined,
+    transcript: draft.transcript.trim() || undefined,
+    mediaAssetId: draft.mediaAssetId,
+    citations: draft.citations ?? [],
+    prediction: draft.prediction,
+    tutorTurns: draft.tutorTurns ?? [],
+    planningTargetId: draft.planningTargetId,
+    planningText: draft.planningText?.trim() || undefined,
+    planningSubmitted: draft.planningSubmitted,
+  };
+  return {
+    ...record,
+    completedSteps: record.completedSteps.map((item) =>
+      item.stepId !== stepId
+        ? item
+        : {
+            ...item,
+            studentResponse: response,
+            evidenceSelected: [...new Set(response.citations?.map((c) => c.evidenceId) ?? [])],
+            responseRevisions: [
+              ...(item.responseRevisions ?? []),
+              { response: item.studentResponse, revisedAt: now, reason: reason.trim() },
+            ],
+          },
+    ),
+  };
 }
 
 function locationOrThrow(config: JourneyProjectConfig, locationId: string) {

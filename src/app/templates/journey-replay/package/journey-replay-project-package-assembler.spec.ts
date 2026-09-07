@@ -49,4 +49,60 @@ describe('JourneyReplayProjectPackageAssembler', () => {
       expect.objectContaining({ code: 'REFERENCE_MISSING', entityId: 'route-missing' }),
     );
   });
+
+  it('rejects planning targets with missing locations or invalid focus bounds', () => {
+    const journey = simpleJourneyReplayPackage['journey.json'];
+    const [firstStep, ...remainingSteps] = journey.steps;
+    const [firstChoice, ...remainingChoices] = firstStep.choices;
+    const files = {
+      ...simpleJourneyReplayPackage,
+      'journey.json': {
+        ...journey,
+        steps: [
+          {
+            ...firstStep,
+            choices: [
+              {
+                ...firstChoice,
+                planning: {
+                  mode: 'sponsor' as const,
+                  mapFocus: {
+                    cover: 'world' as const,
+                    bounds: { west: 20, east: -20, north: 40, south: 50 },
+                  },
+                  prompt: 'Compare sponsors.',
+                  targetPrompt: 'Who should receive the plan?',
+                  selectionLabel: 'Select sponsor',
+                  targets: [
+                    {
+                      id: 'missing-sponsor',
+                      label: 'Missing sponsor',
+                      locationId: 'missing-country',
+                      summary: 'Unavailable location.',
+                      details: 'This target should fail reference validation.',
+                    },
+                  ],
+                },
+              },
+              ...remainingChoices,
+            ],
+          },
+          ...remainingSteps,
+        ],
+      },
+    };
+
+    const result = new JourneyReplayProjectPackageAssembler().assemble(
+      simpleJourneyReplayLocation,
+      files,
+    );
+
+    expect(result.graph).toBeUndefined();
+    expect(result.issues).toContainEqual(
+      expect.objectContaining({ code: 'REFERENCE_MISSING', entityId: 'missing-country' }),
+    );
+    expect(result.issues).toContainEqual(
+      expect.objectContaining({ code: 'MAP_FOCUS_INVALID', entityId: firstChoice.id }),
+    );
+  });
 });

@@ -42,9 +42,54 @@ export interface JourneyEvidenceDefinition {
   readonly title: string;
   readonly sourceLabel: string;
   readonly summary: string;
+  readonly provenance?: 'classroom-reconstruction' | 'primary-source' | 'secondary-source';
+  readonly attribution?: string;
+  readonly sourceUrl?: string;
+  readonly paragraphs?: readonly {
+    readonly id: string;
+    readonly text: string;
+    readonly perspective?: string;
+  }[];
+}
+
+export type JourneyPlanningMode = 'route' | 'sponsor' | 'exploration';
+
+export interface JourneyPlanningTargetDefinition {
+  readonly id: string;
+  readonly label: string;
+  readonly locationId: string;
+  readonly routeId?: string;
+  readonly summary: string;
+  readonly details: string;
+  readonly facts?: readonly { readonly label: string; readonly value: string }[];
+  readonly decisionResponse?: string;
+}
+
+/** Optional pre-commit investigation that keeps a step's primary choices editable. */
+export interface JourneyChoicePlanningDefinition {
+  readonly mode: JourneyPlanningMode;
+  readonly mapFocus?: JourneyMapFocusDefinition;
+  readonly prompt: string;
+  readonly targetPrompt: string;
+  readonly selectionLabel: string;
+  readonly planPrompt?: string;
+  readonly planPlaceholder?: string;
+  readonly submitLabel?: string;
+  readonly targets: readonly JourneyPlanningTargetDefinition[];
+}
+
+export interface JourneyMapFocusDefinition {
+  readonly cover: 'world' | 'regional';
+  readonly bounds?: {
+    readonly west: number;
+    readonly east: number;
+    readonly north: number;
+    readonly south: number;
+  };
 }
 
 export interface JourneyChoiceDefinition {
+  readonly icon?: string;
   readonly id: string;
   readonly label: string;
   readonly summary: string;
@@ -55,6 +100,7 @@ export interface JourneyChoiceDefinition {
   readonly routeId?: string;
   readonly evidenceIds: readonly string[];
   readonly resourceChanges?: Readonly<Record<string, number>>;
+  readonly planning?: JourneyChoicePlanningDefinition;
 }
 
 export interface JourneyStepDefinition {
@@ -120,7 +166,15 @@ export interface JourneyReplaySettings {
 
 export interface ClassVoyageRoutePoint extends GeoPoint {
   readonly locationId?: string;
-  readonly eventType?: 'storm' | 'decision' | 'trade' | 'conflict' | 'discovery' | 'resupply' | 'evidence' | 'encounter';
+  readonly eventType?:
+    | 'storm'
+    | 'decision'
+    | 'trade'
+    | 'conflict'
+    | 'discovery'
+    | 'resupply'
+    | 'evidence'
+    | 'encounter';
   readonly eventLabel?: string;
 }
 
@@ -149,6 +203,15 @@ export interface JourneyProjectConfig {
   readonly map: JourneyMapConfig;
   readonly replay: JourneyReplaySettings;
   readonly classVoyages: readonly ClassVoyageRecord[];
+  readonly learning?: {
+    readonly scopeNote: string;
+    readonly targets: readonly string[];
+    readonly glossary: readonly { readonly term: string; readonly definition: string }[];
+    readonly responseFrame: string;
+    readonly requireCitation: boolean;
+    readonly requirePrediction?: boolean;
+    readonly criteria: readonly JourneyReasoningCriterion[];
+  };
 }
 
 export interface JourneyEnrollment {
@@ -169,6 +232,12 @@ export interface JourneyStudentResponse {
   readonly mediaAssetId?: string;
   readonly masteryTags: readonly string[];
   readonly useInReplay: boolean;
+  readonly citations?: readonly JourneyCitation[];
+  readonly prediction?: string;
+  readonly tutorTurns?: readonly JourneyTutorTurn[];
+  readonly planningTargetId?: string;
+  readonly planningText?: string;
+  readonly planningSubmitted?: boolean;
 }
 
 export interface VoyageRoutePoint extends GeoPoint {
@@ -196,6 +265,15 @@ export interface JourneyStepRecord {
   }[];
   readonly sceneId: string;
   readonly completedAt: string;
+  readonly evidenceOffered?: readonly string[];
+  readonly evidenceViewed?: readonly string[];
+  readonly resourceBefore?: Readonly<Record<string, number>>;
+  readonly resourceAfter?: Readonly<Record<string, number>>;
+  readonly responseRevisions?: readonly {
+    readonly response: JourneyStudentResponse;
+    readonly revisedAt: string;
+    readonly reason: string;
+  }[];
 }
 
 export interface ReplayScene {
@@ -219,6 +297,13 @@ export interface JourneyResponseDraft {
   readonly text: string;
   readonly transcript: string;
   readonly mediaAssetId?: string;
+  readonly citations?: readonly JourneyCitation[];
+  readonly prediction?: string;
+  readonly evidenceViewed?: readonly string[];
+  readonly tutorTurns?: readonly JourneyTutorTurn[];
+  readonly planningTargetId?: string;
+  readonly planningText?: string;
+  readonly planningSubmitted?: boolean;
 }
 
 export interface JourneyRuntimeEvent {
@@ -228,7 +313,9 @@ export interface JourneyRuntimeEvent {
     | 'journey.choice.selected'
     | 'journey.step.completed'
     | 'journey.replay.scene.updated'
-    | 'journey.reset';
+    | 'journey.reset'
+    | 'journey.response.revised'
+    | 'journey.tutor.updated';
   readonly timestamp: string;
   readonly projectId: string;
   readonly actor: { readonly type: 'student' | 'system'; readonly id: string };
@@ -256,6 +343,7 @@ export interface StudentJourneyRecord {
   readonly completionStatus: 'in-progress' | 'complete';
   readonly revision: number;
   readonly eventHistory: readonly JourneyRuntimeEvent[];
+  readonly choiceDrafts?: Readonly<Record<string, JourneyResponseDraft>>;
 }
 
 export type ClassMapDisplayMode = 'all' | 'single' | 'compare' | 'classReplay';
@@ -307,6 +395,42 @@ export interface JourneySubmission {
   readonly teacherFeedback?: string;
   readonly mastery: readonly JourneyMasteryAssessment[];
   readonly revision: number;
+}
+
+export interface JourneyCitation {
+  readonly evidenceId: string;
+  readonly paragraphId: string;
+  readonly explanation: string;
+}
+
+export interface JourneyReasoningCriterion {
+  readonly id: string;
+  readonly label: string;
+  readonly question: string;
+  readonly proficient: string;
+}
+
+/** Advisory dialogue, never an official mastery result. */
+export interface JourneyTutorTurn {
+  readonly id: string;
+  readonly stepId: string;
+  readonly choiceId: string;
+  readonly responseFingerprint: string;
+  readonly question: string;
+  readonly explanation?: string;
+  readonly criterionId: string;
+  readonly answer?: string;
+  readonly createdAt: string;
+  readonly source: 'scaffold' | 'tutor';
+}
+
+export interface JourneySubmissionDetail {
+  readonly submission: JourneySubmission;
+  readonly record: StudentJourneyRecord;
+  readonly history: readonly {
+    readonly submission: JourneySubmission;
+    readonly record: StudentJourneyRecord;
+  }[];
 }
 
 export interface JourneyClassMemberSummary {

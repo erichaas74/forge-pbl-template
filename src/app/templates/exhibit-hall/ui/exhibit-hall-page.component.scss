@@ -836,3 +836,126 @@ a:focus-visible {
     animation-duration: 0.01ms !important;
   }
 }
+
+.curator-next {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 12px 24px;
+  padding: 16px;
+  background: #eff5e9;
+  border: 1px solid #61786c;
+  border-radius: 10px;
+}
+.curator-next > div {
+  flex: 1 1 350px;
+}
+.curator-next p {
+  font-size: 14px;
+  margin: 6px 0 0;
+}
+.curator-next button {
+  padding: 12px;
+  min-height: 44px;
+  cursor: pointer;
+}
+.hall-introduction {
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+.hall-introduction h1 {
+  font-size: clamp(26px, 2.6vw, 40px);
+}
+
+.topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 10px 22px;
+  gap: 12px;
+}
+.project-title {
+  margin-right: auto;
+}
+.project-title > span {
+  display: none;
+}
+.viewer-menu {
+  position: relative;
+  font-size: 12px;
+}
+.viewer-menu summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding: 12px;
+}
+.viewer-menu > div {
+  position: absolute;
+  z-index: 20;
+  right: 0;
+  top: 100%;
+  background: #faf5e7;
+  padding: 12px;
+  display: flex;
+  gap: 8px;
+  box-shadow: 0 8px 24px #0003;
+}
+.topbar .view-switch button {
+  font-size: 12px;
+  min-height: 44px;
+}
+.hall-status {
+  padding: 6px 22px;
+  font-size: 11px;
+}
+.hall-status .opening-label {
+  display: none;
+}
+.curator-start {
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 24px;
+  background: radial-gradient(ellipse at 50% 40%, #e8dfc3, #faf8ef 65%);
+}
+.curator-start h1 {
+  font: 700 clamp(26px, 3vw, 36px) Georgia;
+  max-width: 650px;
+}
+.curator-start p {
+  font-size: 18px;
+}
+.curator-symbol {
+  font-size: 90px;
+  color: #997033;
+}
+.curator-start button {
+  min-height: 54px;
+  padding: 14px 24px;
+  border: 0;
+  border-radius: 10px;
+  color: #fff8e5;
+  background: #2e5d58;
+  font: 700 17px Arial;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.curator-start {
+  padding: 24px;
+  min-height: 0;
+}
+.curator-start h1 {
+  margin: 0 0 20px;
+}
+.curator-object {
+  --model-height: 280px;
+  width: min(100%, 500px);
+}
+.curator-start button {
+  margin-top: 12px;
+}

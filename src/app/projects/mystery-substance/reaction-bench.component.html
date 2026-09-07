@@ -7,7 +7,13 @@
     <aside class="tray" aria-labelledby="tray-title">
       <span class="kicker">Sealed specimens</span>
       <h2 id="tray-title">Specimen tray</h2>
-      <p class="tray-hint">Drag one vial onto the bench to start a run.</p>
+      <p class="tray-hint">
+        {{
+          selectedVialId()
+            ? 'Your selected vial is loaded. Choose another above or drag one here to switch.'
+            : 'Drag one vial onto the bench to start a run.'
+        }}
+      </p>
 
       <ul class="vial-tray">
         @for (vial of vials; track vial.vialId) {
@@ -635,8 +641,8 @@
       <div class="rig-controls">
         <p class="rig-hint" aria-live="polite">{{ stepHint() }}</p>
         @if (vialId()) {
-          <button class="ghost-action" type="button" [disabled]="busy()" (click)="resetRun()">
-            Abandon run
+          <button class="ghost-action" type="button" [disabled]="busy()" (click)="abandonRun()">
+            {{ selectedVialId() ? 'Start this vial again' : 'Abandon run' }}
           </button>
         }
       </div>

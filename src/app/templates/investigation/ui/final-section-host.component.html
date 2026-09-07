@@ -1,0 +1,45 @@
+<form class="final-section-host" (submit)="$event.preventDefault(); submit()">
+  @for (section of orderedSections(); track section.id; let number = $index) {
+    <section class="final-section" [class.missing]="missingSectionIds().includes(section.id)">
+      <header>
+        <span>{{ number + 1 }}</span>
+        <div>
+          <h3>{{ section.prompt || section.id }}</h3>
+          @if (section.required) { <small>Required</small> }
+        </div>
+      </header>
+      @switch (section.type) {
+        @case ('evidence') {
+          <ng-container *ngTemplateOutlet="evidenceOptions; context: { sectionId: section.id }" />
+        }
+        @case ('evidence-selection') {
+          <ng-container *ngTemplateOutlet="evidenceOptions; context: { sectionId: section.id }" />
+        }
+        @case ('confidence') {
+          <label>
+            Confidence {{ numberValue(section.id) }}%
+            <input type="range" min="0" max="100" [ngModel]="numberValue(section.id)"
+              (ngModelChange)="update(section.id, +$event)" [name]="section.id" />
+          </label>
+        }
+        @default {
+          <textarea rows="4" [ngModel]="textValue(section.id)"
+            (ngModelChange)="update(section.id, $event)" [name]="section.id"></textarea>
+        }
+      }
+    </section>
+  }
+  <button type="submit" [disabled]="missingSectionIds().length > 0">Submit</button>
+</form>
+
+<ng-template #evidenceOptions let-sectionId="sectionId">
+  <div class="evidence-options">
+    @for (item of evidence(); track item.id) {
+      <label>
+        <input #choice type="checkbox" [checked]="evidenceIds(sectionId).includes(item.id)"
+          (change)="toggleEvidence(sectionId, item.id, choice.checked)" />
+        <span>{{ item.title }}</span>
+      </label>
+    }
+  </div>
+</ng-template>

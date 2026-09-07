@@ -16,6 +16,11 @@
       <span class="eyebrow">Company charter · {{ runtime.config.gradeLabel }}</span>
       <h1 id="setup-title">Start your trading company</h1>
       <p>{{ runtime.config.mission }}</p>
+      <p class="starting-account">
+        The opening was practice. Your company starts a new account with
+        {{ runtime.money(runtime.config.startingCashCents) }}. Choose a name and transport, then
+        compare two shops.
+      </p>
     </div>
   </header>
 

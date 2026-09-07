@@ -29,7 +29,10 @@ export class FirebaseDebateSessionAdapter implements DebateSessionAdapter {
   private readonly database: Database;
   private actorIdPromise?: Promise<string>;
 
-  constructor(app: FirebaseApp) {
+  constructor(
+    app: FirebaseApp,
+    private readonly allowClientDemoMutations = false,
+  ) {
     this.auth = getAuth(app);
     this.database = getDatabase(app);
   }
@@ -39,6 +42,7 @@ export class FirebaseDebateSessionAdapter implements DebateSessionAdapter {
     seed: DebateSession,
     member: Omit<DebateMember, 'id'>,
   ): Promise<DebateSessionConnection> {
+    this.assertDemoMutationAllowed();
     const actorId = await this.actorId();
     const target = databaseRef(this.database, this.path(locator));
     const result = await runTransaction(target, (value: DebateSession | null) => {
@@ -78,6 +82,7 @@ export class FirebaseDebateSessionAdapter implements DebateSessionAdapter {
     clientEventId: string,
     reducer: (session: DebateSession) => DebateSession,
   ): Promise<DebateSession> {
+    this.assertDemoMutationAllowed();
     await this.actorId();
     const target = databaseRef(this.database, this.path(locator));
     const result = await runTransaction(target, (value: DebateSession | null) => {
@@ -109,11 +114,18 @@ export class FirebaseDebateSessionAdapter implements DebateSessionAdapter {
   private path(locator: DebateSessionLocator): string {
     return [
       'debateSessions',
+      safeKey(locator.tenantId),
       safeKey(locator.projectId),
       safeKey(locator.projectVersion),
       safeKey(locator.classId),
       safeKey(locator.sessionId),
     ].join('/');
+  }
+
+  private assertDemoMutationAllowed(): void {
+    if (!this.allowClientDemoMutations) {
+      throw new Error('SERVER_AUTHORITATIVE_DEBATE_GATEWAY_REQUIRED');
+    }
   }
 }
 
@@ -132,6 +144,7 @@ export class FirebaseDebateMediaAdapter implements DebateMediaAdapter {
         : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
     const path = [
       'debate-recordings',
+      safeKey(input.locator.tenantId),
       safeKey(input.locator.projectId),
       safeKey(input.locator.projectVersion),
       safeKey(input.locator.classId),

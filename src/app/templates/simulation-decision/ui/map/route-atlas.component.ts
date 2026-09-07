@@ -1,11 +1,35 @@
-import { Component, ElementRef, computed, input, output, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  afterRenderEffect,
+  computed,
+  input,
+  output,
+  signal,
+  viewChild,
+} from '@angular/core';
+import { layoutMarketLabels } from './map-market-layout';
 import type { LocationDefinition, RouteDefinition } from '../../domain/simulation-decision.models';
-import { FULL_MAP, boundedMapView, fitMapBounds, mapViewBox, type MapView } from './map-viewport';
+import {
+  FULL_MAP,
+  boundedMapView,
+  fitMapBounds,
+  mapViewBox,
+  routePredictionPosition,
+  type MapView,
+} from './map-viewport';
 
 export interface AtlasTrail {
   route: RouteDefinition;
   state: 'available' | 'unavailable' | 'locked' | 'inactive' | 'completed' | 'traveling';
   compared: boolean;
+  costLabel?: string;
+}
+
+export interface AtlasMarketPrice {
+  readonly goodId: string;
+  readonly name: string;
+  readonly price: string;
 }
 
 @Component({
@@ -19,11 +43,66 @@ export class RouteAtlasComponent {
   readonly backgroundAsset = input<string>();
   readonly currentLocationId = input.required<string>();
   readonly selectedRouteId = input('');
+  readonly predictionRouteId = input('');
+  readonly workspace = input(false);
+  readonly destinationPriceLabels = input<Readonly<Record<string, string>>>({});
+  readonly destinationMarkets = input<Readonly<Record<string, readonly AtlasMarketPrice[]>>>({});
+  readonly currentMarketPrices = input<readonly AtlasMarketPrice[]>([]);
   readonly travel = input<{ routeId: string; progress: number; icon: string }>();
   readonly visitedIds = input<readonly string[]>([]);
   readonly routeSelected = output<string>();
+  readonly routeHighlighted = output<string>();
   readonly detailsRequested = output<void>();
   readonly svg = viewChild<ElementRef<SVGSVGElement>>('mapCanvas');
+  readonly mapWindow = viewChild<ElementRef<HTMLElement>>('mapWindow');
+  readonly mapSize = signal({ width: 1000, height: 500 });
+  readonly routeMidpoints = signal<Readonly<Record<string, { x: number; y: number }>>>({});
+  readonly predictionPosition = computed(() => {
+    const point = this.routeMidpoints()[this.predictionRouteId()];
+    return point
+      ? routePredictionPosition(point, this.view(), this.mapSize().width, this.mapSize().height)
+      : undefined;
+  });
+  readonly mapMarkets = computed(() => ({
+    ...this.destinationMarkets(),
+    [this.currentLocationId()]: this.currentMarketPrices(),
+  }));
+  readonly marketLabels = computed(() =>
+    layoutMarketLabels(
+      this.locations()
+        .filter((location) => (this.mapMarkets()[location.id]?.length ?? 0) > 0)
+        .map((location) => ({
+          id: location.id,
+          mapX: location.mapX,
+          mapY: location.mapY,
+          rows: this.mapMarkets()[location.id]!.length,
+        })),
+      this.view(),
+      this.mapSize().width,
+      this.mapSize().height,
+      this.trails()
+        .filter((trail) => ['available', 'unavailable'].includes(trail.state))
+        .flatMap((trail) => {
+          const point = this.routeMidpoints()[trail.route.id];
+          if (!point) return [];
+          const view = this.view();
+          const size = this.mapSize();
+          return [
+            {
+              x: (((point.x - 8 - view.x) * view.zoom) / 100 + 0.5) * size.width,
+              y: (((point.y - 2.5 - view.y) * view.zoom) / 80 + 0.5) * size.height,
+              width: ((16 * view.zoom) / 100) * size.width,
+              height: ((5 * view.zoom) / 80) * size.height,
+            },
+          ];
+        }),
+    ).map((box) => ({
+      ...box,
+      location: this.locations().find((location) => location.id === box.id)!,
+      prices: this.mapMarkets()[box.id]!,
+      isCurrent: box.id === this.currentLocationId(),
+    })),
+  );
   readonly view = signal<MapView>({ ...FULL_MAP });
   readonly viewBox = computed(() => mapViewBox(this.view()));
   readonly zoomPercent = computed(() => Math.round(this.view().zoom * 100));
@@ -33,7 +112,50 @@ export class RouteAtlasComponent {
   readonly selectedTrail = computed(() =>
     this.trails().find((t) => t.route.id === this.selectedRouteId()),
   );
-  private drag?: { pointerId: number; x: number; y: number; scale: number; view: MapView };
+  private drag?: {
+    pointerId: number;
+    x: number;
+    y: number;
+    scaleX: number;
+    scaleY: number;
+    view: MapView;
+  };
+
+  constructor() {
+    afterRenderEffect(() => {
+      const trails = this.trails();
+      const points = Object.fromEntries(
+        trails.map((trail) => {
+          const path = this.routePath(trail.route.id);
+          const bounds = this.routeEndpointBounds(trail.route);
+          const point =
+            path && typeof path.getTotalLength === 'function'
+              ? path.getPointAtLength(path.getTotalLength() / 2)
+              : {
+                  x: (bounds?.x ?? 0) + (bounds?.width ?? 0) / 2,
+                  y: (bounds?.y ?? 0) + (bounds?.height ?? 0) / 2,
+                };
+          return [trail.route.id, { x: point.x, y: point.y }];
+        }),
+      );
+      this.routeMidpoints.set(points);
+    });
+    afterRenderEffect((onCleanup) => {
+      const element = this.mapWindow()?.nativeElement;
+      if (!element) return;
+      const rect = element.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0)
+        this.mapSize.set({ width: rect.width, height: rect.height });
+      if (typeof ResizeObserver === 'undefined') return;
+      const observer = new ResizeObserver(([entry]) => {
+        if (entry && entry.contentRect.width > 0 && entry.contentRect.height > 0) {
+          this.mapSize.set({ width: entry.contentRect.width, height: entry.contentRect.height });
+        }
+      });
+      observer.observe(element);
+      onCleanup(() => observer.disconnect());
+    });
+  }
 
   zoom(delta: number): void {
     this.view.update((view) => boundedMapView({ ...view, zoom: view.zoom + delta }));
@@ -78,6 +200,24 @@ export class RouteAtlasComponent {
       ?.nativeElement.querySelector<SVGGElement>('[data-map-stop][aria-pressed="true"]')
       ?.focus({ preventScroll: true });
   }
+  focusRouteCost(routeId: string): void {
+    const badge = Array.from(
+      this.svg()?.nativeElement.querySelectorAll<SVGGElement>('[data-route-cost]') ?? [],
+    ).find((element) => element.dataset['routeCost'] === routeId);
+    if (badge) badge.focus({ preventScroll: true });
+    else this.focusSelected();
+  }
+  revealRoutePrediction(routeId: string): void {
+    const point = this.routeMidpoints()[routeId];
+    if (!point) return;
+    const view = this.view();
+    if (
+      Math.abs(point.x - view.x) > 50 / view.zoom ||
+      Math.abs(point.y - view.y) > 40 / view.zoom
+    ) {
+      this.view.set(boundedMapView({ ...view, x: point.x, y: point.y }));
+    }
+  }
   destinationTrail(id: string): AtlasTrail | undefined {
     return this.trails().find(
       (trail) => trail.route.toLocationId === id && trail.state !== 'inactive',
@@ -103,6 +243,9 @@ export class RouteAtlasComponent {
     if (trail?.state === 'unavailable') return 'Unavailable';
     if (trail) return `${trail.route.estimatedDays} days · ${trail.route.risk} risk`;
     return this.visitedIds().includes(location.id) ? 'Visited' : '';
+  }
+  priceLabel(locationId: string): string {
+    return this.destinationPriceLabels()[locationId] ?? '';
   }
   selectDestination(location: LocationDefinition): void {
     const trail = this.destinationTrail(location.id);
@@ -138,17 +281,18 @@ export class RouteAtlasComponent {
       event.button !== 0 ||
       this.view().zoom === 1 ||
       !(event.target instanceof Element) ||
-      event.target.closest('[data-map-stop], [data-map-trail]')
+      event.target.closest('[data-map-stop], [data-map-trail], [data-route-cost]')
     )
       return;
     const svg = this.svg()?.nativeElement;
-    const scale = svg?.getScreenCTM()?.a;
-    if (!svg || !scale) return;
+    const transform = svg?.getScreenCTM();
+    if (!svg || !transform?.a || !transform.d) return;
     this.drag = {
       pointerId: event.pointerId,
       x: event.clientX,
       y: event.clientY,
-      scale,
+      scaleX: transform.a,
+      scaleY: transform.d,
       view: this.view(),
     };
     svg.setPointerCapture(event.pointerId);
@@ -159,8 +303,8 @@ export class RouteAtlasComponent {
     this.view.set(
       boundedMapView({
         ...this.drag.view,
-        x: this.drag.view.x - (event.clientX - this.drag.x) / this.drag.scale,
-        y: this.drag.view.y - (event.clientY - this.drag.y) / this.drag.scale,
+        x: this.drag.view.x - (event.clientX - this.drag.x) / this.drag.scaleX,
+        y: this.drag.view.y - (event.clientY - this.drag.y) / this.drag.scaleY,
       }),
     );
   }

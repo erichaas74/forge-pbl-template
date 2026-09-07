@@ -74,9 +74,6 @@
           </header>
           <div class="document-mark" aria-hidden="true"><span>H</span><i></i><b></b></div>
           <h2>{{ source.title }}</h2>
-          @if (recommended(source.id)) {
-            <p>Recommended for your story</p>
-          }
           @if (!runtime.sourceUsable(source.id)) {
             <p>Later evidence: use only for retrospective reporting</p>
           }
@@ -140,10 +137,6 @@
             [alt]="source.imageAlt || source.title"
           />
         }
-        <section>
-          <span>CONTEXT & LIMITS</span>
-          <p>{{ source.context }}</p>
-        </section>
         <dl>
           <div>
             <dt>Created by</dt>
@@ -154,15 +147,10 @@
             <dd>{{ source.perspective }}</dd>
           </div>
           <div>
-            <dt>Use it for</dt>
+            <dt>Topics</dt>
             <dd>{{ source.tags.join(' · ') }}</dd>
           </div>
         </dl>
-        <div class="check-questions">
-          <strong>Ask before airtime</strong><span>Who created this—and for whom?</span
-          ><span>What context is missing?</span
-          ><span>Would the other network read it differently?</span>
-        </div>
         <p class="citation">{{ source.citation }}</p>
         <footer>
           @if (source.url) {

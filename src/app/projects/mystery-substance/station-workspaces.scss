@@ -699,7 +699,7 @@ textarea:focus {
   margin: 0;
 }
 
-@media (max-width: 820px) {
+@container (max-width: 820px) {
   .station-intro {
     top: 7%;
     left: 4%;
@@ -791,4 +791,27 @@ textarea:focus {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
   }
+}
+
+:host {
+  container-type: inline-size;
+}
+:host(.workbench-station) {
+  position: relative;
+  inset: auto;
+}
+:host(.workbench-station) .station-canvas {
+  position: relative;
+  inset: auto;
+  min-height: 34rem;
+  overflow: visible;
+}
+
+:host(.workbench-station) .restoration-console {
+  position: relative;
+  inset: auto;
+  width: min(42rem, calc(100% - 2rem));
+  max-height: none;
+  margin: 1rem 1rem 1rem auto;
+  overflow: visible;
 }

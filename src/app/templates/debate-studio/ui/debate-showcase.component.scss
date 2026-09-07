@@ -726,3 +726,108 @@ textarea:focus-visible {
     transition: none;
   }
 }
+.entry-link {
+  font: inherit;
+  text-align: left;
+  border: 0;
+  color: inherit;
+  background: none;
+  padding: 4px 0;
+  cursor: pointer;
+  width: 100%;
+}
+.entry-link:hover {
+  text-decoration: underline;
+}
+.entry-link:focus-visible,
+[tabindex='-1']:focus {
+  outline: 3px solid #e0b570;
+  outline-offset: 3px;
+}
+.evidence-projection details {
+  border-top: 1px solid #8b7349;
+  padding: 9px 0;
+}
+.evidence-projection summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+.evidence-projection p {
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+.evidence-projection small {
+  font-size: 0.7rem;
+  line-height: 1.5;
+}
+.persuasion-shift i,
+.vote-line i {
+  overflow: hidden;
+}
+
+.sample-view .broadcast-docket {
+  max-height: 46rem;
+}
+.sample-view .entry-link {
+  font-size: 0.8rem;
+  color: #d3c09c;
+}
+.sample-view .broadcast-order {
+  grid-template-columns: 1fr auto;
+}
+@media (max-width: 900px) {
+  .sample-view .speaker-title,
+  .sample-view .evidence-projection {
+    display: block;
+    width: 100%;
+  }
+  .sample-view .faction-floor {
+    gap: 22px;
+  }
+  .sample-view .student-broadcast {
+    min-width: 0;
+  }
+  .sample-view .student-broadcast blockquote {
+    font-size: 1rem;
+    line-height: 1.8;
+  }
+}
+@media (max-width: 700px) {
+  .sample-view .broadcast-docket {
+    max-height: 12rem;
+  }
+  .sample-view .live-floor {
+    padding: 22px 18px 50px;
+  }
+}
+
+.sample-view .broadcast-stage {
+  min-height: 0;
+  height: var(--presentation-available-height, 70dvh);
+}
+.sample-view .broadcast-docket {
+  max-height: 100%;
+}
+.sample-view .live-floor {
+  min-height: 0;
+  overflow: auto;
+}
+.program-navigation {
+  position: sticky;
+  top: -14px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  background: #1a120c;
+  padding: 8px 0;
+}
+.program-navigation button {
+  min-height: 44px;
+  padding: 8px;
+  border: 1px solid #a98f60;
+  color: #f4e8d2;
+  background: #322517;
+  cursor: pointer;
+}

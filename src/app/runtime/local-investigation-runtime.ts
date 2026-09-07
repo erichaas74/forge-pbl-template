@@ -41,6 +41,8 @@ import { registerInvestigationEventPack } from '../templates/investigation/runti
 import { InvestigationRuntimeInitializer } from '../templates/investigation/runtime/investigation-runtime-initializer';
 import {
   InvestigationCoreReferenceValidator,
+  InvestigationPublicationValidator,
+  InvestigationValueValidator,
   RegisteredProjectCapabilityValidator,
 } from '../templates/investigation/package/investigation-runtime-validators';
 import {
@@ -91,6 +93,8 @@ export class LocalInvestigationRuntime {
     registerInvestigationActionPack(this.actions, this.commandHandlers);
     this.validation.register(new RegisteredProjectCapabilityValidator());
     this.validation.register(new InvestigationCoreReferenceValidator());
+    this.validation.register(new InvestigationValueValidator());
+    this.validation.register(new InvestigationPublicationValidator());
 
     this.persistence = persistence ?? new InMemoryRuntimePersistenceAdapter(clock);
     this.state = new RuntimeStateService(this.persistence, this.realtime);
@@ -113,6 +117,8 @@ export class LocalInvestigationRuntime {
       this.idempotency,
       this.eventLog,
       this.tracer,
+      8,
+      { mode: 'localMock', allowLocalAuthorityBypass: true },
     );
   }
 

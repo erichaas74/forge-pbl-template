@@ -1,4 +1,4 @@
-<div class="atlas" [class.still]="!motion()">
+<div class="atlas" [class.still]="!motion()" [class.workspace-atlas]="workspace()">
   <div class="map-tools" aria-label="Map controls">
     <div class="zoom-controls">
       <button
@@ -25,11 +25,12 @@
       ⌖ Trail
     </button>
   </div>
-  <div class="map-window">
+  <div #mapWindow class="map-window">
     <svg
       #mapCanvas
       class="route-map"
       [attr.viewBox]="viewBox()"
+      [attr.preserveAspectRatio]="workspace() ? 'none' : 'xMidYMid meet'"
       tabindex="0"
       role="group"
       aria-label="Interactive route map"
@@ -141,12 +142,43 @@
               class="trail-hit"
               [attr.d]="trail.route.path"
               (click)="routeSelected.emit(trail.route.id)"
+              (mouseenter)="routeHighlighted.emit(trail.route.id)"
               aria-hidden="true"
             >
               <title>
                 {{ trail.route.name }} · {{ trail.route.distanceMiles }} miles · {{ trail.state }}
               </title>
             </path>
+          }
+          @if (
+            trail.costLabel &&
+            (trail.state === 'available' ||
+              trail.state === 'unavailable' ||
+              trail.state === 'traveling')
+          ) {
+            <g
+              class="route-cost"
+              [attr.data-route-cost]="trail.route.id"
+              [attr.role]="trail.state !== 'traveling' ? 'button' : null"
+              [attr.tabindex]="trail.state !== 'traveling' ? 0 : null"
+              [attr.aria-expanded]="predictionRouteId() === trail.route.id"
+              aria-controls="route-prediction"
+              [attr.aria-label]="trail.route.name + ', travel cost ' + trail.costLabel"
+              (click)="routeSelected.emit(trail.route.id)"
+              (keydown.enter)="routeSelected.emit(trail.route.id)"
+              (keydown.space)="$event.preventDefault(); routeSelected.emit(trail.route.id)"
+            >
+              <rect x="-8" y="-2.5" width="16" height="5" rx="1" />
+              <text y="0.65">{{ trail.costLabel }} travel</text>
+              <animateMotion
+                dur="1ms"
+                [attr.path]="trail.route.path"
+                keyPoints="0.5;0.5"
+                keyTimes="0;1"
+                calcMode="linear"
+                fill="freeze"
+              />
+            </g>
           }
         </g>
       }
@@ -165,6 +197,7 @@
             location.name +
             ', ' +
             label(location) +
+            (priceLabel(location.id) ? ', ' + priceLabel(location.id) : '') +
             (destinationIsInteractive(location.id) ? ', inspect route' : '')
           "
           [attr.aria-pressed]="
@@ -175,7 +208,11 @@
           (click)="selectDestination(location)"
           (keydown.enter)="selectDestination(location)"
           (keydown.space)="$event.preventDefault(); selectDestination(location)"
-          (focus)="revealLocation(location)"
+          (mouseenter)="routeHighlighted.emit(destinationTrail(location.id)?.route?.id ?? '')"
+          (focus)="
+            revealLocation(location);
+            routeHighlighted.emit(destinationTrail(location.id)?.route?.id ?? '')
+          "
         >
           <circle class="selection-ring" r="5.4" />
           <ellipse class="shadow" cy="3.8" rx="4.5" ry="1.1" />
@@ -195,6 +232,15 @@
           >
             {{ label(location) }}
           </text>
+          @if (priceLabel(location.id)) {
+            <text
+              class="place-price"
+              [attr.y]="location.mapY < 30 ? -13.5 : 11"
+              [attr.text-anchor]="location.mapX > 85 ? 'end' : 'middle'"
+            >
+              {{ priceLabel(location.id) }}
+            </text>
+          }
           @if (location.id === currentLocationId() && !travel()) {
             <path class="here-flag" d="M5 2V-5H9L7-3 9-1H5" />
           }
@@ -228,6 +274,88 @@
         <text y="-5.5">N</text>
       </g>
     </svg>
+    @if (marketLabels().length) {
+      <svg
+        class="market-leaders"
+        [attr.viewBox]="'0 0 ' + mapSize().width + ' ' + mapSize().height"
+        aria-hidden="true"
+      >
+        @for (label of marketLabels(); track label.id) {
+          <line
+            [attr.x1]="label.anchorX"
+            [attr.y1]="label.anchorY"
+            [attr.x2]="label.x + label.width / 2"
+            [attr.y2]="label.y + label.height / 2"
+          />
+        }
+      </svg>
+      @for (label of marketLabels(); track label.id) {
+        <section
+          class="town-market"
+          [class.current]="label.isCurrent"
+          [class.chosen]="destinationTrail(label.id)?.route?.id === selectedRouteId()"
+          [attr.data-market-town]="label.id"
+          [attr.data-market-kind]="label.isCurrent ? 'buy' : 'sell'"
+          [attr.aria-label]="
+            label.location.name + (label.isCurrent ? ' current buying prices' : ' selling prices')
+          "
+          [style.left.px]="label.x"
+          [style.top.px]="label.y"
+          [style.width.px]="label.width"
+          [style.height.px]="label.height"
+        >
+          @if (label.isCurrent) {
+            <div class="town-market-heading">
+              <strong>{{ label.location.shortName }}</strong
+              ><span>You are here</span>
+            </div>
+          } @else {
+            <button
+              type="button"
+              [attr.aria-label]="label.location.name + ' travel prediction'"
+              (click)="selectDestination(label.location)"
+            >
+              <strong>{{ label.location.shortName }}</strong
+              ><span aria-hidden="true">↗</span>
+            </button>
+          }
+          <small>{{ label.isCurrent ? 'Buy here' : 'Sell here' }} · price per unit</small>
+          <dl>
+            @for (price of label.prices; track price.goodId) {
+              <div>
+                <dt>{{ price.name }}</dt>
+                <dd>{{ price.price }}</dd>
+              </div>
+            }
+          </dl>
+        </section>
+      }
+    }
+    @if (predictionPosition(); as position) {
+      <svg
+        class="prediction-leader"
+        [attr.viewBox]="'0 0 ' + mapSize().width + ' ' + mapSize().height"
+        aria-hidden="true"
+      >
+        <line
+          [attr.x1]="position.anchorX"
+          [attr.y1]="position.anchorY"
+          [attr.x2]="position.x + position.width / 2"
+          [attr.y2]="position.y + position.height"
+        />
+        <circle [attr.cx]="position.anchorX" [attr.cy]="position.anchorY" r="5" />
+      </svg>
+      <div
+        class="route-prediction-anchor"
+        [attr.data-prediction-route]="predictionRouteId()"
+        [style.left.px]="position.x"
+        [style.top.px]="position.y"
+        [style.width.px]="position.width"
+        [style.height.px]="position.height"
+      >
+        <ng-content />
+      </div>
+    }
     @if (view().zoom > 1) {
       <div class="pan-controls" aria-label="Pan map">
         <button type="button" aria-label="Pan map left" (click)="pan(-12, 0)">←</button>
@@ -237,25 +365,27 @@
       </div>
     }
   </div>
-  <div class="map-caption">
-    <div class="legend" aria-label="Map legend">
-      <span><i></i>Available</span><span><i class="selected"></i>Selected</span>
-      <span><i class="completed"></i>Traveled</span><span><i class="locked"></i>Rank locked</span>
-      <span><i class="blocked"></i>Transport blocked</span>
+  @if (!workspace()) {
+    <div class="map-caption">
+      <div class="legend" aria-label="Map legend">
+        <span><i></i>Available</span><span><i class="selected"></i>Selected</span>
+        <span><i class="completed"></i>Traveled</span><span><i class="locked"></i>Rank locked</span>
+        <span><i class="blocked"></i>Transport blocked</span>
+      </div>
+      <div class="layer-controls">
+        <button
+          type="button"
+          [attr.aria-pressed]="showTerrain()"
+          (click)="showTerrain.set(!showTerrain())"
+        >
+          Scenery
+        </button>
+        <button type="button" [attr.aria-pressed]="motion()" (click)="motion.set(!motion())">
+          Motion {{ motion() ? 'on' : 'off' }}
+        </button>
+      </div>
     </div>
-    <div class="layer-controls">
-      <button
-        type="button"
-        [attr.aria-pressed]="showTerrain()"
-        (click)="showTerrain.set(!showTerrain())"
-      >
-        Scenery
-      </button>
-      <button type="button" [attr.aria-pressed]="motion()" (click)="motion.set(!motion())">
-        Motion {{ motion() ? 'on' : 'off' }}
-      </button>
-    </div>
-  </div>
+  }
   <div class="selection-preview" aria-live="polite" aria-atomic="true">
     @if (selectedTrail(); as trail) {
       <div>

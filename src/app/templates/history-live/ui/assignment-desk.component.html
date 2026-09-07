@@ -4,37 +4,11 @@
       <div>
         <span>ASSIGNMENT DESK · {{ runtime.selectedNetwork()?.shortName }}</span>
         <h1 id="assignment-title">What deserves airtime?</h1>
-        <p>Choose a developing story—or bring the desk an angle no one else has seen.</p>
       </div>
-      <button class="pitch-own" type="button" (click)="runtime.pitchOwnStory()">
-        <span>+</span> Pitch my own story
-      </button>
     </header>
 
     <div class="desk-layout">
-      <aside class="beats" aria-label="Available news beats">
-        <span class="rail-label">NEWS BEATS</span>
-        @for (beat of runtime.config.beats; track beat.id) {
-          <button type="button" (click)="openBeat(beat.id)">
-            <strong>{{ beat.glyph }}</strong
-            ><span
-              >{{ beat.label }}<small>{{ beat.prompt }}</small></span
-            >
-          </button>
-        }
-      </aside>
-
       <div class="story-stage">
-        <div class="wire-topline">
-          <span
-            ><i></i> THE DESK IS MOVING · {{ runtime.availableLeads().length }} STORIES NEED A
-            REPORTER</span
-          >
-          <small
-            >{{ runtime.assignmentScene()?.locationLabel }} · GRAB THE HEADLINE YOU WANT ON
-            AIR</small
-          >
-        </div>
         <div
           class="story-pick-scene"
           [class.crown-room]="runtime.state().selectedSide === 'british'"
@@ -61,136 +35,148 @@
               <b>CLAIM THIS STORY →</b>
             </button>
           }
-          <div class="scene-ticker">
-            <strong>NEWSWIRE</strong
-            ><span>Pick a paper · Pitch the angle · Verify the claim · Take it live</span>
-          </div>
         </div>
-        <p class="scene-instruction">
-          <strong>Walk the room.</strong> Each paper is a live story lead. Select one to bring it to
-          the producer—or pitch an angle the desk has missed.
-        </p>
       </div>
     </div>
   } @else {
     <header class="pitch-header">
-      <button type="button" (click)="runtime.goTo('assignment')">← Assignment desk</button>
       <div>
-        <span>EDITORIAL PITCH · {{ runtime.state().pitch.status }}</span>
-        <h1 id="assignment-title">Make the case for your story</h1>
+        @if (pitchStep() === 0) {
+          <span>BUILD A STORY · STEP 1</span>
+        }
+        <h1 id="assignment-title" tabindex="-1">
+          {{
+            pitchSteps[pitchStep()] === 'Question'
+              ? 'What will your story investigate?'
+              : pitchSteps[pitchStep()]
+          }}
+        </h1>
       </div>
-      <p>
-        <strong>Editorial standard</strong> Focused question · credible evidence · opposing view
-      </p>
     </header>
-
-    <div class="pitch-layout">
-      <form class="pitch-form" (submit)="$event.preventDefault(); runtime.submitPitch()">
-        <p class="wide" role="status">
-          Status: {{ runtime.state().pitch.status }}. {{ runtime.state().pitch.feedback }}
-        </p>
-        <label
-          >Report as of<input
+    @if (pitchStep() === 0) {
+      <app-history-live-story-investigation-preview
+        [historicalEvent]="runtime.config.event"
+        [headline]="runtime.state().pitch.headline"
+        (buildStory)="setPitchStep(1)"
+      />
+    }
+    <div class="pitch-layout" [hidden]="pitchStep() === 0">
+      <form
+        class="pitch-form"
+        tabindex="-1"
+        (submit)="$event.preventDefault(); runtime.submitPitch()"
+      >
+        @if (runtime.state().pitch.feedback) {
+          <p class="wide" role="status">{{ runtime.state().pitch.feedback }}</p>
+        }
+        <label [hidden]="pitchStep() !== 1" class="wide">
+          <span>My headline</span>
+          <input
+            [value]="runtime.state().pitch.headline"
+            (input)="updatePitch('headline', $event)"
+          />
+        </label>
+        <label [hidden]="pitchStep() !== 1" class="wide">
+          <span>My question</span>
+          <textarea
+            rows="3"
+            [value]="runtime.state().pitch.storyQuestion"
+            (input)="updatePitch('storyQuestion', $event)"
+            placeholder="I want to find out…"
+          ></textarea>
+        </label>
+        <label [hidden]="pitchStep() !== 2" class="wide">
+          <span>What evidence would help me answer?</span>
+          <textarea
+            rows="4"
+            [value]="runtime.state().pitch.evidenceNeeded"
+            (input)="updatePitch('evidenceNeeded', $event)"
+          ></textarea>
+        </label>
+        <label [hidden]="pitchStep() !== 3" class="wide">
+          <span>What might the other newsroom challenge?</span>
+          <textarea
+            rows="4"
+            [value]="runtime.state().pitch.opposingChallenge"
+            (input)="updatePitch('opposingChallenge', $event)"
+          ></textarea>
+        </label>
+        <label [hidden]="pitchStep() !== 4" class="wide">
+          <span>What do I expect the evidence to show?</span>
+          <textarea
+            rows="4"
+            [value]="runtime.state().pitch.initialPrediction"
+            (input)="updatePitch('initialPrediction', $event)"
+          ></textarea>
+        </label>
+        <label [hidden]="pitchStep() !== 5" class="wide">
+          <span>Why should my audience hear this story?</span>
+          <textarea
+            rows="4"
+            [value]="runtime.state().pitch.whyAirtime"
+            (input)="updatePitch('whyAirtime', $event)"
+          ></textarea>
+        </label>
+        <label [hidden]="pitchStep() !== 6"
+          >Report as of
+          <input
             type="date"
             [value]="runtime.state().pitch.asOfDate || ''"
             (input)="updatePitch('asOfDate', $event)"
-        /></label>
-        <label
-          >Reporting approach<select
+          />
+        </label>
+        <label [hidden]="pitchStep() !== 6"
+          >Reporting approach
+          <select
             [value]="runtime.state().pitch.reportingMode || 'contemporary'"
             (change)="updatePitch('reportingMode', $event)"
           >
             <option value="contemporary">As events unfold: no later evidence</option>
             <option value="retrospective">Retrospective: identify later evidence on air</option>
-          </select></label
-        >
-        <p class="wide">
-          Publication date alone does not prove a reporter could access a document. Explain access,
-          location, and limits in your evidence reasoning.
-        </p>
-        <label class="wide">
-          <span>Working headline <small>What will viewers remember?</small></span>
-          <input
-            [value]="runtime.state().pitch.headline"
-            (input)="updatePitch('headline', $event)"
-            placeholder="Write a clear, specific headline"
-          />
+          </select>
         </label>
-        <label>
-          <span>News beat</span>
+        <label [hidden]="pitchStep() !== 6"
+          >News beat
           <select [value]="runtime.state().pitch.beatId" (change)="updatePitch('beatId', $event)">
             @for (beat of runtime.config.beats; track beat.id) {
-              <option [selected]="beat.id === runtime.state().pitch.beatId" [value]="beat.id">
-                {{ beat.label }}
-              </option>
+              <option [value]="beat.id">{{ beat.label }}</option>
             }
           </select>
         </label>
-        <label>
-          <span>Report format</span>
+        <label [hidden]="pitchStep() !== 6"
+          >Report format
           <select
             [value]="runtime.state().pitch.reportFormat"
             (change)="runtime.setReportFormat($any($event.target).value)"
           >
             @for (format of runtime.config.reportFormats; track format) {
-              <option [selected]="format === runtime.state().pitch.reportFormat" [value]="format">
-                {{ format }}
-              </option>
+              <option [value]="format">{{ format }}</option>
             }
           </select>
         </label>
-        <label class="wide">
-          <span>Story question <small>Make it answerable with evidence</small></span>
-          <textarea
-            rows="2"
-            [value]="runtime.state().pitch.storyQuestion"
-            (input)="updatePitch('storyQuestion', $event)"
-          ></textarea>
-        </label>
-        <label class="wide">
-          <span>Why this deserves airtime</span>
-          <textarea
-            rows="2"
-            [value]="runtime.state().pitch.whyAirtime"
-            (input)="updatePitch('whyAirtime', $event)"
-          ></textarea>
-        </label>
-        <label>
-          <span>Evidence you need</span>
-          <textarea
-            rows="3"
-            [value]="runtime.state().pitch.evidenceNeeded"
-            (input)="updatePitch('evidenceNeeded', $event)"
-          ></textarea>
-        </label>
-        <label>
-          <span>Initial prediction</span>
-          <textarea
-            rows="3"
-            [value]="runtime.state().pitch.initialPrediction"
-            (input)="updatePitch('initialPrediction', $event)"
-            placeholder="What do you expect the evidence to show?"
-          ></textarea>
-        </label>
-        <label class="wide opposing-field">
-          <span
-            >Opposing-network check <small>What might the other newsroom challenge?</small></span
-          >
-          <textarea
-            rows="2"
-            [value]="runtime.state().pitch.opposingChallenge"
-            (input)="updatePitch('opposingChallenge', $event)"
-          ></textarea>
-        </label>
-        <footer class="pitch-actions">
-          <div>
-            <i [class.ready]="runtime.pitchReady()"></i
-            ><span>{{
-              runtime.pitchReady()
-                ? 'Pitch ready for desk review'
-                : 'Complete the required editorial fields'
-            }}</span>
-          </div>
+        <section class="wide review-check" [hidden]="pitchStep() !== 6" aria-label="Pitch review">
+          <strong>{{ runtime.state().pitch.headline }}</strong>
+          <dl>
+            <dt>My question</dt>
+            <dd>{{ runtime.state().pitch.storyQuestion }}</dd>
+            <dt>Evidence</dt>
+            <dd>{{ runtime.state().pitch.evidenceNeeded }}</dd>
+            <dt>Another perspective</dt>
+            <dd>{{ runtime.state().pitch.opposingChallenge }}</dd>
+            <dt>My prediction</dt>
+            <dd>{{ runtime.state().pitch.initialPrediction }}</dd>
+            <dt>My audience</dt>
+            <dd>{{ runtime.state().pitch.whyAirtime }}</dd>
+          </dl>
+          @if (missingRequirements().length) {
+            <ul>
+              @for (item of missingRequirements(); track item) {
+                <li>{{ item }}</li>
+              }
+            </ul>
+          }
+        </section>
+        <div class="pitch-actions" [hidden]="pitchStep() !== 6">
           <button
             type="submit"
             [disabled]="
@@ -200,45 +186,10 @@
               runtime.state().pitch.status === 'approved'
             "
           >
-            Send to producer <span aria-hidden="true">→</span>
+            Send to producer →
           </button>
-        </footer>
-      </form>
-      <aside class="pitch-sidebar">
-        <div class="network-badge" [class.british]="runtime.state().selectedSide === 'british'">
-          <span>{{ runtime.state().selectedSide === 'patriot' ? 'C' : 'CR' }}</span>
-          <div>
-            <small>REPORTING FOR</small><strong>{{ runtime.selectedNetwork()?.name }}</strong>
-          </div>
         </div>
-        <section>
-          <span class="sidebar-label">DESK NOTES</span>
-          <p>
-            Choosing a side means studying a perspective. It does not mean producing propaganda.
-          </p>
-          <ul>
-            <li>Separate fact from interpretation</li>
-            <li>Name uncertainty</li>
-            <li>Attribute major claims</li>
-            <li>Use the other network’s best challenge</li>
-          </ul>
-        </section>
-        <section class="approval-path">
-          <span class="sidebar-label">APPROVAL PATH</span>
-          <div class="done">
-            <i>1</i
-            ><span
-              >Network selected<small>{{ runtime.selectedNetwork()?.shortName }}</small></span
-            >
-          </div>
-          <div>
-            <i>2</i><span>Producer review<small>Focus & evidence</small></span>
-          </div>
-          <div>
-            <i>3</i><span>Source wall<small>Research begins</small></span>
-          </div>
-        </section>
-      </aside>
+      </form>
     </div>
   }
 </section>

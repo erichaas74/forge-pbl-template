@@ -33,6 +33,33 @@
         </div>
       }
       <p>{{ evidence().summary }}</p>
+      @if (sourceRecord(); as record) {
+        @if (record.text) {
+          <p class="source-transcript">{{ record.text }}</p>
+        }
+        @if (record.rows) {
+          <div class="result-table-scroll">
+            <table class="source-table">
+              <thead>
+                <tr>
+                  @for (column of record.columns; track $index) {
+                    <th scope="col">{{ column }}</th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of record.rows; track $index) {
+                  <tr>
+                    @for (cell of row; track $index) {
+                      <td>{{ cell }}</td>
+                    }
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      }
       @if (evidence().resultMatrix; as matrix) {
         <section class="result-matrix" aria-labelledby="result-matrix-title">
           <h3 id="result-matrix-title">{{ matrix.title }}</h3>
@@ -69,88 +96,103 @@
       }
     </section>
 
-    <section class="guided-step">
-      <span class="step-number">1</span>
-      <div>
-        <h3>Look closely</h3>
-        <p>What do you notice before deciding what this clue means?</p>
-        <label>
-          Evidence note
-          <textarea
-            rows="3"
-            [ngModel]="note()"
-            (ngModelChange)="note.set($event)"
-            (blur)="saveNote()"
-            placeholder="I notice…"
-          ></textarea>
-        </label>
-        <button class="quiet-action" type="button" (click)="saveNote()">Save observation</button>
-      </div>
-    </section>
-
-    <section class="guided-step">
-      <span class="step-number">2</span>
-      <fieldset>
-        <legend>Decide what this clue does</legend>
-        <p>Your classification records your interpretation; it is not graded as right or wrong.</p>
-        <div class="classification-actions">
-          <button
-            type="button"
-            [class.selected]="evidence().classification === 'supports'"
-            [attr.aria-pressed]="evidence().classification === 'supports'"
-            (click)="classificationChanged.emit('supports')"
-          >
-            <span aria-hidden="true">+</span> Supports
-          </button>
-          <button
-            type="button"
-            [class.selected]="evidence().classification === 'uncertain'"
-            [attr.aria-pressed]="evidence().classification === 'uncertain'"
-            (click)="classificationChanged.emit('uncertain')"
-          >
-            <span aria-hidden="true">?</span> Uncertain
-          </button>
-          <button
-            type="button"
-            [class.selected]="evidence().classification === 'contradicts'"
-            [attr.aria-pressed]="evidence().classification === 'contradicts'"
-            (click)="classificationChanged.emit('contradicts')"
-          >
-            <span aria-hidden="true">−</span> Contradicts
-          </button>
+    @if (!referenceOnly()) {
+      <section class="guided-step">
+        <span class="step-number">1</span>
+        <div>
+          <h3>Look closely</h3>
+          <p>What do you notice before deciding what this clue means?</p>
+          <label>
+            Evidence note
+            <textarea
+              rows="3"
+              [ngModel]="note()"
+              (ngModelChange)="note.set($event)"
+              (blur)="saveNote()"
+              placeholder="I notice…"
+            ></textarea>
+          </label>
+          <button class="quiet-action" type="button" (click)="saveNote()">Save observation</button>
         </div>
-      </fieldset>
-    </section>
+      </section>
 
-    <section class="guided-step">
-      <span class="step-number">3</span>
-      <div>
-        <h3>Use the evidence</h3>
-        <div class="evidence-actions">
-          <button
-            type="button"
-            [attr.aria-pressed]="evidence().important"
-            (click)="importanceChanged.emit(!evidence().important)"
-          >
-            <span aria-hidden="true">{{ evidence().important ? '★' : '☆' }}</span>
-            {{ evidence().important ? 'Marked important' : 'Mark important' }}
-          </button>
-          <button type="button" (click)="finalEvidenceSelected.emit()">
-            <span aria-hidden="true">＋</span> Add to final evidence set
-          </button>
+      @if (!requireClaim() || claim()) {
+        <section class="guided-step">
+          <span class="step-number">2</span>
+          <fieldset>
+            <legend>Decide what this clue does</legend>
+            @if (claim()) {
+              <p><strong>Your current idea:</strong> {{ claim() }}</p>
+            }
+            <p>
+              Your classification records your interpretation; it is not graded as right or wrong.
+            </p>
+            <div class="classification-actions">
+              <button
+                type="button"
+                [class.selected]="evidence().classification === 'supports'"
+                [attr.aria-pressed]="evidence().classification === 'supports'"
+                (click)="classificationChanged.emit('supports')"
+              >
+                <span aria-hidden="true">+</span> Supports
+              </button>
+              <button
+                type="button"
+                [class.selected]="evidence().classification === 'uncertain'"
+                [attr.aria-pressed]="evidence().classification === 'uncertain'"
+                (click)="classificationChanged.emit('uncertain')"
+              >
+                <span aria-hidden="true">?</span> Uncertain
+              </button>
+              <button
+                type="button"
+                [class.selected]="evidence().classification === 'contradicts'"
+                [attr.aria-pressed]="evidence().classification === 'contradicts'"
+                (click)="classificationChanged.emit('contradicts')"
+              >
+                <span aria-hidden="true">−</span> Contradicts
+              </button>
+            </div>
+          </fieldset>
+        </section>
+      } @else {
+        <p>
+          Write your current idea in My explanation before deciding whether this evidence supports
+          it.
+        </p>
+      }
+
+      <section class="guided-step">
+        <span class="step-number">3</span>
+        <div>
+          <h3>Use the evidence</h3>
+          <div class="evidence-actions">
+            <button
+              type="button"
+              [attr.aria-pressed]="evidence().important"
+              (click)="importanceChanged.emit(!evidence().important)"
+            >
+              <span aria-hidden="true">{{ evidence().important ? '★' : '☆' }}</span>
+              {{ evidence().important ? 'Marked important' : 'Mark important' }}
+            </button>
+            <button type="button" (click)="finalEvidenceSelected.emit()">
+              <span aria-hidden="true">＋</span>
+              {{ requireClaim() ? 'Use in my explanation' : 'Add to final evidence set' }}
+            </button>
+          </div>
+          <label>
+            Ask a question about this evidence
+            <input
+              type="text"
+              [ngModel]="question()"
+              (ngModelChange)="question.set($event)"
+              (keyup.enter)="addQuestion()"
+              placeholder="Why did this happen?"
+            />
+          </label>
+          <button class="quiet-action" type="button" (click)="addQuestion()">Add question</button>
         </div>
-        <label>
-          Ask a question about this evidence
-          <input
-            type="text"
-            [ngModel]="question()"
-            (ngModelChange)="question.set($event)"
-            (keyup.enter)="addQuestion()"
-            placeholder="Why did this happen?"
-          />
-        </label>
-        <button class="quiet-action" type="button" (click)="addQuestion()">Add question</button>
-      </div>
-    </section>
+      </section>
+    }
   }
 </article>

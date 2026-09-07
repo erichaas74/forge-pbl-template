@@ -1,27 +1,62 @@
-<section class="atlas" aria-label="Journey map workspace">
-  <header class="atlas-tools">
-    <div class="cover-switch" aria-label="Map scale">
-      <button type="button" [attr.aria-pressed]="cover() === 'regional'" (click)="setCover('regional')">
-        Atlantic chart
-      </button>
-      <button type="button" [attr.aria-pressed]="cover() === 'world'" (click)="setCover('world')">
-        World chart
-      </button>
+<section
+  class="atlas"
+  [class.regional]="cover() === 'regional'"
+  [class.immersive]="immersive()"
+  aria-label="Journey map workspace"
+>
+  @if (!immersive()) {
+    <div class="chart-heading">
+      <div>
+        <span class="chart-kicker">Expedition atlas</span>
+        <h2>{{ map().title }}</h2>
+      </div>
+      <span class="chart-edition"
+        >{{ cover() === 'regional' ? 'Atlantic passage' : 'World overview'
+        }}<small>Chart your course · Record your story</small></span
+      >
     </div>
-    <div class="zoom-tools" aria-label="Map zoom">
-      <button type="button" aria-label="Zoom out" [disabled]="zoom() <= 1" (click)="zoomBy(-0.25)">−</button>
-      <output aria-label="Zoom level">{{ (zoom() * 100).toFixed(0) }}%</output>
-      <button type="button" aria-label="Zoom in" [disabled]="zoom() >= 2.8" (click)="zoomBy(0.25)">+</button>
-      <button type="button" (click)="resetView()">Fit map</button>
-    </div>
-  </header>
+    <header class="atlas-tools">
+      <div class="cover-switch" aria-label="Map scale">
+        <button
+          type="button"
+          [attr.aria-pressed]="cover() === 'regional'"
+          (click)="setCover('regional')"
+        >
+          Atlantic chart
+        </button>
+        <button type="button" [attr.aria-pressed]="cover() === 'world'" (click)="setCover('world')">
+          World chart
+        </button>
+      </div>
+      <div class="zoom-tools" aria-label="Map zoom">
+        <button
+          type="button"
+          aria-label="Zoom out"
+          [disabled]="zoom() <= 1"
+          (click)="zoomBy(-0.25)"
+        >
+          −
+        </button>
+        <output aria-label="Zoom level">{{ (zoom() * 100).toFixed(0) }}%</output>
+        <button
+          type="button"
+          aria-label="Zoom in"
+          [disabled]="zoom() >= 2.8"
+          (click)="zoomBy(0.25)"
+        >
+          +
+        </button>
+        <button type="button" (click)="resetView()">Fit map</button>
+      </div>
+    </header>
+  }
 
   <div class="map-stage">
     <svg
       class="world-map"
       [attr.viewBox]="viewBox()"
       tabindex="0"
-      role="img"
+      role="group"
       [attr.aria-label]="mapLabel()"
       (keydown)="mapKey($event)"
     >
@@ -32,28 +67,44 @@
       </desc>
       <defs>
         <pattern id="longitude-grid" width="83.333" height="83.333" patternUnits="userSpaceOnUse">
-          <path d="M83.333 0H0V83.333" fill="none" stroke="#557f82" stroke-width="0.8" opacity=".28" />
+          <path
+            d="M83.333 0H0V83.333"
+            fill="none"
+            stroke="#557f82"
+            stroke-width="0.8"
+            opacity=".28"
+          />
         </pattern>
-        <pattern id="paper-grain" width="18" height="18" patternUnits="userSpaceOnUse">
-          <path d="M1 4l8-2m3 11l5-1M2 16l4-1" stroke="#76582d" stroke-width=".6" opacity=".12" />
-        </pattern>
-        <filter id="ink-shadow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#12262b" flood-opacity=".7" />
-        </filter>
       </defs>
 
-      <rect width="1000" height="500" fill="#b7d0c6" />
-      <rect width="1000" height="500" fill="url(#longitude-grid)" />
-      <g class="continents" aria-hidden="true">
-        <path d="M8 38L72 18 135 29 174 56 222 69 247 101 225 137 186 154 173 196 137 210 114 185 83 174 58 140 23 123Z" />
-        <path d="M244 212L279 219 310 248 322 296 306 354 282 416 257 451 242 405 247 348 226 292 215 246Z" />
-        <path d="M438 83L475 62 523 61 547 83 579 79 598 100 625 96 656 119 679 117 714 139 740 163 722 189 687 192 661 209 626 204 611 181 584 174 563 195 528 186 502 168 474 171 455 143 430 131Z" />
-        <path d="M507 187L558 187 591 219 607 265 591 331 563 399 535 377 514 322 487 286 481 234Z" />
-        <path d="M718 148L767 146 802 167 838 164 879 188 918 191 959 219 934 242 891 241 850 226 808 235 781 216 749 219 721 193Z" />
-        <path d="M843 335L880 326 919 346 929 382 894 400 850 388 828 360Z" />
-        <path d="M171 82L204 67 224 80 210 102 181 105Z" />
-      </g>
-      <rect width="1000" height="500" fill="url(#paper-grain)" pointer-events="none" />
+      <image
+        href="/journey-replay/world-coastlines.svg"
+        width="1000"
+        height="500"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      />
+      <image
+        href="/journey-replay/world-atlas-v1.png"
+        width="1000"
+        height="500"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      />
+      @if (lensOn('navigation')) {
+        <g class="navigation-layer" aria-hidden="true">
+          <rect width="1000" height="500" fill="url(#longitude-grid)" />
+          <path class="equator" d="M0 250H1000" />
+          <text class="ocean-label" x="403" y="220" transform="rotate(-12 403 220)">ATLANTIC</text>
+          <text class="ocean-label" x="398" y="233" transform="rotate(-12 398 233)">OCEAN</text>
+          <text class="ocean-label" x="692" y="322">INDIAN OCEAN</text>
+          <text class="ocean-label" x="134" y="275">PACIFIC OCEAN</text>
+          <text class="land-label" x="523" y="221">AFRICA</text>
+          <text class="land-label" x="310" y="300" transform="rotate(25 310 300)">
+            SOUTH AMERICA
+          </text>
+        </g>
+      }
 
       @if (lensOn('weather')) {
         <g class="weather-layer" aria-label="Weather lens">
@@ -61,7 +112,10 @@
           <path d="M302 221l15-3-8 13" />
           <path d="M431 244C391 262 357 283 329 314" />
           <path d="M329 314l15-3-8 13" />
-          <g transform="translate(390 275)"><circle r="25" /><text y="5">STORM</text></g>
+          <g transform="translate(390 275)">
+            <circle r="25" />
+            <text y="5">STORM</text>
+          </g>
         </g>
       }
       @if (lensOn('risk')) {
@@ -80,21 +134,53 @@
       }
 
       <g class="candidate-routes" aria-label="Available routes">
-        @for (routeId of candidateRouteIds(); track routeId) {
-          <path [attr.d]="candidatePath(routeId)" />
+        @for (route of candidateRoutes(); track route.id) {
+          <g
+            class="candidate-route"
+            [class.selected]="selectedRouteId() === route.id"
+            role="button"
+            tabindex="0"
+            [attr.aria-label]="candidateAriaLabel(route)"
+            (click)="inspectRoute(route.id)"
+            (keydown.enter)="inspectRoute(route.id)"
+            (keydown.space)="$event.preventDefault(); inspectRoute(route.id)"
+          >
+            <title>{{ candidateAriaLabel(route) }}</title>
+            <path class="route-hit" [attr.d]="candidatePath(route.id)" />
+            <path class="route-option" [attr.d]="candidatePath(route.id)" />
+            <text
+              class="route-choice-label"
+              [attr.x]="candidateLabelPoint(route).x"
+              [attr.y]="candidateLabelPoint(route).y - 7"
+            >
+              {{ candidateLabel(route.id) }}
+            </text>
+          </g>
         }
       </g>
 
       <g class="voyage-routes" aria-label="Recorded voyage routes">
         @for (layer of voyageLayers(); track layer.voyageId) {
-          <g [attr.class]="'voyage ' + teamClass(layer.team)" [style.--route-color]="layer.team.color">
+          <g
+            [attr.class]="'voyage ' + teamClass(layer.team)"
+            [class.featured]="featuredVoyageId() === layer.voyageId"
+            [class.context-route]="
+              featuredVoyageId() !== undefined && featuredVoyageId() !== layer.voyageId
+            "
+            [style.--route-color]="layer.team.color"
+          >
             <path class="route-shadow" [attr.d]="path(layer.route)" />
             <path class="route-line" [attr.d]="path(layer.route)" />
             @if (layer.team.linePattern === 'double') {
               <path class="route-line double-line" [attr.d]="path(layer.route)" />
             }
             @for (event of layer.events; track $index) {
-              <g class="event-marker" [attr.transform]="'translate(' + project(event.point).x + ' ' + project(event.point).y + ')'">
+              <g
+                class="event-marker"
+                [attr.transform]="
+                  'translate(' + project(event.point).x + ' ' + project(event.point).y + ')'
+                "
+              >
                 <circle r="7" />
                 <text y="3">•</text>
                 <title>{{ layer.team.name }} · {{ event.label }}</title>
@@ -110,18 +196,39 @@
             class="location"
             [class.inspected]="inspectedLocationId() === location.id"
             [class.shared]="intersectionAt(location.id)"
-            [attr.transform]="'translate(' + locationPoint(location).x + ' ' + locationPoint(location).y + ')'"
+            [class.candidate-destination]="candidateDestinationIds().has(location.id)"
+            [class.candidate-map-option]="candidateLocations().has(location.id)"
+            [class.selected-destination]="
+              selectedDestinationId() === location.id ||
+              selectedCandidateLocationId() === location.id
+            "
+            [class.active-decision]="activeLocationId() === location.id"
+            [attr.transform]="
+              'translate(' + locationPoint(location).x + ' ' + locationPoint(location).y + ')'
+            "
             role="button"
             tabindex="0"
-            [attr.aria-label]="location.name + '. ' + location.description"
+            [attr.aria-label]="locationAriaLabel(location)"
             (click)="inspect(location)"
             (keydown.enter)="inspect(location)"
             (keydown.space)="$event.preventDefault(); inspect(location)"
           >
-            <circle class="location-ring" r="10" />
-            <path class="port-pin" d="M0-8A7 7 0 0 1 7-1C7 4 0 10 0 10S-7 4-7-1A7 7 0 0 1 0-8Z" />
-            <circle class="pin-center" cy="-1" r="2" />
-            <text class="location-label" x="12" y="4">{{ location.shortName }}</text>
+            <g [attr.transform]="cover() === 'regional' ? 'scale(.62)' : null">
+              <circle class="location-ring" r="14" />
+              <path class="port-pin" d="M0-8A7 7 0 0 1 7-1C7 4 0 10 0 10S-7 4-7-1A7 7 0 0 1 0-8Z" />
+              <circle class="pin-center" cy="-1" r="2" />
+            </g>
+            <text
+              class="location-label"
+              [attr.x]="labelPlacement(location).x"
+              [attr.y]="labelPlacement(location).y"
+              [attr.text-anchor]="labelPlacement(location).anchor"
+            >
+              {{ location.shortName }}
+            </text>
+            @if (candidateLocationLabels()[location.id]; as optionLabel) {
+              <text class="map-option-label" y="-16">{{ optionLabel }}</text>
+            }
             @if (intersectionAt(location.id); as shared) {
               <text class="shared-count" y="-13">{{ shared.voyageIds.length }} routes</text>
             }
@@ -130,27 +237,51 @@
       </g>
 
       @if (currentPoint(); as ship) {
-        <g class="ship" [attr.transform]="'translate(' + project(ship).x + ' ' + project(ship).y + ')'" aria-label="Current expedition position">
-          <ellipse cy="8" rx="13" ry="4" />
-          <path d="M-12 2H12L7 9H-7Z" />
-          <path d="M-1-20V3M0-18L12-8H0ZM-2-15L-11-7H-2Z" />
-          <circle r="20" />
+        <g
+          class="ship"
+          [attr.transform]="'translate(' + project(ship).x + ' ' + project(ship).y + ')'"
+          aria-label="Current expedition position"
+        >
+          <g
+            [attr.transform]="
+              cover() === 'regional' ? 'translate(0 -13) scale(.65)' : 'translate(0 -18)'
+            "
+          >
+            <ellipse cy="10" rx="19" ry="4" />
+            <path class="ship-hull" d="M-19 2Q0 7 19 0L12 11H-10Z" />
+            <path class="ship-rigging" d="M-4-30V5M9-22V4M-17-2L-4-28 18-1" />
+            <path
+              class="ship-sails"
+              d="M-6-27Q-17-15-13-5L-6-6ZM-2-28Q13-17 6-7H-2ZM11-21Q22-12 17-5L11-4Z"
+            />
+            <path class="ship-flag" d="M-4-30L6-29-4-25Z" />
+          </g>
+          <circle r="11" />
         </g>
       }
 
       @if (route().length < 5 && classVoyages().length === 0) {
-        <g class="knowledge-fog" aria-label="Unmapped regions remain hidden">
+        <g class="knowledge-fog" aria-label="Uncharted regions">
           <path d="M620 75Q740 42 965 95L990 420Q802 462 666 427T620 75Z" />
           <text x="785" y="260">TERRA INCOGNITA</text>
         </g>
       }
-
-      <g class="compass-rose" transform="translate(930 420)" aria-hidden="true">
-        <circle r="34" />
-        <path d="M0-32L7-6 32 0 7 6 0 32-7 6-32 0-7-6Z" />
-        <text y="-39">N</text>
-      </g>
     </svg>
+    <div class="chart-compass" aria-hidden="true">
+      <svg viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="34" />
+        <circle cx="50" cy="50" r="29" />
+        <path d="M50 13L57 43 87 50 57 57 50 87 43 57 13 50 43 43Z" />
+        <path
+          class="compass-light"
+          d="M50 13V50L43 43ZM87 50H50L57 43ZM50 87V50L57 57ZM13 50H50L43 57Z"
+        />
+        <text x="50" y="10">N</text>
+        <text x="50" y="99">S</text>
+        <text x="5" y="54">W</text>
+        <text x="95" y="54">E</text>
+      </svg>
+    </div>
 
     @if (zoom() > 1) {
       <div class="pan-pad" aria-label="Pan map">
@@ -161,13 +292,26 @@
       </div>
     }
   </div>
+  @if (!immersive()) {
+    <div class="chart-legend" aria-label="Map legend">
+      <span><i class="legend-port"></i>Ports &amp; waypoints</span>
+      <span><i class="legend-route"></i>Possible passage</span>
+      <span
+        ><i class="legend-voyage" [style.background]="team().color"></i
+        >{{ featuredVoyageId() ? 'Featured voyage' : 'Recorded voyage' }}</span
+      >
+      @if (featuredVoyageId() && classVoyages().length > 1) {
+        <span><i class="legend-class"></i>Other class voyages</span>
+      }
+    </div>
 
-  <footer class="lens-tray" aria-label="Map lenses">
-    <span>Chart overlays</span>
-    @for (lens of map().lenses; track lens) {
-      <button type="button" [attr.aria-pressed]="lensOn(lens)" (click)="toggleLens(lens)">
-        {{ lens }}
-      </button>
-    }
-  </footer>
+    <footer class="lens-tray" aria-label="Map lenses">
+      <span>Chart overlays</span>
+      @for (lens of map().lenses; track lens) {
+        <button type="button" [attr.aria-pressed]="lensOn(lens)" (click)="toggleLens(lens)">
+          {{ lens }}
+        </button>
+      }
+    </footer>
+  }
 </section>

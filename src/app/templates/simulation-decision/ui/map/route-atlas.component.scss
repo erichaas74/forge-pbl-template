@@ -2,6 +2,9 @@
 :host {
   display: block;
 }
+:host:has(.workspace-atlas) {
+  height: 100%;
+}
 .atlas {
   position: relative;
   min-height: 38rem;
@@ -216,6 +219,154 @@ output {
 .checkpoint {
   pointer-events: none;
 }
+.route-cost {
+  cursor: pointer;
+}
+.route-cost[role='button']:hover rect,
+.route-cost[aria-expanded='true'] rect {
+  fill: #bde8e5;
+  stroke: #126877;
+}
+.route-cost:focus-visible {
+  outline: none;
+}
+.route-cost:focus-visible rect {
+  stroke: #075dcc;
+  stroke-width: 0.8;
+}
+.route-prediction-anchor {
+  position: absolute;
+  z-index: 12;
+}
+.prediction-leader {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 11;
+}
+.prediction-leader line {
+  stroke: #78d3d4;
+  stroke-width: 3;
+}
+.prediction-leader circle {
+  fill: #78d3d4;
+  stroke: #164f5b;
+  stroke-width: 2;
+}
+.route-cost rect {
+  fill: #fff2ca;
+  stroke: #815928;
+  stroke-width: 0.3;
+}
+.route-cost text {
+  fill: #35250f;
+  font:
+    800 1.75px Arial,
+    sans-serif;
+  text-anchor: middle;
+}
+.market-leaders {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.market-leaders line {
+  stroke: #fff0bf;
+  stroke-width: 2;
+  stroke-dasharray: 4 3;
+}
+.town-market {
+  position: absolute;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: hidden;
+  color: #34291a;
+  background: #fff8e8f5;
+  border: 2px solid #997647;
+  border-radius: 8px;
+  box-shadow: 0 3px 12px #1c130b66;
+  font:
+    14px/1.3 Arial,
+    sans-serif;
+}
+.town-market.chosen {
+  border-color: #167384;
+  box-shadow: 0 0 0 2px #82d3d5;
+}
+.town-market button,
+.town-market-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 5px 8px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: #dfc893;
+  color: #34291a;
+  font:
+    700 15px/1.2 Georgia,
+    serif;
+  text-align: left;
+}
+.town-market.current {
+  border-color: #286857;
+}
+.town-market-heading {
+  box-sizing: border-box;
+  background: #d2e5d5;
+  color: #244f40;
+}
+.town-market-heading span {
+  font:
+    10px/1.2 Arial,
+    sans-serif;
+  max-width: 40px;
+}
+.town-market button:hover {
+  background: #ecdbaa;
+  color: #34291a;
+}
+.town-market button:focus-visible {
+  outline: 3px solid #147381;
+  outline-offset: -3px;
+}
+.town-market > small {
+  padding: 3px 8px;
+  font-size: 11px;
+  color: #6b5635;
+}
+.town-market dl {
+  overflow: auto;
+  overscroll-behavior: contain;
+  min-height: 0;
+  margin: 0;
+  padding: 0 8px 4px;
+}
+.town-market dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  min-height: 22px;
+}
+.town-market dt {
+  overflow-wrap: anywhere;
+}
+.town-market dd {
+  margin: 0;
+  color: #24543c;
+  font-weight: 800;
+  white-space: nowrap;
+}
 .checkpoint circle {
   fill: #fff0b4;
   stroke: #7d5019;
@@ -308,6 +459,15 @@ output {
   fill: #efffd9;
   font:
     700 1.55px Arial,
+    sans-serif;
+  paint-order: stroke;
+  stroke: #1c160d;
+  stroke-width: 1;
+}
+.place-price {
+  fill: #ffe59a;
+  font:
+    800 1.4px Arial,
     sans-serif;
   paint-order: stroke;
   stroke: #1c160d;
@@ -492,6 +652,48 @@ output {
   clip-path: inset(50%);
   white-space: nowrap;
 }
+.workspace-atlas {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.workspace-atlas .map-tools {
+  position: relative;
+  inset: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0.25rem;
+  border-radius: 0;
+}
+.workspace-atlas .map-window {
+  flex: 1;
+  min-height: 0;
+}
+.workspace-atlas .route-map {
+  height: 100%;
+  min-height: 0;
+  aspect-ratio: auto;
+}
+.workspace-atlas .map-caption {
+  position: relative;
+  inset: auto;
+  margin: 0;
+  padding: 0.25rem;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.workspace-atlas .legend {
+  width: auto;
+}
+.workspace-atlas .selection-preview {
+  display: none;
+}
+.workspace-atlas .pan-controls {
+  bottom: 0.5rem;
+}
 .still * {
   animation: none !important;
 }
@@ -563,5 +765,19 @@ output {
   }
   .selection-preview button {
     width: 100%;
+  }
+}
+@media (max-width: 640px) {
+  .workspace-atlas .map-caption {
+    display: none;
+  }
+  .workspace-atlas .map-tools {
+    flex-wrap: nowrap;
+    gap: 0.15rem;
+  }
+  .workspace-atlas .map-tools button {
+    min-height: 2.75rem;
+    padding-inline: 0.3rem;
+    font-size: 0.65rem;
   }
 }

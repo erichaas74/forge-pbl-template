@@ -1,3 +1,4 @@
+import { TaskGuideComponent } from '../../../shared/learning/task-guide.component';
 import {
   afterEveryRender,
   Component,
@@ -8,8 +9,8 @@ import {
   OnDestroy,
   signal,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
 
+import { ChoiceProgressionPanelComponent } from './progression/choice-progression-panel.component';
 import { choiceProgression } from '../domain/choice-progression';
 import { routeProfitForecast } from '../domain/simulation-decision.engine';
 import type { SimulationView } from '../domain/simulation-decision.models';
@@ -69,7 +70,8 @@ interface ResourceFeedback {
 @Component({
   selector: 'app-simulation-decision-shell',
   imports: [
-    RouterLink,
+    TaskGuideComponent,
+    ChoiceProgressionPanelComponent,
     SimulationCargoViewComponent,
     SimulationCompanySetupComponent,
     SimulationEventDecisionComponent,
@@ -111,6 +113,9 @@ export class SimulationDecisionShellComponent implements OnDestroy {
     });
   }
   readonly runtime = inject(SimulationDecisionRuntimeService);
+  readonly progression = computed(() =>
+    choiceProgression(this.runtime.config, this.runtime.state()),
+  );
   readonly helpOpen = signal(false);
   readonly teacherConfirmOpen = signal(false);
   readonly sceneTransition = signal<SceneTransition | undefined>(undefined);
@@ -127,9 +132,9 @@ export class SimulationDecisionShellComponent implements OnDestroy {
     { space: 'finish', label: 'Finish', icon: '★' },
   ];
   readonly expeditionNavigation: readonly ContextNavigationItem[] = [
-    { view: 'market', label: '1 · Shops & Goods', icon: '▦' },
-    { view: 'route', label: '2 · Choose Route', icon: '⌁' },
-    { view: 'cargo', label: '3 · Check Wagon', icon: '▣' },
+    { view: 'route', label: 'Choose Route', icon: '⌁' },
+    { view: 'market', label: 'Shops & Goods', icon: '▦' },
+    { view: 'cargo', label: 'Check Wagon', icon: '▣' },
   ];
   readonly journalNavigation: readonly ContextNavigationItem[] = [
     { view: 'ledger', label: 'Money Record', icon: '≡' },
@@ -241,16 +246,7 @@ export class SimulationDecisionShellComponent implements OnDestroy {
       this.navigate(this.locked('results') ? 'ledger' : 'results');
       return;
     }
-    const arrivedHere = this.runtime
-      .state()
-      .routeHistory.some(
-        (route) =>
-          route.dayArrived !== undefined &&
-          route.knownInfoSnapshot.toLocationId === this.runtime.state().currentLocationId,
-      );
-    this.navigate(
-      arrivedHere || this.runtime.state().routeHistory.length === 0 ? 'market' : 'route',
-    );
+    this.navigate('route');
   }
 
   spaceForView(view: SimulationView): StudentSpace | 'teacher' {
@@ -488,7 +484,7 @@ export class SimulationDecisionShellComponent implements OnDestroy {
           remaining === 1
             ? 'Choose one more glowing shop and read what the merchant knows.'
             : 'Visit the General Store and one more shop. Each shop reveals goods and a clue.',
-        actionLabel: 'Show the next shop',
+        actionLabel: 'Find the next shop, then select it',
         actionView: 'market',
         focusSelector: '.stall.mission-target',
         current: requirement.current,

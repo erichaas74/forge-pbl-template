@@ -25,6 +25,11 @@ export interface RuntimeEngineDefinitionAdapter<TDefinitions> {
   ): ReadonlyMap<string, StateVariableConstraint>;
 }
 
+export interface RuntimeAuthorityPolicy {
+  readonly mode: 'localMock' | 'serverConfirmed';
+  readonly allowLocalAuthorityBypass?: boolean;
+}
+
 export class RuntimeEngine<
   TState extends CoreRuntimeState,
   TDefinitions = unknown,
@@ -42,6 +47,7 @@ export class RuntimeEngine<
     private readonly eventLog: RuntimeEventLog = new BoundedRuntimeEventLog(),
     private readonly tracer: RuntimeTracer = new NoopRuntimeTracer(),
     private readonly maximumDerivedEventDepth = 8,
+    private readonly authorityPolicy: RuntimeAuthorityPolicy = { mode: 'localMock' },
   ) {}
 
   async dispatch(
@@ -163,7 +169,8 @@ export class RuntimeEngine<
       scope,
       definitions,
       stateDefinitions: this.definitionAdapter.stateDefinitions(definitions),
-      authorityMode: 'localMock' as const,
+      authorityMode: this.authorityPolicy.mode,
+      allowLocalAuthorityBypass: this.authorityPolicy.allowLocalAuthorityBypass,
     };
     const directPreview = await this.commandExecutor.execute(
       direct.commands,

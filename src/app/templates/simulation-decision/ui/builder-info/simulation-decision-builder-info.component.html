@@ -5,7 +5,7 @@
       <span>Builder information</span>
       <strong>{{ config.title }}</strong>
     </div>
-    <a class="open-game" routerLink="/frontier-trading">Open student game →</a>
+    <a class="open-game" [routerLink]="studentRoute">Open student game →</a>
   </header>
 
   <section class="builder-hero">
@@ -17,7 +17,7 @@
         <button type="button" (click)="copySnapshot()">
           {{ copiedPath() === '__snapshot__' ? '✓ Snapshot copied' : 'Copy current snapshot' }}
         </button>
-        <a routerLink="/frontier-trading">Preview student path</a>
+        <a [routerLink]="studentRoute">Preview student path</a>
       </div>
     </div>
     <aside>
@@ -214,6 +214,6 @@
 
   <footer class="builder-footer">
     <div><strong>{{ config.projectId }}@{{ config.projectVersion }}</strong><span>{{ info.updatedBy }}</span></div>
-    <a routerLink="/frontier-trading">Return to student game →</a>
+      <a [routerLink]="studentRoute">Return to student game →</a>
   </footer>
 </main>

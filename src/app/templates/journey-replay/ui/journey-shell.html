@@ -1,114 +1,532 @@
 <main class="journey-page">
   <header class="command-bar">
-    <a routerLink="/projects" aria-label="Return to project library">← Projects</a>
-    <div class="project-title"><span>{{ runtime.config.subtitle }}</span><h1>{{ runtime.config.title }}</h1></div>
+    <a class="project-return-link" routerLink="/projects">← Projects</a>
+    <div class="project-title">
+      <span>Forge PBL · {{ runtime.step()?.title || 'Journey complete' }}</span>
+      <h1>{{ runtime.config.title }}</h1>
+    </div>
+
     <div class="voyage-status">
       <span>{{ runtime.config.team.emblem }} {{ runtime.config.team.name }}</span>
       <div><i [style.width.%]="runtime.progressPercent()"></i></div>
-      <small>{{ runtime.progressPercent() }}% recorded · {{ runtime.authorityState() }}</small>
+      <small>{{ runtime.progressPercent() }}% recorded · {{ runtime.saveLabel() }}</small>
     </div>
-    @if (view() === 'class') {
-      <button type="button" (click)="returnToJourney()">Return to voyage</button>
-    } @else if (runtime.isTeacher() || !runtime.session()) {
-      <button type="button" class="class-map-button" (click)="openClassMap()">Class map</button>
-    }
+
+    <nav class="artifact-tools" aria-label="Expedition tools">
+      <button
+        type="button"
+        class="map-home-tool"
+        [attr.aria-pressed]="mapOnly()"
+        (click)="showMapOnly()"
+      >
+        <span aria-hidden="true">🗺</span><small>Map</small>
+      </button>
+      <button
+        type="button"
+        [attr.aria-pressed]="view() === 'journey' && decisionOpen()"
+        (click)="openDecision()"
+      >
+        <span aria-hidden="true">☷</span><small>Chapter</small>
+      </button>
+      <button
+        type="button"
+        class="guide-tool"
+        [attr.aria-pressed]="utility() === 'mission'"
+        (click)="openUtility('mission')"
+      >
+        <span aria-hidden="true">⌖</span><small>Guide</small>
+      </button>
+      <details class="voyage-menu" #voyageMenu>
+        <summary>My voyage</summary>
+        <div (click)="voyageMenu.open = false">
+          <a [routerLink]="['/projects', runtime.config.projectId]">Project opening</a>
+          <a [routerLink]="['/projects', runtime.config.projectId, 'final-demo']">Final example</a>
+          <button
+            type="button"
+            [attr.aria-pressed]="utility() === 'location'"
+            (click)="openUtility('location')"
+          >
+            <span aria-hidden="true">◉</span><small>Place</small>
+          </button>
+          <button
+            type="button"
+            [attr.aria-pressed]="utility() === 'manifest'"
+            (click)="openUtility('manifest')"
+          >
+            <span aria-hidden="true">▤</span><small>Manifest</small>
+          </button>
+          <button
+            type="button"
+            [attr.aria-pressed]="utility() === 'log'"
+            (click)="openUtility('log')"
+          >
+            <span aria-hidden="true">▣</span><small>Captain's log</small>
+          </button>
+          <button
+            type="button"
+            [attr.aria-pressed]="utility() === 'records'"
+            (click)="openUtility('records')"
+          >
+            <span aria-hidden="true">⇩</span><small>Backup</small>
+          </button>
+          <button
+            type="button"
+            class="replay-tool"
+            [disabled]="runtime.state().replayTimeline.length === 0"
+            (click)="openReplay()"
+          >
+            <span aria-hidden="true">▶</span><small>Replay</small>
+          </button>
+          @if (runtime.isTeacher() || !runtime.session()) {
+            <button type="button" (click)="openClassMap()">Class map</button>
+          }
+        </div>
+      </details>
+    </nav>
   </header>
 
-  @if (view() === 'journey') {
-    <section class="journey-workspace">
-      <nav class="artifact-tools" aria-label="Expedition tools">
-        <button type="button" [attr.aria-pressed]="utility() === 'mission'" (click)="openUtility('mission')"><span aria-hidden="true">⌖</span><small>Compass</small></button>
-        <button type="button" [attr.aria-pressed]="utility() === 'location'" (click)="openUtility('location')"><span aria-hidden="true">◉</span><small>Spyglass</small></button>
-        <button type="button" [attr.aria-pressed]="utility() === 'manifest'" (click)="openUtility('manifest')"><span aria-hidden="true">▤</span><small>Manifest</small></button>
-        <button type="button" [attr.aria-pressed]="utility() === 'log'" (click)="openUtility('log')"><span aria-hidden="true">▣</span><small>Captain’s log</small></button>
-        <button type="button" class="replay-tool" [disabled]="runtime.state().replayTimeline.length === 0" (click)="openReplay()"><span aria-hidden="true">▶</span><small>Replay</small></button>
-      </nav>
+  <section class="map-experience" aria-label="Race Around the World map workspace">
+    <div class="map-canvas">
+      <app-living-journey-map
+        [map]="runtime.config.map"
+        [route]="runtime.state().route"
+        [team]="runtime.config.team"
+        [candidateRouteIds]="candidateRouteIds()"
+        [candidateRouteLabels]="candidateRouteLabels()"
+        [selectedRouteId]="selectedRouteId()"
+        [candidateLocationIds]="candidateLocationIds()"
+        [candidateLocationLabels]="candidateLocationLabels()"
+        [selectedCandidateLocationId]="selectedPlanningTarget()?.locationId"
+        [activeLocationId]="runtime.step()?.positionLocationId"
+        [immersive]="true"
+        mapLabel="Interactive Atlantic journey map. Choose highlighted routes and inspect places."
+        (locationInspected)="inspectLocation($event)"
+        (routeInspected)="inspectRoute($event)"
+      />
+    </div>
 
-      <section class="map-column">
-        <app-living-journey-map
-          [map]="runtime.config.map"
-          [route]="runtime.state().route"
-          [team]="runtime.config.team"
-          [candidateRouteIds]="candidateRouteIds()"
-          mapLabel="Interactive Atlantic journey map"
-          (locationInspected)="inspectLocation($event)"
-        />
-        @if (utility(); as openUtilityName) {
-          <aside class="utility-sheet" [attr.aria-label]="openUtilityName">
-            <button type="button" class="utility-close" aria-label="Close tool" (click)="utility.set(undefined)">×</button>
-            @switch (openUtilityName) {
-              @case ('mission') {
-                <span>Current heading</span><h2>{{ runtime.step()?.title || 'Journey recorded' }}</h2>
-                <p>{{ runtime.step()?.mission || runtime.config.drivingQuestion }}</p>
-                <dl><div><dt>Driving question</dt><dd>{{ runtime.config.drivingQuestion }}</dd></div><div><dt>Student role</dt><dd>{{ runtime.config.roles.join(' · ') }}</dd></div></dl>
+    @if (livingMap(); as map) {
+      <details class="map-settings map-tools-popout">
+        <summary>
+          <span aria-hidden="true">🗺</span>
+          <span>
+            <strong>Map tools</strong>
+            <small>{{ map.cover() === 'regional' ? 'Atlantic' : 'World' }}</small>
+          </span>
+        </summary>
+        <div class="map-settings-body">
+          <fieldset>
+            <legend>Map view</legend>
+            <div class="map-button-row">
+              <button
+                type="button"
+                [attr.aria-pressed]="map.cover() === 'regional'"
+                (click)="map.setCover('regional')"
+              >
+                Atlantic
+              </button>
+              <button
+                type="button"
+                [attr.aria-pressed]="map.cover() === 'world'"
+                (click)="map.setCover('world')"
+              >
+                World
+              </button>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Zoom</legend>
+            <div class="map-button-row map-zoom-row">
+              <button
+                type="button"
+                aria-label="Zoom map out"
+                [disabled]="map.zoom() <= 1"
+                (click)="map.zoomBy(-0.25)"
+              >
+                −
+              </button>
+              <output aria-label="Map zoom level">{{ (map.zoom() * 100).toFixed(0) }}%</output>
+              <button
+                type="button"
+                aria-label="Zoom map in"
+                [disabled]="map.zoom() >= 2.8"
+                (click)="map.zoomBy(0.25)"
+              >
+                +
+              </button>
+              <button type="button" (click)="map.resetView()">Fit map</button>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Chart overlays</legend>
+            <div class="map-button-row overlay-buttons">
+              @for (lens of runtime.config.map.lenses; track lens) {
+                <button
+                  type="button"
+                  [attr.aria-pressed]="map.lensOn(lens)"
+                  (click)="map.toggleLens(lens)"
+                >
+                  {{ lens }}
+                </button>
               }
-              @case ('location') {
-                <span>Spyglass report</span><h2>{{ inspectedLocation()?.name || 'Choose a map location' }}</h2>
-                <p>{{ inspectedLocation()?.description || 'Select any marked port or waypoint to inspect it.' }}</p>
-                @if (inspectedLocation(); as location) {
-                  <dl><div><dt>Region</dt><dd>{{ location.regionId }}</dd></div><div><dt>Coordinates</dt><dd>{{ location.latitude.toFixed(2) }}°, {{ location.longitude.toFixed(2) }}°</dd></div></dl>
-                }
-              }
-              @case ('manifest') {
-                <span>Ship’s manifest</span><h2>Expedition resources</h2>
-                <div class="resource-list">
-                  @for (resource of runtime.config.resources; track resource.id) {
-                    <div><header><strong>{{ resource.label }}</strong><output>{{ runtime.state().resources[resource.id] }}{{ resource.unit }}</output></header><div><i [style.width.%]="(runtime.state().resources[resource.id] / resource.maximum) * 100"></i></div></div>
-                  }
-                </div>
-              }
-              @case ('log') {
-                <span>Captain’s log</span><h2>{{ runtime.state().completedSteps.length }} chapters recorded</h2>
-                <div class="log-list">
-                  @for (record of runtime.state().completedSteps; track record.stepId) {
-                    <article><small>Chapter {{ $index + 1 }}</small><strong>{{ choiceLabel(record.stepId) }}</strong><p>{{ record.studentResponse.text || record.studentResponse.transcript || 'Audio response attached' }}</p><footer>@for (mastery of record.masteryResults; track mastery.masteryTag) { <span>✓ {{ mastery.masteryTag }}</span> }</footer></article>
-                  } @empty { <p>Your completed decisions and explanations will appear here.</p> }
-                </div>
-              }
-            }
-          </aside>
+            </div>
+          </fieldset>
+        </div>
+      </details>
+    }
+
+    @if (mapOnly()) {
+      <section class="map-prompt" aria-live="polite">
+        <span>Map workspace</span>
+        @if (candidateRouteIds().length > 0 || candidateLocationIds().length > 0) {
+          <strong>Select a glowing route or destination to compare your choices.</strong>
+          <small>The map opens route facts without taking you away from your voyage.</small>
+        } @else {
+          <strong>Explore any marked place, or return to the current chapter.</strong>
+          <small
+            >Your ship, completed route, and current decision location stay visible here.</small
+          >
         }
+        <button type="button" (click)="openDecision()">Open current chapter</button>
       </section>
+    }
 
-      <aside class="decision-column">
+    <aside
+      class="decision-sheet overlay-sheet"
+      [hidden]="view() !== 'journey' || !decisionOpen()"
+      aria-label="Current chapter"
+    >
+      <button type="button" class="sheet-close" (click)="showMapOnly()">
+        <span aria-hidden="true">×</span> Explore map
+      </button>
+      <div class="sheet-scroll">
+        @if (planningChoices().length > 0) {
+          <nav class="mission-goal-tabs" aria-label="Choose the expedition goal">
+            @for (choice of planningChoices(); track choice.id) {
+              <button
+                type="button"
+                [class.selected]="runtime.choice()?.id === choice.id"
+                [attr.aria-pressed]="runtime.choice()?.id === choice.id"
+                (click)="chooseGoal(choice.id)"
+              >
+                @if (choice.icon) {
+                  <span aria-hidden="true">{{ choice.icon }}</span>
+                }
+                <strong>{{ choice.label }}</strong>
+              </button>
+            }
+          </nav>
+        }
         <app-journey-decision-panel />
         @if (runtime.state().completionStatus === 'complete') {
-          <button type="button" class="play-journey" (click)="openReplay()">▶ Play my journey</button>
+          <button type="button" class="play-journey" (click)="openReplay()">
+            ▶ Play my journey
+          </button>
           <section class="submission-card" aria-labelledby="submission-title">
             <span>Teacher review</span>
             <h2 id="submission-title">Submit the recorded voyage</h2>
             @if (runtime.submission(); as submission) {
               <p class="submission-state" [class.approved]="submission.status === 'approved'">
-                {{ submission.status === 'revision-requested' ? 'Revision requested' : submission.status }}
+                {{
+                  submission.status === 'revision-requested'
+                    ? 'Revision requested'
+                    : submission.status
+                }}
               </p>
-              @if (submission.teacherFeedback) { <p>{{ submission.teacherFeedback }}</p> }
+              @if (submission.teacherFeedback) {
+                <p>{{ submission.teacherFeedback }}</p>
+              }
             } @else {
-              <p>Submission creates an authoritative snapshot. Later edits stay separate until you submit again.</p>
+              <p>
+                Submission creates an authoritative snapshot. Later edits stay separate until you
+                submit again.
+              </p>
             }
             @if (!runtime.session()) {
               <p>Open the signed-in hosted site to submit this local draft.</p>
             }
             @if (runtime.canSubmit()) {
               <button type="button" class="submit-journey" (click)="runtime.submitJourney()">
-                {{ runtime.submission()?.status === 'revision-requested' ? 'Resubmit journey' : 'Submit for review' }}
+                {{
+                  runtime.submission()?.status === 'revision-requested'
+                    ? 'Resubmit journey'
+                    : 'Submit for review'
+                }}
               </button>
             }
           </section>
         }
+      </div>
+    </aside>
+
+    @if (utility(); as openUtilityName) {
+      <aside class="utility-sheet overlay-sheet" [attr.aria-label]="openUtilityName">
+        <button
+          type="button"
+          class="utility-close"
+          aria-label="Close tool and return to map"
+          (click)="closeUtility()"
+        >
+          ×
+        </button>
+        @switch (openUtilityName) {
+          @case ('mission') {
+            <span>Current heading</span>
+            <h2>{{ runtime.step()?.title || 'Journey recorded' }}</h2>
+            <p>{{ runtime.step()?.mission || runtime.config.drivingQuestion }}</p>
+            <dl>
+              <div>
+                <dt>Driving question</dt>
+                <dd>{{ runtime.config.drivingQuestion }}</dd>
+              </div>
+              <div>
+                <dt>Student role</dt>
+                <dd>{{ runtime.config.roles.join(' · ') }}</dd>
+              </div>
+            </dl>
+            @if (runtime.config.learning; as learning) {
+              <details>
+                <summary>Words and ideas</summary>
+                <p>{{ learning.scopeNote }}</p>
+                <dl>
+                  @for (entry of learning.glossary; track entry.term) {
+                    <dt>{{ entry.term }}</dt>
+                    <dd>{{ entry.definition }}</dd>
+                  }
+                </dl>
+              </details>
+            }
+          }
+          @case ('location') {
+            <span>{{ inspectedRoute() ? 'Route report' : 'Map report' }}</span>
+            <h2>{{ inspectedLocation()?.name || 'Choose a map location' }}</h2>
+            <p>
+              {{
+                inspectedLocation()?.description ||
+                  'Select any marked port, waypoint, or glowing route to inspect it.'
+              }}
+            </p>
+
+            @if (inspectedRoute(); as route) {
+              @if (inspectedRouteChoice(); as routeChoice) {
+                <section class="route-detail" aria-labelledby="route-detail-title">
+                  <span>Possible decision</span>
+                  <h3 id="route-detail-title">{{ routeChoice.label }}</h3>
+                  <p>{{ routeChoice.summary }}</p>
+                  <dl>
+                    <div>
+                      <dt>Distance</dt>
+                      <dd>{{ route.distanceLabel }}</dd>
+                    </div>
+                    <div>
+                      <dt>Risk</dt>
+                      <dd>{{ route.risk }}</dd>
+                    </div>
+                    <div>
+                      <dt>Wind and navigation</dt>
+                      <dd>{{ route.windLabel }}</dd>
+                    </div>
+                  </dl>
+                  <p class="route-hint">{{ routeChoice.rationaleHint }}</p>
+                  <button type="button" class="choose-map-route" (click)="chooseInspectedRoute()">
+                    Choose {{ routeChoice.label }}
+                  </button>
+                </section>
+              }
+            } @else if (inspectedDestinationRoutes().length > 0) {
+              <section class="destination-routes" aria-labelledby="destination-routes-title">
+                <span>Routes to this place</span>
+                <h3 id="destination-routes-title">Compare on the map</h3>
+                @for (item of inspectedDestinationRoutes(); track item.route.id) {
+                  <button type="button" (click)="inspectRoute(item.route.id)">
+                    <strong>{{ item.choice?.label || 'Possible route' }}</strong>
+                    <small>{{ item.route.distanceLabel }} · {{ item.route.risk }} risk</small>
+                  </button>
+                }
+              </section>
+            } @else if (inspectedLocation(); as location) {
+              <dl>
+                <div>
+                  <dt>Region</dt>
+                  <dd>{{ location.regionId }}</dd>
+                </div>
+                <div>
+                  <dt>Coordinates</dt>
+                  <dd>{{ location.latitude.toFixed(2) }}°, {{ location.longitude.toFixed(2) }}°</dd>
+                </div>
+              </dl>
+            }
+          }
+          @case ('manifest') {
+            <span>Ship's manifest</span>
+            <h2>Expedition resources</h2>
+            <div class="resource-list">
+              @for (resource of runtime.config.resources; track resource.id) {
+                <div>
+                  <header>
+                    <strong>{{ resource.label }}</strong>
+                    <output>{{ runtime.state().resources[resource.id] }}{{ resource.unit }}</output>
+                  </header>
+                  <div>
+                    <i
+                      [style.width.%]="
+                        (runtime.state().resources[resource.id] / resource.maximum) * 100
+                      "
+                    ></i>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+          @case ('log') {
+            <span>Captain's log</span>
+            <h2>{{ runtime.state().completedSteps.length }} chapters recorded</h2>
+            <div class="log-list">
+              @for (record of runtime.state().completedSteps; track record.stepId) {
+                <article>
+                  <small>Chapter {{ $index + 1 }} · {{ stepTitle(record.stepId) }}</small>
+                  <strong>{{ choiceLabel(record.stepId) }}</strong>
+                  @if (record.studentResponse.prediction) {
+                    <p><b>Prediction:</b> {{ record.studentResponse.prediction }}</p>
+                  }
+                  <p>
+                    {{
+                      record.studentResponse.text ||
+                        record.studentResponse.transcript ||
+                        'Audio response attached'
+                    }}
+                  </p>
+                  @for (
+                    citation of record.studentResponse.citations ?? [];
+                    track citation.evidenceId + citation.paragraphId
+                  ) {
+                    <blockquote>
+                      <b>{{ citation.paragraphId }}</b> · {{ citation.explanation }}
+                    </blockquote>
+                  }
+                  @if ((record.responseRevisions?.length ?? 0) > 0) {
+                    <p class="revision-count">
+                      {{ record.responseRevisions?.length }} earlier response version(s) preserved
+                    </p>
+                  }
+                  <footer>
+                    @for (mastery of record.masteryResults; track mastery.masteryTag) {
+                      <span>✓ {{ mastery.masteryTag }}</span>
+                    }
+                    @if (runtime.submission()?.status !== 'approved') {
+                      <button type="button" (click)="runtime.openRevision(record.stepId)">
+                        Revise explanation
+                      </button>
+                    }
+                  </footer>
+                </article>
+              } @empty {
+                <p>Your completed decisions and explanations will appear here.</p>
+              }
+            </div>
+            @if (runtime.revisionStepId(); as stepId) {
+              <section class="revision-editor" aria-labelledby="revision-title">
+                <span>Preserves the earlier response</span>
+                <h3 id="revision-title">Revise {{ stepTitle(stepId) }}</h3>
+                <label>
+                  Updated explanation
+                  <textarea
+                    rows="5"
+                    [value]="runtime.revisionDraft().text"
+                    (input)="updateRevisionText($event)"
+                  ></textarea>
+                </label>
+                <label>
+                  Why are you revising?
+                  <textarea
+                    rows="3"
+                    [value]="revisionReason()"
+                    (input)="revisionReason.set($any($event.target).value)"
+                  ></textarea>
+                </label>
+                <div>
+                  <button type="button" (click)="runtime.revisionStepId.set(undefined)">
+                    Cancel
+                  </button>
+                  <button type="button" class="save-revision" (click)="saveRevision()">
+                    Save revision
+                  </button>
+                </div>
+              </section>
+            }
+          }
+          @case ('records') {
+            <span>Journey records</span>
+            <h2>Keep a portable backup</h2>
+            <p>
+              The JSON backup contains decisions, explanations, citations, route points, and
+              revision history. Audio files remain in their media storage.
+            </p>
+            <div class="backup-actions">
+              <button type="button" (click)="downloadBackup('device')">Download device copy</button>
+              @if (runtime.conflictRecord()) {
+                <button type="button" (click)="downloadBackup('class')">Download class copy</button>
+              }
+              <label>
+                Restore this learner's backup
+                <input
+                  type="file"
+                  accept="application/json,.json"
+                  (change)="importBackup($event)"
+                />
+              </label>
+              @if (runtime.saveState() === 'error' || runtime.authorityState() === 'offline') {
+                <button type="button" (click)="runtime.retrySave()">Retry save</button>
+              }
+            </div>
+          }
+        }
+        <button type="button" class="return-to-map" (click)="closeUtility()">
+          Keep exploring the map
+        </button>
       </aside>
-    </section>
+    }
 
-    <nav class="chapter-rail" aria-label="Journey chapters">
-      @for (step of runtime.config.steps; track step.id) {
-        <div [class.complete]="$index < runtime.state().currentStepIndex" [class.current]="$index === runtime.state().currentStepIndex"><span>{{ $index < runtime.state().currentStepIndex ? '✓' : step.chapter }}</span><p><small>{{ step.kicker }}</small><strong>{{ step.title }}</strong></p></div>
-      }
-    </nav>
-  } @else if (view() === 'class') {
-    <app-class-journey-map />
-  }
+    @if (view() === 'class') {
+      <section class="view-overlay class-overlay" aria-label="Class voyage overlay">
+        <button type="button" class="view-close" (click)="returnToJourney()">
+          × Return to map
+        </button>
+        <app-class-journey-map />
+      </section>
+    }
 
-  @if (view() === 'replay') { <app-journey-replay-player (closed)="returnToJourney()" /> }
+    @if (view() === 'replay') {
+      <section class="view-overlay replay-overlay" aria-label="Journey replay overlay">
+        <app-journey-replay-player [embedded]="true" (closed)="returnToJourney()" />
+      </section>
+    }
+
+    @if (runtime.conflictRecord()) {
+      <section class="conflict-banner" role="alert" aria-labelledby="conflict-title">
+        <div>
+          <span>Two saved copies</span>
+          <h2 id="conflict-title">Choose which journey to continue</h2>
+          <p>Download both copies first. Recorded decisions cannot be silently replaced.</p>
+        </div>
+        <div>
+          <button type="button" (click)="downloadBackup('device')">Download device</button>
+          <button type="button" (click)="downloadBackup('class')">Download class</button>
+          <button type="button" (click)="runtime.resolveConflict('device')">
+            Keep device copy
+          </button>
+          <button type="button" (click)="runtime.resolveConflict('class')">Use class copy</button>
+        </div>
+      </section>
+    }
+  </section>
+
   @if (runtime.notice() || runtime.error()) {
-    <div class="toast" [class.error]="runtime.error()" role="status"><span>{{ runtime.error() || runtime.notice() }}</span><button type="button" aria-label="Dismiss message" (click)="runtime.clearMessages()">×</button></div>
+    <div class="toast" [class.error]="runtime.error()" role="status">
+      <span>{{ runtime.error() || runtime.notice() }}</span>
+      <button type="button" aria-label="Dismiss message" (click)="runtime.clearMessages()">
+        ×
+      </button>
+    </div>
   }
 </main>

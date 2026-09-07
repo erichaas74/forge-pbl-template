@@ -1,4 +1,4 @@
-<section class="final-workspace" aria-labelledby="final-case-title">
+<section [class.read-only]="readOnly()" class="final-workspace" aria-labelledby="final-case-title">
   @if (runtime().finalSubmission.status === 'submitted') {
     <section class="submission-success" aria-live="polite">
       <span aria-hidden="true">✓</span>
@@ -6,13 +6,19 @@
         <small>Final investigation submitted</small>
         <h2>Your case has been recorded.</h2>
         <p>The official case reveal will be released by your teacher.</p>
-        <button type="button" (click)="caseBoardRequested.emit()">Review Case Board</button>
+        @if (!readOnly()) {
+          <button type="button" (click)="caseBoardRequested.emit()">Review Case Board</button>
+        }
       </div>
     </section>
   } @else {
     <header class="final-header">
       <div>
-        <span class="eyebrow">Build from the work you already created</span>
+        <span class="eyebrow">{{
+          readOnly()
+              ? 'Completed investigation · Fictional sample'
+            : 'Build from the work you already created'
+        }}</span>
         <h2 id="final-case-title">Final Investigation</h2>
       </div>
       <div class="final-progress">
@@ -25,12 +31,20 @@
       <div>
         <span aria-hidden="true">{{ ready() ? '✓' : '◇' }}</span>
         <div>
-          <strong>{{ ready() ? 'Final case is ready to build' : 'Final readiness check' }}</strong>
+          <strong>{{
+            readOnly()
+              ? 'Case file complete · Evidence available to inspect'
+              : ready()
+                ? 'Final case is ready to build'
+                : 'Final readiness check'
+          }}</strong>
           <p>
             {{
-              ready()
-                ? 'You can still return to the Case Board before submitting.'
-                : 'You may draft now, but finish the investigation record before submitting.'
+              readOnly()
+                ? 'Open the clues to see how the completed identification was supported.'
+                : ready()
+                  ? 'You can still return to the Case Board before submitting.'
+                  : 'You may draft now, but finish the investigation record before submitting.'
             }}
           </p>
         </div>
@@ -47,8 +61,10 @@
     <div class="final-pair">
       <aside class="investigation-record" aria-label="Investigation record">
         <header>
-          <span>Your investigation</span
-          ><button type="button" (click)="caseBoardRequested.emit()">Review Case Board</button>
+          <span>Your investigation</span>
+          @if (!readOnly()) {
+            <button type="button" (click)="caseBoardRequested.emit()">Review Case Board</button>
+          }
         </header>
         <section>
           <small>Current theory</small>
@@ -63,7 +79,7 @@
         <section>
           <small>Strongest support</small>
           @for (item of strongestSupport(); track item.id) {
-            <button type="button" (click)="previewEvidenceId.set(item.id)">
+            <button type="button" (click)="previewEvidenceRecord(item.id)">
               {{ item.title }}
             </button>
           }
@@ -71,7 +87,7 @@
         <section>
           <small>Biggest challenge</small>
           @for (item of biggestChallenges(); track item.id) {
-            <button type="button" (click)="previewEvidenceId.set(item.id)">
+            <button type="button" (click)="previewEvidenceRecord(item.id)">
               {{ item.title }}
             </button>
           }
@@ -87,9 +103,42 @@
               ×
             </button>
             <small>{{ preview.type }}</small>
-            <strong>{{ preview.title }}</strong>
+            <strong #previewHeading tabindex="-1">{{ preview.title }}</strong>
             <p>{{ preview.summary }}</p>
-            <span>Your analysis: {{ preview.classification ?? 'not classified' }}</span>
+            <span>Analysis: {{ preview.classification ?? 'not classified' }}</span>
+            <p><small>Source</small> {{ preview.source }}</p>
+            @if (preview.resultMatrix; as matrix) {
+              <div class="matrix-scroll">
+                <table>
+                  <caption>
+                    {{
+                      matrix.title
+                    }}
+                  </caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Sample</th>
+                      @for (column of matrix.columnLabels; track column) {
+                        <th scope="col">{{ column }}</th>
+                      }
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (row of matrix.rows; track row.id) {
+                      <tr>
+                        <th scope="row">{{ row.label }}</th>
+                        @for (cell of row.cells; track $index) {
+                          <td>{{ cell ?? '—' }}</td>
+                        }
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+            @for (note of preview.notes; track note) {
+              <p>{{ note }}</p>
+            }
           </article>
         }
       </aside>
@@ -101,11 +150,13 @@
             <h3>Restored Shelf Case File</h3>
           </div>
           <span class="save-state" aria-live="polite">{{
-            saveState() === 'saving'
-              ? 'Saving…'
-              : saveState() === 'pending'
-                ? 'Pending sync'
-                : 'Saved on this device'
+            readOnly()
+              ? 'Completed sample · Read only'
+              : saveState() === 'saving'
+                ? 'Saving…'
+                : saveState() === 'pending'
+                  ? 'Pending sync'
+                  : 'Saved on this device'
           }}</span>
         </header>
 
@@ -116,6 +167,7 @@
             ><small>Identify the four vials and explain the shelf arrangement.</small>
           </div>
           <textarea
+            [readOnly]="readOnly()"
             rows="3"
             [ngModel]="identification()"
             (ngModelChange)="updateText('identification', $event)"
@@ -179,6 +231,7 @@
                 <input
                   #finalEvidence
                   type="checkbox"
+                  [disabled]="readOnly()"
                   [checked]="selectedEvidenceIds().includes(item.id)"
                   (change)="toggleEvidence(item.id, finalEvidence.checked)"
                 />
@@ -188,7 +241,7 @@
                 >
                 <button
                   type="button"
-                  (click)="$event.stopPropagation(); previewEvidenceId.set(item.id)"
+                  (click)="$event.stopPropagation(); previewEvidenceRecord(item.id)"
                 >
                   Preview
                 </button>
@@ -206,6 +259,7 @@
             ><small>Why do these clues support your identification?</small>
           </div>
           <textarea
+            [readOnly]="readOnly()"
             rows="5"
             [ngModel]="reasoning()"
             (ngModelChange)="updateText('reasoning', $event)"
@@ -222,6 +276,7 @@
             >
           </div>
           <textarea
+            [readOnly]="readOnly()"
             rows="4"
             [ngModel]="counterevidence()"
             (ngModelChange)="updateText('counterevidence', $event)"
@@ -236,6 +291,7 @@
             ><small>What should the lab do next, including safe handling?</small>
           </div>
           <textarea
+            [readOnly]="readOnly()"
             rows="4"
             [ngModel]="recommendation()"
             (ngModelChange)="updateText('recommendation', $event)"
@@ -247,6 +303,7 @@
           <label
             ><strong>What remains uncertain?</strong
             ><textarea
+              [readOnly]="readOnly()"
               rows="3"
               [ngModel]="uncertainty()"
               (ngModelChange)="updateText('uncertainty', $event)"
@@ -258,6 +315,7 @@
             ><span class="range-label">Final confidence {{ confidence() }}%</span
             ><input
               type="range"
+              [disabled]="readOnly()"
               min="0"
               max="100"
               step="5"
@@ -268,6 +326,7 @@
           <label
             ><strong>Individual reflection</strong
             ><textarea
+              [readOnly]="readOnly()"
               rows="3"
               [ngModel]="reflection()"
               (ngModelChange)="updateText('reflection', $event)"
@@ -277,6 +336,7 @@
           <label
             ><strong>Your contribution</strong
             ><textarea
+              [readOnly]="readOnly()"
               rows="3"
               [ngModel]="individualContribution()"
               (ngModelChange)="updateText('individualContribution', $event)"
@@ -303,25 +363,27 @@
           }
         </section>
 
-        <footer>
-          @if (!connectionAvailable()) {
-            <p role="status">
-              Connection required to submit. Your draft remains saved on this device.
-            </p>
-          }
-          <button type="button" (click)="saveDraft()">Save draft</button>
-          <button
-            class="submit"
-            type="submit"
-            [disabled]="missingSections().length > 0 || !connectionAvailable()"
-          >
-            Submit final investigation
-          </button>
-        </footer>
+        @if (!readOnly()) {
+          <footer>
+            @if (!connectionAvailable()) {
+              <p role="status">
+                Connection required to submit. Your draft remains saved on this device.
+              </p>
+            }
+            <button type="button" (click)="saveDraft()">Save draft</button>
+            <button
+              class="submit"
+              type="submit"
+              [disabled]="missingSections().length > 0 || !connectionAvailable()"
+            >
+              Submit final investigation
+            </button>
+          </footer>
+        }
       </form>
     </div>
 
-    @if (confirmSubmit()) {
+    @if (!readOnly() && confirmSubmit()) {
       <div class="confirmation-backdrop">
         <section role="alertdialog" aria-modal="true" aria-labelledby="submit-confirm-title">
           <span class="eyebrow">Authoritative submission</span>

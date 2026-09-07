@@ -11,6 +11,8 @@
   }
 </header>
 
+<p class="faction-position"><strong>Arguing:</strong> {{ faction().position }}</p>
+
 <div class="rail-rule" aria-hidden="true"><i></i></div>
 
 <ol
@@ -18,44 +20,79 @@
   [attr.aria-label]="(faction().railLabel ?? faction().name) + ' argument record'"
 >
   @for (turn of filedTurns(); track turn.id) {
-    <li class="message-slip" [class.incoming]="isNewestIncoming(turn)">
-      <header>
+    <li
+      class="message-slip"
+      [class.incoming]="isNewestIncoming(turn)"
+      [class.expanded]="expandedTurnId() === turn.id"
+    >
+      <button
+        class="message-summary"
+        type="button"
+        [attr.aria-expanded]="expandedTurnId() === turn.id"
+        [attr.aria-controls]="'rail-turn-details-' + turn.id"
+        (click)="toggleTurn(turn)"
+      >
         <span>{{ romanNumeral(turn) }}</span>
         <div>
           <small>{{ turn.roundLabel }}</small
           ><strong>{{ runtime.roleLabel(turn) }}</strong>
+          <em>{{ turn.speakerDisplayName }}</em>
         </div>
         <b>{{ isNewestIncoming(turn) ? 'NEW' : 'FILED' }}</b>
-      </header>
-      <p class="speaker">{{ turn.speakerDisplayName }}</p>
-      <p class="faction-name">{{ faction().railLabel ?? faction().name }}</p>
-      <footer>
-        <time>{{ formattedDuration(turn) }}</time>
-        @if (isNewestIncoming(turn)) {
-          <button class="hear-now" type="button" (click)="openIncoming()">
-            <span aria-hidden="true">▶</span> Hear & mark
-          </button>
-        } @else {
-          <button type="button" (click)="toggleReplay(turn)">
-            <span aria-hidden="true">▶</span>
-            {{ expandedTurnId() === turn.id ? 'Close replay' : 'Replay' }}
-          </button>
-        }
-      </footer>
-      @if (expandedTurnId() === turn.id && turn.recording?.kind === 'video') {
-        <video
-          controls
-          preload="metadata"
-          [src]="turn.recording.downloadUrl"
-          aria-label="Filed student debate video"
-        ></video>
-      } @else if (expandedTurnId() === turn.id && turn.recording?.kind === 'audio') {
-        <audio
-          controls
-          preload="metadata"
-          [src]="turn.recording.downloadUrl"
-          aria-label="Filed student debate audio"
-        ></audio>
+        <i aria-hidden="true">{{ expandedTurnId() === turn.id ? '−' : '+' }}</i>
+      </button>
+
+      @if (expandedTurnId() === turn.id) {
+        <div class="message-details" [id]="'rail-turn-details-' + turn.id">
+          <div class="detail-meta">
+            <span>{{ faction().railLabel ?? faction().name }}</span>
+            <time>{{ formattedDuration(turn) }}</time>
+          </div>
+          <div class="detail-actions">
+            <button class="review-thread" type="button" (click)="reviewTurn(turn)">
+              Find in thread
+            </button>
+            <button type="button" (click)="hearTurn(turn)">
+              <span aria-hidden="true">▶</span> Hear argument
+            </button>
+            <button
+              type="button"
+              [attr.aria-expanded]="evidenceTurnId() === turn.id"
+              [attr.aria-controls]="'rail-evidence-' + turn.id"
+              (click)="toggleEvidence(turn)"
+            >
+              Evidence presented ({{ turn.evidenceIds.length }})
+            </button>
+          </div>
+
+          @if (evidenceTurnId() === turn.id) {
+            <div class="rail-evidence" [id]="'rail-evidence-' + turn.id">
+              @for (evidenceId of turn.evidenceIds; track evidenceId) {
+                <span>{{ evidenceTitle(evidenceId) }}</span>
+              } @empty {
+                <span>No evidence was attached to this argument.</span>
+              }
+            </div>
+          }
+
+          @if (replayTurnId() === turn.id && turn.recording?.kind === 'video') {
+            <video
+              controls
+              autoplay
+              preload="metadata"
+              [src]="turn.recording.downloadUrl"
+              aria-label="Filed student debate video"
+            ></video>
+          } @else if (replayTurnId() === turn.id && turn.recording?.kind === 'audio') {
+            <audio
+              controls
+              autoplay
+              preload="metadata"
+              [src]="turn.recording.downloadUrl"
+              aria-label="Filed student debate audio"
+            ></audio>
+          }
+        </div>
       }
     </li>
   } @empty {
@@ -106,7 +143,7 @@
 
 @if (isViewerFaction()) {
   <footer class="rail-tools">
-    <button type="button" (click)="runtime.openStation('evidence')">
+    <button type="button" (click)="evidenceRequested.emit()">
       <span aria-hidden="true">▱</span>
       Evidence Scrolls
       <small

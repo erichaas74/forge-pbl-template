@@ -16,3 +16,8 @@ export * from './runtime/investigation-command-handlers';
 export * from './runtime/investigation-condition-pack';
 export * from './runtime/investigation-event-pack';
 export * from './runtime/investigation-runtime-initializer';
+export * from './runtime/investigation-runtime.tokens';
+export * from './ui/case-board.component';
+export * from './ui/activity-host.component';
+export * from './ui/final-section-host.component';
+export * from './ui/investigation-shell.component';

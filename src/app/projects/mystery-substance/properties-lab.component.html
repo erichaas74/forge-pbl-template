@@ -1,4 +1,4 @@
-<section class="lab-canvas">
+<section class="lab-canvas" [class.embedded]="embedded()">
   <div class="lab-scene" role="img" aria-label="Physical properties bench"></div>
   <div class="lab-shade" aria-hidden="true"></div>
 
@@ -31,30 +31,32 @@
         }
       </ul>
 
-      <span class="kicker">Specimens</span>
-      <ul class="vial-row">
-        @for (vial of vials; track vial.vialId) {
-          <li>
-            <button
-              type="button"
-              [class.active]="vialId() === vial.vialId"
-              [style.--vial-color]="vial.color"
-              [disabled]="running()"
-              [attr.aria-pressed]="vialId() === vial.vialId"
-              [attr.aria-label]="
-                'Vial ' + vial.code + (hasRun(vial.vialId, testId()) ? ', already tested' : '')
-              "
-              (click)="selectVial(vial.vialId)"
-            >
-              <img [src]="vial.image" alt="" />
-              <strong>{{ vial.code }}</strong>
-              @if (hasRun(vial.vialId, testId())) {
-                <span class="done" aria-hidden="true">✓</span>
-              }
-            </button>
-          </li>
-        }
-      </ul>
+      @if (!embedded()) {
+        <span class="kicker">Specimens</span>
+        <ul class="vial-row">
+          @for (vial of vials; track vial.vialId) {
+            <li>
+              <button
+                type="button"
+                [class.active]="vialId() === vial.vialId"
+                [style.--vial-color]="vial.color"
+                [disabled]="running()"
+                [attr.aria-pressed]="vialId() === vial.vialId"
+                [attr.aria-label]="
+                  'Vial ' + vial.code + (hasRun(vial.vialId, testId()) ? ', already tested' : '')
+                "
+                (click)="selectVial(vial.vialId)"
+              >
+                <img [src]="vial.image" alt="" />
+                <strong>{{ vial.code }}</strong>
+                @if (hasRun(vial.vialId, testId())) {
+                  <span class="done" aria-hidden="true">✓</span>
+                }
+              </button>
+            </li>
+          }
+        </ul>
+      }
 
       @if (trials().length > 0) {
         <span class="kicker">Trial log</span>

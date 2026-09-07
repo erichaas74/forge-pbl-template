@@ -893,3 +893,12 @@ export const migratedInvestigationCapabilities = [
   'constrainedMultiEntityAssignment',
   'showcaseStudio',
 ] as const;
+
+/** Catalog identity; keep the original package export for legacy runtime saves. */
+export const mysterySubstanceCatalogPackage: Readonly<Record<string, unknown>> = {
+  ...mysterySubstanceProjectPackage,
+  'project.json': {
+    ...(mysterySubstanceProjectPackage['project.json'] as Record<string, unknown>),
+    id: 'mystery-substance',
+  },
+};

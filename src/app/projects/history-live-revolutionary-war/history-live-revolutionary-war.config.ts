@@ -1,7 +1,9 @@
 import { additionalRevolutionaryWarSources } from './revolutionary-war.sources';
+import { revolutionaryWarResearch } from './revolutionary-war.research';
 import type { HistoryLiveProjectConfig } from '../../templates/history-live/domain/history-live.models';
 
 export const historyLiveRevolutionaryWarConfig: HistoryLiveProjectConfig = {
+  researchLibrary: revolutionaryWarResearch,
   schemaVersion: '1.0',
   template: { id: 'history-live-broadcast', version: '1.1' },
   projectId: 'history-live-revolutionary-war',
@@ -437,8 +439,7 @@ export const historyLiveRevolutionaryWarConfig: HistoryLiveProjectConfig = {
       dateLabel: '1781; exact completion date unknown',
       sourceType: 'Map',
       perspective: 'multiple',
-      excerpt:
-        'An unfinished manuscript plan records siege works around Yorktown. Examine which positions are drawn and which details remain incomplete.',
+      excerpt: 'An unfinished manuscript plan records siege works around Yorktown.',
       context:
         'Maps emphasize selected terrain and movement. Check dates, scale, legend, and the mapmaker’s purpose.',
       citation:

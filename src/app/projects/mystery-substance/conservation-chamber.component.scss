@@ -426,7 +426,7 @@ h2 {
   text-transform: none;
 }
 
-@media (max-width: 1180px) {
+@container (max-width: 1180px) {
   .matter-grid {
     grid-template-columns: minmax(11rem, 0.8fr) minmax(0, 2fr);
   }
@@ -434,7 +434,7 @@ h2 {
     grid-column: 1 / -1;
   }
 }
-@media (max-width: 820px) {
+@container (max-width: 820px) {
   .matter-grid {
     grid-template-columns: 1fr;
   }
@@ -448,4 +448,18 @@ h2 {
   .balance-read {
     transition-duration: 0.001ms;
   }
+}
+
+:host {
+  container-type: inline-size;
+}
+:host(.workbench-station) {
+  position: relative;
+  inset: auto;
+}
+:host(.workbench-station) .matter-canvas {
+  position: relative;
+  inset: auto;
+  min-height: 34rem;
+  overflow: visible;
 }

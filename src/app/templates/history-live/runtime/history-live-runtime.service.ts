@@ -32,6 +32,8 @@ import type {
   ScriptBlockType,
 } from '../domain/history-live.models';
 import { HISTORY_LIVE_PERSISTENCE } from '../persistence/history-live.persistence';
+import { EMPTY_REPORTING, reduceReporting, validateReportingConfig } from '../reporting/story-reporting.engine';
+import type { PresentationFormat, ReportingAction } from '../reporting/story-reporting.models';
 import {
   HISTORY_LIVE_CONFIG,
   HISTORY_LIVE_ENROLLMENT,
@@ -52,7 +54,15 @@ export class HistoryLiveRuntimeService implements OnDestroy {
   private recordingGeneration = 0;
   private readonly flushListener = () => this.flushDrafts();
   private readonly persistence = inject(HISTORY_LIVE_PERSISTENCE);
-  private readonly initial = createInitialHistoryLiveState(this.config);
+  private readonly runtimeScope = {
+    tenantId: this.viewer.tenantId,
+    projectId: this.config.projectId,
+    projectVersion: this.config.projectVersion,
+    classId: this.viewer.classId,
+    studentId: this.viewer.studentId,
+    scopeType: 'student' as const,
+  };
+  private readonly initial = createInitialHistoryLiveState(this.config, this.runtimeScope);
 
   readonly state = signal<HistoryLiveRuntimeState>(this.load());
   readonly notification = signal<string | undefined>(undefined);
@@ -96,6 +106,7 @@ export class HistoryLiveRuntimeService implements OnDestroy {
       ).length,
   );
   readonly configurationErrors = [
+    ...validateReportingConfig(this.config),
     ...validateHistoryLiveVisualConfig(this.config),
     ...validateHistoryLiveContent(this.config),
   ];
@@ -196,7 +207,7 @@ export class HistoryLiveRuntimeService implements OnDestroy {
     }
     this.commit('network.selected', (state) => ({
       ...state,
-      ...createInitialHistoryLiveState(this.config),
+      ...createInitialHistoryLiveState(this.config, this.runtimeScope),
       role: state.role,
       selectedSide: side,
       pitch: { ...EMPTY_PITCH },
@@ -218,10 +229,10 @@ export class HistoryLiveRuntimeService implements OnDestroy {
       reportingMode: 'contemporary',
       beatId: lead.beatId,
       headline: lead.headline,
-      storyQuestion: lead.question,
-      whyAirtime: lead.whyNow,
+      storyQuestion: '',
+      whyAirtime: '',
       reportFormat: lead.format,
-      evidenceNeeded: 'At least two credible sources, including one primary source.',
+      evidenceNeeded: '',
       initialPrediction: '',
       opposingChallenge: '',
       status: 'draft',
@@ -971,7 +982,7 @@ export class HistoryLiveRuntimeService implements OnDestroy {
     this.recordingUrl.set(undefined);
     this.recordingState.set('idle');
     this.persistence.clear(this.config.projectId, this.config.projectVersion);
-    this.state.set(createInitialHistoryLiveState(this.config));
+    this.state.set(createInitialHistoryLiveState(this.config, this.runtimeScope));
     this.loadError = undefined;
     this.saveState.set('saved');
     this.error.set(undefined);
@@ -991,6 +1002,29 @@ export class HistoryLiveRuntimeService implements OnDestroy {
     this.mediaStream?.getTracks().forEach((track) => track.stop());
     this.mediaStream = undefined;
     this.mediaRecorder = undefined;
+  }
+
+  dispatchReporting(action: ReportingAction): void {
+    if (this.configurationErrors.length) { this.error.set(this.configurationErrors.join(' · ')); return; }
+    try {
+      const reporting = reduceReporting(this.state().reporting ?? EMPTY_REPORTING, action, this.config);
+      const draft = ['reporting.noteDraftChanged', 'reporting.boardChanged', 'reporting.presentationChanged'].includes(action.type);
+      this.error.set(undefined);
+      this.commit(action.type, state => ({ ...state, reporting }), 'student', { storyId: reporting.activeStoryId }, !draft);
+    } catch (error) { this.error.set(error instanceof Error ? error.message : 'REPORTING_ACTION_FAILED'); }
+  }
+
+  async configureReportingFormats(formats: readonly PresentationFormat[]): Promise<void> {
+    if (!this.config.reporting || !formats.length || new Set(formats).size !== formats.length || formats.some(format => !this.config.reporting!.allowedFormats.includes(format))) {
+      this.error.set('Select at least one configured presentation format.'); return;
+    }
+    await this.authorized('reporting.configureFormats', true, () => {
+      this.commit('reporting.formatsConfigured', state => {
+        const reporting = state.reporting ?? EMPTY_REPORTING;
+        const active = reporting.workspaces.find(work => work.storyId === reporting.activeStoryId);
+        return { ...state, reporting: { ...reporting, allowedFormats: [...formats], step: reporting.step === 'create' && active?.format && !formats.includes(active.format) ? 'format' : reporting.step } };
+      }, 'teacher', { formats });
+    }, { formats });
   }
 
   private commit(
@@ -1164,6 +1198,7 @@ export class HistoryLiveRuntimeService implements OnDestroy {
       return {
         ...this.initial,
         ...loaded,
+        runtimeScope: this.runtimeScope,
         role: this.viewer.mode === 'demo' ? loaded.role : this.viewer.role,
       };
     } catch (error) {

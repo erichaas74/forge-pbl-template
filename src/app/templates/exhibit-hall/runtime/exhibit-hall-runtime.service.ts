@@ -28,11 +28,25 @@ import { MuseumBoardRenderer } from '../renderers/museum-board/museum-board-rend
 import { parseMetaStepsEmbed } from '../renderers/metasteps/metasteps-embed';
 import { parsePresentationVideo } from '../renderers/video/presentation-video';
 import { SciencePosterRenderer } from '../renderers/science-poster/science-poster-renderer';
-import { EXHIBIT_HALL_CONFIG, EXHIBIT_HALL_PERSISTENCE } from './exhibit-hall.tokens';
+import {
+  EXHIBIT_HALL_CONFIG,
+  EXHIBIT_HALL_PERSISTENCE,
+  EXHIBIT_HALL_SESSION_CONTEXT,
+} from './exhibit-hall.tokens';
+import { projectSessionRuntimeScope } from '../../../core/context/project-session-context';
+import type { RuntimeScope } from '../../../core/state/runtime-state-contracts';
 
 @Injectable()
 export class ExhibitHallRuntimeService implements OnDestroy {
   readonly config = inject(EXHIBIT_HALL_CONFIG);
+  private readonly session = inject(EXHIBIT_HALL_SESSION_CONTEXT, { optional: true });
+  private readonly runtimeScope =
+    this.session === null
+      ? undefined
+      : projectSessionRuntimeScope(
+          this.session,
+          this.session.teamId === undefined ? 'student' : 'team',
+        );
   private readonly persistence = inject(EXHIBIT_HALL_PERSISTENCE);
   private readonly accessPolicy = new ExhibitAccessPolicy();
   private readonly validator = new ArtifactValidator();
@@ -63,6 +77,29 @@ export class ExhibitHallRuntimeService implements OnDestroy {
   readonly state = signal(this.loadOrCreateState());
   readonly composerDraft = signal(this.initialComposerDraft());
   readonly draftVersion = signal(0);
+  readonly usingStarter = computed(() => !this.state().composerDraft && this.draftVersion() === 0);
+  startOwnDraft(): void {
+    if (!this.usingStarter()) return;
+    const starter = this.composerDraft();
+    this.updateComposer({
+      ...starter,
+      title: '',
+      centralClaim: '',
+      objects: starter.objects.map((object) => ({
+        ...object,
+        description: '',
+        evidenceConnection: '',
+      })),
+      sources: starter.sources.map((source) => ({ ...source, citation: '' })),
+      immersiveGallery: starter.immersiveGallery
+        ? { ...starter.immersiveGallery, title: '', embedUrl: '' }
+        : undefined,
+      videoPresentation: starter.videoPresentation
+        ? { ...starter.videoPresentation, title: '', videoUrl: '', prototype: false }
+        : undefined,
+    });
+    this.openComposer();
+  }
 
   readonly actor = computed<ExhibitActor>(() => {
     if (this.role() === 'teacher') {
@@ -177,6 +214,7 @@ export class ExhibitHallRuntimeService implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (this.persistTimer) this.persist(this.state());
     clearTimeout(this.persistTimer);
   }
 
@@ -569,6 +607,8 @@ export class ExhibitHallRuntimeService implements OnDestroy {
   private updateComposer(value: MuseumBoardSnapshotData): void {
     this.composerDraft.set(value);
     this.draftVersion.update((version) => version + 1);
+    this.state.update((state) => ({ ...state, composerDraft: value }));
+    this.schedulePersist();
   }
 
   private applyResult(result: ExhibitMutationResult, persist: boolean, announce = true): boolean {
@@ -609,13 +649,14 @@ export class ExhibitHallRuntimeService implements OnDestroy {
   }
 
   private loadOrCreateState(): ExhibitHallState {
-    return (
-      this.persistence.load(this.config.projectId, this.config.projectVersion) ??
-      createInitialHallState(this.config, new MuseumBoardRenderer())
-    );
+    const saved = this.persistence.load(this.config.projectId, this.config.projectVersion);
+    return saved === undefined
+      ? createInitialHallState(this.config, new MuseumBoardRenderer(), this.runtimeScope)
+      : { ...saved, runtimeScope: this.runtimeScope ?? saved.runtimeScope };
   }
 
   private initialComposerDraft(): MuseumBoardSnapshotData {
+    if (this.state().composerDraft) return structuredClone(this.state().composerDraft!);
     const board = this.config.seedBoards.find((item) => item.teamId === this.config.viewer.teamId);
     if (board === undefined) {
       return {
@@ -643,6 +684,7 @@ export class ExhibitHallRuntimeService implements OnDestroy {
 export function createInitialHallState(
   config: ExhibitHallRuntimeService['config'],
   renderer: MuseumBoardRenderer,
+  runtimeScope?: RuntimeScope,
 ): ExhibitHallState {
   const createdAt = '2026-09-03T18:00:00.000Z';
   const artifacts = config.teams.map((team) => {
@@ -704,6 +746,7 @@ export function createInitialHallState(
     schemaVersion: '1.0',
     revision: 1,
     sequence: 100,
+    runtimeScope,
     hall: {
       id: 'hall-period-3',
       courseSectionId: config.courseSectionId,

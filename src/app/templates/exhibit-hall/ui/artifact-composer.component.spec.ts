@@ -1,3 +1,4 @@
+import { LOAD_OBJECT_MODEL_VIEWER } from '../../../shared/media/object-model-viewer.component';
 import { TestBed } from '@angular/core/testing';
 
 import { classExhibitHallConfig } from '../../../projects/class-exhibit-hall/class-exhibit-hall.config';
@@ -9,10 +10,16 @@ import { MuseumBoardComponent } from './museum-board.component';
 import { ArtifactComposerComponent } from './artifact-composer.component';
 
 describe('ArtifactComposerComponent', () => {
-  it('keeps a live station-only field view and opens full-screen review on demand', async () => {
+  beforeEach(() => {
+    HTMLDialogElement.prototype.showModal = vi.fn(function (this: HTMLDialogElement) {
+      this.open = true;
+    });
+  });
+  it('centers the objects and student claim, with steps in the header and full review on demand', async () => {
     await TestBed.configureTestingModule({
       imports: [ArtifactComposerComponent],
       providers: [
+        { provide: LOAD_OBJECT_MODEL_VIEWER, useValue: () => Promise.resolve() },
         {
           provide: EXHIBIT_RENDERER_COMPONENTS,
           useValue: [{ rendererType: 'museum-board-v1', component: MuseumBoardComponent }],
@@ -44,19 +51,22 @@ describe('ArtifactComposerComponent', () => {
     expect(element.querySelectorAll('.studio-map li button')).toHaveLength(6);
     expect(element.querySelector('.story-sheet')).not.toBeNull();
     expect(element.querySelector('.artifact-sheet')).toBeNull();
-    expect(element.querySelector('.live-story')?.textContent).toContain('Life Along the Nile');
+    expect(element.querySelector('.objects-to-ideas')).not.toBeNull();
+    expect(element.querySelector('.composer-header .studio-map')).not.toBeNull();
     expect(element.querySelector('.live-labels')).toBeNull();
 
     fixture.componentRef.setInput('draft', { ...draft, title: 'The Nile at Work' });
     fixture.detectChanges();
-    expect(element.querySelector('.live-story')?.textContent).toContain('The Nile at Work');
+    expect((element.querySelector('.plaque-field input') as HTMLInputElement).value).toBe(
+      'The Nile at Work',
+    );
 
-    (element.querySelector('.step-controls .next') as HTMLButtonElement).click();
+    (element.querySelector('.header-next') as HTMLButtonElement).click();
     fixture.detectChanges();
 
     expect(fixture.componentInstance.activeStep()).toBe(1);
-    expect(element.querySelectorAll('.object-editors article')).toHaveLength(3);
-    expect(element.querySelectorAll('.live-labels article')).toHaveLength(3);
+    expect(element.querySelectorAll('.object-editors article')).toHaveLength(2);
+    expect(element.querySelector('.studio-sidecar')).toBeNull();
     expect(element.querySelector('.live-story')).toBeNull();
 
     fixture.componentInstance.goToStep(5);

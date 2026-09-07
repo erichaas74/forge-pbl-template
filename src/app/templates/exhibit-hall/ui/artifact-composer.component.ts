@@ -1,4 +1,17 @@
-import { Component, ElementRef, computed, input, output, signal, viewChild } from '@angular/core';
+import { TaskGuideComponent } from '../../../shared/learning/task-guide.component';
+import { ObjectModelViewerComponent } from '../../../shared/media/object-model-viewer.component';
+import {
+  Component,
+  ElementRef,
+  computed,
+  input,
+  output,
+  signal,
+  viewChild,
+  afterNextRender,
+  inject,
+  Injector,
+} from '@angular/core';
 
 import { wordCount } from '../core/artifact-validator';
 import type {
@@ -80,12 +93,18 @@ const COMPOSER_STEPS: readonly ComposerStepDefinition[] = [
 
 @Component({
   selector: 'app-artifact-composer',
-  imports: [ExhibitRenderHostComponent],
+  imports: [ExhibitRenderHostComponent, TaskGuideComponent, ObjectModelViewerComponent],
   templateUrl: './artifact-composer.component.html',
   styleUrl: './artifact-composer.component.scss',
 })
 export class ArtifactComposerComponent {
+  private readonly injector = inject(Injector);
+  private readonly dialog = viewChild<ElementRef<HTMLElement>>('composerDialog');
+  constructor() {
+    afterNextRender(() => this.stepHeading()?.nativeElement.focus({ preventScroll: true }));
+  }
   readonly draft = input.required<MuseumBoardSnapshotData>();
+  readonly starterExample = input(false);
   readonly previewSnapshot = input.required<ExhibitSnapshot>();
   readonly validation = input.required<ArtifactValidationResult>();
   readonly publishLabel = input('Publish');
@@ -107,6 +126,16 @@ export class ArtifactComposerComponent {
   readonly videoUrlChanged = output<string>();
   readonly publishedRequested = output<void>();
   readonly steps = COMPOSER_STEPS;
+  readonly inspectedObject = signal(0);
+  readonly coreReady = computed(() => [0, 1, 2].every((index) => this.isStepComplete(index)));
+  readonly visibleSteps = computed(() =>
+    this.steps.slice(0, this.coreReady() ? this.steps.length : Math.max(3, this.activeStep() + 1)),
+  );
+  nextStep(): void {
+    if (this.activeStep() === 2 && !this.coreReady()) {
+      this.goToStep([0, 1, 2].find((index) => !this.isStepComplete(index)) ?? 0);
+    } else this.goToStep(this.activeStep() + 1);
+  }
   readonly activeStep = signal(0);
   readonly lastEditingStep = signal(0);
   readonly stepHeading = viewChild<ElementRef<HTMLElement>>('stepHeading');
@@ -133,7 +162,14 @@ export class ArtifactComposerComponent {
       this.lastEditingStep.set(this.activeStep());
     }
     this.activeStep.set(next);
-    queueMicrotask(() => this.stepHeading()?.nativeElement.focus());
+    afterNextRender(
+      () => {
+        const surface = this.dialog()?.nativeElement.querySelector<HTMLElement>('.work-surface');
+        if (surface) surface.scrollTop = 0;
+        this.stepHeading()?.nativeElement.focus({ preventScroll: true });
+      },
+      { injector: this.injector },
+    );
   }
 
   backToEditing(): void {

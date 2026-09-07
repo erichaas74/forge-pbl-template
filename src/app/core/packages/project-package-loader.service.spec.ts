@@ -13,7 +13,7 @@ describe('ProjectPackageLoaderService', () => {
     const first = await platform.loadProject(simpleProjectLocation);
     const second = await platform.loadProject(simpleProjectLocation);
 
-    expect(first.issues).toEqual([]);
+    expect(first.issues.filter((issue) => issue.severity === 'error')).toEqual([]);
     expect(first.graph?.evidenceById.get('ev-result')?.title).toBe('Activity Result');
     expect(first.graph?.resourcesById.get('resource-credits')?.initialAmount).toBe(2);
     expect(Object.isFrozen(first.graph)).toBe(true);

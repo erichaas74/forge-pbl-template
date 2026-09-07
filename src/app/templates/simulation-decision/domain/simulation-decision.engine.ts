@@ -19,16 +19,19 @@ import type {
   TradePreview,
   TradingSeasonResults,
 } from './simulation-decision.models';
+import type { RuntimeScope } from '../../../core/state/runtime-state-contracts';
 
 export function createSimulationState(
   config: SimulationDecisionConfig,
   seed = 20_260_902,
+  runtimeScope?: RuntimeScope,
 ): SimulationDecisionState {
   const timestamp = new Date().toISOString();
   return {
     simulationId: `${config.projectId}-local-attempt-1`,
     projectId: config.projectId,
     projectVersion: config.projectVersion,
+    runtimeScope,
     version: 0,
     seed,
     difficulty: 'standard',

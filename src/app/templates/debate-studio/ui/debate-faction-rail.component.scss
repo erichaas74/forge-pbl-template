@@ -4,7 +4,7 @@
   z-index: 8;
   display: grid;
   min-width: 0;
-  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
   height: 100%;
   overflow: hidden;
   border-inline: 1px solid #d6b56a42;
@@ -97,6 +97,22 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0 0.75rem;
+}
+
+.faction-position {
+  margin: 0;
+  border-block: 1px solid #c4a05b2e;
+  padding: 0.55rem 0.75rem;
+  color: #c8b58d;
+  background: #130c09c9;
+  font:
+    0.68rem/1.4 Georgia,
+    serif;
+}
+
+.faction-position strong {
+  color: #e7c978;
+  text-transform: uppercase;
 }
 .rail-rule::before,
 .rail-rule::after {
@@ -209,6 +225,21 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
+}
+
+.replay-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.35rem;
+}
+
+.replay-row button {
+  border: 0;
+  padding: 0.25rem;
+  color: #5e3c25;
+  background: transparent;
+  font-size: 0.62rem;
+  cursor: pointer;
 }
 .message-slip time {
   font:
@@ -375,4 +406,132 @@
   .incoming-seal {
     animation: none;
   }
+}
+
+/* Compact archive entries reveal playback and evidence only on demand. */
+.message-slip {
+  padding: 0;
+  overflow: hidden;
+}
+
+.message-summary {
+  display: grid;
+  width: 100%;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 0.5rem;
+  border: 0;
+  padding: 0.65rem 0.6rem;
+  color: #342013;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.message-summary > span {
+  color: #72431f;
+  font:
+    700 0.82rem Georgia,
+    serif;
+}
+
+.message-summary small,
+.message-summary strong,
+.message-summary em {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.message-summary small {
+  color: #79512d;
+  font-size: 0.58rem;
+}
+
+.message-summary strong {
+  font:
+    700 0.7rem/1.2 Georgia,
+    serif;
+  text-transform: uppercase;
+}
+
+.message-summary em {
+  margin-top: 0.12rem;
+  color: #50331f;
+  font:
+    700 0.72rem Georgia,
+    serif;
+}
+
+.message-summary b {
+  border: 1px solid currentColor;
+  padding: 0.12rem 0.22rem;
+  color: #6d4a2a;
+  font-size: 0.5rem;
+  letter-spacing: 0.06em;
+}
+
+.message-summary i {
+  color: #613b21;
+  font:
+    normal 700 1rem/1 Georgia,
+    serif;
+}
+
+.message-slip.expanded {
+  border-color: #e2bd6d;
+  box-shadow:
+    0 0 0 0.12rem #d5aa5440,
+    0 0.8rem 1.2rem #0008;
+}
+
+.message-details {
+  border-top: 1px solid #76502f59;
+  padding: 0.55rem 0.6rem 0.65rem;
+  background: #f0daa5a3;
+}
+
+.detail-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: #69442a;
+  font-size: 0.56rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.detail-actions {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+}
+
+.detail-actions button {
+  width: 100%;
+  border: 1px solid #76502f;
+  padding: 0.38rem 0.45rem;
+  color: #351e10;
+  background: #f6e3b5;
+  font:
+    700 0.62rem Georgia,
+    serif;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rail-evidence {
+  display: grid;
+  gap: 0.25rem;
+  margin-top: 0.45rem;
+  border-left: 0.18rem solid #79532c;
+  padding-left: 0.45rem;
+}
+
+.rail-evidence span {
+  color: #50331e;
+  font:
+    0.61rem/1.3 Georgia,
+    serif;
 }

@@ -4,7 +4,7 @@ import {
   InjectionToken,
   makeEnvironmentProviders,
   PLATFORM_ID,
-  provideAppInitializer,
+  provideEnvironmentInitializer,
   type EnvironmentProviders,
 } from '@angular/core';
 import {
@@ -37,7 +37,7 @@ export function provideFirebase(
         getApps().length === 0 ? initializeApp(firebaseOptions) : getApp(),
       deps: [FIREBASE_OPTIONS],
     },
-    provideAppInitializer(() => {
+    provideEnvironmentInitializer(() => {
       if (providerOptions.analytics !== true || !isPlatformBrowser(inject(PLATFORM_ID))) {
         return;
       }

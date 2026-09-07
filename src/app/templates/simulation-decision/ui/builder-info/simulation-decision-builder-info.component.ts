@@ -1,10 +1,13 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-
 import { marketAt } from '../../domain/simulation-decision.engine';
 import type { ChoiceProgressionRequirement } from '../../domain/simulation-decision.models';
-import { SIMULATION_DECISION_CONFIG } from '../../runtime/simulation-decision.tokens';
+import {
+  SIMULATION_DECISION_BUILDER_INFO,
+  SIMULATION_DECISION_CONFIG,
+  SIMULATION_DECISION_PROJECT_ROUTE,
+} from '../../runtime/simulation-decision.tokens';
 import type {
   BuilderPathDefinition,
   SimulationDecisionBuilderInfoDefinition,
@@ -19,9 +22,11 @@ import type {
 export class SimulationDecisionBuilderInfoComponent {
   private readonly route = inject(ActivatedRoute);
   readonly config = inject(SIMULATION_DECISION_CONFIG);
-  readonly info = this.route.snapshot.data[
-    'builderInfo'
-  ] as SimulationDecisionBuilderInfoDefinition;
+  readonly info =
+    inject(SIMULATION_DECISION_BUILDER_INFO, { optional: true }) ??
+    (this.route.snapshot.data['builderInfo'] as SimulationDecisionBuilderInfoDefinition);
+  readonly studentRoute =
+    inject(SIMULATION_DECISION_PROJECT_ROUTE, { optional: true }) ?? '/frontier-trading';
   readonly pathQuery = signal('');
   readonly copiedPath = signal<string | undefined>(undefined);
   readonly snapshotAligned = computed(

@@ -1,0 +1,122 @@
+<div class="conversation-layout">
+  <aside class="history-context" [class.setting-chosen]="!!runtime.selectedHistoricalSetting()">
+    <header><h2>Where does your story begin?</h2></header>
+    <div class="setting-list">
+      @for (setting of runtime.config.historicalSettings; track setting.id) {
+        <button
+          type="button"
+          [class.selected]="runtime.state().historicalSettingId === setting.id"
+          [attr.aria-pressed]="runtime.state().historicalSettingId === setting.id"
+          (click)="runtime.selectHistoricalSetting(setting.id)"
+        >
+          @if (setting.icon) {
+            <span class="setting-icon" aria-hidden="true">{{ setting.icon }}</span>
+          }
+          <span>{{ setting.eraLabel }}</span
+          ><strong>{{ setting.title }}</strong>
+        </button>
+      }
+    </div>
+    @if (runtime.selectedHistoricalSetting(); as setting) {
+      <article class="selected-context">
+        <details class="change-setting">
+          <summary>{{ setting.title }}</summary>
+          <div>
+            @for (option of runtime.config.historicalSettings; track option.id) {
+              <button type="button" (click)="runtime.selectHistoricalSetting(option.id)">
+                {{ option.title }}
+              </button>
+            }
+          </div>
+        </details>
+        <span>Keep this fact true</span>
+        <p>{{ setting.accuracyBoundary }}</p>
+        <a [href]="setting.sourceUrl" target="_blank" rel="noopener noreferrer"
+          >Historical source ↗</a
+        >
+      </article>
+    }
+  </aside>
+
+  @if (runtime.selectedHistoricalSetting()) {
+    <section class="planning-chat" aria-labelledby="planning-chat-title">
+      <header class="chat-header">
+        <div class="coach-avatar" aria-hidden="true">✦</div>
+        <div>
+          <h2 id="planning-chat-title">{{ runtime.config.coachName }}</h2>
+          <p>Story guide</p>
+        </div>
+        <span
+          >{{ runtime.planningAnswerCount() }}/{{ runtime.config.planningQuestions.length }} ideas
+          saved</span
+        >
+      </header>
+
+      <div class="chat-thread" aria-live="polite">
+        @if (!runtime.planningTurns().length) {
+          <article class="coach-message">
+            <strong>{{ runtime.config.coachName }}</strong>
+            <p>
+              @if (!runtime.selectedHistoricalSetting()) {
+                Choose a historical setting first. Then I’ll ask about the person you want to
+                create.
+              } @else {
+                {{ runtime.nextPlanningQuestion().prompt }}
+              }
+            </p>
+          </article>
+        }
+        @if (runtime.planningTurns().length && !runtime.planningComplete()) {
+          <article class="coach-message">
+            <p>{{ runtime.nextPlanningQuestion().prompt }}</p>
+          </article>
+          <details class="earlier-ideas">
+            <summary>My earlier ideas</summary>
+            @for (turn of runtime.planningTurns(); track turn.id) {
+              <article [class.student-message]="turn.role === 'student'">
+                <strong>{{ turn.role === 'student' ? 'You' : 'Guide' }}</strong>
+                <p>{{ turn.text }}</p>
+              </article>
+            }
+          </details>
+        }
+        @if (runtime.coachBusy()) {
+          <p class="thinking">{{ runtime.config.coachName }} is thinking about your answer…</p>
+        }
+      </div>
+
+      @if (runtime.planningComplete()) {
+        <footer class="conversation-complete">
+          <div>
+            <span aria-hidden="true">✓</span>
+            <p><strong>Your ideas are saved.</strong> Review them in your optional Story Notes.</p>
+          </div>
+          <button type="button" (click)="runtime.setStage('bible')">Review my Story Notes →</button>
+        </footer>
+      } @else {
+        <label class="answer-box">
+          <span>My idea</span>
+          <textarea
+            rows="3"
+            [value]="draft()"
+            [disabled]="!runtime.selectedHistoricalSetting() || runtime.coachBusy()"
+            (input)="updateDraft($event)"
+            (keydown)="handleKeydown($event)"
+            placeholder=""
+          ></textarea>
+        </label>
+        <footer class="chat-send">
+          <button
+            type="button"
+            [disabled]="
+              !runtime.selectedHistoricalSetting() || !draft().trim() || runtime.coachBusy()
+            "
+            (click)="send()"
+          >
+            Save my idea <span aria-hidden="true">↑</span>
+          </button>
+        </footer>
+      }
+    </section>
+  }
+</div>

@@ -95,28 +95,42 @@ describe('RegisteredCommandExecutor', () => {
     expect(overMaximum.errors?.[0]?.code).toBe('STATE_MAX_EXCEEDED');
   });
 
-  it('prevents insufficient resource spend and marks it for server authority', async () => {
+  it('blocks unconfirmed resource spending and executes only after server confirmation', async () => {
     const { platform, graph } = await createSimpleRuntime();
     const snapshot = platform.state.getSnapshot(studentScope)!;
     const executor = new RegisteredCommandExecutor(platform.commandHandlers);
 
-    const failed = await executor.execute(
+    const unconfirmed = await executor.execute(
       [{ commandType: 'resource.spend', targetId: 'resource-credits', value: 3 }],
       snapshot,
       context(graph, graph.stateById as ReadonlyMap<string, StateVariableConstraint>),
     );
+    const failed = await executor.execute(
+      [{ commandType: 'resource.spend', targetId: 'resource-credits', value: 3 }],
+      snapshot,
+      {
+        ...context(graph, graph.stateById as ReadonlyMap<string, StateVariableConstraint>),
+        authorityMode: 'serverConfirmed',
+      },
+    );
     const accepted = await executor.execute(
       [{ commandType: 'resource.spend', targetId: 'resource-credits', value: 1 }],
       snapshot,
-      context(graph, graph.stateById as ReadonlyMap<string, StateVariableConstraint>),
+      {
+        ...context(graph, graph.stateById as ReadonlyMap<string, StateVariableConstraint>),
+        authorityMode: 'serverConfirmed',
+      },
     );
 
+    expect(unconfirmed.errors?.[0]?.code).toBe('AUTHORITATIVE_CONFIRMATION_REQUIRED');
+    expect(unconfirmed.snapshot?.resources['resource-credits']).toBe(2);
+    expect(unconfirmed.requiresAuthoritativeConfirmation).toEqual([
+      { commandType: 'resource.spend', targetId: 'resource-credits', value: 3 },
+    ]);
     expect(failed.errors?.[0]?.code).toBe('INSUFFICIENT_RESOURCE');
     expect(failed.snapshot?.resources['resource-credits']).toBe(2);
     expect(accepted.snapshot?.resources['resource-credits']).toBe(1);
-    expect(accepted.requiresAuthoritativeConfirmation).toEqual([
-      { commandType: 'resource.spend', targetId: 'resource-credits', value: 1 },
-    ]);
+    expect(accepted.requiresAuthoritativeConfirmation).toEqual([]);
   });
 });
 

@@ -1,13 +1,18 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import {
+  ApplicationConfig,
+  inject,
+  provideAppInitializer,
+  provideBrowserGlobalErrorListeners,
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
 
-import { firebaseClientConfig, provideFirebase } from './infrastructure/firebase';
 import { routes } from './app.routes';
+import { ProjectCatalogService } from './runtime/project-launch/project-catalog.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideFirebase(firebaseClientConfig, { analytics: true }),
+    provideAppInitializer(() => inject(ProjectCatalogService).load()),
   ],
 };

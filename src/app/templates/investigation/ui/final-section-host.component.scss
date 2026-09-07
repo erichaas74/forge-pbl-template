@@ -1,0 +1,14 @@
+.final-section-host,
+.final-section { display: grid; gap: 1rem; }
+.final-section {
+  padding: 1rem;
+  border: 1px solid #cbc2b3;
+  border-radius: 0.75rem;
+  background: #fffdf8;
+}
+.final-section.missing { border-color: #a86148; }
+.final-section > header,
+.evidence-options label { display: flex; align-items: center; gap: 0.75rem; }
+.final-section h3 { margin: 0; }
+textarea { width: 100%; box-sizing: border-box; }
+.evidence-options { display: grid; gap: 0.5rem; }

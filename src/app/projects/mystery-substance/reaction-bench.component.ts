@@ -2,10 +2,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
+  input,
   OnDestroy,
   output,
   signal,
+  untracked,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
@@ -16,6 +19,22 @@ import { RenderQualityService } from './lab-kit/render-quality.service';
 import { reactionOutcomeTable } from './mystery-science.config';
 import { mysteryVials } from './mystery-substance.package';
 import type { StationCapture } from './station-workspaces';
+import { persistWorkspaceDraft } from '../../shared/drafts/persist-workspace-draft';
+
+interface BenchDraft {
+  vialId: string | undefined;
+  step: BenchStep;
+  volumeMl: number;
+  massG: number;
+  drops: number;
+  recordedVolumeMl: number;
+  recordedMassG: number;
+  retries: number;
+  liquid: string;
+  temperature: number;
+  stages: readonly StageResult[];
+  observation: string;
+}
 
 /**
  * The bench runs one sealed vessel at a time. The student pours solution from
@@ -77,6 +96,12 @@ const solutionColor = 'rgba(206, 236, 243, 0.5)';
 })
 export class ReactionBenchComponent implements OnDestroy {
   readonly captured = output<StationCapture>();
+  readonly selectedVialId = input<string>();
+  readonly active = input(true);
+  readonly vialChanged = output<string>();
+  private readonly drafts = new Map<string, BenchDraft>();
+  private checkpoint?: BenchDraft;
+  private flushDraft = () => {};
 
   readonly vials = mysteryVials;
   readonly targetVolumeMl = targetVolumeMl;
@@ -134,12 +159,82 @@ export class ReactionBenchComponent implements OnDestroy {
       id: 'chemical-reaction-comparison',
       settings: { keyFields: ['specimen', 'test'], outcomeTable: reactionOutcomeTable },
     });
+    this.flushDraft = persistWorkspaceDraft(
+      'reaction-bench',
+      () => {
+        if (!this.busy()) this.checkpoint = this.readDraft();
+        return {
+          current: this.checkpoint,
+          drafts: [...this.drafts.entries()],
+          screened: this.screenedVialIds(),
+          log: this.procedureLog(),
+        };
+      },
+      (saved) => {
+        if (Array.isArray(saved.drafts))
+          for (const [id, draft] of saved.drafts) this.drafts.set(id, draft);
+        if (saved.current) this.restoreDraft(saved.current);
+        if (Array.isArray(saved.screened)) this.screenedVialIds.set(saved.screened);
+        if (Array.isArray(saved.log)) this.procedureLog.set(saved.log);
+      },
+    );
+    effect(() => {
+      const id = this.selectedVialId();
+      untracked(() => {
+        if (id && id !== this.vialId()) this.selectVial(id);
+      });
+    });
+    effect(() => {
+      if (!this.active())
+        untracked(() => {
+          this.stopTap();
+          this.stopTip();
+        });
+    });
   }
 
   ngOnDestroy(): void {
     this.stopTap();
     this.stopTip();
     this.clearTween();
+    this.flushDraft();
+  }
+
+  private readDraft(): BenchDraft {
+    return {
+      vialId: this.vialId(),
+      step: this.step(),
+      volumeMl: this.volumeMl(),
+      massG: this.massG(),
+      drops: this.drops(),
+      recordedVolumeMl: this.recordedVolumeMl(),
+      recordedMassG: this.recordedMassG(),
+      retries: this.retries(),
+      liquid: this.liquid(),
+      temperature: this.temperature(),
+      stages: this.stages(),
+      observation: this.observation(),
+    };
+  }
+
+  private restoreDraft(draft: BenchDraft): void {
+    if (
+      !this.vials.some((v) => v.vialId === draft.vialId) ||
+      !['fill', 'weigh', 'indicator', 'complete'].includes(draft.step)
+    )
+      return;
+    this.vialId.set(draft.vialId);
+    this.step.set(draft.step);
+    this.volumeMl.set(draft.volumeMl);
+    this.massG.set(draft.massG);
+    this.drops.set(draft.drops);
+    this.recordedVolumeMl.set(draft.recordedVolumeMl);
+    this.recordedMassG.set(draft.recordedMassG);
+    this.retries.set(draft.retries);
+    this.liquid.set(draft.liquid);
+    this.temperature.set(draft.temperature);
+    this.stages.set(draft.stages);
+    this.observation.set(draft.observation);
   }
 
   // ---- derived readouts ---------------------------------------------------
@@ -328,13 +423,18 @@ export class ReactionBenchComponent implements OnDestroy {
   }
 
   selectVial(vialId: string): void {
-    if (this.busy()) {
+    if (this.busy() || vialId === this.vialId() || !this.vials.some((v) => v.vialId === vialId)) {
       return;
     }
+    const previous = this.vialId();
+    if (previous) this.drafts.set(previous, this.readDraft());
     this.resetRun();
     this.vialId.set(vialId);
     this.heldVialId.set(undefined);
     this.step.set('fill');
+    const draft = this.drafts.get(vialId);
+    if (draft) this.restoreDraft(draft);
+    this.vialChanged.emit(vialId);
   }
 
   // ---- step 1: pour from the tun -----------------------------------------
@@ -529,7 +629,17 @@ export class ReactionBenchComponent implements OnDestroy {
       note: this.observation().trim(),
     });
     this.screenedVialIds.update((current) => [...new Set([...current, vialId])]);
+    this.drafts.delete(vialId);
     this.resetRun();
+    if (this.selectedVialId()) this.selectVial(vialId);
+  }
+
+  abandonRun(): void {
+    if (this.busy()) return;
+    const id = this.selectedVialId();
+    if (id) this.drafts.delete(id);
+    this.resetRun();
+    if (id) this.selectVial(id);
   }
 
   resetRun(): void {

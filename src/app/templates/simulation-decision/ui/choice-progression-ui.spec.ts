@@ -36,6 +36,14 @@ describe('choice progression UI', () => {
 
     expect(component.reachableRoutes()).toHaveLength(2);
     expect(component.atlasTrails().filter((trail) => trail.state === 'locked')).toHaveLength(3);
+    expect(fixture.nativeElement.querySelectorAll('[data-market-kind="sell"]')).toHaveLength(2);
+    expect(
+      fixture.nativeElement.querySelectorAll('[data-market-kind="buy"] dl > div'),
+    ).toHaveLength(3);
+    expect(component.currentMarketPrices().map((price) => price.goodId)).toEqual(
+      component.progression().currentStage.availableGoodIds,
+    );
+    expect(fixture.nativeElement.querySelectorAll('.route-cost')).toHaveLength(2);
     expect(text).toContain('Starter Trader');
     expect(text).toContain('2 / 5 routes open');
     expect(text).toContain('Explore market stalls · 0 / 2');
@@ -53,10 +61,9 @@ describe('choice progression UI', () => {
 
     const marketFixture = TestBed.createComponent(SimulationMarketViewComponent);
     marketFixture.detectChanges();
-    expect((marketFixture.nativeElement as HTMLElement).textContent).toContain('Frontier Trader');
-    expect((marketFixture.nativeElement as HTMLElement).textContent).toContain(
-      '10 / 10 supplies open',
-    );
+    expect(marketFixture.componentInstance.availableGoodCount()).toBe(10);
+    expect(marketFixture.nativeElement.querySelector('.trade-builder')).toBeNull();
+    expect(marketFixture.nativeElement.querySelector('app-choice-progression-panel')).toBeNull();
 
     const route = TestBed.createComponent(SimulationRouteMapComponent).componentInstance;
     expect(route.reachableRoutes()).toHaveLength(5);

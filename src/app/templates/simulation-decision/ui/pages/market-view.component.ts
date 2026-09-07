@@ -26,17 +26,11 @@ import type {
 import { SimulationDecisionRuntimeService } from '../../runtime/simulation-decision-runtime.service';
 import { changeTradePlan } from '../../runtime/simulation-planning';
 import { ReviewDialogDirective } from '../review-dialog.directive';
-import { ChoiceProgressionPanelComponent } from '../progression/choice-progression-panel.component';
 import { IllustratedWagonComponent } from '../art/illustrated-wagon.component';
 
 @Component({
   selector: 'app-simulation-market-view',
-  imports: [
-    FormsModule,
-    ReviewDialogDirective,
-    ChoiceProgressionPanelComponent,
-    IllustratedWagonComponent,
-  ],
+  imports: [FormsModule, ReviewDialogDirective, IllustratedWagonComponent],
   templateUrl: './market-view.component.html',
   styleUrl: './market-view.component.scss',
 })

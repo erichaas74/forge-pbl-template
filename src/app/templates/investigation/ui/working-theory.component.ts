@@ -1,5 +1,6 @@
 import { Component, computed, effect, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { persistWorkspaceDraft } from '../../../shared/drafts/persist-workspace-draft';
 
 import type { HypothesisRuntimeState } from '../domain/runtime-state';
 import type { InvestigationEvidenceItem, TheoryDraft } from './investigation-ui.models';
@@ -19,6 +20,7 @@ export class InvestigationWorkingTheoryComponent {
   readonly evidence = input<readonly InvestigationEvidenceItem[]>([]);
   readonly compact = input(false);
   readonly saveState = input<'saved' | 'saving' | 'pending'>('saved');
+  readonly singlePage = input(false);
 
   readonly theorySaved = output<TheoryDraft>();
   readonly theorySelected = output<string>();
@@ -95,6 +97,34 @@ export class InvestigationWorkingTheoryComponent {
   }
 
   constructor() {
+    persistWorkspaceDraft(
+      'working-theory',
+      () => ({
+        statement: this.statement(),
+        reasoning: this.reasoning(),
+        confidence: this.confidence(),
+        remainingQuestion: this.remainingQuestion(),
+        evidenceIds: this.evidenceIds(),
+        reasonForChange: this.reasonForChange(),
+        editing: this.editing() || this.theory() === undefined,
+        creatingAlternative: this.creatingAlternative(),
+        step: this.step(),
+      }),
+      (saved) => {
+        if (typeof saved.statement !== 'string') return;
+        this.statement.set(saved.statement);
+        this.reasoning.set(typeof saved.reasoning === 'string' ? saved.reasoning : '');
+        this.remainingQuestion.set(
+          typeof saved.remainingQuestion === 'string' ? saved.remainingQuestion : '',
+        );
+        this.confidence.set(typeof saved.confidence === 'number' ? saved.confidence : 50);
+        this.evidenceIds.set(Array.isArray(saved.evidenceIds) ? saved.evidenceIds : []);
+        this.reasonForChange.set(saved.reasonForChange ?? '');
+        this.editing.set(saved.editing ?? true);
+        this.creatingAlternative.set(saved.creatingAlternative ?? false);
+        this.step.set(saved.step ?? 0);
+      },
+    );
     effect(() => {
       if (this.editing() || this.creatingAlternative()) {
         return;
@@ -114,6 +144,11 @@ export class InvestigationWorkingTheoryComponent {
       this.remainingQuestion.set(theory.remainingQuestion ?? '');
       this.evidenceIds.set([...(theory.evidenceIds ?? [])]);
     });
+  }
+
+  includeEvidence(evidenceId: string): void {
+    this.editing.set(true);
+    this.evidenceIds.update((ids) => [...new Set([...ids, evidenceId])]);
   }
 
   beginEditing(): void {

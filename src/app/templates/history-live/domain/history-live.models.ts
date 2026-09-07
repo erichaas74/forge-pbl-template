@@ -1,3 +1,7 @@
+import type { RuntimeScope } from '../../../core/state/runtime-state-contracts';
+import type { HistoryLiveResearchLibrary } from './history-live-research';
+import type { StoryReportingConfig, StoryReportingState } from '../reporting/story-reporting.models';
+
 export type HistoryLiveSide = 'patriot' | 'british';
 
 export type HistoryLiveRole = 'student' | 'producer';
@@ -163,6 +167,10 @@ export interface BroadcastSegment {
   readonly script?: readonly HistoryLiveScriptBlock[];
   readonly scenes?: readonly HistoryLiveVisualScene[];
   readonly recordingAssetId?: string;
+  readonly recordingPoster?: {
+    readonly src: string;
+    readonly alt: string;
+  };
   readonly transcript?: string;
   readonly sample?: boolean;
   readonly id: string;
@@ -185,6 +193,8 @@ export interface HistoryLiveViewer {
 }
 
 export interface HistoryLiveProjectConfig {
+  readonly researchLibrary?: HistoryLiveResearchLibrary;
+  readonly reporting?: StoryReportingConfig;
   readonly schemaVersion: '1.0';
   readonly template: {
     readonly id: 'history-live-broadcast';
@@ -217,6 +227,8 @@ export interface HistoryLiveProjectConfig {
 }
 
 export interface HistoryLiveRuntimeState {
+  readonly reporting?: StoryReportingState;
+  readonly runtimeScope?: RuntimeScope;
   readonly packageStatus?: StoryPitchStatus;
   readonly packageFeedback?: string;
   readonly recordingAssetId?: string;

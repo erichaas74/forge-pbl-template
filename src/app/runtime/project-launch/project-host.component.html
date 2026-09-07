@@ -1,0 +1,25 @@
+@if (loading()) {
+  <main class="project-host-status" aria-live="polite">
+    <span>Loading project package…</span>
+  </main>
+} @else if (error()) {
+  <main class="project-host-status project-host-error" role="alert">
+    <h1>Project unavailable</h1>
+    <p>{{ error() }}</p>
+    <a routerLink="/projects">Return to projects</a>
+  </main>
+} @else {
+  @if (isActivity() && hasIntro() && !usesIntegratedActivityHeader() && project(); as current) {
+    <nav class="project-return-bar" aria-label="Project launch and example">
+      <a routerLink="/projects">← Projects</a>
+      <span>FORGE PBL</span>
+      <div class="lms-links">
+        <a [routerLink]="['/projects', current.id]">Opening</a>
+        <a [routerLink]="['/projects', current.id, 'final-demo']">Example ↗</a>
+      </div>
+    </nav>
+  }
+  <ng-container
+    *ngComponentOutlet="component(); environmentInjector: projectInjector()"
+  ></ng-container>
+}

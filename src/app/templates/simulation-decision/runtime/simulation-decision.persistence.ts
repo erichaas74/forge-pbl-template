@@ -1,4 +1,10 @@
 import type { SimulationDecisionState } from '../domain/simulation-decision.models';
+import type { ProjectSessionContext } from '../../../core/context/project-session-context';
+import {
+  safeBrowserStorage,
+  ScopedBrowserStore,
+  type WorkspaceStorageScope,
+} from '../../../shared/persistence';
 
 export interface SimulationDecisionPersistenceAdapter {
   load(projectId: string, projectVersion: string): SimulationDecisionState | undefined;
@@ -7,27 +13,40 @@ export interface SimulationDecisionPersistenceAdapter {
 }
 
 export class BrowserSimulationDecisionPersistenceAdapter implements SimulationDecisionPersistenceAdapter {
-  constructor(private readonly storage: Storage | undefined = safeStorage()) {}
+  private readonly store: ScopedBrowserStore<SimulationDecisionState>;
+
+  constructor(
+    storage: Storage | undefined = safeBrowserStorage(),
+    private readonly session?: ProjectSessionContext,
+  ) {
+    this.store = new ScopedBrowserStore('simulation-decision', storage, (value): value is SimulationDecisionState =>
+      isCompatibleState(value),
+    );
+  }
 
   load(projectId: string, projectVersion: string): SimulationDecisionState | undefined {
-    const serialized = this.storage?.getItem(storageKey(projectId, projectVersion));
-    if (serialized === undefined || serialized === null) {
-      return undefined;
-    }
-    try {
-      const value: unknown = JSON.parse(serialized);
-      return isCompatibleState(value, projectId, projectVersion) ? value : undefined;
-    } catch {
-      return undefined;
-    }
+    const value = this.store.load(this.scope(projectId, projectVersion));
+    return value?.projectId === projectId && value.projectVersion === projectVersion ? value : undefined;
   }
 
   save(state: Readonly<SimulationDecisionState>): void {
-    this.storage?.setItem(storageKey(state.projectId, state.projectVersion), JSON.stringify(state));
+    this.store.save(this.scope(state.projectId, state.projectVersion), state as SimulationDecisionState);
   }
 
   clear(projectId: string, projectVersion: string): void {
-    this.storage?.removeItem(storageKey(projectId, projectVersion));
+    this.store.clear(this.scope(projectId, projectVersion));
+  }
+
+  private scope(projectId: string, projectVersion: string): WorkspaceStorageScope {
+    return {
+      tenantId: this.session?.tenantId ?? 'local-preview',
+      projectId,
+      projectVersion,
+      classId: this.session?.classId,
+      actorId: this.session?.actorId,
+      teamId: this.session?.teamId,
+      attemptId: this.session?.attemptId,
+    };
   }
 }
 
@@ -49,30 +68,16 @@ export class MemorySimulationDecisionPersistenceAdapter implements SimulationDec
   }
 }
 
-function safeStorage(): Storage | undefined {
-  try {
-    return typeof localStorage === 'undefined' ? undefined : localStorage;
-  } catch {
-    return undefined;
-  }
-}
-
-function storageKey(projectId: string, projectVersion: string): string {
-  return `forge:simulation-decision:${projectId}:${projectVersion}`;
-}
-
 function isCompatibleState(
   value: unknown,
-  projectId: string,
-  projectVersion: string,
 ): value is SimulationDecisionState {
   return (
     typeof value === 'object' &&
     value !== null &&
     'projectId' in value &&
-    value.projectId === projectId &&
+    typeof value.projectId === 'string' &&
     'projectVersion' in value &&
-    value.projectVersion === projectVersion &&
+    typeof value.projectVersion === 'string' &&
     'ledger' in value &&
     Array.isArray(value.ledger) &&
     'inventory' in value &&

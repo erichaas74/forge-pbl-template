@@ -5,6 +5,7 @@ import { createInitialDebateSession } from '../core/debate-studio-state';
 import { MemoryDebateSessionAdapter, type DebateSessionLocator } from './debate-studio.persistence';
 
 const locator: DebateSessionLocator = {
+  tenantId: 'tenant-test',
   projectId: romanSenateDebateConfig.projectId,
   projectVersion: romanSenateDebateConfig.projectVersion,
   classId: romanSenateDebateConfig.viewer.classId,

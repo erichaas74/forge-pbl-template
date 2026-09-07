@@ -15,52 +15,59 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'mystery-substance',
-    title: 'The Unlabeled Shelf | Forge PBL',
+    path: 'projects/:projectId/:view',
+    canDeactivate: [
+      (component: { canLeave: () => boolean | Promise<boolean> }) => component.canLeave(),
+    ],
     loadComponent: () =>
-      import('./features/mystery-investigation').then(
-        (module) => module.MysteryInvestigationComponent,
+      import('./runtime/project-launch/project-host.component').then(
+        (module) => module.ProjectHostComponent,
       ),
+  },
+  {
+    path: 'projects/:projectId',
+    canDeactivate: [
+      (component: { canLeave: () => boolean | Promise<boolean> }) => component.canLeave(),
+    ],
+    loadComponent: () =>
+      import('./runtime/project-launch/project-host.component').then(
+        (module) => module.ProjectHostComponent,
+      ),
+  },
+  {
+    path: 'mystery-substance',
+    pathMatch: 'full',
+    redirectTo: 'projects/mystery-substance',
+  },
+  {
+    path: 'frontier-trading/builder-info',
+    pathMatch: 'full',
+    redirectTo: 'projects/frontier-trading-company/builder-info',
   },
   {
     path: 'frontier-trading',
-    title: 'Frontier Trading Company | Forge PBL',
-    loadChildren: () =>
-      import('./features/frontier-trading/frontier-trading.routes').then(
-        (module) => module.FRONTIER_TRADING_ROUTES,
-      ),
+    pathMatch: 'full',
+    redirectTo: 'projects/frontier-trading-company',
   },
   {
     path: 'class-exhibit-hall',
-    title: 'Objects That Changed Us: Ancient Egypt | Class Exhibit Hall',
-    loadChildren: () =>
-      import('./features/class-exhibit-hall/class-exhibit-hall.routes').then(
-        (module) => module.CLASS_EXHIBIT_HALL_ROUTES,
-      ),
+    pathMatch: 'full',
+    redirectTo: 'projects/objects-that-changed-us',
   },
   {
     path: 'history-live',
-    title: 'History Live: The Revolutionary War | Forge PBL',
-    loadChildren: () =>
-      import('./features/history-live/history-live.routes').then(
-        (module) => module.HISTORY_LIVE_ROUTES,
-      ),
+    pathMatch: 'full',
+    redirectTo: 'projects/history-live-revolutionary-war',
   },
   {
     path: 'debate-studio',
-    title: 'The Fate of the Republic | Ancient World Debate Studio',
-    loadChildren: () =>
-      import('./features/debate-studio/debate-studio.routes').then(
-        (module) => module.DEBATE_STUDIO_ROUTES,
-      ),
+    pathMatch: 'full',
+    redirectTo: 'projects/the-fate-of-the-republic',
   },
   {
     path: 'journey-replay',
-    title: 'Race Around the World | Expedition Journey Replay',
-    loadChildren: () =>
-      import('./features/journey-replay/journey-replay.routes').then(
-        (module) => module.JOURNEY_REPLAY_ROUTES,
-      ),
+    pathMatch: 'full',
+    redirectTo: 'projects/race-around-the-world',
   },
   {
     path: '**',

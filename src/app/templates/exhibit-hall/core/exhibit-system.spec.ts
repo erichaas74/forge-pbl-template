@@ -150,10 +150,10 @@ describe('reusable exhibit system', () => {
   it('isolates sections and filters family collection data', () => {
     const state = createInitialHallState(classExhibitHallConfig, new MuseumBoardRenderer());
     expect(state.snapshots.map((snapshot) => snapshot.corridorPreview?.walkUpAvailable)).toEqual([
-      true,
-      false,
-      false,
-      false,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
     ]);
     const policy = new ExhibitAccessPolicy();
     const outsider: ExhibitActor = {

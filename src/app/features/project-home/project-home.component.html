@@ -1,76 +1,46 @@
 <main class="project-home">
-  <header class="home-hero">
-    <div class="forge-mark" aria-hidden="true"><span>F</span></div>
-    <div>
-      <span class="eyebrow">Forge PBL Learning Studio</span>
-      <h1>Choose your next project</h1>
-      <p>
-        Enter an investigation or decision simulation. Each project saves its own progress on this
-        device.
-      </p>
-    </div>
-    <aside>
-      <strong>{{ projects.length }}</strong
-      ><span>projects available</span>
-    </aside>
+  <header class="library-header">
+    <strong>FORGE PBL</strong
+    ><app-task-guide title="Project guide">
+      @for (project of projects(); track project.id) {
+        <h3>{{ project.title }}</h3>
+        <p>{{ project.description }}</p>
+        <p>{{ project.learningGoals.join(' · ') }}</p>
+        @if (project.builderRoute) {
+          <a [routerLink]="project.builderRoute">Builder information</a>
+        }
+      }
+    </app-task-guide>
   </header>
-
   <section class="project-section" aria-labelledby="available-projects-title">
-    <header>
-      <div>
-        <span class="eyebrow">Student project library</span>
-        <h2 id="available-projects-title">Available projects</h2>
-      </div>
-      <p>Select a project card to open or continue your work.</p>
-    </header>
-
+    <h1 id="available-projects-title">What will you create?</h1>
     <div class="project-grid">
-      @for (project of projects; track project.id) {
+      @for (project of projects(); track project.id) {
         <article class="project-card" [class]="'project-card ' + project.theme">
-          <div class="project-art">
-            <span aria-hidden="true">{{ project.symbol }}</span>
-            <i></i>
-            <small>{{ project.projectType }}</small>
-          </div>
-          <div class="project-content">
-            <header>
-              <div>
-                <span>{{ project.grade }} · {{ project.subject }}</span>
-                <h3>{{ project.title }}</h3>
-                <p>{{ project.subtitle }}</p>
-              </div>
-              <strong>{{ project.status }}</strong>
-            </header>
-            <p class="description">{{ project.description }}</p>
-            <ul aria-label="Learning goals">
-              @for (goal of project.learningGoals; track goal) {
-                <li>{{ goal }}</li>
+          <a
+            class="project-choice"
+            [routerLink]="project.route"
+            [attr.aria-label]="'Open ' + project.title"
+          >
+            <div class="project-art">
+              @if (project.coverImage) {
+                <img [src]="project.coverImage" alt="" loading="lazy" />
+              } @else {
+                <span aria-hidden="true">{{ project.symbol }}</span>
               }
-            </ul>
-            <footer>
-              <span>{{ project.projectType }}</span>
-              <div class="project-links">
-                @if (project.builderRoute) {
-                  <a
-                    class="builder-link"
-                    [routerLink]="project.builderRoute"
-                    [attr.aria-label]="'Open builder information for ' + project.title"
-                    >Builder info</a
-                  >
-                }
-                <a [routerLink]="project.route" [attr.aria-label]="'Open ' + project.title"
-                  >Open project <b aria-hidden="true">→</b></a
-                >
-              </div>
-            </footer>
-          </div>
+              <strong>{{ project.studentInvitation || project.projectType }}</strong>
+            </div>
+            <div class="project-content">
+              <h2>{{ project.title }}</h2>
+              <p>{{ project.grade }} · {{ project.subject }}</p>
+              <span class="project-status" [attr.data-release-status]="project.status">{{
+                project.status
+              }}</span
+              ><span class="open-mark" aria-hidden="true">→</span>
+            </div>
+          </a>
         </article>
       }
     </div>
   </section>
-
-  <footer class="home-footer">
-    <span>Forge PBL</span>
-    <p>Learn by investigating, deciding, building, and explaining.</p>
-  </footer>
 </main>

@@ -1,78 +1,255 @@
 <section class="class-map" aria-labelledby="class-map-title">
-  <header>
+  <header class="hero">
     <div>
-      <span>Final class artifact</span>
-      <h2 id="class-map-title">Class voyages · One changing world</h2>
-      <p>Each route remains a separate voyage record. The live summary refreshes without exposing another student's private runtime.</p>
+      <span>Class voyage gallery</span>
+      <h2 id="class-map-title">One journey at a time. Then the whole class.</h2>
+      <p>
+        Follow a group’s voyage through its key snapshots, then place that route beside every other
+        class expedition.
+      </p>
     </div>
-    <button type="button" class="replay" [disabled]="voyages().length === 0" (click)="startClassReplay()">▶ Class replay</button>
+    @if (runtime.isTeacher() && !isSimulatedSummary()) {
+      <div class="live-status" role="status">
+        <i aria-hidden="true"></i>Live class summary · {{ voyages().length }} voyages
+      </div>
+    } @else {
+      <div class="demo-status" role="status">
+        <strong>Simulated class</strong>
+        <span>{{ displaySummary()?.classLabel }} · expected showcase performance</span>
+      </div>
+    }
   </header>
 
-  @if (runtime.session() && !runtime.isTeacher()) {
-    <div class="access-note" role="status">
-      The live class map is a teacher view. Your own voyage remains saved and available in Journey Replay.
-    </div>
-  } @else if (runtime.isTeacher()) {
-    <div class="live-status" role="status">
-      <span aria-hidden="true"></span>
-      Live class summary · {{ runtime.classSummary()?.members?.length ?? 0 }} enrolled voyages
-    </div>
-  }
-
-  <nav class="modes" aria-label="Class map modes">
-    <button type="button" [attr.aria-pressed]="mode() === 'all'" (click)="setMode('all')">All voyages</button>
-    <button type="button" [attr.aria-pressed]="mode() === 'single'" (click)="setMode('single')">Single voyage</button>
-    <button type="button" [attr.aria-pressed]="mode() === 'compare'" (click)="setMode('compare')">Compare two</button>
+  <nav class="mode-switch" aria-label="Voyage presentation modes">
+    <button
+      type="button"
+      [attr.aria-pressed]="mode() === 'snapshots'"
+      (click)="setMode('snapshots')"
+    >
+      <span>Mode 1</span><strong>Voyage snapshots</strong
+      ><small>Follow one group stop by stop</small>
+    </button>
+    <button type="button" [attr.aria-pressed]="mode() === 'compare'" (click)="setMode('compare')">
+      <span>Mode 2</span><strong>Class comparison</strong
+      ><small>See one route against the class</small>
+    </button>
   </nav>
 
-  <div class="team-legend" aria-label="Team routes">
-    @for (voyage of voyages(); track voyage.voyageId) {
-      <button
-        type="button"
-        [class.active]="visibleVoyages().includes(voyage)"
-        [disabled]="mode() === 'all' || mode() === 'classReplay'"
-        [style.--team-color]="voyage.team.color"
-        (click)="toggleVoyage(voyage.voyageId)"
-      >
-        <span>{{ voyage.team.emblem }}</span>
-        <strong>{{ voyage.team.name }}</strong>
-        <small>{{ voyage.team.linePattern }}</small>
-      </button>
-    } @empty {
-      <p>No class voyages are available in this view.</p>
-    }
-  </div>
-
-  @if (mode() === 'classReplay') {
-    <div class="reveal-status" aria-live="polite">
-      Voyage {{ revealCount() }} of {{ voyages().length }} ·
-      {{ visibleVoyages().at(-1)?.team?.name }} joins the class map
+  <section class="voyage-picker" aria-labelledby="voyage-picker-title">
+    <div>
+      <span>Featured voyage</span>
+      <h3 id="voyage-picker-title">Choose a group to follow</h3>
     </div>
-  }
+    <div class="team-options">
+      @for (voyage of voyages(); track voyage.voyageId) {
+        <button
+          type="button"
+          [attr.aria-pressed]="selectedVoyage()?.voyageId === voyage.voyageId"
+          [style.--team-color]="voyage.team.color"
+          (click)="selectVoyage(voyage.voyageId)"
+        >
+          <span aria-hidden="true">{{ voyage.team.emblem }}</span>
+          <strong>{{ voyage.team.name }}</strong>
+        </button>
+      } @empty {
+        <p>No class voyages are available in this view.</p>
+      }
+    </div>
+  </section>
 
-  <app-living-journey-map
-    [map]="runtime.config.map"
-    [route]="[]"
-    [team]="runtime.config.team"
-    [classVoyages]="visibleVoyages()"
-    [intersections]="intersections()"
-    mapLabel="Class expedition map showing separate team voyage layers"
-  />
+  @if (selectedVoyage(); as selected) {
+    @if (mode() === 'snapshots') {
+      <section class="story-mode" aria-labelledby="story-title">
+        <div class="story-map">
+          <div class="section-heading">
+            <div>
+              <span>Single group voyage</span>
+              <h3 id="story-title">{{ selected.team.emblem }} {{ selected.team.name }}</h3>
+            </div>
+            <div class="story-progress">
+              <strong>{{ activeSnapshotIndex() + 1 }} / {{ snapshots().length }}</strong
+              ><span>journey snapshots</span>
+            </div>
+          </div>
+          <app-living-journey-map
+            [map]="runtime.config.map"
+            [route]="[]"
+            [team]="selected.team"
+            [classVoyages]="storyVoyage()"
+            [featuredVoyageId]="selected.voyageId"
+            mapLabel="Single group voyage revealed one snapshot at a time"
+          />
+        </div>
 
-  <div class="comparison-notes">
-    <article>
-      <span>Shared locations</span>
-      <strong>{{ intersections().length }}</strong>
-      <p>Ports used by more than one team become comparison points.</p>
-    </article>
-    @for (intersection of intersections().slice(0, 3); track intersection.locationId) {
-      <article>
-        <span>{{ locationName(intersection.locationId) }}</span>
-        <strong>{{ intersection.voyageIds.length }} voyages</strong>
-        <p>{{ intersection.eventLabels.join(' · ') || 'Routes crossed here' }}</p>
-      </article>
+        <aside class="snapshot-panel" aria-label="Journey snapshot">
+          @if (activeSnapshot(); as snapshot) {
+            <div
+              class="snapshot-visual"
+              [attr.data-event]="snapshot.eventType ?? 'journey'"
+              [style.--team-color]="selected.team.color"
+            >
+              <span class="snapshot-number">Snapshot {{ snapshot.sequence }}</span>
+              <div class="snapshot-icon" aria-hidden="true">
+                {{ snapshotIcon(snapshot.eventType) }}
+              </div>
+              <p>{{ snapshot.locationName }}</p>
+            </div>
+            <article aria-live="polite">
+              <span>{{ snapshot.eventType ?? 'voyage log' }}</span>
+              <h3>{{ snapshot.label }}</h3>
+              <p>{{ snapshot.description }}</p>
+            </article>
+            <div class="snapshot-controls">
+              <button
+                type="button"
+                aria-label="Previous snapshot"
+                [disabled]="activeSnapshotIndex() === 0"
+                (click)="previousSnapshot()"
+              >
+                ←
+              </button>
+              <button type="button" class="play" (click)="togglePlayback()">
+                {{ playing() ? 'Pause story' : 'Play story' }}
+              </button>
+              <button
+                type="button"
+                aria-label="Next snapshot"
+                [disabled]="activeSnapshotIndex() >= snapshots().length - 1"
+                (click)="nextSnapshot()"
+              >
+                →
+              </button>
+            </div>
+          }
+          <div class="snapshot-dots" aria-label="Choose a journey snapshot">
+            @for (snapshot of snapshots(); track snapshot.id) {
+              <button
+                type="button"
+                [attr.aria-label]="'Snapshot ' + snapshot.sequence + ': ' + snapshot.label"
+                [attr.aria-pressed]="activeSnapshotIndex() === $index"
+                (click)="selectSnapshot($index)"
+              >
+                <span>{{ snapshot.sequence }}</span>
+              </button>
+            }
+          </div>
+          <footer>
+            <strong>Voyage outcome</strong>
+            <p>{{ selected.outcome }}</p>
+          </footer>
+        </aside>
+      </section>
+    } @else {
+      <section class="compare-mode" aria-labelledby="compare-title">
+        <div class="section-heading compare-heading">
+          <div>
+            <span>Class view</span>
+            <h3 id="compare-title">
+              {{ selected.team.name }} compared with {{ voyages().length - 1 }} other voyages
+            </h3>
+          </div>
+          <p>
+            The featured route stays bright. Other routes provide class context without combining
+            student records.
+          </p>
+        </div>
+
+        <app-living-journey-map
+          [map]="runtime.config.map"
+          [route]="[]"
+          [team]="selected.team"
+          [classVoyages]="compareVoyages()"
+          [featuredVoyageId]="selected.voyageId"
+          [intersections]="intersections()"
+          mapLabel="Selected group voyage highlighted against all other class voyages"
+        />
+
+        <div class="class-stats" aria-label="Class voyage summary">
+          <article>
+            <span>Journey progress</span
+            ><strong>{{ classPerformance().completionPercent }}%</strong>
+            <p>of all class chapters complete</p>
+          </article>
+          <article>
+            <span>Reasoning ready</span
+            ><strong>{{ classPerformance().reasoningReadyPercent }}%</strong>
+            <p>of reviewed criteria at proficient or advanced</p>
+          </article>
+          <article>
+            <span>Teacher queue</span><strong>{{ classPerformance().awaitingReviewCount }}</strong>
+            <p>awaiting review · {{ classPerformance().approvedCount }} approved</p>
+          </article>
+          <article class="featured-outcome" [style.--team-color]="selected.team.color">
+            <span>Featured outcome</span
+            ><strong>{{ selected.team.emblem }} {{ selected.team.name }}</strong>
+            <p>{{ selected.outcome }}</p>
+          </article>
+        </div>
+
+        @if (isSimulatedSummary()) {
+          <aside class="simulation-note" role="note">
+            <span>Preview data</span>
+            <p>
+              These are fictional crew records showing how a completed class might look. They are
+              never saved as student work and disappear when a live authorized summary is present.
+            </p>
+          </aside>
+        }
+
+        <section class="story-plan" aria-labelledby="story-plan-title">
+          <header>
+            <div>
+              <span>Planned class story</span>
+              <h3 id="story-plan-title">The moments worth putting on the big screen</h3>
+            </div>
+            <p>
+              A teacher-led reveal can move from launch, to crisis, to global outcomes, to visible
+              revision.
+            </p>
+          </header>
+          <div>
+            @for (beat of classStoryBeats(); track beat.id) {
+              <article>
+                <span>{{ $index + 1 < 10 ? '0' + ($index + 1) : $index + 1 }}</span>
+                <small>{{ beat.kicker }}</small>
+                <h4>{{ beat.title }}</h4>
+                <p>{{ beat.body }}</p>
+                <footer>{{ beat.stat }}</footer>
+              </article>
+            }
+          </div>
+        </section>
+
+        <section class="comparison-grid" aria-labelledby="route-comparisons-title">
+          <div class="comparison-intro">
+            <span>Route-by-route</span>
+            <h3 id="route-comparisons-title">What changed across the class?</h3>
+            <p>
+              Compare shared decisions, different destinations, and the consequences each group
+              recorded.
+            </p>
+          </div>
+          @for (comparison of comparisons(); track comparison.voyage.voyageId) {
+            <article [style.--team-color]="comparison.voyage.team.color">
+              <header>
+                <span aria-hidden="true">{{ comparison.voyage.team.emblem }}</span>
+                <div>
+                  <strong>{{ comparison.voyage.team.name }}</strong
+                  ><small
+                    >{{ comparison.uniqueLocationCount }} different named stop{{
+                      comparison.uniqueLocationCount === 1 ? '' : 's'
+                    }}</small
+                  >
+                </div>
+              </header>
+              <p>{{ comparison.summary }}</p>
+              <footer>{{ comparison.voyage.outcome }}</footer>
+            </article>
+          }
+        </section>
+      </section>
     }
-  </div>
+  }
 
   @if (runtime.isTeacher()) {
     <section class="review-queue" aria-labelledby="review-queue-title">
@@ -84,15 +261,21 @@
         <strong>{{ pendingReviews().length }} awaiting review</strong>
       </header>
       <div class="review-settings">
-        <label>Mastery level
+        <label
+          >Mastery level
           <select [value]="reviewLevel()" (change)="setReviewLevel($event)">
             <option value="developing">Developing</option>
             <option value="proficient">Proficient</option>
             <option value="advanced">Advanced</option>
           </select>
         </label>
-        <label>Feedback
-          <textarea rows="2" [value]="reviewFeedback()" (input)="setReviewFeedback($event)" placeholder="Add evidence-based feedback"></textarea>
+        <label
+          >Feedback<textarea
+            rows="2"
+            [value]="reviewFeedback()"
+            (input)="setReviewFeedback($event)"
+            placeholder="Add evidence-based feedback"
+          ></textarea>
         </label>
       </div>
       <div class="submission-list">
@@ -101,11 +284,16 @@
             <div>
               <span>{{ member.completedStepCount }} / {{ member.totalStepCount }} chapters</span>
               <h4>{{ member.studentDisplayName }}</h4>
-              <p>{{ member.responsePreview || 'Replay and journey record are ready for review.' }}</p>
+              <p>
+                {{ member.responsePreview || 'Replay and journey record are ready for review.' }}
+              </p>
             </div>
             <footer>
-              <button type="button" class="revise" (click)="review(member, 'revision-requested')">Request revision</button>
-              <button type="button" class="approve" (click)="review(member, 'approved')">Approve replay</button>
+              <button type="button" class="revise" (click)="review(member, 'revision-requested')">
+                Request revision</button
+              ><button type="button" class="approve" (click)="review(member, 'approved')">
+                Approve replay
+              </button>
             </footer>
           </article>
         } @empty {

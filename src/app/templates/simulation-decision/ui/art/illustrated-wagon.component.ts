@@ -1,4 +1,6 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
+
+import { SIMULATION_DECISION_CONFIG } from '../../runtime/simulation-decision.tokens';
 
 export interface WagonCargoItem {
   readonly goodId: string;
@@ -7,25 +9,23 @@ export interface WagonCargoItem {
   readonly packageKind?: 'sack' | 'crate' | 'bale' | 'coil';
 }
 
-const packageAssets = {
-  sack: '/frontier-trading/cargo-scenes/provisions-sack.png',
-  crate: '/frontier-trading/cargo-scenes/trade-crate.png',
-  bale: '/frontier-trading/cargo-scenes/wrapped-bale.png',
-  coil: '/frontier-trading/cargo-scenes/rope-coil.png',
-} as const;
-
 @Component({
   selector: 'app-illustrated-wagon',
   templateUrl: './illustrated-wagon.component.html',
   styleUrl: './illustrated-wagon.component.scss',
 })
 export class IllustratedWagonComponent {
+  private readonly config = inject(SIMULATION_DECISION_CONFIG);
   readonly loadPercent = input(0);
   readonly cargo = input<readonly WagonCargoItem[]>([]);
   readonly moving = input(false);
   readonly strained = input(false);
   readonly compact = input(false);
   readonly transportName = input('Prairie Wagon');
+  readonly vehicleImageUrl = computed(() => this.config.visualTheme?.vehicleImageUrl);
+  readonly vehicleImageAlt = computed(
+    () => this.config.visualTheme?.vehicleImageAlt ?? `${this.transportName()} carrying cargo`,
+  );
 
   readonly visibleCargo = computed(() => {
     return this.cargo()
@@ -38,7 +38,7 @@ export class IllustratedWagonComponent {
         return {
           ...item,
           packageKind,
-          asset: packageAssets[packageKind],
+          asset: this.config.visualTheme?.cargoPackageAssets?.[packageKind],
           pieces: Array.from({ length: pieceCount }, (_, piece) => piece),
           left: 2 + index * 19,
           bottom: index % 2 === 0 ? 0 : 5,

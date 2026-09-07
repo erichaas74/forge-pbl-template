@@ -28,6 +28,7 @@ import {
 } from './emergency.config';
 import { RenderQualityService } from './lab-kit/render-quality.service';
 import type { StationCapture } from './station-workspaces';
+import { persistWorkspaceDraft } from '../../shared/drafts/persist-workspace-draft';
 
 /** One test the team bought, in the order they bought it. */
 interface RanTest {
@@ -93,6 +94,44 @@ export class EmergencyResponseComponent implements OnDestroy {
   readonly gasCount = signal(0);
 
   private timer?: ReturnType<typeof setInterval>;
+  private checkpoint?: ReturnType<EmergencyResponseComponent['readDraft']>;
+
+  constructor() {
+    persistWorkspaceDraft(
+      'emergency-response',
+      () => {
+        if (!this.running()) this.checkpoint = this.readDraft();
+        return this.checkpoint;
+      },
+      (saved) => {
+        if (!saved || saved.tub !== this.tub()) return;
+        this.minutesLeft.set(saved.minutesLeft);
+        this.ran.set(saved.ran);
+        this.call.set(saved.call);
+        this.reasoning.set(saved.reasoning);
+        this.confidence.set(saved.confidence);
+        this.citedTestIds.set(saved.citedTestIds);
+        this.verdict.set(saved.verdict);
+        this.attempt.set(saved.attempt);
+        this.briefingOpen.set(saved.briefingOpen);
+      },
+    );
+  }
+
+  private readDraft() {
+    return {
+      tub: this.tub(),
+      minutesLeft: this.minutesLeft(),
+      ran: this.ran(),
+      call: this.call(),
+      reasoning: this.reasoning(),
+      confidence: this.confidence(),
+      citedTestIds: this.citedTestIds(),
+      verdict: this.verdict(),
+      attempt: this.attempt(),
+      briefingOpen: this.briefingOpen(),
+    };
+  }
 
   ngOnDestroy(): void {
     this.stop();

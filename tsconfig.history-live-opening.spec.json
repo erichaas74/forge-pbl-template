@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.spec.json",
+  "include": [
+    "src/**/*.d.ts",
+    "src/app/templates/history-live/**/*.spec.ts",
+    "src/app/plugins/intro-scenes/decision-scene.component.spec.ts",
+    "src/app/shared/media/presentation-examples.component.spec.ts"
+  ]
+}

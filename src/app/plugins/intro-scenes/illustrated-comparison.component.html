@@ -1,0 +1,462 @@
+<section
+  class="cartoon-opening"
+  [class.singed]="singed()"
+  [class.testing]="stage() === 'testing'"
+  [class.poofing]="stage() === 'poof'"
+  [class.handoff]="stage() === 'handoff'"
+>
+  <header class="episode-header">
+    <strong>The Mystery of the Unlabeled Shelf</strong>
+    <div class="header-tools">
+      <button type="button" (click)="reset()">↺ Restart</button
+      ><button type="button" (click)="finish(true)">Project preview</button>
+      <app-task-guide title="Look, predict, compare"
+        ><p>{{ config().invitation }}</p>
+        <p>A prediction is your idea before a test. Compare both samples after the same test.</p>
+        @for (line of lines(); track $index) {
+          <p>{{ line.text }}</p>
+        }
+        <button type="button" (click)="toggleVoice()">
+          {{ voices() ? 'Mute voices' : 'Play voices' }}
+        </button>
+        <p role="status">{{ audioNotice() }}</p>
+      </app-task-guide>
+    </div>
+  </header>
+  <main class="comparison-task" #dialoguePanel tabindex="-1">
+    <p class="eyebrow">
+      {{
+        stage() === 'welcome'
+          ? '1 · Predict'
+          : stage() === 'handoff'
+            ? '3 · Explain'
+            : '2 · Test and compare'
+      }}
+    </p>
+    <h1 #sceneHeading tabindex="-1">
+      {{
+        stage() === 'welcome'
+          ? 'Will both samples react the same way?'
+          : stage() === 'handoff'
+            ? 'Looking alike was not enough.'
+            : 'What changed?'
+      }}
+    </h1>
+    <div
+      class="illustration"
+      role="img"
+      [attr.aria-label]="
+        singed()
+          ? 'After the test: sample A is blue; sample B is pink.'
+          : 'Before the test: samples A and B both look clear.'
+      "
+    >
+      <svg viewBox="0 0 720 530" aria-hidden="true" focusable="false">
+        <defs>
+          <linearGradient id="teaser-wall" x2="0" y2="1">
+            <stop stop-color="#185467" />
+            <stop offset="1" stop-color="#092c3d" />
+          </linearGradient>
+          <linearGradient id="teaser-coat" x1="0" x2="1">
+            <stop stop-color="#fcf8e6" />
+            <stop offset=".65" stop-color="#e9eee8" />
+            <stop offset="1" stop-color="#a7c8c7" />
+          </linearGradient>
+          <linearGradient id="teaser-glass" x2="1" y2="1">
+            <stop stop-color="#d6ffff" stop-opacity=".45" />
+            <stop offset="1" stop-color="#c6f9ff" stop-opacity=".08" />
+          </linearGradient>
+          <pattern id="teaser-grid" width="38" height="38" patternUnits="userSpaceOnUse">
+            <path d="M38 0H0V38" fill="none" stroke="#81c6cb" stroke-opacity=".09" />
+          </pattern>
+          <radialGradient id="teaser-glow">
+            <stop stop-color="#9eeee8" stop-opacity=".18" />
+            <stop offset="1" stop-color="#9eeee8" stop-opacity="0" />
+          </radialGradient>
+        </defs>
+        <rect width="720" height="530" fill="url(#teaser-wall)" />
+        <rect width="720" height="530" fill="url(#teaser-grid)" />
+        <ellipse cx="445" cy="220" rx="340" ry="275" fill="url(#teaser-glow)" />
+        <g fill="none" stroke="#60a2ae" stroke-width="3" opacity=".28">
+          <path d="M30 0V90Q30 110 55 110H180V150M665 0V250H705V375" />
+          <circle cx="180" cy="162" r="12" />
+          <path d="M645 80h50M50 300h70M82 278v44" />
+        </g>
+        <g class="wall-sign">
+          <rect x="35" y="35" width="202" height="84" rx="9" fill="#0d2936" stroke="#54808b" />
+          <text x="52" y="61" fill="#98c8cc" font-size="10" letter-spacing="2">
+            TODAY’S LAB FORECAST
+          </text>
+          <text x="52" y="88" fill="#f1d493" font-size="17" font-weight="bold">
+            {{ singed() ? 'CHANCE OF BAD HAIR' : '100% CONFIDENCE' }}
+          </text>
+          <path d="M52 99h164" stroke="#3f616c" />
+        </g>
+        <g class="shelf-props" opacity=".5">
+          <rect x="44" y="225" width="154" height="10" rx="3" fill="#608b8a" />
+          <path
+            d="M65 156h21v36l15 31H49l16-31z"
+            fill="#f9c676"
+            stroke="#b3ddd5"
+            stroke-width="2"
+          />
+          <path d="M126 165h21v57h-21z" fill="#6bddd0" stroke="#b3ddd5" stroke-width="2" />
+          <rect x="160" y="184" width="19" height="37" rx="3" fill="#ef9c95" />
+        </g>
+        <g
+          class="scientist"
+          stroke="#173745"
+          stroke-width="4"
+          stroke-linejoin="round"
+          stroke-linecap="round"
+        >
+          <ellipse cx="458" cy="492" rx="112" ry="18" fill="#061e2c" opacity=".55" stroke="none" />
+          <path d="M400 401l-6 77 34 2 24-79M464 401l17 80 34-2-6-80" fill="#213d54" />
+          <path d="M393 470q-43 12-38 24l75-1 1-21M480 473l33-1q38 9 40 23h-71z" fill="#e6a859" />
+          <path d="M384 229q-40 7-60 49l-33-20-13 27 51 34q28 3 52-34" fill="url(#teaser-coat)" />
+          <path
+            d="M282 256q-2-16-8-18-7-3-4 15l-23-12q-16-8-18 1l16 16-12-3q-12-4-11 6l44 28q16 2 24-17"
+            fill="#edb984"
+          />
+          <path d="M502 231q53 6 77 60l-25 18-45-38" fill="url(#teaser-coat)" />
+          <path d="M550 297q5 16 22 14l13-18q2-12-12-21l-14 1" fill="#edb984" />
+          <path d="M393 211q58-23 107 7l32 186q-73 39-153-1z" fill="url(#teaser-coat)" />
+          <path d="M427 220l19 91 26-93" fill="#174d5b" />
+          <path d="M443 242l-10 12 14 42 17-42-12-12" fill="#e5aa51" />
+          <path
+            d="M419 217l-25 43 32 4-15 20 35 30M480 217l24 43-31 4 16 20-43 30"
+            fill="#fff9e7"
+          />
+          <path d="M447 315v94" stroke="#91aeae" stroke-width="2" />
+          <g fill="#e4a95c" stroke="none">
+            <circle cx="456" cy="330" r="4" />
+            <circle cx="456" cy="356" r="4" />
+            <circle cx="456" cy="382" r="4" />
+          </g>
+          <path d="M480 307h37v40q-18 9-37-1z" fill="#d1e3da" stroke-width="2" />
+          <path d="M488 316v-30m11 30v-24" stroke="#256e7a" stroke-width="5" />
+          <g class="head">
+            <path d="M425 195v36q24 18 44-1v-36" fill="#d7986f" />
+            <g class="tidy-hair" fill="#e8e4cb">
+              <path
+                d="M369 144q-49-23-31-48 10-14 27-8-20-33 9-38 11-1 21 10-9-30 21-27l23 19q14-30 33-16l13 22q31-19 40 9-2 10-11 16 43 4 37 29l-20 20-7 40z"
+              />
+            </g>
+            <path
+              class="wild-hair"
+              d="M369 152l-47-24 28-19-50-47 59 15-8-61 45 42 22-58 29 54 33-42 7 50 63-27-26 58 51 2-36 34 26 30-66 27z"
+              fill="#f8eab7"
+            />
+            <ellipse cx="374" cy="157" rx="19" ry="26" fill="#e1a274" />
+            <ellipse cx="519" cy="153" rx="18" ry="26" fill="#e1a274" />
+            <path
+              d="M379 113q16-54 76-47 64 4 62 67l-4 50q-8 37-64 42-58-2-68-38z"
+              fill="#edbc8b"
+            />
+            <path d="M391 105q18-18 42-9M463 94q27-6 40 11" stroke="#f4ead0" stroke-width="13" />
+            <g class="goggles">
+              <path d="M366 136h165" stroke="#103e49" stroke-width="10" />
+              <rect
+                x="379"
+                y="117"
+                width="64"
+                height="51"
+                rx="18"
+                fill="#d6fbf0"
+                stroke="#216675"
+                stroke-width="7"
+              />
+              <rect
+                x="452"
+                y="117"
+                width="64"
+                height="51"
+                rx="18"
+                fill="#d6fbf0"
+                stroke="#216675"
+                stroke-width="7"
+              />
+              <path d="M443 136h9" stroke="#e1ac57" stroke-width="6" />
+              <g class="eyes" stroke="none">
+                <ellipse cx="417" cy="143" rx="7" ry="10" fill="#183b4a" />
+                <ellipse cx="478" cy="143" rx="7" ry="10" fill="#183b4a" />
+                <circle cx="419" cy="140" r="2" fill="white" />
+                <circle cx="480" cy="140" r="2" fill="white" />
+              </g>
+              <path d="M388 129l16-6m57 6 16-6" stroke="white" stroke-width="4" opacity=".9" />
+            </g>
+            <path d="M447 144q-22 33-1 35l14-6" fill="#eaa876" stroke-width="3" />
+            <path
+              class="smug-mouth"
+              d="M421 187q30 26 59-3-35 13-59 3z"
+              fill="#fffbe2"
+              stroke-width="3"
+            />
+            <ellipse
+              class="surprised-mouth"
+              cx="453"
+              cy="199"
+              rx="12"
+              ry="9"
+              fill="#4c4141"
+              stroke-width="2"
+            />
+            <g class="soot" fill="#4a5260" opacity=".47" stroke="none">
+              <ellipse cx="402" cy="179" rx="16" ry="7" transform="rotate(22 402 179)" />
+              <ellipse cx="493" cy="183" rx="13" ry="6" />
+              <circle cx="480" cy="109" r="8" />
+              <circle cx="423" cy="204" r="4" />
+            </g>
+            <g class="sticky-note" stroke="none">
+              <path d="M428 74l78 10-10 53-75-9z" fill="#ffe28d" />
+              <path d="M485 135l11-14 1 15z" fill="#d4a948" />
+              <text
+                x="463"
+                y="98"
+                text-anchor="middle"
+                transform="rotate(7 463 102)"
+                font-size="10"
+                font-weight="bold"
+                fill="#473d36"
+              >
+                <tspan x="463">NEEDS MORE</tspan>
+                <tspan x="463" dy="13">EVIDENCE</tspan>
+              </text>
+            </g>
+          </g>
+        </g>
+        <g class="robot" stroke="#133d4d" stroke-width="4" stroke-linejoin="round">
+          <ellipse cx="149" cy="464" rx="67" ry="12" fill="#051e2c" opacity=".5" stroke="none" />
+          <circle cx="147" cy="433" r="24" fill="#244655" />
+          <circle cx="147" cy="433" r="12" fill="#4b6e75" />
+          <path d="M102 359h90l-11 69h-67z" fill="#e9b95d" />
+          <path d="M110 370h71v28h-71z" fill="#194856" />
+          <text
+            x="145"
+            y="389"
+            fill="#bceccb"
+            text-anchor="middle"
+            stroke="none"
+            font-size="11"
+            font-weight="bold"
+          >
+            {{ singed() ? 'CLUE FOUND' : 'EVIDENCE: 0' }}
+          </text>
+          <path
+            d="M103 382l-35-26-10 11m134 15 27-34 20 7"
+            fill="none"
+            stroke="#88bdbe"
+            stroke-width="9"
+          />
+          <circle cx="57" cy="366" r="8" fill="#e7b45b" />
+          <circle cx="239" cy="355" r="8" fill="#e7b45b" />
+          <path d="M145 294v-25" stroke="#93c2b9" stroke-width="5" />
+          <circle class="antenna" cx="145" cy="263" r="9" fill="#f6b98a" />
+          <rect x="90" y="295" width="114" height="72" rx="23" fill="#9dcecd" />
+          <rect x="101" y="307" width="92" height="47" rx="15" fill="#123749" />
+          <path d="M113 328h17m34 0h17" stroke="#a8ffe0" stroke-width="7" stroke-linecap="round" />
+          <path d="M140 341h13" stroke="#a8ffe0" stroke-width="3" stroke-linecap="round" />
+          <circle cx="117" cy="408" r="4" fill="#e26d63" stroke="none" />
+          <circle cx="130" cy="408" r="4" fill="#76aaa8" stroke="none" />
+        </g>
+        <g class="workbench">
+          <path d="M255 421h363v19H255z" fill="#bb8e63" stroke="#123341" stroke-width="4" />
+          <path d="M270 440v74m328-74v74" stroke="#739ba0" stroke-width="13" />
+          <rect x="276" y="441" width="320" height="36" rx="2" fill="#305466" />
+          <text
+            x="436"
+            y="464"
+            text-anchor="middle"
+            fill="#d7e0cc"
+            font-size="11"
+            letter-spacing="3"
+          >
+            VIRTUAL COMPARISON BENCH
+          </text>
+        </g>
+        <g class="sample-pair" [class.hidden]="stage() === 'handoff'">
+          @for (sample of config().samples; track sample.id; let i = $index) {
+            <g [attr.transform]="'translate(' + (310 + i * 130) + ' 280)'">
+              <path
+                d="M28 14h31v47l29 55q8 24-20 24H18q-26 0-16-24l26-55z"
+                fill="url(#teaser-glass)"
+                stroke="#a8e1e2"
+                stroke-width="3"
+              />
+              <path
+                d="M13 100h64l10 23q3 13-15 13H14q-13 0-9-13z"
+                [attr.fill]="(i === 0 ? firstColor() : secondColor()) ? sample.color : '#bce5df'"
+                [attr.opacity]="(i === 0 ? firstColor() : secondColor()) ? '.95' : '.25'"
+                class="sample-liquid"
+              />
+              <path
+                d="M32 24h8v47l-19 38"
+                stroke="#e2ffff"
+                stroke-width="5"
+                fill="none"
+                opacity=".6"
+              />
+              <rect
+                x="23"
+                y="7"
+                width="41"
+                height="12"
+                rx="4"
+                fill="#e9b36b"
+                stroke="#174655"
+                stroke-width="2"
+              />
+              <circle cx="44" cy="110" r="15" fill="#f8f1d9" />
+              <text
+                x="44"
+                y="116"
+                text-anchor="middle"
+                fill="#1b4652"
+                font-size="19"
+                font-weight="bold"
+              >
+                {{ i === 0 ? 'A' : 'B' }}
+              </text>
+              @if (i === 1 && secondColor()) {
+                <g class="sample-sparkles" stroke="#ffd6e9" stroke-width="3">
+                  <path d="M-7 64v16m-8-8h16M94 47v14m-7-7h14" />
+                </g>
+              }
+            </g>
+          }
+        </g>
+        @if (stage() === 'handoff') {
+          <g class="case-vials">
+            <rect
+              x="292"
+              y="397"
+              width="285"
+              height="28"
+              rx="4"
+              fill="#ddb979"
+              stroke="#19404b"
+              stroke-width="3"
+            />
+            @for (label of ['A', 'B', 'C', 'D']; track label; let i = $index) {
+              <g [attr.transform]="'translate(' + (310 + i * 67) + ' 315)'">
+                <rect
+                  width="40"
+                  height="83"
+                  rx="10"
+                  fill="#9cdfdc"
+                  fill-opacity=".45"
+                  stroke="#c6eeee"
+                  stroke-width="3"
+                />
+                <rect
+                  x="-2"
+                  y="-8"
+                  width="44"
+                  height="19"
+                  rx="5"
+                  fill="#e2af64"
+                  stroke="#204451"
+                  stroke-width="2"
+                />
+                <rect x="5" y="36" width="30" height="32" rx="3" fill="#faf1d6" />
+                <text
+                  x="20"
+                  y="58"
+                  text-anchor="middle"
+                  fill="#204451"
+                  font-size="20"
+                  font-weight="bold"
+                >
+                  {{ label }}
+                </text>
+              </g>
+            }
+          </g>
+        }
+        <g class="puff-cloud">
+          <path
+            d="M344 291q-86 2-85-50-70-26-20-77-12-60 48-61 9-54 67-23 44-50 85-1 68-25 82 35 71-1 61 60 60 39 16 79 8 69-63 68-24 61-82 30-70 31-109-60z"
+            fill="#f6e5b3"
+            stroke="#f9f3d2"
+            stroke-width="8"
+          />
+          <path
+            d="M270 183q8-28 36-24m199 36q32 6 32 32m-194 69q-30-4-35-23"
+            fill="none"
+            stroke="#dbc895"
+            stroke-width="5"
+          />
+          <text
+            x="404"
+            y="223"
+            text-anchor="middle"
+            font-size="80"
+            font-weight="900"
+            font-style="italic"
+            fill="#d16b65"
+            stroke="#783e50"
+            stroke-width="2"
+            transform="rotate(-9 404 223)"
+          >
+            POOF!
+          </text>
+        </g>
+      </svg>
+    </div>
+    <div class="evidence-readout" aria-live="polite">
+      @for (sample of config().samples; track sample.id; let i = $index) {
+        <span class="observation"
+          ><i
+            [style.background]="(i === 0 ? firstColor() : secondColor()) ? sample.color : '#b8d4ce'"
+          ></i
+          ><b>{{ sample.label }}</b
+          ><span>{{
+            (i === 0 ? firstColor() : secondColor()) ? sample.result : 'Looks clear'
+          }}</span></span
+        >
+      }
+    </div>
+    @if (stage() === 'welcome') {
+      <div class="prediction-choices" aria-label="My prediction">
+        @for (idea of ['Same reaction', 'Different reactions', 'Not sure yet']; track idea) {
+          <button
+            type="button"
+            [attr.aria-pressed]="prediction() === idea"
+            (click)="prediction.set(idea)"
+          >
+            {{ idea }}
+          </button>
+        }
+      </div>
+      <button class="test-button" type="button" [disabled]="!prediction()" (click)="runTest()">
+        Test my prediction →
+      </button>
+    } @else if (stage() === 'testing' || stage() === 'poof') {
+      <p role="status">Comparing the samples…</p>
+    } @else if (stage() === 'reveal') {
+      <div class="prediction-choices" aria-label="What I observed">
+        <button
+          type="button"
+          [attr.aria-pressed]="conclusion() === 'same'"
+          (click)="conclusion.set('same')"
+        >
+          A = B · Same reaction</button
+        ><button
+          type="button"
+          [attr.aria-pressed]="conclusion() === 'different'"
+          (click)="conclusion.set('different')"
+        >
+          A ≠ B · Different reactions
+        </button>
+      </div>
+      <p role="status">{{ feedback() }}</p>
+      <button class="test-button" type="button" [disabled]="!conclusion()" (click)="showCase()">
+        Check my observation →
+      </button>
+    } @else {
+      <p class="student-prediction">My prediction: {{ prediction() }}</p>
+      <p class="evidence-note">{{ config().evidenceNote }}</p>
+      <button class="test-button" type="button" (click)="finish()">Open my investigation →</button>
+    }
+  </main>
+</section>

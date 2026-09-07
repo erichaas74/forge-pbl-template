@@ -15,12 +15,15 @@ describe('ProjectHomeComponent', () => {
 
     const links = fixture.debugElement.queryAll(By.css('.project-card a'));
     expect(links.map((link) => link.attributes['href'])).toEqual([
-      '/mystery-substance',
-      '/frontier-trading/builder-info',
-      '/frontier-trading',
-      '/class-exhibit-hall',
-      '/history-live',
-      '/debate-studio',
+      '/projects/robot-delivery-code-lab',
+      '/projects/mystery-substance',
+      '/projects/frontier-trading-company',
+      '/projects/objects-that-changed-us',
+      '/projects/history-live-revolutionary-war',
+      '/projects/the-fate-of-the-republic',
+      '/projects/race-around-the-world',
+      '/projects/survival-island-story-lab',
+      '/projects/calendar-monument',
     ]);
   });
 });

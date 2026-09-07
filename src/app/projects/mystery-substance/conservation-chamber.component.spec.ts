@@ -22,6 +22,18 @@ async function runTrial(chamber: ConservationChamberComponent): Promise<void> {
 }
 
 describe('ConservationChamberComponent', () => {
+  it('restores a settled open-chamber result and note after comparing the sealed chamber', async () => {
+    const chamber = await createChamber();
+    chamber.selectTrial('open');
+    await runTrial(chamber);
+    chamber.observation.set('Five particles crossed the boundary.');
+    chamber.selectTrial('closed');
+    chamber.selectTrial('open');
+    expect(chamber.insideCount()).toBe(19);
+    expect(chamber.mass()).toBeCloseTo(123.5, 1);
+    expect(chamber.observation()).toBe('Five particles crossed the boundary.');
+    expect(chamber.canCapture()).toBe(true);
+  });
   it('keeps every particle and the whole mass inside a sealed chamber', async () => {
     const chamber = await createChamber();
     chamber.selectTrial('closed');

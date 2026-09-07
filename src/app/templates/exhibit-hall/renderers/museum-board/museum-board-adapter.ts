@@ -12,6 +12,7 @@ import type {
   NotebookArtifactSource,
 } from '../../domain/exhibit-types';
 import { museumBoardTemplate } from './museum-board-template';
+import { isExhibitObjectModel } from '../../../../shared/media/object-model';
 import { parseMetaStepsEmbed } from '../metasteps/metasteps-embed';
 import { parsePresentationVideo } from '../video/presentation-video';
 
@@ -81,6 +82,15 @@ export function validateMuseumBoard(
 ): ArtifactValidationResult {
   const base = validator.validate(template, data, museumBoardFieldValue);
   const errors = [...base.errors];
+  for (const object of data.objects) {
+    if (object.model !== undefined && !isExhibitObjectModel(object.model)) {
+      errors.push({
+        fieldId: 'selected-objects',
+        message: `The 3D model for ${object.title} needs a GLB URL, description, source, and credit.`,
+        focusTarget: '[data-field-id="selected-objects"]',
+      });
+    }
+  }
   const galleryValue = data.immersiveGallery?.embedUrl.trim() ?? '';
   const parsedGallery = parseMetaStepsEmbed(galleryValue);
   if (galleryValue.length > 0 && !parsedGallery.valid) {
@@ -154,6 +164,7 @@ function objectList(value: unknown, captions: unknown): readonly MuseumBoardObje
         title: stringValue(candidate['title']),
         imageAssetId: optionalString(candidate['imageAssetId']),
         imageAlt: optionalString(candidate['imageAlt']),
+        model: candidate['model'] as MuseumBoardObject['model'],
         description,
         evidenceConnection: stringValue(candidate['evidenceConnection']),
         sourceIds,

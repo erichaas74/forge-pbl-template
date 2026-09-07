@@ -377,3 +377,11 @@ legend {
     color: #e0d0b2;
   }
 }
+
+.setup h1 {
+  font-size: clamp(28px, 3vw, 42px);
+}
+.setup .starting-account {
+  font-size: 14px;
+  line-height: 1.5;
+}

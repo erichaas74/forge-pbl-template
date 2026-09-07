@@ -66,6 +66,16 @@ export class RegisteredCommandExecutor<
         context.authorityMode !== 'serverConfirmed'
       ) {
         requiresAuthoritativeConfirmation.push(command);
+        if (context.allowLocalAuthorityBypass !== true) {
+          errors.push(
+            runtimeError(
+              'AUTHORITATIVE_CONFIRMATION_REQUIRED',
+              `Command "${command.commandType}" must be confirmed by the authoritative server.`,
+              { sourceId: command.targetId },
+            ),
+          );
+          break;
+        }
       }
 
       let handled;
@@ -105,6 +115,10 @@ export class RegisteredCommandExecutor<
         snapshot: structuredClone(state),
         executedCommands: [],
         mutations: [],
+        requiresAuthoritativeConfirmation:
+          requiresAuthoritativeConfirmation.length > 0
+            ? requiresAuthoritativeConfirmation
+            : undefined,
         errors,
       };
     }

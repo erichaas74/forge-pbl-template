@@ -13,6 +13,7 @@ import { conservationTrials } from './mystery-science.config';
 import { RenderQualityService } from './lab-kit/render-quality.service';
 import { stationArt } from './station-art.config';
 import type { StationCapture } from './station-workspaces';
+import { persistWorkspaceDraft } from '../../shared/drafts/persist-workspace-draft';
 
 export type ChamberId = (typeof conservationTrials)[number]['id'];
 export type ChamberPhase = 'idle' | 'running' | 'settled';
@@ -59,6 +60,38 @@ export class ConservationChamberComponent implements OnDestroy {
   readonly log = signal<readonly { id: number; title: string; headline: string }[]>([]);
 
   private timer?: ReturnType<typeof setInterval>;
+  private readonly drafts = new Map<ChamberId, { observation: string; settled: boolean }>();
+
+  constructor() {
+    persistWorkspaceDraft(
+      'conservation-chamber',
+      () => ({
+        trialId: this.trialId(),
+        observation: this.observation(),
+        settled: this.phase() === 'settled',
+        drafts: [...this.drafts.entries()],
+        log: this.log(),
+      }),
+      (saved) => {
+        if (Array.isArray(saved.drafts))
+          for (const [id, draft] of saved.drafts) this.drafts.set(id, draft);
+        if (Array.isArray(saved.log)) this.log.set(saved.log);
+        if (this.trials.some((t) => t.id === saved.trialId)) this.trialId.set(saved.trialId);
+        this.restoreTrialDraft(saved);
+      },
+    );
+  }
+
+  private restoreTrialDraft(draft: { observation: string; settled: boolean }): void {
+    this.observation.set(typeof draft.observation === 'string' ? draft.observation : '');
+    if (draft.settled) {
+      const trial = this.trials.find((t) => t.id === this.trialId())!;
+      this.seed(trial.beforeParticles);
+      this.reconcile(trial.afterParticles);
+      this.phase.set('settled');
+      this.progress.set(1);
+    }
+  }
 
   ngOnDestroy(): void {
     this.stop();
@@ -110,11 +143,17 @@ export class ConservationChamberComponent implements OnDestroy {
   });
 
   selectTrial(id: ChamberId): void {
-    if (this.running()) {
+    if (this.running() || id === this.trialId()) {
       return;
     }
+    this.drafts.set(this.trialId(), {
+      observation: this.observation(),
+      settled: this.phase() === 'settled',
+    });
     this.trialId.set(id);
     this.reset();
+    const draft = this.drafts.get(id);
+    if (draft) this.restoreTrialDraft(draft);
   }
 
   toggleBoundary(): void {
@@ -271,6 +310,7 @@ export class ConservationChamberComponent implements OnDestroy {
       },
       note: this.observation().trim(),
     });
+    this.drafts.delete(this.trialId());
     this.reset();
   }
 }

@@ -7,6 +7,7 @@ import type {
 } from '../../domain/exhibit-types';
 import { parseMetaStepsEmbed } from '../metasteps/metasteps-embed';
 import { parsePresentationVideo } from '../video/presentation-video';
+import { isExhibitObjectModel } from '../../../../shared/media/object-model';
 
 export class MuseumBoardRenderer implements ExhibitRenderer {
   readonly type = 'museum-board-v1';
@@ -103,6 +104,12 @@ export function isMuseumBoardSnapshotData(data: unknown): data is MuseumBoardSna
     typeof data.centralClaim === 'string' &&
     'objects' in data &&
     Array.isArray(data.objects) &&
+    data.objects.every(
+      (object) =>
+        typeof object === 'object' &&
+        object !== null &&
+        (object.model === undefined || isExhibitObjectModel(object.model)),
+    ) &&
     'sources' in data &&
     Array.isArray(data.sources) &&
     'teamCredit' in data &&

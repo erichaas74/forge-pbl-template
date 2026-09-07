@@ -2,8 +2,8 @@
   <section class="map-card page-card" aria-labelledby="route-title">
     <header>
       <div>
-        <span class="eyebrow">Trail command</span>
-        <h1 id="route-title">Chart the Frontier</h1>
+        <span class="eyebrow">Your trading map</span>
+        <h1 id="route-title">Choose your route</h1>
         <p>
           {{ runtime.currentLocation()?.name }} ·
           {{ runtime.state().activeTravel ? 'Departure point' : 'Current location' }}
@@ -13,47 +13,111 @@
         >Day {{ runtime.state().currentDay }}<small>{{ runtime.transport()?.name }}</small></span
       >
     </header>
-    <section class="game-hud" aria-label="Route mission status">
-      <div class="mission-chip">
-        <small>Current objective</small>
-        <strong>{{
-          runtime.state().activeTravel ? 'Reach the next checkpoint' : 'Choose a profitable trail'
-        }}</strong>
-      </div>
-      <dl>
-        <div>
-          <dt>Cash</dt>
-          <dd>{{ runtime.money(runtime.cash()) }}</dd>
-        </div>
-        <div>
-          <dt>Cargo</dt>
-          <dd>{{ runtime.usedCargo() }} / {{ runtime.capacity() }}</dd>
-        </div>
-        <div>
-          <dt>Day</dt>
-          <dd>{{ runtime.state().currentDay }} / {{ runtime.config.maxSeasonDays }}</dd>
-        </div>
-      </dl>
-    </section>
-
     <app-route-atlas
+      [workspace]="true"
       [locations]="runtime.config.locations"
       [trails]="atlasTrails()"
       [backgroundAsset]="runtime.config.world.mapSceneAsset"
       [currentLocationId]="runtime.state().currentLocationId"
       [selectedRouteId]="mapRouteId()"
+      [predictionRouteId]="predictionOpen() ? highlightedRouteId() : ''"
+      [destinationMarkets]="destinationMarkets()"
+      [currentMarketPrices]="currentMarketPrices()"
       [travel]="mapTravel()"
       [visitedIds]="visitedIds()"
-      (routeSelected)="selectRoute($event)"
+      (routeSelected)="previewRoute($event)"
+      (routeHighlighted)="highlightRoute($event)"
       (detailsRequested)="showTripDetails()"
-    />
+    >
+      @if (routeOptions().length > 0 && !runtime.state().activeTravel) {
+        @if (predictionOpen() && highlightedRoute(); as route) {
+          <article
+            routePrediction
+            #predictionPanel
+            id="route-prediction"
+            class="route-prediction"
+            tabindex="-1"
+            aria-live="polite"
+            aria-labelledby="prediction-title"
+            (keydown.escape)="closePrediction()"
+          >
+            <header>
+              <div>
+                <span class="eyebrow">Route prediction</span>
+                <h3 id="prediction-title">
+                  {{ route.name }} → {{ locationName(route.toLocationId) }}
+                </h3>
+              </div>
+              <div class="prediction-verdict">
+                <strong>{{ route.estimatedDays }} days</strong>
+                <span>{{ runtime.money(route.supplyCostCents) }} travel cost</span>
+              </div>
+              <button
+                type="button"
+                class="close-prediction"
+                aria-label="Close route prediction"
+                (click)="closePrediction()"
+              >
+                ×
+              </button>
+            </header>
+            <div class="prediction-columns">
+              <section class="route-intelligence" aria-labelledby="route-intel-title">
+                <span>Travel intelligence</span>
+                <h4 id="route-intel-title">What could change the result?</h4>
+                <dl>
+                  <div>
+                    <dt>Distance</dt>
+                    <dd>{{ route.distanceMiles }} miles</dd>
+                  </div>
+                  <div>
+                    <dt>Weather</dt>
+                    <dd>{{ routeWeather(route) }}</dd>
+                  </div>
+                  <div>
+                    <dt>Terrain</dt>
+                    <dd>{{ route.terrain.join(' · ') }}</dd>
+                  </div>
+                  <div>
+                    <dt>Risk forecast</dt>
+                    <dd>{{ routeRiskPrediction(route) }}</dd>
+                  </div>
+                  <div>
+                    <dt>Market clue</dt>
+                    <dd>{{ route.demandClue }}</dd>
+                  </div>
+                </dl>
+                <p>
+                  Route events can add time or costs and may damage cargo. Keep a cash reserve for
+                  the journey.
+                </p>
+              </section>
+            </div>
+            <footer>
+              <small
+                >{{ route.estimatedDays }} days · {{ runtime.money(route.supplyCostCents) }} travel
+                cost</small
+              >
+              <button
+                type="button"
+                class="primary"
+                [disabled]="!routeUnlocked(route)"
+                (click)="chooseRoute(route.id)"
+              >
+                {{
+                  routeUnlocked(route)
+                    ? route.id === selectedRouteId()
+                      ? 'Open selected route plan'
+                      : 'Use this route · plan trip'
+                    : 'Unlock by completing your next mission'
+                }}
+              </button>
+            </footer>
+          </article>
+        }
+      }
+    </app-route-atlas>
   </section>
-  <app-choice-progression-panel
-    [progression]="progression()"
-    choiceLabel="routes open"
-    [availableCount]="availableRouteCount()"
-    [totalCount]="runtime.config.routes.length"
-  />
   <aside
     #tripCard
     class="trip-card page-card"
@@ -62,6 +126,7 @@
     [attr.inert]="plannerOpen() || runtime.state().activeTravel ? null : ''"
     aria-label="Selected trip"
     tabindex="-1"
+    (keydown.escape)="closePlanner()"
   >
     @if (!runtime.state().activeTravel) {
       <button
@@ -288,146 +353,159 @@
       <h2>Choose a destination</h2>
     }
   </aside>
-  @if (reachableRoutes().length > 0 && !runtime.state().activeTravel) {
-    <details class="comparison route-journal page-card">
-      <summary>
-        <span aria-hidden="true">▤</span><strong>Open Route Journal</strong
-        ><small>Compare every route with exact numbers</small>
-      </summary>
-      <section aria-labelledby="comparison-title">
-        <header>
-          <div>
-            <span class="eyebrow">Compare your options</span>
-            <h2 id="comparison-title">Routes from {{ runtime.currentLocation()?.shortName }}</h2>
-          </div>
-          <button
-            type="button"
-            class="secondary"
-            [disabled]="compareIds().length < 2"
-            (click)="compareOnly.set(!compareOnly())"
-          >
-            {{
-              compareOnly() ? 'Show all routes' : 'Compare selected (' + compareIds().length + '/3)'
-            }}
-          </button>
-        </header>
-        <div class="route-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Compare</th>
-                <th>Destination / route</th>
-                <th>Distance</th>
-                <th>Days</th>
-                <th>Supplies</th>
-                <th>Risk / access</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (route of displayedRoutes(); track route.id) {
-                <tr [class.selected]="route.id === selectedRouteId()">
-                  <td>
-                    <input
-                      type="checkbox"
-                      [attr.aria-label]="'Compare ' + route.name"
-                      [checked]="compareIds().includes(route.id)"
-                      [disabled]="!compareIds().includes(route.id) && compareIds().length >= 3"
-                      (change)="toggleCompare(route.id)"
-                    />
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      [attr.aria-pressed]="route.id === selectedRouteId()"
-                      (click)="selectRoute(route.id)"
-                    >
-                      <strong>{{ locationName(route.toLocationId) }}</strong
-                      ><small>{{ route.name }}</small>
-                    </button>
-                  </td>
-                  <td>{{ route.distanceMiles }} mi</td>
-                  <td>{{ route.estimatedDays }}</td>
-                  <td>{{ runtime.money(route.supplyCostCents) }}</td>
-                  <td>
-                    <span [class]="'risk ' + route.risk">{{ route.risk }}</span
-                    ><small>{{
-                      compatible(route)
-                        ? '✓ Fits your transport'
-                        : '× Unavailable for your transport'
-                    }}</small>
-                  </td>
+  <div class="map-notebooks">
+    <details class="progress-notebook">
+      <summary>Mission progress · {{ availableRouteCount() }} routes open</summary>
+      <app-choice-progression-panel
+        [progression]="progression()"
+        choiceLabel="routes open"
+        [availableCount]="availableRouteCount()"
+        [totalCount]="runtime.config.routes.length"
+      />
+    </details>
+    @if (reachableRoutes().length > 0 && !runtime.state().activeTravel) {
+      <details class="comparison route-journal page-card">
+        <summary>
+          <span aria-hidden="true">▤</span><strong>Open Route Journal</strong
+          ><small>Compare every route with exact numbers</small>
+        </summary>
+        <section aria-labelledby="comparison-title">
+          <header>
+            <div>
+              <span class="eyebrow">Compare your options</span>
+              <h2 id="comparison-title">Routes from {{ runtime.currentLocation()?.shortName }}</h2>
+            </div>
+            <button
+              type="button"
+              class="secondary"
+              [disabled]="compareIds().length < 2"
+              (click)="compareOnly.set(!compareOnly())"
+            >
+              {{
+                compareOnly()
+                  ? 'Show all routes'
+                  : 'Compare selected (' + compareIds().length + '/3)'
+              }}
+            </button>
+          </header>
+          <div class="route-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Compare</th>
+                  <th>Destination / route</th>
+                  <th>Distance</th>
+                  <th>Days</th>
+                  <th>Supplies</th>
+                  <th>Risk / access</th>
                 </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </details>
-  }
-  @if (journeyHistory().length) {
-    <details
-      #historyPanel
-      class="journey-record page-card"
-      tabindex="-1"
-      [open]="historyOpen()"
-      (toggle)="syncHistory($event)"
-    >
-      <summary>
-        Journey record · {{ journeyHistory().length }} recorded
-        {{ journeyHistory().length === 1 ? 'route' : 'routes' }}
-      </summary>
-      @for (entry of journeyHistory(); track entry.id) {
-        <article>
-          <span class="eyebrow">{{
-            entry.dayArrived !== undefined
-              ? 'Arrived · Day ' + entry.dayArrived
-              : 'Journey in progress'
-          }}</span>
-          <h2>{{ entry.knownInfoSnapshot.name }}</h2>
-          <p>
-            {{ locationName(entry.knownInfoSnapshot.fromLocationId) }} →
-            {{ locationName(entry.knownInfoSnapshot.toLocationId) }}
-          </p>
-          <dl class="budget">
-            <div>
-              <dt>Departure</dt>
-              <dd>Day {{ entry.dayStarted }}</dd>
-            </div>
-            <div>
-              <dt>Planned travel</dt>
-              <dd>
-                {{ entry.knownInfoSnapshot.estimatedDays }} days ·
-                {{ entry.knownInfoSnapshot.distanceMiles }} miles
-              </dd>
-            </div>
-            @if (entry.dayArrived !== undefined) {
+              </thead>
+              <tbody>
+                @for (route of displayedRoutes(); track route.id) {
+                  <tr [class.selected]="route.id === selectedRouteId()">
+                    <td>
+                      <input
+                        type="checkbox"
+                        [attr.aria-label]="'Compare ' + route.name"
+                        [checked]="compareIds().includes(route.id)"
+                        [disabled]="!compareIds().includes(route.id) && compareIds().length >= 3"
+                        (change)="toggleCompare(route.id)"
+                      />
+                    </td>
+                    <td>
+                      <button
+                        type="button"
+                        [attr.aria-pressed]="route.id === selectedRouteId()"
+                        (click)="selectRoute(route.id)"
+                      >
+                        <strong>{{ locationName(route.toLocationId) }}</strong
+                        ><small>{{ route.name }}</small>
+                      </button>
+                    </td>
+                    <td>{{ route.distanceMiles }} mi</td>
+                    <td>{{ route.estimatedDays }}</td>
+                    <td>{{ runtime.money(route.supplyCostCents) }}</td>
+                    <td>
+                      <span [class]="'risk ' + route.risk">{{ route.risk }}</span
+                      ><small>{{
+                        compatible(route)
+                          ? '✓ Fits your transport'
+                          : '× Unavailable for your transport'
+                      }}</small>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </details>
+    }
+    @if (journeyHistory().length) {
+      <details
+        #historyPanel
+        class="journey-record page-card"
+        tabindex="-1"
+        [open]="historyOpen()"
+        (toggle)="syncHistory($event)"
+      >
+        <summary>
+          Journey record · {{ journeyHistory().length }} recorded
+          {{ journeyHistory().length === 1 ? 'route' : 'routes' }}
+        </summary>
+        @for (entry of journeyHistory(); track entry.id) {
+          <article>
+            <span class="eyebrow">{{
+              entry.dayArrived !== undefined
+                ? 'Arrived · Day ' + entry.dayArrived
+                : 'Journey in progress'
+            }}</span>
+            <h2>{{ entry.knownInfoSnapshot.name }}</h2>
+            <p>
+              {{ locationName(entry.knownInfoSnapshot.fromLocationId) }} →
+              {{ locationName(entry.knownInfoSnapshot.toLocationId) }}
+            </p>
+            <dl class="budget">
               <div>
-                <dt>Actual elapsed time</dt>
-                <dd>{{ entry.dayArrived - entry.dayStarted }} days</dd>
+                <dt>Departure</dt>
+                <dd>Day {{ entry.dayStarted }}</dd>
               </div>
-            }
-            <div>
-              <dt>Departure supplies</dt>
-              <dd>{{ runtime.money(entry.knownInfoSnapshot.supplyCostCents) }}</dd>
-            </div>
-          </dl>
-          <blockquote>{{ entry.rationale }}</blockquote>
-          <p class="record-note">
-            Route information was saved when you departed. Later trail costs appear in your money
-            record.
-          </p>
-          <button
-            type="button"
-            class="secondary"
-            [disabled]="historyPinned(entry)"
-            (click)="pinHistory(entry)"
-          >
-            {{ historyPinned(entry) ? '✓ Journey record saved' : 'Save journey record' }}
-          </button>
-        </article>
-      }
-    </details>
-  }
+              <div>
+                <dt>Planned travel</dt>
+                <dd>
+                  {{ entry.knownInfoSnapshot.estimatedDays }} days ·
+                  {{ entry.knownInfoSnapshot.distanceMiles }} miles
+                </dd>
+              </div>
+              @if (entry.dayArrived !== undefined) {
+                <div>
+                  <dt>Actual elapsed time</dt>
+                  <dd>{{ entry.dayArrived - entry.dayStarted }} days</dd>
+                </div>
+              }
+              <div>
+                <dt>Departure supplies</dt>
+                <dd>{{ runtime.money(entry.knownInfoSnapshot.supplyCostCents) }}</dd>
+              </div>
+            </dl>
+            <blockquote>{{ entry.rationale }}</blockquote>
+            <p class="record-note">
+              Route information was saved when you departed. Later trail costs appear in your money
+              record.
+            </p>
+            <button
+              type="button"
+              class="secondary"
+              [disabled]="historyPinned(entry)"
+              (click)="pinHistory(entry)"
+            >
+              {{ historyPinned(entry) ? '✓ Journey record saved' : 'Save journey record' }}
+            </button>
+          </article>
+        }
+      </details>
+    }
+  </div>
   @if (reviewOpen() && selectedRoute(); as route) {
     <div class="review-backdrop">
       <section

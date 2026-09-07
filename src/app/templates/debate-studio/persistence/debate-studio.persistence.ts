@@ -1,4 +1,10 @@
 import { InjectionToken } from '@angular/core';
+import type { ProjectSessionContext } from '../../../core/context/project-session-context';
+import {
+  safeBrowserStorage,
+  ScopedBrowserStore,
+  type WorkspaceStorageScope,
+} from '../../../shared/persistence';
 
 import type {
   DebateMember,
@@ -9,6 +15,7 @@ import type {
 } from '../domain/debate-studio.models';
 
 export interface DebateSessionLocator {
+  readonly tenantId: string;
   readonly projectId: string;
   readonly projectVersion: string;
   readonly classId: string;
@@ -71,21 +78,30 @@ export interface DebateWorkspacePersistenceAdapter {
 }
 
 export class BrowserDebateWorkspacePersistenceAdapter implements DebateWorkspacePersistenceAdapter {
+  private readonly store: ScopedBrowserStore<DebateWorkspaceState>;
+
+  constructor(
+    storage: Storage | undefined = safeBrowserStorage(),
+    private readonly context?: ProjectSessionContext,
+  ) {
+    this.store = new ScopedBrowserStore(
+      'debate-workspace',
+      storage,
+      (value): value is DebateWorkspaceState =>
+        typeof value === 'object' &&
+        value !== null &&
+        'schemaVersion' in value &&
+        value.schemaVersion === '2.0',
+    );
+  }
+
   load(
     projectId: string,
     projectVersion: string,
     sessionId: string,
     studentId: string,
   ): DebateWorkspaceState | undefined {
-    if (typeof localStorage === 'undefined') return undefined;
-    const raw = localStorage.getItem(this.key(projectId, projectVersion, sessionId, studentId));
-    if (raw === null) return undefined;
-    try {
-      const value = JSON.parse(raw) as DebateWorkspaceState;
-      return value.schemaVersion === '2.0' ? value : undefined;
-    } catch {
-      return undefined;
-    }
+    return this.store.load(this.scope(projectId, projectVersion, sessionId, studentId));
   }
 
   save(
@@ -95,25 +111,29 @@ export class BrowserDebateWorkspacePersistenceAdapter implements DebateWorkspace
     studentId: string,
     state: DebateWorkspaceState,
   ): void {
-    if (typeof localStorage === 'undefined') return;
-    localStorage.setItem(
-      this.key(projectId, projectVersion, sessionId, studentId),
-      JSON.stringify(state),
-    );
+    this.store.save(this.scope(projectId, projectVersion, sessionId, studentId), state);
   }
 
   clear(projectId: string, projectVersion: string, sessionId: string, studentId: string): void {
-    if (typeof localStorage === 'undefined') return;
-    localStorage.removeItem(this.key(projectId, projectVersion, sessionId, studentId));
+    this.store.clear(this.scope(projectId, projectVersion, sessionId, studentId));
   }
 
-  private key(
+  private scope(
     projectId: string,
     projectVersion: string,
     sessionId: string,
     studentId: string,
-  ): string {
-    return `forge:debate-workspace:${projectId}@${projectVersion}:${sessionId}:${studentId}`;
+  ): WorkspaceStorageScope {
+    return {
+      tenantId: this.context?.tenantId ?? 'local-preview',
+      projectId,
+      projectVersion,
+      classId: this.context?.classId,
+      actorId: studentId,
+      teamId: this.context?.teamId,
+      attemptId: this.context?.attemptId,
+      sessionId,
+    };
   }
 }
 

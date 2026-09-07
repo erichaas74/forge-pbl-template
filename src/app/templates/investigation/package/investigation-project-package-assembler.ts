@@ -314,8 +314,10 @@ function isEntity(value: unknown): value is BaseEntity {
   return (
     isRecord(value) &&
     typeof value['id'] === 'string' &&
-    value['id'].length > 0 &&
-    typeof value['schemaVersion'] === 'string'
+    value['id'].trim() === value['id'] &&
+    /^[a-z0-9][a-z0-9._-]*$/i.test(value['id']) &&
+    typeof value['schemaVersion'] === 'string' &&
+    /^(0|[1-9]\d*)\.(0|[1-9]\d*)(?:\.(0|[1-9]\d*))?$/.test(value['schemaVersion'])
   );
 }
 

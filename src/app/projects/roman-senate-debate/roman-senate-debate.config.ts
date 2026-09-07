@@ -18,8 +18,8 @@ export const romanSenateDebateConfig: DebateStudioProjectConfig = {
     {
       id: 'caesarian-reformers',
       name: 'Caesarian Reformers',
-      railLabel: 'Defenders of Caesar',
-      shortName: 'Reformers',
+      railLabel: 'Caesarian Reformers',
+      shortName: 'Caesarian Reformers',
       position: 'Caesar’s leadership and reforms were necessary responses to a Republic in crisis.',
       accent: '#c49b58',
       emblem: 'C',

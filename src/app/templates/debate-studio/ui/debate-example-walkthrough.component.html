@@ -1,0 +1,305 @@
+<main
+  class="example-debate"
+  [class.builder-open]="builderOpen()"
+  [style.--chamber-image]="'url(' + runtime.config.chamberImageUrl + ')'"
+>
+  <header class="example-header">
+    <div>
+      <span>Finished project example · animated walkthrough</span>
+      <h1>{{ runtime.config.title }}</h1>
+    </div>
+    <div class="example-question">
+      <small>Question before the class</small>
+      <strong>{{ runtime.config.centralQuestion }}</strong>
+    </div>
+    <div class="walkthrough-status" aria-live="polite">
+      <small>Now showing</small>
+      <strong>{{ walkthroughLabel() }}</strong>
+    </div>
+    <nav aria-label="Walkthrough controls">
+      <button type="button" (click)="restart()">Restart</button>
+      <button class="play-control" type="button" (click)="togglePlayback()">
+        {{ playing() ? 'Pause' : 'Play' }}
+      </button>
+      <button type="button" [disabled]="scene() >= maxScene()" (click)="next()">Next step</button>
+    </nav>
+  </header>
+
+  <div class="walkthrough-progress" aria-hidden="true">
+    <i [style.width.%]="(scene() / maxScene()) * 100"></i>
+  </div>
+
+  <section class="example-layout">
+    <aside class="example-rail left-example-rail" aria-labelledby="left-example-title">
+      <header>
+        <span>{{ runtime.config.factions[0].emblem }}</span>
+        <div>
+          <small>Arguing</small>
+          <h2 id="left-example-title">{{ runtime.config.factions[0].railLabel }}</h2>
+        </div>
+      </header>
+      <p>{{ runtime.config.factions[0].position }}</p>
+      <ol>
+        @for (segment of leftArchive(); track segment.id; let index = $index) {
+          <li [class.expanded]="expandedArchiveId() === segment.id">
+            <button
+              type="button"
+              class="archive-summary"
+              [attr.aria-expanded]="expandedArchiveId() === segment.id"
+              (click)="toggleArchive(segment)"
+            >
+              <b>{{ index + 1 }}</b
+              ><span
+                ><small>{{ segment.roundLabel }}</small
+                ><strong>{{ segment.speakerDisplayName }}</strong></span
+              ><i>{{ expandedArchiveId() === segment.id ? '−' : '+' }}</i>
+            </button>
+            @if (expandedArchiveId() === segment.id) {
+              <div class="archive-details">
+                <button type="button" (click)="hear(segment)">▶ Hear argument</button>
+                <strong>Evidence presented</strong>
+                @for (evidenceId of segment.evidenceIds; track evidenceId) {
+                  <span>{{ evidenceTitle(evidenceId) }}</span>
+                }
+              </div>
+            }
+          </li>
+        } @empty {
+          <li class="rail-empty">Arguments appear here as they are filed.</li>
+        }
+      </ol>
+    </aside>
+
+    <section class="example-center" aria-label="Animated debate workspace">
+      <section class="example-thread" aria-labelledby="example-thread-title">
+        <header>
+          <div>
+            <small>Live argument thread</small>
+            <h2 id="example-thread-title">A finished debate, rebuilt step by step</h2>
+          </div>
+          <span>{{ visibleTimeline().length }} entries shown</span>
+        </header>
+        <div #threadScroller class="thread-window">
+          @if (scene() === 0) {
+            <div class="empty-stage">
+              <span>SPQR</span><strong>The chamber is ready</strong>
+              <p>Press Play or Next step to watch the completed class project take shape.</p>
+            </div>
+          }
+          <ol>
+            @for (segment of visibleTimeline(); track segment.id) {
+              @if (segment.kind === 'moderator') {
+                <li class="demo-moderator" [class.just-added]="currentSegment()?.id === segment.id">
+                  <span>{{ runtime.config.moderator.initials }}</span>
+                  <div>
+                    <small>Moderator question · neutral</small
+                    ><strong>{{ segment.transcript }}</strong>
+                  </div>
+                </li>
+              } @else {
+                <li
+                  class="demo-speech"
+                  [class.left]="isLeft(segment)"
+                  [class.right]="!isLeft(segment)"
+                  [class.just-added]="currentSegment()?.id === segment.id"
+                >
+                  <article [style.--faction-accent]="faction(segment)?.accent">
+                    <header>
+                      <span>{{ faction(segment)?.emblem }}</span>
+                      <div>
+                        <small>{{ faction(segment)?.railLabel }}</small
+                        ><strong>{{ segment.speakerDisplayName }}</strong>
+                      </div>
+                      <b>{{ segment.roundLabel }}</b>
+                    </header>
+                    <p>{{ segment.transcript }}</p>
+                    <footer>
+                      <span>{{ segment.evidenceIds.length }} sources cited</span
+                      ><strong>{{
+                        scene() === 9 && currentSegment()?.id === segment.id
+                          ? '✓ Just filed'
+                          : 'Filed argument'
+                      }}</strong>
+                    </footer>
+                  </article>
+                </li>
+              }
+            }
+          </ol>
+        </div>
+      </section>
+
+      @if (builderOpen()) {
+        <section class="example-builder" aria-labelledby="example-builder-title">
+          <header>
+            <div>
+              <small>Build the next argument</small>
+              <h2 id="example-builder-title">Response round · Evidence Senator</h2>
+            </div>
+            <span class="demo-badge">Demonstration</span>
+          </header>
+          <nav aria-label="Builder demonstration stages">
+            @for (tab of ['plan', 'evidence', 'write', 'feedback', 'file']; track tab) {
+              <span
+                [class.active]="builderStage() === tab"
+                [class.complete]="
+                  ['plan', 'evidence', 'write', 'feedback', 'file'].indexOf(tab) <
+                  ['plan', 'evidence', 'write', 'feedback', 'file'].indexOf(builderStage())
+                "
+                >{{ tab === 'file' ? 'Record & file' : tab }}</span
+              >
+            }
+          </nav>
+          <div class="builder-stage">
+            @switch (builderStage()) {
+              @case ('plan') {
+                <div class="plan-demo stage-enter">
+                  <article>
+                    <small>Moderator asks</small><strong>{{ timeline()[2].transcript }}</strong>
+                  </article>
+                  <article>
+                    <small>Plan the response</small>
+                    <p>
+                      Answer the limit on emergency power, acknowledge the strongest opposing point,
+                      and connect the claim to Rome’s future.
+                    </p>
+                  </article>
+                </div>
+              }
+              @case ('evidence') {
+                <div class="evidence-demo stage-enter">
+                  <span>Evidence is reviewed and pinned</span>
+                  @for (evidenceId of responseSegment()?.evidenceIds ?? []; track evidenceId) {
+                    <article>
+                      <i>✓</i>
+                      <div>
+                        <small>Selected source</small
+                        ><strong>{{ evidenceTitle(evidenceId) }}</strong>
+                      </div>
+                      <b>PINNED</b>
+                    </article>
+                  }
+                </div>
+              }
+              @case ('write') {
+                <div class="write-demo stage-enter">
+                  <header>
+                    <span>Speech draft</span
+                    ><b>{{ typedDraft().split(' ').length }} words · saving</b>
+                  </header>
+                  <p>{{ typedDraft() }}<i aria-hidden="true"></i></p>
+                  <aside>
+                    <small>Reasoning</small
+                    ><strong>{{
+                      responseSegment()?.turnId
+                        ? 'The evidence supports action, but action alone does not justify authority without limits.'
+                        : ''
+                    }}</strong>
+                  </aside>
+                </div>
+              }
+              @case ('feedback') {
+                <div class="feedback-demo stage-enter">
+                  <article>
+                    <small>Readiness check</small>
+                    <ul>
+                      <li>✓ Opposing claim answered</li>
+                      <li>✓ Moderator question addressed</li>
+                      <li>✓ Two sources connected</li>
+                      <li>✓ Reasoning explained</li>
+                    </ul>
+                  </article>
+                  <article class="teacher-note">
+                    <small>Teacher feedback</small>
+                    <p>
+                      Strong revision. You acknowledged the opposing evidence and narrowed the
+                      claim. File when the recording is reviewed.
+                    </p>
+                  </article>
+                </div>
+              }
+              @case ('file') {
+                <div class="file-demo stage-enter">
+                  <div class="recording">
+                    <i></i><span>Recording reviewed</span><strong>0:55</strong>
+                  </div>
+                  <div class="filing-progress">
+                    <span>Sealing argument into the class record</span><i><b></b></i>
+                  </div>
+                  <div class="file-stamp">FILED <small>Evidence and reasoning attached</small></div>
+                </div>
+              }
+            }
+          </div>
+        </section>
+      } @else {
+        <footer class="collapsed-builder" [class.filed]="scene() >= 9">
+          <div>
+            <small>Build the next argument</small
+            ><strong>{{
+              scene() >= 9
+                ? 'Response filed · builder closed'
+                : 'The builder opens after the moderator question'
+            }}</strong>
+          </div>
+          @if (scene() >= maxScene()) {
+            <button type="button" (click)="resultsOpen.set(!resultsOpen())">
+              {{ resultsOpen() ? 'Hide class results' : 'Reveal class results' }}
+            </button>
+          }
+        </footer>
+      }
+
+      @if (resultsOpen()) {
+        <aside class="example-results">
+          <span>Completed fictional class</span
+          ><strong>10 filed arguments · all required evidence attached</strong>
+          <div>
+            <b>Republic defenders 58%</b><i><span></span></i><b>Caesarian reformers 42%</b>
+          </div>
+          <p>The result measures persuasion in this sample, not individual mastery.</p>
+        </aside>
+      }
+    </section>
+
+    <aside class="example-rail right-example-rail" aria-labelledby="right-example-title">
+      <header>
+        <span>{{ runtime.config.factions[1].emblem }}</span>
+        <div>
+          <small>Arguing</small>
+          <h2 id="right-example-title">{{ runtime.config.factions[1].railLabel }}</h2>
+        </div>
+      </header>
+      <p>{{ runtime.config.factions[1].position }}</p>
+      <ol>
+        @for (segment of rightArchive(); track segment.id; let index = $index) {
+          <li [class.expanded]="expandedArchiveId() === segment.id">
+            <button
+              type="button"
+              class="archive-summary"
+              [attr.aria-expanded]="expandedArchiveId() === segment.id"
+              (click)="toggleArchive(segment)"
+            >
+              <b>{{ index + 1 }}</b
+              ><span
+                ><small>{{ segment.roundLabel }}</small
+                ><strong>{{ segment.speakerDisplayName }}</strong></span
+              ><i>{{ expandedArchiveId() === segment.id ? '−' : '+' }}</i>
+            </button>
+            @if (expandedArchiveId() === segment.id) {
+              <div class="archive-details">
+                <button type="button" (click)="hear(segment)">▶ Hear argument</button>
+                <strong>Evidence presented</strong>
+                @for (evidenceId of segment.evidenceIds; track evidenceId) {
+                  <span>{{ evidenceTitle(evidenceId) }}</span>
+                }
+              </div>
+            }
+          </li>
+        } @empty {
+          <li class="rail-empty">Arguments appear here as they are filed.</li>
+        }
+      </ol>
+    </aside>
+  </section>
+</main>

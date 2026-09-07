@@ -1,4 +1,5 @@
 import type { HistoryLiveRuntimeState } from '../domain/history-live.models';
+import { isStoryReportingSnapshot } from '../reporting/story-reporting.validation';
 
 const record = (value: unknown): value is Record<string, unknown> =>
   !!value && typeof value === 'object' && !Array.isArray(value);
@@ -199,5 +200,5 @@ export function isHistoryLiveSnapshot(value: unknown): value is HistoryLiveRunti
       !evidence(draft['evidence']))
   )
     return false;
-  return true;
+  return value['reporting'] === undefined || isStoryReportingSnapshot(value['reporting']);
 }

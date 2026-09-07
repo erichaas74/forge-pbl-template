@@ -1,6 +1,16 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { TaskGuideComponent } from '../../shared/learning/task-guide.component';
+import {
+  Component,
+  computed,
+  inject,
+  signal,
+  viewChild,
+  effect,
+  ElementRef,
+  afterNextRender,
+  Injector,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 
 import { MysteryInvestigationService } from '../../projects/mystery-substance/mystery-investigation.service';
 import {
@@ -23,10 +33,7 @@ import {
   physicalTests,
   reactionTests,
 } from '../../projects/mystery-substance/mystery-science.config';
-import { InvestigationAnalysisPanelComponent } from '../../templates/investigation/ui/analysis-panel.component';
-import { InvestigationEvidenceLockerComponent } from '../../templates/investigation/ui/evidence-locker.component';
 import { InvestigationFinalCaseComponent } from '../../templates/investigation/ui/final-investigation.component';
-import { InvestigationOptionsPanelComponent } from '../../templates/investigation/ui/investigate-panel.component';
 import type {
   AnalysisClassification,
   EvidenceClassificationChange,
@@ -41,6 +48,11 @@ import type {
   TheoryDraft,
 } from '../../templates/investigation/ui/investigation-ui.models';
 import { InvestigationWorkingTheoryComponent } from '../../templates/investigation/ui/working-theory.component';
+import { WorkbenchEvidenceComponent } from '../../templates/investigation/ui/workbench-evidence.component';
+import type { WorkbenchEvidenceLink } from '../../templates/investigation/ui/workbench-evidence.models';
+import { mysteryWorkbenchLinks } from '../../projects/mystery-substance/mystery-workbench.config';
+import { persistWorkspaceDraft } from '../../shared/drafts/persist-workspace-draft';
+import type { PhysicalTestId } from '../../projects/mystery-substance/properties-lab.component';
 
 type UtilityDrawer = 'mission' | 'notebook' | 'help' | 'route' | 'lockedPhase' | undefined;
 
@@ -51,7 +63,7 @@ type UtilityDrawer = 'mission' | 'notebook' | 'help' | 'route' | 'lockedPhase' |
  * and showcase can be worked on without replaying nine activities first. While
  * it is on, the route guide says so in the drawer rather than hiding it.
  */
-const finalUnlockedForTesting = true;
+const finalUnlockedForTesting = false;
 
 /** One stop on the path through the lab, and what actually closes it. */
 interface RouteStep {
@@ -74,8 +86,8 @@ const routeGuide: Readonly<Record<string, { where: string; todo: string; complet
   },
   'phase-evidence': {
     where: 'Evidence Locker',
-    todo: 'Open the recovered records and sort each into supports, uncertain, or contradicts.',
-    completes: 'The locker activity is marked complete once you have reviewed the case files.',
+    todo: 'Read the inventory, scene, prior test log, recovered labels and witness note beside your bench.',
+    completes: 'Review all five case clues. Tool guides are available whenever you need them.',
   },
   'phase-properties': {
     where: 'Properties Lab',
@@ -198,38 +210,70 @@ const requiredFinalActivityIds = [
 @Component({
   selector: 'app-mystery-investigation',
   imports: [
+    TaskGuideComponent,
     FormsModule,
-    RouterLink,
-    InvestigationAnalysisPanelComponent,
-    InvestigationEvidenceLockerComponent,
     InvestigationFinalCaseComponent,
-    InvestigationOptionsPanelComponent,
     InvestigationWorkingTheoryComponent,
     PropertiesLabComponent,
     ReactionBenchComponent,
     ConservationChamberComponent,
     RestorationWorkspaceComponent,
     EmergencyResponseComponent,
+    WorkbenchEvidenceComponent,
   ],
   templateUrl: './mystery-investigation.component.html',
-  styleUrls: ['./mystery-investigation.component.scss', './case-wall.scss'],
+  styleUrls: ['./mystery-investigation.component.scss', './workbench.scss'],
 })
 export class MysteryInvestigationComponent {
   readonly investigation = inject(MysteryInvestigationService);
   readonly observationTags = mysteryObservationTags;
   readonly vials = mysteryVials;
 
+  readonly evidenceDockOpen = signal(false);
   readonly workspacePair = signal<InvestigationWorkspacePair>('bench');
   readonly activePhaseId = signal<string>(mysteryInvestigationPhases[0].id);
   readonly selectedEvidenceId = signal<string | undefined>(undefined);
-  readonly activeActivityId = signal<string | undefined>(undefined);
+  readonly activeActivityId = signal<string | undefined>('activity-scan-vial-a');
   readonly drawer = signal<UtilityDrawer>(undefined);
   readonly lockedPhaseId = signal<string | undefined>(undefined);
   readonly mobilePanel = signal<'left' | 'right'>('left');
   readonly contextAlert = signal<ContextAlert | undefined>(undefined);
   readonly notebookQuestion = signal('');
 
-  readonly selectedVial = signal<MysteryVial | undefined>(undefined);
+  readonly selectedVial = signal<MysteryVial | undefined>(mysteryVials[0]);
+  readonly workbenchLinks = mysteryWorkbenchLinks;
+  readonly visitedStations = signal<readonly string[]>(['scanner']);
+  readonly comparisonOpen = signal(false);
+  readonly explanationOpen = signal(false);
+  private readonly propertiesLab = viewChild(PropertiesLabComponent);
+  private readonly reactionLab = viewChild(ReactionBenchComponent);
+  private readonly theoryEditor = viewChild(InvestigationWorkingTheoryComponent);
+  private readonly evidenceDock = viewChild(WorkbenchEvidenceComponent);
+  private readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
+  private readonly scanDrafts = new Map<string, { observation: string; tags: string[] }>();
+  readonly activeStationKey = computed(() => {
+    const id = this.activeActivityId();
+    return id?.startsWith('activity-scan-')
+      ? 'scanner'
+      : stationCatalogue.find((s) => s.activityId === id)?.key;
+  });
+  readonly selectionBusy = computed(
+    () =>
+      this.propertiesLab()?.running() ||
+      this.reactionLab()?.busy() ||
+      this.scanState() === 'scanning',
+  );
+  readonly propertyResults = computed(
+    () =>
+      this.investigation.snapshot()?.activities['activity-property-comparison']?.resultHistory ??
+      [],
+  );
+  readonly comparisonMatrices = computed(() =>
+    this.evidence()
+      .filter((item) => item.resultMatrix)
+      .map((item) => ({ evidenceId: item.id, matrix: item.resultMatrix! })),
+  );
   readonly observation = signal('');
   readonly selectedTags = signal<string[]>([]);
   readonly scanState = signal<'ready' | 'scanning' | 'captured'>('ready');
@@ -454,9 +498,24 @@ export class MysteryInvestigationComponent {
     if (this.finalReady()) {
       return 'Build your final evidence-based case';
     }
-    if (this.capturedCount() === 0) {
-      return 'Inspect a sealed vial or open the first recovered record';
-    }
+    const guidance: Readonly<Record<string, string>> = {
+      scanner:
+        'Describe the visible features of each sealed vial. Record each observation before comparing tests.',
+      properties:
+        'Choose a test, run it under equal conditions, then record what you see. Compare the same test across Vials A–D.',
+      reaction:
+        'Follow the highlighted step on the rig. Measure, weigh, react, and add the indicator; then record both changes.',
+      conservation:
+        'Compare the open and sealed chambers. Record what happens to the particles and the measured mass.',
+      restoration:
+        'Use your measurements and the recovered records to choose each vial’s label and shelf position.',
+      emergency:
+        'Use what you learned on a new case. Choose tests for the Bay 3 tub, then explain the call you can defend.',
+    };
+    const current = this.activeStationKey();
+    if (current && guidance[current]) return guidance[current];
+    const next = this.nextRouteStep();
+    if (next && next.id !== 'phase-showcase') return `${next.where}: ${next.todo}`;
     if (this.currentTheory() === undefined) {
       return 'Use your analyzed evidence to create a working theory';
     }
@@ -466,7 +525,7 @@ export class MysteryInvestigationComponent {
   readonly workspaceHelp = computed(() => {
     switch (this.workspacePair()) {
       case 'bench':
-        return 'Walk into a lab station to run a test, or open a record in the evidence rail. Every test you run adds a record you can reason with.';
+        return 'Choose a vial and tool above. Read clues and full reference records beside the experiment. Record your observations, compare results below, and build your explanation in the same workspace.';
       case 'evidence-analysis':
         return 'Open a piece of evidence, record what you notice, then decide whether it supports, challenges, or leaves your explanation uncertain.';
       case 'analysis-theory':
@@ -479,17 +538,58 @@ export class MysteryInvestigationComponent {
   });
 
   constructor() {
+    persistWorkspaceDraft(
+      'investigation-workbench',
+      () => ({
+        activityId: this.activeActivityId(),
+        vialId: this.selectedVial()?.vialId,
+        observation: this.observation(),
+        tags: this.selectedTags(),
+        drafts: [...this.scanDrafts.entries()],
+        selectedEvidenceId: this.selectedEvidenceId(),
+        comparisonOpen: this.comparisonOpen(),
+        explanationOpen: this.explanationOpen(),
+        notebookQuestion: this.notebookQuestion(),
+      }),
+      (saved) => {
+        const vial = this.vials.find((v) => v.vialId === saved.vialId);
+        if (typeof saved.selectedEvidenceId === 'string')
+          this.selectedEvidenceId.set(saved.selectedEvidenceId);
+        this.comparisonOpen.set(saved.comparisonOpen === true);
+        this.explanationOpen.set(saved.explanationOpen === true);
+        if (typeof saved.notebookQuestion === 'string')
+          this.notebookQuestion.set(saved.notebookQuestion);
+        if (vial) this.selectedVial.set(vial);
+        if (mysteryInvestigationActivities.some((a) => a.id === saved.activityId))
+          this.activeActivityId.set(saved.activityId);
+        if (typeof saved.observation === 'string') this.observation.set(saved.observation);
+        if (Array.isArray(saved.tags))
+          this.selectedTags.set(
+            saved.tags.filter((t) => this.observationTags.some((tag) => tag === t)),
+          );
+        if (Array.isArray(saved.drafts))
+          for (const [id, draft] of saved.drafts) this.scanDrafts.set(id, draft);
+      },
+    );
+    effect(() => {
+      const key = this.activeStationKey();
+      if (key)
+        this.visitedStations.update((items) => (items.includes(key) ? items : [...items, key]));
+    });
     void this.investigation.initialize();
   }
 
   openBench(): void {
+    this.comparisonOpen.set(false);
+    this.explanationOpen.set(false);
     this.workspacePair.set('bench');
-    this.activeActivityId.set(undefined);
     this.drawer.set(undefined);
   }
 
   async launchStation(station: LabStation): Promise<void> {
+    this.openBench();
     await this.launchActivity(station.id);
+    this.reveal('#active-experiment');
   }
 
   selectWorkspace(pair: InvestigationWorkspacePair): void {
@@ -497,8 +597,17 @@ export class MysteryInvestigationComponent {
       void this.openFinalInvestigation();
       return;
     }
-    this.workspacePair.set(pair);
-    this.activeActivityId.set(undefined);
+    this.workspacePair.set('bench');
+    if (pair === 'analysis-theory') {
+      this.comparisonOpen.set(false);
+      this.explanationOpen.set(true);
+      this.reveal('#explanation');
+    }
+    if (pair === 'evidence-analysis') {
+      this.evidenceDockOpen.set(true);
+      this.evidenceDock()?.scope.set('all');
+      this.reveal('#evidence-dock');
+    }
     this.drawer.set(undefined);
     this.mobilePanel.set('left');
   }
@@ -518,6 +627,7 @@ export class MysteryInvestigationComponent {
 
   async inspectEvidence(evidenceId: string | undefined): Promise<void> {
     this.selectedEvidenceId.set(evidenceId);
+    if (evidenceId) this.evidenceDockOpen.set(true);
     if (evidenceId === undefined) {
       return;
     }
@@ -525,6 +635,70 @@ export class MysteryInvestigationComponent {
     if (item !== undefined && item.status !== 'locked' && !item.studentCreated) {
       await this.investigation.reviewEvidence(evidenceId);
     }
+  }
+
+  scrollToComparison(): void {
+    this.reveal('#comparison');
+  }
+
+  private reveal(selector: string): void {
+    afterNextRender(
+      () => {
+        const region = this.element.nativeElement.querySelector<HTMLElement>(selector);
+        region?.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+        region
+          ?.querySelector<HTMLElement>('input, button, summary, textarea')
+          ?.focus({ preventScroll: true });
+      },
+      { injector: this.injector },
+    );
+  }
+
+  async useTool(action: NonNullable<WorkbenchEvidenceLink['action']>): Promise<void> {
+    if (this.selectionBusy()) return;
+    const scanVial = this.vials.find((v) => action.activityId === `activity-scan-${v.vialId}`);
+    if (scanVial) await this.selectVial(scanVial);
+    await this.launchActivity(action.activityId);
+    if (action.toolId)
+      afterNextRender(() => this.propertiesLab()?.selectTest(action.toolId as PhysicalTestId), {
+        injector: this.injector,
+      });
+    this.reveal('#active-experiment');
+  }
+
+  async chooseResult(
+    evidenceId: string,
+    testId: string,
+    column: number,
+    recorded: boolean,
+  ): Promise<void> {
+    if (recorded) {
+      await this.inspectEvidence(evidenceId);
+      this.reveal('#evidence-dock');
+      return;
+    }
+    if (this.selectionBusy()) return;
+    await this.selectVial(this.vials[column]);
+    await this.useTool({
+      activityId:
+        evidenceId === 'evidence-property-trials'
+          ? 'activity-property-comparison'
+          : 'activity-reaction-comparison',
+      label: 'Run test',
+      toolId: evidenceId === 'evidence-property-trials' ? testId : undefined,
+    });
+  }
+
+  async useInExplanation(evidenceId: string): Promise<void> {
+    await this.investigation.addEvidenceToFinal(evidenceId);
+    this.theoryEditor()?.includeEvidence(evidenceId);
+    this.explanationOpen.set(true);
+    this.reveal('#explanation');
+  }
+
+  onVialChanged(id: string): void {
+    const vial = this.vials.find((v) => v.vialId === id);
+    if (vial) void this.selectVial(vial);
   }
 
   async classifyEvidence(change: EvidenceClassificationChange): Promise<void> {
@@ -588,7 +762,6 @@ export class MysteryInvestigationComponent {
     await this.investigation.openFinalInvestigation();
     this.workspacePair.set('final-investigation');
     this.activePhaseId.set('phase-showcase');
-    this.activeActivityId.set(undefined);
     this.drawer.set(undefined);
   }
 
@@ -605,14 +778,20 @@ export class MysteryInvestigationComponent {
   }
 
   async launchActivity(activityId: string): Promise<void> {
+    if (this.selectionBusy()) return;
+    this.workspacePair.set('bench');
     if (activityId === 'activity-evidence-locker') {
       this.selectWorkspace('evidence-analysis');
       return;
     }
-    this.activeActivityId.set(activityId);
+    this.activeActivityId.set(
+      activityId.startsWith('activity-scan-')
+        ? `activity-scan-${this.selectedVial()?.vialId ?? 'vial-a'}`
+        : activityId,
+    );
     this.drawer.set(undefined);
     const scanVialId = activityId.startsWith('activity-scan-')
-      ? activityId.replace('activity-scan-', '')
+      ? this.selectedVial()?.vialId
       : undefined;
     if (scanVialId !== undefined) {
       const vial = this.vials.find((item) => item.vialId === scanVialId);
@@ -629,11 +808,24 @@ export class MysteryInvestigationComponent {
   }
 
   async selectVial(vial: MysteryVial): Promise<void> {
+    if (this.selectionBusy() || vial.vialId === this.selectedVial()?.vialId) return;
+    const previous = this.selectedVial();
+    if (previous)
+      this.scanDrafts.set(previous.vialId, {
+        observation: this.observation(),
+        tags: this.selectedTags(),
+      });
     this.selectedVial.set(vial);
-    this.observation.set(this.investigation.legacyDrafts()[vial.vialId] ?? '');
-    this.selectedTags.set([]);
+    const draft = this.scanDrafts.get(vial.vialId);
+    this.observation.set(
+      draft?.observation ?? this.investigation.legacyDrafts()[vial.vialId] ?? '',
+    );
+    this.selectedTags.set(draft?.tags ?? []);
     this.scanState.set('ready');
-    await this.investigation.startScan(vial.vialId);
+    if (this.activeStationKey() === 'scanner') {
+      this.activeActivityId.set(`activity-scan-${vial.vialId}`);
+      await this.investigation.startScan(vial.vialId);
+    }
   }
 
   toggleTag(tag: string): void {
@@ -644,7 +836,7 @@ export class MysteryInvestigationComponent {
 
   async captureScan(): Promise<void> {
     const vial = this.selectedVial();
-    if (vial === undefined || this.scanState() === 'scanning') {
+    if (vial === undefined || this.scanState() === 'scanning' || !this.observation().trim()) {
       return;
     }
     this.scanState.set('scanning');

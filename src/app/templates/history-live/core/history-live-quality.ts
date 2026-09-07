@@ -4,6 +4,7 @@ import type {
   HistoryLiveStage,
   HistoryLiveSource,
 } from '../domain/history-live.models';
+import { validateResearchLibrary } from '../domain/history-live-research';
 
 export function sourceUsable(source: HistoryLiveSource, state: HistoryLiveRuntimeState): boolean {
   return (
@@ -113,7 +114,7 @@ export function stageIssues(
 }
 
 export function validateHistoryLiveContent(config: HistoryLiveProjectConfig): readonly string[] {
-  const issues: string[] = [];
+  const issues: string[] = [...validateResearchLibrary(config)];
   for (const collection of [config.sources, config.storyLeads, config.beats, config.networks]) {
     if (new Set(collection.map((item) => item.id)).size !== collection.length)
       issues.push('DUPLICATE_ID: Content IDs must be unique.');

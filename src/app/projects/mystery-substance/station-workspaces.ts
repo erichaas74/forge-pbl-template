@@ -1,6 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnInit, Output, signal } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  signal,
+  input,
+  effect,
+  untracked,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { persistWorkspaceDraft } from '../../shared/drafts/persist-workspace-draft';
 
 import { handlingRecommendations, recoveredLabels, shelfZones } from './mystery-science.config';
 import { mysteryEvidenceFiles, mysteryVials } from './mystery-substance.package';
@@ -106,7 +117,7 @@ export class EvidenceWorkspaceComponent {
               type="button"
               [class.active]="activeVialId() === vial.vialId"
               [style.--vial-color]="vial.color"
-              (click)="activeVialId.set(vial.vialId)"
+              (click)="selectVial(vial.vialId)"
             >
               <img [src]="vial.image" alt="" /><strong>{{ vial.code }}</strong
               ><small>{{ assignments()[vial.vialId] ? 'Drafted' : 'Open' }}</small>
@@ -213,6 +224,8 @@ export class EvidenceWorkspaceComponent {
 })
 export class RestorationWorkspaceComponent {
   @Output() readonly captured = new EventEmitter<StationCapture>();
+  @Output() readonly vialChanged = new EventEmitter<string>();
+  readonly selectedVialId = input<string>();
   readonly vials = mysteryVials;
   readonly labels = recoveredLabels;
   readonly zones = shelfZones;
@@ -231,6 +244,32 @@ export class RestorationWorkspaceComponent {
       }
     >
   >({});
+
+  constructor() {
+    persistWorkspaceDraft(
+      'shelf-restoration',
+      () => ({ assignments: this.assignments(), mode: this.mode(), vialId: this.activeVialId() }),
+      (saved) => {
+        if (saved.assignments && typeof saved.assignments === 'object')
+          this.assignments.set(saved.assignments);
+        if (['label', 'position', 'decision', 'explain'].includes(saved.mode))
+          this.mode.set(saved.mode);
+        if (this.vials.some((v) => v.vialId === saved.vialId)) this.activeVialId.set(saved.vialId);
+      },
+    );
+    effect(() => {
+      const id = this.selectedVialId();
+      untracked(() => {
+        if (id && id !== this.activeVialId()) this.selectVial(id);
+      });
+    });
+  }
+
+  selectVial(id: string): void {
+    if (!this.vials.some((v) => v.vialId === id)) return;
+    this.activeVialId.set(id);
+    this.vialChanged.emit(id);
+  }
 
   activeCode(): string {
     return this.vials.find((vial) => vial.vialId === this.activeVialId())?.code ?? '?';

@@ -20,6 +20,21 @@ async function runTrial(lab: PropertiesLabComponent): Promise<void> {
 }
 
 describe('PropertiesLabComponent', () => {
+  it('restores the observation and settled result for each vial and test', async () => {
+    const lab = await createLab();
+    lab.selectTest('solubility');
+    await runTrial(lab);
+    lab.observation.set('The water cleared.');
+    const result = lab.result();
+    lab.selectVial('vial-d');
+    lab.observation.set('A different draft');
+    lab.selectTest('texture');
+    lab.selectVial('vial-a');
+    lab.selectTest('solubility');
+    expect(lab.observation()).toBe('The water cleared.');
+    expect(lab.result()).toEqual(result);
+    expect(lab.canCapture()).toBe(true);
+  });
   it('drives the meter and lamp from the conductivity reading', async () => {
     const lab = await createLab();
     lab.selectTest('conductivity');

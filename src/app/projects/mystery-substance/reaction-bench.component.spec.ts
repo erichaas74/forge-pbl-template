@@ -71,6 +71,34 @@ async function runProtocol(bench: ReactionBenchComponent, vialId: string): Promi
 }
 
 describe('ReactionBenchComponent', () => {
+  it('keeps the globally selected vial loaded when restarting a procedure', async () => {
+    await TestBed.configureTestingModule({ imports: [ReactionBenchComponent] }).compileComponents();
+    const fixture = TestBed.createComponent(ReactionBenchComponent);
+    fixture.componentRef.setInput('selectedVialId', 'vial-b');
+    fixture.detectChanges();
+    const bench = fixture.componentInstance;
+    bench.nudgeVolume();
+    bench.observation.set('Discard this draft.');
+    bench.abandonRun();
+    expect(bench.vialId()).toBe('vial-b');
+    expect(bench.step()).toBe('fill');
+    expect(bench.volumeMl()).toBe(0);
+    expect(bench.observation()).toBe('');
+  });
+  it('keeps a measured procedure and observation when switching vials', async () => {
+    const bench = await createBench();
+    bench.selectVial('vial-c');
+    await pourTo(bench, targetVolumeMl);
+    bench.confirmVolume();
+    bench.observation.set('Prepared an equal volume.');
+    const volume = bench.volumeMl();
+    bench.selectVial('vial-b');
+    expect(bench.step()).toBe('fill');
+    bench.selectVial('vial-c');
+    expect(bench.step()).toBe('weigh');
+    expect(bench.volumeMl()).toBe(volume);
+    expect(bench.observation()).toBe('Prepared an equal volume.');
+  });
   it('swaps the SVG stand-in for a rendered plate when one is configured', async () => {
     const original = apparatusArt.beaker.src;
     try {

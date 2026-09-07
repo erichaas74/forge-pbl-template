@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { historyLiveRevolutionaryWarConfig as config } from '../../../projects/history-live-revolutionary-war/history-live-revolutionary-war.config';
 import {
@@ -12,6 +13,9 @@ import {
   HISTORY_LIVE_PERSISTENCE,
 } from '../persistence/history-live.persistence';
 import { HistoryLiveRuntimeService } from './history-live-runtime.service';
+import { AssignmentDeskComponent } from '../ui/assignment-desk.component';
+import { ResearchShelfState } from '../ui/research-shelf-state';
+import { HistoryLivePageComponent } from '../ui/history-live-page.component';
 import { BroadcastPlayerComponent } from '../ui/broadcast-player.component';
 import type { HistoryLiveEnrollment } from '../domain/history-live.models';
 import { createInitialHistoryLiveState } from '../core/history-live-state';
@@ -37,6 +41,7 @@ describe('History Live classroom workflow', () => {
     persistence = new BrowserHistoryLivePersistenceAdapter(context);
     TestBed.configureTestingModule({
       providers: [
+        provideRouter([]),
         HistoryLiveRuntimeService,
         { provide: HISTORY_LIVE_CONFIG, useValue: config },
         { provide: HISTORY_LIVE_ENROLLMENT, useValue: context },
@@ -58,9 +63,107 @@ describe('History Live classroom workflow', () => {
   function pitch() {
     runtime.chooseSide('patriot');
     runtime.claimStory(config.storyLeads[0]);
+    runtime.updatePitch(
+      'storyQuestion',
+      'How do the witnesses describe who fired first at Lexington?',
+    );
+    runtime.updatePitch(
+      'whyAirtime',
+      'Our audience needs to understand why the accounts disagree.',
+    );
+    runtime.updatePitch(
+      'evidenceNeeded',
+      'Compare Parker’s testimony with Gage’s orders and note their limits.',
+    );
     runtime.updatePitch('initialPrediction', 'The witnesses may disagree about who fired first.');
     runtime.updatePitch('opposingChallenge', 'The Crown may describe the march as a lawful order.');
   }
+  it('keeps both research panels mounted when moving from pitch to script and back', () => {
+    HTMLElement.prototype.scrollIntoView = vi.fn();
+    runtime.chooseSide('patriot');
+    runtime.claimStory(config.storyLeads[0]);
+    const fixture = TestBed.createComponent(HistoryLivePageComponent);
+    fixture.detectChanges();
+    const panels = [...fixture.nativeElement.querySelectorAll('app-history-live-research-panel')];
+    expect(panels).toHaveLength(2);
+    const shelf = fixture.debugElement.injector.get(ResearchShelfState);
+    shelf.open('documents');
+    shelf.toggleItem('source-declaration');
+    fixture.detectChanges();
+    for (const stage of ['script', 'pitch'] as const) {
+      runtime.state.update((state) => ({ ...state, stage }));
+      fixture.detectChanges();
+      expect([
+        ...fixture.nativeElement.querySelectorAll('app-history-live-research-panel'),
+      ]).toEqual(panels);
+      expect(fixture.nativeElement.querySelector('#resource-source-declaration')).not.toBeNull();
+      expect(
+        fixture.nativeElement
+          .querySelector('#research-documents-button')
+          .getAttribute('aria-expanded'),
+      ).toBe('true');
+    }
+    fixture.destroy();
+  });
+  it("opens the research guide before the student's separate story thinking tasks", () => {
+    runtime.chooseSide('patriot');
+    runtime.claimStory(config.storyLeads[0]);
+    expect(runtime.state().pitch.storyQuestion).toBe('');
+    expect(runtime.state().pitch.evidenceNeeded).toBe('');
+    expect(runtime.state().pitch.whyAirtime).toBe('');
+    expect(runtime.pitchReady()).toBe(false);
+    const fixture = TestBed.createComponent(AssignmentDeskComponent);
+    fixture.detectChanges();
+    const element = fixture.nativeElement as HTMLElement;
+    const initialPitch = runtime.state().pitch;
+    expect(element.querySelector('h1')?.textContent).toContain('Enter the Moment');
+    expect(element.querySelector<HTMLElement>('.pitch-layout')?.hidden).toBe(true);
+    const previewActions = element.querySelectorAll<HTMLButtonElement>('.guide-grid button');
+    expect(previewActions).toHaveLength(4);
+    for (const action of previewActions) {
+      expect(action.disabled).toBe(false);
+      action.click();
+    }
+    expect(runtime.state().pitch).toBe(initialPitch);
+    expect(runtime.state().savedSourceIds).toEqual([]);
+    expect(TestBed.inject(ResearchShelfState).categories()).toEqual([
+      'documents',
+      'witnesses',
+      'events',
+      'interviews',
+    ]);
+    expect(runtime.canOpen('sources')).toBe(false);
+
+    const scrollIntoView = vi.fn();
+    const headline = element.querySelector<HTMLInputElement>('.pitch-form input')!;
+    headline.scrollIntoView = scrollIntoView;
+    element.querySelector<HTMLButtonElement>('.build-story-button')!.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.pitchStep()).toBe(1);
+    expect(element.querySelector<HTMLElement>('.pitch-layout')?.hidden).toBe(false);
+    expect(scrollIntoView).toHaveBeenCalledWith({ block: 'nearest', behavior: 'instant' });
+    expect(document.activeElement).toBe(headline);
+    expect(element.querySelectorAll('.pitch-form label:not([hidden])')).toHaveLength(2);
+    const question = element.querySelector<HTMLTextAreaElement>('label:not([hidden]) textarea')!;
+    question.value = 'What do the two accounts disagree about at Lexington?';
+    question.dispatchEvent(new Event('input'));
+    expect(runtime.state().pitch.storyQuestion).toBe(question.value);
+    fixture.componentInstance.pitchStep.set(2);
+    fixture.detectChanges();
+    expect(element.querySelectorAll('.pitch-form label:not([hidden])')).toHaveLength(1);
+    expect(element.querySelector('.pitch-sidebar')).toBeNull();
+    expect(runtime.state().pitch.storyQuestion).toBe(question.value);
+
+    fixture.componentInstance.pitchStep.set(0);
+    fixture.detectChanges();
+    expect(element.querySelector('.moment-guide')).not.toBeNull();
+    expect(runtime.state().pitch.storyQuestion).toBe(question.value);
+    fixture.componentInstance.pitchStep.set(6);
+    fixture.detectChanges();
+    expect(element.querySelector<HTMLElement>('.review-check')?.hidden).toBe(false);
+    expect(element.querySelector<HTMLElement>('.pitch-actions')?.hidden).toBe(false);
+    expect(element.querySelector('.review-check')?.textContent).toContain(question.value);
+  });
   async function research() {
     pitch();
     await runtime.submitPitch();

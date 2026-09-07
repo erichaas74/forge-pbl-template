@@ -1,4 +1,4 @@
-<section class="composer" role="dialog" aria-modal="true" aria-labelledby="composer-title">
+<section #composerDialog class="composer" aria-labelledby="composer-title">
   <header class="composer-header" [class.review-header]="activeStep() === steps.length - 1">
     @if (activeStep() === steps.length - 1) {
       <button type="button" class="back-to-editing" (click)="backToEditing()">
@@ -24,7 +24,7 @@
           type="button"
           class="close"
           (click)="closed.emit()"
-          aria-label="Close final exhibit builder"
+          aria-label="Return to exhibit hall"
         >
           ×
         </button>
@@ -32,13 +32,19 @@
     } @else {
       <div class="studio-title">
         <span>Student curator studio</span>
-        <h1 id="composer-title">Build your final exhibit</h1>
+        <h1 id="composer-title">
+          {{ starterExample() ? 'Inspect a worked example' : 'Build your final exhibit' }}
+        </h1>
         <p>Build one part at a time. Your work becomes the visitor-ready museum snapshot.</p>
       </div>
 
       <div class="studio-progress">
         <div>
-          <span>Exhibit readiness</span>
+          <span>{{
+            starterExample()
+              ? 'Example content readiness — not your progress'
+              : 'Your draft readiness'
+          }}</span>
           <strong>{{ completedStepCount() }} of {{ editingStepCount }} stations ready</strong>
         </div>
         <i
@@ -57,103 +63,108 @@
           type="button"
           class="close"
           (click)="closed.emit()"
-          aria-label="Close final exhibit builder"
+          aria-label="Return to exhibit hall"
         >
           ×
         </button>
       </div>
     }
+    <nav class="studio-map" aria-label="Exhibit build steps">
+      <ol>
+        @for (step of visibleSteps(); track step.shortLabel; let index = $index) {
+          <li [class.active]="activeStep() === index" [class.complete]="isStepComplete(index)">
+            <button
+              type="button"
+              (click)="goToStep(index)"
+              [attr.aria-current]="activeStep() === index ? 'step' : null"
+            >
+              <span class="step-number">{{ (index + 1).toString().padStart(2, '0') }}</span>
+              <span class="step-name">
+                <strong>{{ step.shortLabel }}</strong>
+              </span>
+              <span class="step-state">
+                {{ activeStep() === index ? 'Now' : isStepComplete(index) ? 'Ready' : 'To do' }}
+              </span>
+            </button>
+          </li>
+        }
+      </ol>
+    </nav>
+    <app-task-guide [title]="currentStep().shortLabel"
+      ><p>{{ currentStep().guidance }}</p>
+      <ul>
+        @for (prompt of currentStep().prompts; track prompt) {
+          <li>{{ prompt }}</li>
+        }
+      </ul></app-task-guide
+    >
+    @if (activeStep() < steps.length - 1) {
+      <button class="header-next" type="button" (click)="nextStep()">
+        {{ activeStep() === 2 && !coreReady() ? 'Finish my first ideas' : 'Next' }} →
+      </button>
+    }
   </header>
 
   <div class="composer-layout" [class.reviewing]="activeStep() === steps.length - 1">
     @if (activeStep() < steps.length - 1) {
-      <nav class="studio-map" aria-label="Exhibit build steps">
-        <header>
-          <span>Build path</span>
-          <strong>Six studio stations</strong>
-          <p>Move in order or return to any station.</p>
-        </header>
-        <ol>
-          @for (step of steps; track step.shortLabel; let index = $index) {
-            <li [class.active]="activeStep() === index" [class.complete]="isStepComplete(index)">
-              <button
-                type="button"
-                (click)="goToStep(index)"
-                [attr.aria-current]="activeStep() === index ? 'step' : null"
-              >
-                <span class="step-number">{{ (index + 1).toString().padStart(2, '0') }}</span>
-                <span class="step-name">
-                  <strong>{{ step.shortLabel }}</strong>
-                  <small>{{ step.title }}</small>
-                </span>
-                <span class="step-state">
-                  {{ activeStep() === index ? 'Now' : isStepComplete(index) ? 'Ready' : 'To do' }}
-                </span>
-              </button>
-            </li>
-          }
-        </ol>
-        <footer>
-          <i aria-hidden="true"></i>
-          <span>Changes stay in your team draft until you showcase.</span>
-        </footer>
-      </nav>
-
       <form class="workbench" (submit)="$event.preventDefault(); publishedRequested.emit()">
         <div class="workbench-heading">
           <span>Station {{ (activeStep() + 1).toString().padStart(2, '0') }}</span>
-          <h2 #stepHeading tabindex="-1">{{ currentStep().title }}</h2>
-          <p>{{ currentStep().guidance }}</p>
+          <h2 #stepHeading tabindex="-1">
+            {{ activeStep() === 0 ? 'What connects these objects?' : currentStep().title }}
+          </h2>
         </div>
 
-        <div class="work-surface">
+        <div
+          class="work-surface"
+          tabindex="0"
+          role="region"
+          aria-label="Active station fields — scroll for more"
+        >
           @switch (activeStep()) {
             @case (0) {
               <section class="step-sheet story-sheet" aria-label="Collection story">
-                <div class="desk-note">
-                  <span aria-hidden="true">Museum question</span>
-                  <strong
-                    >What should a visitor understand after seeing all three artifacts?</strong
-                  >
-                </div>
-                <label class="plaque-field" data-field-id="exhibit-title">
-                  <span>
-                    Entrance title
-                    <small [class.over-limit]="words(draft().title) > 12">
-                      {{ words(draft().title) }} / 12 words
-                    </small>
-                  </span>
-                  <input
-                    type="text"
-                    [value]="draft().title"
-                    (input)="titleChanged.emit(value($event))"
-                    aria-describedby="title-help"
-                    placeholder="Give the collection a memorable name"
-                  />
-                  <small id="title-help"
-                    >This becomes the title visitors see in the corridor.</small
-                  >
-                </label>
-                <label class="claim-field" data-field-id="central-claim">
-                  <span>
-                    Collection claim
-                    <small [class.over-limit]="words(draft().centralClaim) > 60">
-                      {{ words(draft().centralClaim) }} / 60 words
-                    </small>
-                  </span>
-                  <textarea
-                    rows="7"
-                    [value]="draft().centralClaim"
-                    (input)="claimChanged.emit(value($event))"
-                    placeholder="Together, these artifacts show that…"
-                  ></textarea>
-                </label>
-                <div class="curator-test">
-                  <span aria-hidden="true">?</span>
-                  <p>
-                    <strong>Curator test:</strong> Could you point to every artifact while
-                    explaining this claim? If not, make the claim more focused.
-                  </p>
+                <div class="objects-to-ideas">
+                  <div class="object-study">
+                    <div class="object-tabs" aria-label="Objects to examine">
+                      @for (object of draft().objects; track object.id; let index = $index) {
+                        <button
+                          type="button"
+                          [attr.aria-pressed]="inspectedObject() === index"
+                          (click)="inspectedObject.set(index)"
+                        >
+                          {{ object.title }}
+                        </button>
+                      }
+                    </div>
+                    @if (draft().objects[inspectedObject()]; as object) {
+                      @if (object.model; as model) {
+                        <app-object-model-viewer [model]="model" [autoLoad]="true" />
+                      } @else if (object.imageAssetId) {
+                        <img [src]="object.imageAssetId" [alt]="object.imageAlt || object.title" />
+                      }
+                    }
+                  </div>
+                  <div class="first-claim">
+                    <label class="claim-field" data-field-id="central-claim"
+                      ><span>My first idea</span
+                      ><textarea
+                        rows="4"
+                        [value]="draft().centralClaim"
+                        (input)="claimChanged.emit(value($event))"
+                        placeholder="Together, these objects show…"
+                      ></textarea>
+                    </label>
+                    @if (draft().centralClaim.trim()) {
+                      <label class="plaque-field" data-field-id="exhibit-title"
+                        ><span>Name my exhibit</span
+                        ><input
+                          type="text"
+                          [value]="draft().title"
+                          (input)="titleChanged.emit(value($event))"
+                      /></label>
+                    }
+                  </div>
                 </div>
               </section>
             }
@@ -366,126 +377,7 @@
             }
           }
         </div>
-
-        <footer class="step-controls">
-          <button
-            type="button"
-            class="back"
-            [disabled]="activeStep() === 0"
-            (click)="goToStep(activeStep() - 1)"
-          >
-            <span aria-hidden="true">←</span> Previous station
-          </button>
-          <div>
-            <span>{{ isStepComplete(activeStep()) ? 'Station ready' : 'Work in progress' }}</span>
-            <small>Step {{ activeStep() + 1 }} of {{ steps.length }}</small>
-          </div>
-          <button type="button" class="next" (click)="goToStep(activeStep() + 1)">
-            {{ activeStep() === editingStepCount - 1 ? 'Open full review' : 'Next station' }}
-            <span aria-hidden="true">→</span>
-          </button>
-        </footer>
       </form>
-
-      <aside class="studio-sidecar field-view" aria-label="Live preview of the current build step">
-        <div class="field-view-heading">
-          <span>Curator field view</span>
-          <strong>Live station preview</strong>
-          <small>Updates automatically while you work.</small>
-        </div>
-
-        <div class="partial-preview">
-          @switch (activeStep()) {
-            @case (0) {
-              <article class="live-story">
-                <span>Nile Life Curators presents</span>
-                <h3>{{ draft().title || 'Your exhibit title' }}</h3>
-                <p>{{ draft().centralClaim || 'Your collection claim will appear here.' }}</p>
-                <small>Entrance story</small>
-              </article>
-            }
-            @case (1) {
-              <div class="live-labels">
-                @for (object of draft().objects; track object.id; let index = $index) {
-                  <article>
-                    <span>{{ index + 1 }}</span>
-                    <div>
-                      <h3>{{ object.title || 'Untitled artifact' }}</h3>
-                      <p>{{ object.description || 'Artifact description' }}</p>
-                      <strong>Why it matters</strong>
-                      <small>{{ object.evidenceConnection || 'Connection to the claim' }}</small>
-                    </div>
-                  </article>
-                }
-              </div>
-            }
-            @case (2) {
-              <article class="live-sources">
-                <span>Research trail</span>
-                <h3>Sources visitors can follow</h3>
-                <ol>
-                  @for (source of draft().sources; track source.id) {
-                    <li>{{ source.citation || 'Source citation needed' }}</li>
-                  }
-                </ol>
-              </article>
-            }
-            @case (3) {
-              <article class="live-gallery">
-                <div class="mini-door" aria-hidden="true"><span>3D</span><i></i></div>
-                <span>MetaSteps entrance</span>
-                <h3>{{ draft().immersiveGallery?.title || 'Name the 3D wing' }}</h3>
-                <p>
-                  {{
-                    isStepComplete(3)
-                      ? 'The public entrance is connected and ready to test.'
-                      : 'Paste the public viewer link to connect this entrance.'
-                  }}
-                </p>
-                <strong [class.connected]="isStepComplete(3)">
-                  {{ isStepComplete(3) ? 'Connected' : 'Not connected' }}
-                </strong>
-              </article>
-            }
-            @case (4) {
-              <article class="live-video">
-                <div class="video-screen">
-                  <span>{{ draft().videoPresentation?.presenterLabel || 'Student curators' }}</span>
-                  <i aria-hidden="true">▶</i>
-                </div>
-                <span>Curator presentation</span>
-                <h3>{{ draft().videoPresentation?.title || 'Name the presentation' }}</h3>
-                <p>
-                  {{
-                    draft().videoPresentation?.prototype
-                      ? 'Prototype player—the final recording can be connected later.'
-                      : 'Public presentation link ready for visitors.'
-                  }}
-                </p>
-              </article>
-            }
-          }
-        </div>
-
-        <div class="field-prompts">
-          <strong>Check this station</strong>
-          <ul>
-            @for (prompt of currentStep().prompts; track prompt) {
-              <li><span aria-hidden="true">□</span>{{ prompt }}</li>
-            }
-          </ul>
-        </div>
-
-        <div class="guide-status" [class.complete]="isStepComplete(activeStep())">
-          <i aria-hidden="true"></i>
-          <span>
-            <strong>{{
-              isStepComplete(activeStep()) ? 'This station is ready' : 'Keep working here'
-            }}</strong>
-            <small>The field view reflects the current draft.</small>
-          </span>
-        </div>
-      </aside>
     } @else {
       <main class="review-experience" aria-label="Complete visitor exhibit review">
         <div class="review-stage-heading">

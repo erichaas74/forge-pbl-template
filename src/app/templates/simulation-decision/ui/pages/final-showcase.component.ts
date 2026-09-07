@@ -1,4 +1,16 @@
-import { Component, HostListener, OnDestroy, computed, inject, signal } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  ElementRef,
+  HostListener,
+  Injector,
+  OnDestroy,
+  computed,
+  inject,
+  input,
+  signal,
+  viewChild,
+} from '@angular/core';
 
 import type { EventHistoryEntry, LedgerEntry } from '../../domain/simulation-decision.models';
 import { SimulationDecisionRuntimeService } from '../../runtime/simulation-decision-runtime.service';
@@ -19,6 +31,9 @@ interface ShowcaseLoadRow {
 })
 export class SimulationFinalShowcaseComponent implements OnDestroy {
   readonly runtime = inject(SimulationDecisionRuntimeService);
+  readonly readOnly = input(false);
+  private readonly stage = viewChild<ElementRef<HTMLElement>>('presentationStage');
+  private readonly injector = inject(Injector);
   readonly Math = Math;
   readonly activeSlide = signal(0);
   readonly presenting = signal(false);
@@ -155,6 +170,14 @@ export class SimulationFinalShowcaseComponent implements OnDestroy {
 
   setSlide(index: number): void {
     this.activeSlide.set(Math.min(this.slides.length - 1, Math.max(0, index)));
+    afterNextRender(
+      () => {
+        const element = this.stage()?.nativeElement;
+        element?.scrollIntoView({ block: 'nearest' });
+        element?.focus({ preventScroll: true });
+      },
+      { injector: this.injector },
+    );
   }
 
   moveSlide(change: number): void {

@@ -1,3 +1,5 @@
+import type { ExhibitObjectModel } from '../../../shared/media/object-model';
+export type { ExhibitObjectModel } from '../../../shared/media/object-model';
 export type ExhibitUserRole = 'student' | 'teacher' | 'family';
 
 export interface ExhibitActor {
@@ -85,6 +87,7 @@ export interface MuseumBoardObject {
   readonly title: string;
   readonly imageAssetId?: string;
   readonly imageAlt?: string;
+  readonly model?: ExhibitObjectModel;
   readonly description: string;
   readonly evidenceConnection: string;
   readonly sourceIds: readonly string[];
@@ -107,6 +110,16 @@ export interface ExhibitVideoPresentation {
   readonly videoUrl?: string;
   readonly prototype?: boolean;
   readonly presenterLabel?: string;
+}
+
+/** Read-only explanation and revision trail for a completed curator presentation. */
+export interface ExhibitCuratorRecord {
+  readonly hangingId: string;
+  readonly transcript: string;
+  readonly initialClaim: string;
+  readonly feedback: string;
+  readonly revision: string;
+  readonly reflection: string;
 }
 
 export interface ExhibitCorridorPreview {
@@ -298,9 +311,12 @@ export interface LmsEvidenceEvent {
 export type HallPhase = 'dark' | 'async_walk' | 'live_opening' | 'closed_readable';
 
 export interface ExhibitHallState {
+  /** Private editable board, independent of published visitor snapshots. */
+  readonly composerDraft?: MuseumBoardSnapshotData;
   readonly schemaVersion: '1.0';
   readonly revision: number;
   readonly sequence: number;
+  readonly runtimeScope?: RuntimeScope;
   readonly hall: HallTemplateInstance;
   readonly hallPhase: HallPhase;
   readonly artifacts: readonly ExhibitArtifact[];
@@ -332,7 +348,9 @@ export interface ExhibitProjectConfig {
   readonly schemaVersion: string;
   readonly projectId: string;
   readonly projectVersion: string;
+  /** @deprecated Supplied by ProjectSessionContext at launch; retained for package compatibility. */
   readonly projectInstanceId: string;
+  /** @deprecated Supplied by ProjectSessionContext at launch; retained for package compatibility. */
   readonly courseSectionId: string;
   readonly classLabel: string;
   readonly title: string;
@@ -342,6 +360,7 @@ export interface ExhibitProjectConfig {
   readonly template: ExhibitTemplateDefinition;
   readonly teams: readonly ExhibitTeam[];
   readonly seedBoards: readonly ExhibitSeedBoard[];
+  /** @deprecated Supplied by ProjectSessionContext at launch; retained for package compatibility. */
   readonly viewer: {
     readonly studentId: string;
     readonly studentDisplayName: string;
@@ -359,3 +378,4 @@ export interface ExhibitMutationResult {
   readonly duplicate?: boolean;
   readonly announcement?: string;
 }
+import type { RuntimeScope } from '../../../core/state/runtime-state-contracts';

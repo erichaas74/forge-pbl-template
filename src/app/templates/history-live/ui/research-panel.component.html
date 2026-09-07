@@ -1,0 +1,102 @@
+<aside
+  [attr.aria-label]="
+    side() === 'left' ? 'Primary sources and testimony' : 'Interviews and live events'
+  "
+>
+  <header>
+    <span>MY WORK · RESEARCH</span>
+    <h2>{{ side() === 'left' ? 'Sources' : 'In the moment' }}</h2>
+  </header>
+  @for (group of groups(); track group.id) {
+    <section class="research-category">
+      <button
+        type="button"
+        class="category-button"
+        [id]="'research-' + group.id + '-button'"
+        [attr.aria-expanded]="shelf.categories().includes(group.id)"
+        [attr.aria-controls]="'research-' + group.id"
+        (click)="shelf.toggleCategory(group.id)"
+      >
+        <span>{{ group.title }}</span
+        ><small>{{ items(group.id).length }}</small>
+        <b aria-hidden="true">{{ shelf.categories().includes(group.id) ? '−' : '+' }}</b>
+      </button>
+      @if (shelf.categories().includes(group.id)) {
+        <div class="category-list" [id]="'research-' + group.id" [attr.aria-label]="group.title">
+          <p class="category-description">{{ group.description }}</p>
+          @for (item of items(group.id); track item.id) {
+            <article class="resource" [class.is-open]="shelf.items().includes(item.id)">
+              <button
+                type="button"
+                class="resource-button"
+                [attr.aria-expanded]="shelf.items().includes(item.id)"
+                [attr.aria-controls]="'resource-' + item.id"
+                (click)="shelf.toggleItem(item.id)"
+              >
+                <strong>{{ item.title }}</strong
+                ><span>{{ item.description }}</span>
+              </button>
+              @if (shelf.items().includes(item.id)) {
+                <div class="resource-detail" [id]="'resource-' + item.id">
+                  @for (section of item.sections; track $index) {
+                    <section>
+                      <h3>{{ section.label }}</h3>
+                      <p>{{ section.text }}</p>
+                    </section>
+                  }
+                  @for (source of sources(item.sourceIds); track source.id) {
+                    <div class="record-reference">
+                      <p>
+                        <strong>Source record</strong> {{ source.title }} · {{ source.dateLabel }}
+                      </p>
+                      @if (source.imageUrl) {
+                        <a [href]="source.imageUrl" target="_blank" rel="noopener"
+                          >View document image ↗</a
+                        >
+                      }
+                      <a [href]="source.url" target="_blank" rel="noopener"
+                        >Read original record ↗</a
+                      >
+                      <p class="citation">{{ source.citation }}</p>
+                      <button
+                        type="button"
+                        class="pin-button"
+                        [attr.aria-pressed]="runtime.state().savedSourceIds.includes(source.id)"
+                        (click)="runtime.toggleSource(source.id)"
+                      >
+                        {{
+                          runtime.state().savedSourceIds.includes(source.id)
+                            ? 'Pinned to my work ✓'
+                            : 'Pin to my work'
+                        }}
+                      </button>
+                    </div>
+                  }
+                </div>
+              }
+            </article>
+          } @empty {
+            <p class="category-description">
+              No records in this category have been added to this project.
+            </p>
+          }
+        </div>
+      }
+    </section>
+  }
+  @if (side() === 'right') {
+    <details class="saved-records">
+      <summary>
+        Pinned sources <span>{{ runtime.savedSources().length }}</span>
+      </summary>
+      @for (source of runtime.savedSources(); track source.id) {
+        <article>
+          <a [href]="source.url" target="_blank" rel="noopener">{{ source.title }} ↗</a>
+          <p>{{ source.dateLabel }} · {{ source.sourceType }}</p>
+        </article>
+      } @empty {
+        <p>Sources you pin appear here throughout your work.</p>
+      }
+    </details>
+  }
+</aside>

@@ -8,6 +8,9 @@ import {
   untracked,
   viewChild,
   ElementRef,
+  input,
+  afterNextRender,
+  Injector,
 } from '@angular/core';
 import type { BroadcastSegment } from '../domain/history-live.models';
 import { HistoryLiveRuntimeService } from '../runtime/history-live-runtime.service';
@@ -21,6 +24,11 @@ import { EvidenceSceneComponent } from './evidence-scene.component';
 })
 export class BroadcastPlayerComponent implements OnDestroy {
   readonly runtime = inject(HistoryLiveRuntimeService);
+  readonly readOnly = input(false);
+  readonly playingScenes = signal(false);
+  private sceneTimer?: ReturnType<typeof setInterval>;
+  private readonly injector = inject(Injector);
+  private readonly sceneHeading = viewChild<ElementRef<HTMLElement>>('sceneHeading');
   readonly sceneIndex = signal(0);
   readonly mediaUrl = signal<string | undefined>(undefined);
   private request = 0;
@@ -82,12 +90,49 @@ export class BroadcastPlayerComponent implements OnDestroy {
   reactionCount(reaction: string): number {
     return this.runtime.state().audienceReactions[`${this.previewSegment()?.id}:${reaction}`] ?? 0;
   }
+  sourceTitle(id: string): string {
+    return this.runtime.config.sources.find((source) => source.id === id)?.title ?? 'Source';
+  }
+
+  selectScene(index: number): void {
+    this.pauseScenes();
+    this.sceneIndex.set(index);
+    afterNextRender(
+      () => {
+        const element = this.sceneHeading()?.nativeElement;
+        element?.scrollIntoView({ block: 'nearest' });
+        element?.focus({ preventScroll: true });
+      },
+      { injector: this.injector },
+    );
+  }
+
+  toggleScenes(): void {
+    if (this.playingScenes()) {
+      this.pauseScenes();
+      return;
+    }
+    this.playingScenes.set(true);
+    if (this.sceneIndex() >= (this.previewSegment()?.scenes?.length ?? 1) - 1)
+      this.sceneIndex.set(0);
+    this.sceneTimer = setInterval(() => {
+      if (this.sceneIndex() >= (this.previewSegment()?.scenes?.length ?? 1) - 1) this.pauseScenes();
+      else this.sceneIndex.update((index) => index + 1);
+    }, 10000);
+  }
+
+  private pauseScenes(): void {
+    if (this.sceneTimer) clearInterval(this.sceneTimer);
+    this.sceneTimer = undefined;
+    this.playingScenes.set(false);
+  }
   private clearMedia(): void {
     const url = this.mediaUrl();
     if (url?.startsWith('blob:')) URL.revokeObjectURL(url);
     this.mediaUrl.set(undefined);
   }
   ngOnDestroy(): void {
+    this.pauseScenes();
     this.request++;
     this.clearMedia();
   }

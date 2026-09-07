@@ -2,6 +2,10 @@ import { EventRegistry, CapabilityRegistry } from '../../../core/registries/spec
 import { Registry } from '../../../core/registries/registry';
 
 export const historyLiveEventIds = [
+  'reporting.storySelected', 'reporting.stepOpened', 'reporting.questionAsked',
+  'reporting.noteDraftChanged', 'reporting.noteSaved', 'reporting.boardChanged',
+  'reporting.noteLinked', 'reporting.checkChanged', 'reporting.formatSelected',
+  'reporting.presentationChanged', 'reporting.presentationSaved', 'reporting.formatsConfigured',
   'audience.reacted',
   'broadcast.ended',
   'broadcast.held',
@@ -48,6 +52,7 @@ export const historyLiveCommands = new Registry<{ id: string; producerOnly: bool
   'history-live-commands',
 );
 historyLiveCommands.registerAll([
+  { id: 'reporting.configureFormats', producerOnly: true },
   { id: 'broadcast.end', producerOnly: true },
   { id: 'broadcast.hold', producerOnly: true },
   { id: 'broadcast.next', producerOnly: true },
@@ -61,6 +66,11 @@ historyLiveCommands.registerAll([
   { id: 'schedule.reorder', producerOnly: true },
 ]);
 export const historyLiveCapabilities = new CapabilityRegistry();
+historyLiveCapabilities.register({
+  id: 'history-live.story-reporting', version: '1.0', status: 'extension',
+  eventsProduced: historyLiveEventIds.filter(id => id.startsWith('reporting.')),
+  actionsSupported: ['history-live.reporting.configureFormats'],
+});
 historyLiveCapabilities.register({
   id: 'history-live.editorial-workflow',
   version: '1.1',

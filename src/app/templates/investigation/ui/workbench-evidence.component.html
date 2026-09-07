@@ -1,0 +1,84 @@
+<section aria-label="Evidence and equipment guides">
+  <header>
+    <h2>Evidence beside your bench</h2>
+    <p>Look up a clue or tool guide without leaving your experiment.</p>
+  </header>
+  <label class="search"
+    >Find evidence or equipment<input
+      type="search"
+      placeholder="Try water, probe, color, or vial A"
+      [ngModel]="query()"
+      (ngModelChange)="query.set($event)"
+  /></label>
+  <div class="filters">
+    <label
+      >Show<select [ngModel]="scope()" (ngModelChange)="scope.set($event)">
+        <option value="related">For this tool</option>
+        <option value="all">All records</option>
+      </select></label
+    >
+    <label
+      >Kind<select [ngModel]="category()" (ngModelChange)="category.set($event)">
+        <option value="all">Everything</option>
+        <option value="clue">Case clues</option>
+        <option value="guide">Tool guides</option>
+        <option value="result">My results</option>
+      </select></label
+    >
+  </div>
+  @if (query().trim()) {
+    <p class="hint">Searching all available records.</p>
+  }
+  <div class="record-list" [class.record-list--compact]="!!current()" aria-label="Matching records">
+    @for (item of items(); track item.id) {
+      <button
+        type="button"
+        [attr.aria-pressed]="selectedId() === item.id"
+        (click)="selected.emit(item.id)"
+      >
+        @if (item.asset) {
+          <img [src]="item.asset" alt="" loading="lazy" />
+        }
+        <span
+          >{{ item.title
+          }}<small>{{
+            item.status === 'locked'
+              ? 'Not recorded yet'
+              : item.status === 'available' || item.status === 'unopened'
+                ? 'New'
+                : 'Available'
+          }}</small></span
+        >
+      </button>
+    } @empty {
+      <p>No matching records. Try another word or choose All records.</p>
+    }
+  </div>
+  @if (current(); as item) {
+    <div class="selected-record" aria-live="polite">
+      @if (currentLink(); as link) {
+        @if (link.instruction) {
+          <p class="instructions">{{ link.instruction }}</p>
+        }
+        @if (link.action; as action) {
+          <button class="tool-action" type="button" (click)="useTool.emit(action)">
+            {{ action.label }}
+          </button>
+        }
+      }
+      <app-investigation-evidence-detail
+        [evidence]="item"
+        [sourceRecord]="currentLink()?.sourceRecord"
+        [referenceOnly]="currentLink()?.category === 'guide'"
+        [claim]="claim()"
+        [requireClaim]="true"
+        (closed)="selected.emit(undefined)"
+        (classificationChanged)="classify.emit({ evidenceId: item.id, classification: $event })"
+        (noteSaved)="noteSaved.emit({ evidenceId: item.id, note: $event })"
+        (questionCreated)="questionCreated.emit({ evidenceId: item.id, text: $event })"
+        (importanceChanged)="importanceChanged.emit({ evidenceId: item.id, important: $event })"
+        (finalEvidenceSelected)="useEvidence.emit(item.id)"
+      />
+    </div>
+  }
+</section>

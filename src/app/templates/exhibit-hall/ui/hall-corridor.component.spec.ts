@@ -8,7 +8,7 @@ import { createInitialHallState } from '../runtime/exhibit-hall-runtime.service'
 import { HallCorridorComponent } from './hall-corridor.component';
 
 describe('HallCorridorComponent', () => {
-  it('shows four dimensional previews but makes only the first exhibit walk-up available', async () => {
+  it('offers four rotatable model previews and opens every exhibit', async () => {
     await TestBed.configureTestingModule({ imports: [HallCorridorComponent] }).compileComponents();
     const fixture = TestBed.createComponent(HallCorridorComponent);
     const actor: ExhibitActor = {
@@ -30,12 +30,18 @@ describe('HallCorridorComponent', () => {
     fixture.detectChanges();
 
     const element = fixture.nativeElement as HTMLElement;
-    expect(element.querySelectorAll('.preview-frame img')).toHaveLength(4);
-    expect(element.querySelectorAll('button.preview-frame.available')).toHaveLength(1);
-    expect(element.querySelectorAll('.preview-frame.unavailable')).toHaveLength(3);
-    expect(element.querySelectorAll('.coming-soon-action')).toHaveLength(3);
-
-    (element.querySelector('button.preview-frame.available') as HTMLButtonElement).click();
-    expect(opened).toEqual(['hanging-team-atlas']);
+    expect(element.querySelectorAll('.model-frame app-object-model-viewer')).toHaveLength(4);
+    expect(element.querySelectorAll('.preview-frame img')).toHaveLength(0);
+    expect(element.querySelectorAll('.coming-soon-action')).toHaveLength(0);
+    expect(element.querySelectorAll('.location-actions button')).toHaveLength(4);
+    element
+      .querySelectorAll<HTMLButtonElement>('.location-actions button')
+      .forEach((button) => button.click());
+    expect(opened).toEqual([
+      'hanging-team-atlas',
+      'hanging-team-marigold',
+      'hanging-team-northstar',
+      'hanging-team-ember',
+    ]);
   });
 });

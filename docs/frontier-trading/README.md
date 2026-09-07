@@ -8,6 +8,18 @@ Builders can open `/frontier-trading/builder-info` from the Frontier card on the
 
 The opening now uses a painted frontier prologue matching the town and route map. The selected transport remains a live illustrated overlay, while the editable company-name field starts with a randomly selected animal trading-company name. Students and builders can accept it immediately or choose another animal name with one click. See [the setup scene art system](SETUP_SCENE_ART_SYSTEM.md) for the background and overlay contract.
 
+## Route-first planning workspace
+
+The map is the full-width planning workspace. Each unlocked, transport-compatible destination has a readable market-price placard beside its fort showing projected selling prices per unit for currently available goods. Labels move with zoom/pan, stay inside the map frame, and use nearby candidate positions to avoid crowding. A dotted connection identifies the matching town. Long lists scroll within the placard; no separate market sidebar or mobile tray is needed.
+
+Each open route displays its own configuration-derived travel cost halfway along its path. Clicking that marker, its fort, or its placard toggles a prediction anchored to the same path midpoint, not to a fixed sidebar. Only one route prediction is open at a time: selecting another route switches its content and location; selecting the same route or pressing Escape closes it. Hover/focus alone does not open or switch the prediction. The card follows map pan/zoom and is clamped inside the map frame; a leader identifies its route anchor. It shows time, travel cost, distance, terrain, weather, and risk without repeating prices or calculated margins. Previewing does not change the saved route, spend cash, or record a domain event. “Use this route” opens the existing forecast/rationale planner and preserves all departure checks.
+
+Starting a company and returning to Plan Trip opens Choose Route. The map stays mounted behind overlays; mission progress and route/journey journals remain available in the bottom toolbar. Predictions remain route-anchored on narrow screens; the longer trip planner uses a bounded sheet.
+
+The atlas's optional `destinationMarkets` input accepts formatted, configuration-derived price rows; optional trail `costLabel` fields carry formatted route costs. Its optional `predictionRouteId` input positions projected prediction content using the rendered SVG path's arc-length midpoint (endpoint fallback for non-SVG test environments). Existing atlas hosts retain their default behavior. The pure `map-market-layout.ts` helper and its tests were added in the map-pricing work; this refinement modifies route page, atlas, `map-viewport.ts`, regression tests, and this documentation without adding files. No core or persistence schema changes, architecture deviations, or template capability gaps were introduced.
+
+Verification covers reachable versus locked markets, prices on-map but not in predictions, route-specific midpoint costs, wide/narrow label bounds, zoom/pan tracking, keyboard preview/selection, and unchanged departure gates. Next: student walkthrough of comparing destination prices against travel costs before choosing cargo.
+
 ## Connected town market
 
 The market now uses a pre-rendered connected-town background with four transparent, accessible storefront hotspots. Opening a shop replaces the street in the same game frame with a matching pre-rendered interior. The full interior remains visible behind a shallow price shelf instead of being covered by tall product panels. Compact cards show Buy each, Sell each, wagon space, stock, and direct Buy or Sell actions; quantity and full trade math open in the wagon planner. A small merchant bubble and collapsed route tip keep helpful context available without covering the room. The art never contains authoritative prices or assessed answers. Opening a storefront scrolls only as far as needed and moves focus to the in-view shop counter. The repository interaction rule in `AGENTS.md` applies this same behavior to future drawers, dialogs, expanded cards, and selected-item controls.
@@ -64,7 +76,7 @@ The interaction layer makes each animation explain state rather than decorate it
 - Generic domain and reducer: `src/app/templates/simulation-decision/domain/`
 - Runtime and persistence boundary: `src/app/templates/simulation-decision/runtime/`
 - Reusable shell and pages: `src/app/templates/simulation-decision/ui/`
-- Route composition: `src/app/features/frontier-trading/frontier-trading.routes.ts`
+- Route composition: `src/app/runtime/project-launch/template-launchers/simulation-decision.launcher.ts`
 
 ## September 2026 route and market update
 
@@ -89,6 +101,12 @@ The live game score is intentionally transparent: **40 points for trading result
 ## Final project competition
 
 The [final project competition plan](FINAL_PROJECT_COMPETITION_PLAN.md) carries the individual practice language into a 55-minute four-company final. Student-produced route totals, capacity calculations, unit-price comparisons, forecasts, revisions, and profit audits unlock the game actions; the interface withholds assessed totals until students respond. The plan also defines the difficulty ladder, HBC scenario requirements, rotating math ownership, 40/40/20 score, visible price traps, server-authoritative trade sequence, teacher controls, implementation phases, and classroom release checks.
+
+## Current-fort map prices
+
+The route workspace places a **Buy here** price card beside the current fort, using existing market buying prices and unlocked goods. Destination cards remain **Sell here**. Buying prices follow arrival and hide during travel. Card placement avoids route-cost controls where space permits. The workspace legend and Scenery/Motion controls are removed; artwork, navigation, and reduced-motion support remain. This extends the reusable atlas with an optional current-market input, without changing domain or persistence contracts. Tests cover price accuracy, arrival updates, starter goods, travel visibility, control removal, and map placement.
+
+Verification: 76 simulation tests passed across eight files, production build passed with existing stylesheet-budget warnings, and the live browser showed buying/selling cards with route buttons clear. Modified the route page, atlas, market-layout helper, their tests, and this document; no files added, specification deviations, or new capability gaps. Next recommended check: classroom-sized screens with the fully unlocked goods catalog.
 
 ## Final company showcase
 

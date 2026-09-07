@@ -505,3 +505,61 @@ textarea:focus-visible {
     grid-template-columns: 1.5rem minmax(0, 1fr);
   }
 }
+.read-only textarea {
+  background: #fff;
+  color: #283c3b;
+  resize: vertical;
+  line-height: 1.65;
+}
+.matrix-scroll {
+  overflow: auto;
+  margin: 12px 0;
+}
+table {
+  border-collapse: collapse;
+  font-size: 0.72rem;
+  min-width: 320px;
+}
+caption {
+  text-align: left;
+  font-weight: 700;
+  padding: 8px 0;
+}
+td,
+th {
+  padding: 7px;
+  border: 1px solid #cdd7d4;
+  text-align: left;
+}
+th {
+  background: #edf2ed;
+}
+.evidence-preview [tabindex='-1']:focus {
+  outline: 2px solid #967343;
+  outline-offset: 3px;
+}
+.final-workspace.read-only {
+  background: #10252e;
+  padding: 24px;
+  border-radius: 12px;
+}
+.read-only .readiness {
+  background: #234743;
+}
+.read-only .final-progress {
+  color: #b6cbd0;
+}
+@media (max-width: 680px) {
+  .final-workspace.read-only {
+    padding: 14px;
+  }
+  .read-only .final-pair {
+    grid-template-columns: 1fr;
+  }
+  .read-only .final-evidence-picker {
+    grid-template-columns: 1fr;
+  }
+  .read-only .optional-grid {
+    grid-template-columns: 1fr;
+  }
+}

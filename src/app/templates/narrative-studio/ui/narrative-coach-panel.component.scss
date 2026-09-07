@@ -1,0 +1,162 @@
+:host {
+  display: block;
+  min-width: 0;
+  border-left: 1px solid #264d55;
+  color: #e6f0ed;
+  background: linear-gradient(165deg, #0c3942, #071e29 70%);
+}
+:host,
+:host * {
+  box-sizing: border-box;
+}
+button,
+textarea {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+button:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #f2ba54;
+  outline-offset: 3px;
+}
+.coach-panel {
+  padding: 1.2rem;
+}
+header {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.coach-mark {
+  display: grid;
+  width: 2.6rem;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px solid #e0ae59;
+  border-radius: 50%;
+  color: #ffd686;
+  background: #164952;
+}
+header div:last-child {
+  display: grid;
+  gap: 0.15rem;
+}
+header strong {
+  font:
+    700 1rem Georgia,
+    serif;
+}
+header small {
+  color: #91b0ad;
+  font-size: 0.72rem;
+}
+.coach-promise {
+  margin: 0.8rem 0;
+  border-left: 2px solid #d99655;
+  padding-left: 0.7rem;
+  color: #aac0bd;
+  font:
+    italic 0.82rem/1.45 Georgia,
+    serif;
+}
+.coach-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.coach-tools button {
+  border: 1px solid #3a6870;
+  border-radius: 99px;
+  padding: 0.45rem 0.6rem;
+  color: #c9dcda;
+  background: #123f48;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+.coach-tools .storm-tool {
+  border-color: #c89a50;
+  color: #ffe7ae;
+  background: #55472f;
+}
+.coach-conversation {
+  display: grid;
+  gap: 0.6rem;
+  max-height: 23rem;
+  overflow-y: auto;
+  margin: 1rem 0 0.7rem;
+}
+.coach-conversation article {
+  border-radius: 0.5rem 0.5rem 0.5rem 0.1rem;
+  padding: 0.65rem 0.75rem;
+  color: #dce9e6;
+  background: #154651;
+}
+.coach-conversation article.student {
+  margin-left: 1.5rem;
+  background: #3b5558;
+}
+.coach-conversation strong {
+  color: #ffd487;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.coach-conversation p {
+  margin: 0.25rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+.coach-empty,
+.thinking {
+  color: #91aaa7;
+  font:
+    italic 0.82rem/1.45 Georgia,
+    serif;
+}
+.send-reply {
+  width: 100%;
+  min-height: 2.7rem;
+  border: 0;
+  border-radius: 0.35rem;
+  padding: 0.6rem;
+  color: #102d31;
+  background: #efbd63;
+  font-weight: 900;
+}
+.coach-reply {
+  display: grid;
+  gap: 0.42rem;
+  margin-top: 0.8rem;
+  color: #b9cfcc;
+  font-size: 0.82rem;
+  font-weight: 850;
+}
+.coach-reply textarea {
+  width: 100%;
+  min-height: 5rem;
+  resize: vertical;
+  border: 1px solid #3f6970;
+  border-radius: 0.45rem;
+  padding: 0.78rem 0.85rem;
+  color: #edf5f3;
+  background: #0e3038;
+  line-height: 1.5;
+}
+.send-reply {
+  margin-top: 0.5rem;
+  color: #eff7f4;
+  background: #26726f;
+}
+@media (max-width: 1050px) {
+  :host {
+    grid-column: 1 / -1;
+    border-top: 1px solid #28525a;
+    border-left: 0;
+  }
+}

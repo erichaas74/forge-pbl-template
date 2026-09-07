@@ -1,7 +1,9 @@
-import { Component, effect, input, output, signal } from '@angular/core';
+import { Component, effect, input, output, signal, untracked } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { persistWorkspaceDraft } from '../../../shared/drafts/persist-workspace-draft';
 
 import type { AnalysisClassification, InvestigationEvidenceItem } from './investigation-ui.models';
+import type { WorkbenchEvidenceLink } from './workbench-evidence.models';
 
 @Component({
   selector: 'app-investigation-evidence-detail',
@@ -11,6 +13,10 @@ import type { AnalysisClassification, InvestigationEvidenceItem } from './invest
 })
 export class InvestigationEvidenceDetailComponent {
   readonly evidence = input.required<InvestigationEvidenceItem>();
+  readonly referenceOnly = input(false);
+  readonly claim = input<string>();
+  readonly requireClaim = input(false);
+  readonly sourceRecord = input<WorkbenchEvidenceLink['sourceRecord']>();
   readonly closed = output<void>();
   readonly classificationChanged = output<AnalysisClassification>();
   readonly noteSaved = output<string>();
@@ -20,12 +26,32 @@ export class InvestigationEvidenceDetailComponent {
 
   readonly note = signal('');
   readonly question = signal('');
+  private currentId?: string;
+  private readonly drafts = new Map<string, { note: string; question: string }>();
 
   constructor() {
+    persistWorkspaceDraft(
+      'evidence-notes',
+      () => {
+        const draft = { note: this.note(), question: this.question() };
+        if (this.currentId) this.drafts.set(this.currentId, draft);
+        return [...this.drafts.entries()];
+      },
+      (saved) => {
+        if (Array.isArray(saved)) for (const [id, draft] of saved) this.drafts.set(id, draft);
+      },
+    );
     effect(() => {
-      const notes = this.evidence().notes;
-      this.note.set(notes.at(-1) ?? '');
-      this.question.set('');
+      const item = this.evidence();
+      untracked(() => {
+        if (item.id === this.currentId) return;
+        if (this.currentId)
+          this.drafts.set(this.currentId, { note: this.note(), question: this.question() });
+        this.currentId = item.id;
+        const draft = this.drafts.get(item.id);
+        this.note.set(draft?.note ?? item.notes.at(-1) ?? '');
+        this.question.set(draft?.question ?? '');
+      });
     });
   }
 

@@ -1,0 +1,321 @@
+<section class="composer-dock" aria-labelledby="composer-title">
+  <header class="composer-summary">
+    <div>
+      <span>Build the next argument</span>
+      <h2 id="composer-title">
+        {{ runtime.currentRound().label }} · {{ runtime.roleLabel(runtime.currentTurn()) }}
+      </h2>
+    </div>
+    <div class="summary-actions">
+      <div class="floor-status" [class.ready]="runtime.chamberStage() === 'your-turn'">
+        <i aria-hidden="true"></i>{{ runtime.chamberHeadline() }}
+      </div>
+      <button
+        class="builder-toggle"
+        type="button"
+        [attr.aria-expanded]="expanded()"
+        aria-controls="response-builder-content"
+        (click)="toggleExpanded()"
+      >
+        {{ expanded() ? 'Close builder' : 'Open response builder' }}
+        <span aria-hidden="true">{{ expanded() ? '⌄' : '⌃' }}</span>
+      </button>
+    </div>
+  </header>
+
+  @if (expanded()) {
+    <div id="response-builder-content" class="composer-content">
+      <div class="composer-tabs" role="tablist" aria-label="Response builder">
+        @for (tab of tabs; track tab.id) {
+          <button
+            type="button"
+            role="tab"
+            [id]="'composer-tab-' + tab.id"
+            [attr.aria-selected]="activeTab() === tab.id"
+            [attr.aria-controls]="'composer-panel-' + tab.id"
+            (click)="setTab(tab.id)"
+          >
+            {{ tab.label }}
+            @if (tab.id === 'evidence') {
+              <b>{{ runtime.state().selectedEvidenceIds.length }}</b>
+            }
+          </button>
+        }
+        @if (runtime.canManageModerator() && runtime.pendingModeratorPrompt()) {
+          <button
+            type="button"
+            role="tab"
+            id="composer-tab-moderator"
+            [attr.aria-selected]="activeTab() === 'moderator'"
+            aria-controls="composer-panel-moderator"
+            (click)="setTab('moderator')"
+          >
+            Moderator <b>1</b>
+          </button>
+        }
+      </div>
+
+      <div
+        class="composer-panel"
+        role="tabpanel"
+        [id]="'composer-panel-' + activeTab()"
+        [attr.aria-labelledby]="'composer-tab-' + activeTab()"
+      >
+        @switch (activeTab()) {
+          @case ('plan') {
+            <div class="plan-grid">
+              <article>
+                <small>Question before the class</small>
+                <strong>{{ runtime.config.centralQuestion }}</strong>
+              </article>
+              @if (runtime.currentModeratorPrompt(); as prompt) {
+                <article class="neutral-card">
+                  <small>Moderator asks</small>
+                  <strong>{{ prompt.question }}</strong>
+                  @if (!moderatorReady()) {
+                    <button type="button" (click)="runtime.markModeratorHeard()">
+                      Accept question
+                    </button>
+                  }
+                </article>
+              }
+              <article>
+                <small>Your response must</small>
+                <ul>
+                  @for (prompt of runtime.currentRound().preparationPrompts; track prompt) {
+                    <li>{{ prompt }}</li>
+                  }
+                </ul>
+              </article>
+            </div>
+          }
+          @case ('opponent') {
+            @if (runtime.previousOpponentTurn(); as opponent) {
+              <div class="opponent-review">
+                <header>
+                  <div>
+                    <small>Latest opposing argument</small
+                    ><strong>{{ opponent.speakerDisplayName }}</strong>
+                  </div>
+                  <button type="button" (click)="runtime.speak(opponent.transcript ?? '')">
+                    Hear aloud
+                  </button>
+                </header>
+                <div class="passage-list">
+                  @for (passage of runtime.opponentPassages(); track passage) {
+                    <article [class.marked]="runtime.annotationFor(passage)">
+                      <p>{{ passage }}</p>
+                      <label
+                        >Mark this claim
+                        <select
+                          [value]="runtime.annotationFor(passage)?.marker ?? ''"
+                          (change)="markPassage(passage, $event)"
+                        >
+                          <option value="" disabled>Choose a note</option>
+                          @for (mark of argumentMarks; track mark.value) {
+                            <option [value]="mark.value">{{ mark.label }}</option>
+                          }
+                        </select>
+                      </label>
+                    </article>
+                  }
+                </div>
+                <div class="review-actions">
+                  <button type="button" (click)="runtime.markOpponentPlaybackComplete()">
+                    I heard the full argument
+                  </button>
+                  <button class="primary" type="button" (click)="runtime.markOpponentHeard()">
+                    Carry it into my response
+                  </button>
+                </div>
+              </div>
+            } @else {
+              <p class="empty-panel">No opposing argument is required before this turn.</p>
+            }
+          }
+          @case ('evidence') {
+            <div class="evidence-grid">
+              @for (item of runtime.config.evidence; track item.id) {
+                <article [class.selected]="runtime.state().selectedEvidenceIds.includes(item.id)">
+                  <header>
+                    <small>{{ item.dateLabel }} · {{ item.sourceType }}</small
+                    ><strong>{{ item.title }}</strong>
+                  </header>
+                  <p>{{ item.excerpt }}</p>
+                  <footer>
+                    <label
+                      >Use as
+                      <select
+                        [value]="runtime.state().evidenceMarks[item.id] ?? ''"
+                        (change)="markEvidence(item, $event)"
+                      >
+                        <option value="" disabled>Classify</option>
+                        @for (mark of evidenceMarks; track mark.value) {
+                          <option [value]="mark.value">{{ mark.label }}</option>
+                        }
+                      </select>
+                    </label>
+                    <button
+                      type="button"
+                      [attr.aria-pressed]="runtime.state().selectedEvidenceIds.includes(item.id)"
+                      (click)="runtime.toggleEvidence(item)"
+                    >
+                      {{
+                        runtime.state().selectedEvidenceIds.includes(item.id)
+                          ? 'Pinned'
+                          : 'Pin evidence'
+                      }}
+                    </button>
+                  </footer>
+                </article>
+              }
+            </div>
+          }
+          @case ('write') {
+            @if (runtime.chamberStage() !== 'your-turn') {
+              <p class="gate-note">
+                Complete the highlighted listening step to unlock editing. Your saved draft remains
+                visible.
+              </p>
+            }
+            <fieldset class="writing-grid" [disabled]="runtime.chamberStage() !== 'your-turn'">
+              <label class="draft-field"
+                >Speech draft <span>{{ draftWords() }} words · {{ runtime.saveState() }}</span>
+                <textarea
+                  [value]="runtime.state().draft"
+                  (input)="updateDraft($event)"
+                  placeholder="Write the next response here…"
+                ></textarea>
+              </label>
+              <label
+                >Explain your reasoning
+                <textarea
+                  [value]="runtime.state().reasoningContribution"
+                  (input)="updateReasoning($event)"
+                  placeholder="Why does your evidence support the claim, and how does it answer the other side?"
+                ></textarea>
+              </label>
+            </fieldset>
+          }
+          @case ('feedback') {
+            <div class="feedback-grid">
+              <article class="readiness-card">
+                <small>Response readiness</small>
+                <ul>
+                  <li [class.done]="listeningReady()">Heard the opposing argument</li>
+                  <li
+                    [class.done]="
+                      runtime.state().annotations.length > 0 || !runtime.previousOpponentTurn()
+                    "
+                  >
+                    Marked a claim to answer
+                  </li>
+                  <li [class.done]="moderatorReady()">Received the moderator question</li>
+                  <li [class.done]="evidenceReady()">Pinned required evidence</li>
+                  <li [class.done]="reasoningReady()">Explained the reasoning</li>
+                  <li [class.done]="runtime.state().rehearsed">Completed a rehearsal</li>
+                  <li [class.done]="runtime.state().recordingReady">
+                    Reviewed a recording or transcript
+                  </li>
+                </ul>
+              </article>
+              <article class="teacher-feedback">
+                <small>Teacher feedback</small>
+                <p>
+                  {{
+                    runtime.currentTurn()?.teacherFeedback ||
+                      'No teacher note yet. Use the readiness checks to strengthen this response before filing.'
+                  }}
+                </p>
+              </article>
+            </div>
+          }
+          @case ('file') {
+            <div class="file-grid">
+              <article>
+                <small>1 · Rehearse</small>
+                <strong
+                  >{{ runtime.formatTime(runtime.state().rehearsalSeconds) }} /
+                  {{ runtime.formatTime(runtime.currentRound().timeLimitSeconds) }}</strong
+                >
+                @if (runtime.rehearsalRunning()) {
+                  <button type="button" (click)="runtime.stopRehearsal()">Stop rehearsal</button>
+                } @else {
+                  <button type="button" (click)="runtime.startRehearsal()">Start rehearsal</button>
+                }
+              </article>
+              <article>
+                <small>2 · Record</small>
+                <strong>{{
+                  runtime.recordingState() === 'recording'
+                    ? 'Recording now'
+                    : (runtime.state().recordingKind ?? 'Choose a format')
+                }}</strong>
+                <div>
+                  @if (runtime.recordingState() === 'recording') {
+                    <button type="button" (click)="runtime.stopRecording()">Stop</button>
+                  } @else {
+                    <button type="button" (click)="runtime.startRecording(true)">Video</button>
+                    <button type="button" (click)="runtime.startRecording(false)">Audio</button>
+                    <button type="button" (click)="runtime.useTranscriptFallback()">
+                      Transcript
+                    </button>
+                  }
+                  @if (runtime.state().recordingReady) {
+                    <button type="button" (click)="runtime.retakeRecording()">Retake</button>
+                  }
+                </div>
+              </article>
+              <article class="file-action">
+                <small>3 · File to the debate</small>
+                <strong>{{
+                  runtime.canFile() ? 'Ready to enter the record' : 'Finish the remaining checks'
+                }}</strong>
+                @if (runtime.recordingState() === 'uploading') {
+                  <progress max="100" [value]="runtime.uploadProgress()">
+                    {{ runtime.uploadProgress() }}%
+                  </progress>
+                }
+                <button
+                  class="primary"
+                  type="button"
+                  [disabled]="!runtime.canFile() || runtime.recordingState() === 'uploading'"
+                  (click)="runtime.fileSpeech()"
+                >
+                  File this argument
+                </button>
+              </article>
+            </div>
+          }
+          @case ('moderator') {
+            @if (runtime.pendingModeratorPrompt(); as prompt) {
+              <div class="moderator-editor">
+                <label
+                  >Question for the next speaker
+                  <textarea
+                    [value]="runtime.moderatorDraft()"
+                    (input)="updateModerator($event)"
+                  ></textarea>
+                </label>
+                <div>
+                  <button type="button" (click)="runtime.saveModeratorEdit(prompt)">
+                    Save edit
+                  </button>
+                  <button type="button" (click)="runtime.regeneratePrompt(prompt)">
+                    Regenerate
+                  </button>
+                  @if (prompt.status === 'proposed') {
+                    <button type="button" (click)="runtime.approvePrompt(prompt)">Approve</button>
+                  }
+                  <button class="primary" type="button" (click)="runtime.releasePrompt(prompt)">
+                    Release to debate
+                  </button>
+                </div>
+              </div>
+            }
+          }
+        }
+      </div>
+    </div>
+  }
+</section>

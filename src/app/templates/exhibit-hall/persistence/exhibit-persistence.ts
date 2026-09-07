@@ -1,4 +1,11 @@
+import { isExhibitDraft } from './exhibit-draft-validation';
 import type { ExhibitHallState } from '../domain/exhibit-types';
+import type { ProjectSessionContext } from '../../../core/context/project-session-context';
+import {
+  safeBrowserStorage,
+  ScopedBrowserStore,
+  type WorkspaceStorageScope,
+} from '../../../shared/persistence';
 
 export interface ExhibitPersistenceAdapter {
   load(projectId: string, projectVersion: string): ExhibitHallState | undefined;
@@ -7,25 +14,37 @@ export interface ExhibitPersistenceAdapter {
 }
 
 export class BrowserExhibitPersistenceAdapter implements ExhibitPersistenceAdapter {
-  constructor(private readonly storage: Storage | undefined = safeStorage()) {}
+  private readonly store: ScopedBrowserStore<ExhibitHallState>;
+
+  constructor(
+    storage: Storage | undefined = safeBrowserStorage(),
+    private readonly session?: ProjectSessionContext,
+  ) {
+    this.store = new ScopedBrowserStore('exhibit-hall', storage, isExhibitState);
+  }
 
   load(projectId: string, projectVersion: string): ExhibitHallState | undefined {
-    const value = this.storage?.getItem(storageKey(projectId, projectVersion));
-    if (value === undefined || value === null) return undefined;
-    try {
-      const parsed: unknown = JSON.parse(value);
-      return isExhibitState(parsed) ? parsed : undefined;
-    } catch {
-      return undefined;
-    }
+    return this.store.load(this.scope(projectId, projectVersion));
   }
 
   save(projectId: string, projectVersion: string, state: ExhibitHallState): void {
-    this.storage?.setItem(storageKey(projectId, projectVersion), JSON.stringify(state));
+    this.store.save(this.scope(projectId, projectVersion), state);
   }
 
   clear(projectId: string, projectVersion: string): void {
-    this.storage?.removeItem(storageKey(projectId, projectVersion));
+    this.store.clear(this.scope(projectId, projectVersion));
+  }
+
+  private scope(projectId: string, projectVersion: string): WorkspaceStorageScope {
+    return {
+      tenantId: this.session?.tenantId ?? 'local-preview',
+      projectId,
+      projectVersion,
+      classId: this.session?.classId,
+      actorId: this.session?.actorId,
+      teamId: this.session?.teamId,
+      attemptId: this.session?.attemptId,
+    };
   }
 }
 
@@ -46,14 +65,6 @@ export class MemoryExhibitPersistenceAdapter implements ExhibitPersistenceAdapte
   }
 }
 
-function safeStorage(): Storage | undefined {
-  try {
-    return typeof localStorage === 'undefined' ? undefined : localStorage;
-  } catch {
-    return undefined;
-  }
-}
-
 function storageKey(projectId: string, projectVersion: string): string {
   return `forge:exhibit-hall:${projectId}:${projectVersion}`;
 }
@@ -70,6 +81,9 @@ function isExhibitState(value: unknown): value is ExhibitHallState {
     'snapshots' in value &&
     Array.isArray(value.snapshots) &&
     'hangings' in value &&
-    Array.isArray(value.hangings)
+    Array.isArray(value.hangings) &&
+    (!('composerDraft' in value) ||
+      value.composerDraft === undefined ||
+      isExhibitDraft(value.composerDraft))
   );
 }

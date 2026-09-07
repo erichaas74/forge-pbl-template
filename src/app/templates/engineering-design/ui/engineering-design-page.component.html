@@ -1,0 +1,155 @@
+<main class="design-studio">
+  <header class="mission">
+    <div>
+      <p class="eyebrow">ENGINEERING DESIGN · RESEARCH / BUILD / TEST</p>
+      <h1>{{ config.title }}</h1>
+      <p>{{ config.mission }}</p>
+    </div>
+    <button (click)="exportNotebook()">Export notebook & blueprint ↓</button>
+  </header>
+  <nav aria-label="Project workspace">
+    @for (item of tabs; track item.id) {
+      <button
+        [class.active]="tab() === item.id"
+        [attr.aria-current]="tab() === item.id ? 'step' : null"
+        (click)="tab.set(item.id)"
+      >
+        {{ item.label }}
+      </button>
+    }
+  </nav>
+  <p class="save-status" role="status">
+    {{ runtime.saveStatus() }} · {{ researchCount() }}/{{ config.research.length }} research notes ·
+    {{ runtime.snapshot().trials.length }} trials
+  </p>
+  @if (tab() === 'research') {
+    <section class="research">
+      <div class="section-heading">
+        <h2>Read the sky. Find a pattern.</h2>
+        <p>
+          Observe a real shadow, investigate the sources, then explain the science in your own
+          words.
+        </p>
+      </div>
+      <div class="research-grid">
+        @for (item of config.research; track item.id; let i = $index) {
+          <article>
+            <span class="number">0{{ i + 1 }}</span>
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.explanation }}</p>
+            <a [href]="item.source.url" target="_blank" rel="noopener noreferrer"
+              >{{ item.source.label }} ↗</a
+            ><label [for]="'research-' + item.id">{{ item.prompt }}</label
+            ><textarea
+              [id]="'research-' + item.id"
+              rows="5"
+              maxlength="10000"
+              [ngModel]="runtime.snapshot().research[item.id] || ''"
+              (ngModelChange)="(null)"
+              (change)="runtime.saveResearch(item.id, $any($event.target).value)"
+              placeholder="My observations, explanation, and source…"
+            ></textarea>
+          </article>
+        }
+      </div>
+      <button class="primary" (click)="tab.set('build')">
+        Take my ideas to the building table →
+      </button>
+    </section>
+  }
+  <section [hidden]="tab() !== 'build'" aria-label="Build and test workspace">
+    <div class="build-brief">
+      <h2>Your building table</h2>
+      <p>{{ config.designBrief }}</p>
+    </div>
+    <div class="workbench">
+      <div class="construction">
+        <details class="builder" open>
+          <summary>Blocks & ground targets</summary>
+          <app-block-builder
+            [design]="runtime.snapshot().design"
+            (changed)="runtime.saveDesign($event)"
+          />
+        </details>
+        <div class="prediction">
+          <label for="prediction">Before saving a trial: what do you predict?</label
+          ><textarea
+            id="prediction"
+            rows="2"
+            maxlength="10000"
+            [ngModel]="runtime.snapshot().prediction"
+            (change)="runtime.saveText('prediction', $any($event.target).value)"
+            placeholder="On this date and at this time, I predict…"
+          ></textarea>
+        </div>
+      </div>
+      <div class="simulation">
+        <ng-container *ngComponentOutlet="simulation; inputs: simulationInputs()" />
+      </div>
+    </div>
+    <details class="instructions">
+      <summary>How to run a fair test</summary>
+      <ol>
+        @for (instruction of config.testInstructions; track instruction) {
+          <li>{{ instruction }}</li>
+        }
+      </ol>
+    </details>
+  </section>
+  @if (tab() === 'trials') {
+    <section>
+      <h2>Your evidence notebook</h2>
+      <p>
+        Every trial keeps its own design, prediction, location, time, and measurements. Compare all
+        four seasonal dates, then test nearby dates and revise.
+      </p>
+      <div class="trial-grid">
+        @for (trial of runtime.snapshot().trials; track trial.id; let i = $index) {
+          <article>
+            <h3>Trial {{ i + 1 }}</h3>
+            <p>{{ trial.prediction || 'No prediction recorded.' }}</p>
+            <dl>
+              @for (m of trial.measurements; track m.label) {
+                <dt>{{ m.label }}</dt>
+                <dd>{{ m.value }}</dd>
+              }
+            </dl>
+            <button (click)="replay(trial)">Load this design & test again</button>
+          </article>
+        } @empty {
+          <article>
+            <h3>Your first test is waiting</h3>
+            <p>Choose a date and time in the lab, then select Save trial.</p>
+            <button (click)="tab.set('build')">Open the lab →</button>
+          </article>
+        }
+      </div>
+    </section>
+  }
+  @if (tab() === 'exhibit') {
+    <section>
+      <h2>Tell the story of your monument</h2>
+      <ul>
+        @for (prompt of config.exhibitPrompts; track prompt) {
+          <li>{{ prompt }}</li>
+        }
+      </ul>
+      <label for="exhibit">My design, evidence, and revisions</label
+      ><textarea
+        id="exhibit"
+        rows="6"
+        maxlength="10000"
+        [ngModel]="runtime.snapshot().exhibit"
+        (change)="runtime.saveText('exhibit', $any($event.target).value)"
+      ></textarea>
+      <p>
+        {{
+          ready()
+            ? 'Your draft has research, at least four trials, and an explanation. Check that it covers every seasonal event.'
+            : 'Complete your research, save at least four seasonal trials, and add an explanation.'
+        }}
+      </p>
+      <app-engineering-exhibit [title]="config.title" [snapshot]="runtime.snapshot()" />
+    </section>
+  }
+</main>

@@ -101,4 +101,23 @@ describe('local template composition', () => {
       },
     });
   });
+
+  it('registers every installed project template at the composition boundary', () => {
+    const registry = createLocalTemplateRegistry(
+      new InMemoryProjectPackageSource({}),
+      new FixedClock(),
+    );
+
+    expect(registry.list().map((registration) => registration.id)).toEqual([
+      'debate-studio',
+      'engineering-design',
+      'exhibit-hall',
+      'history-live-broadcast',
+      'investigation',
+      'journey-replay',
+      'narrative-studio',
+      'programming-automation',
+      'simulation-decision',
+    ]);
+  });
 });

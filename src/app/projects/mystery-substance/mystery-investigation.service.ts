@@ -1,11 +1,21 @@
-import { Injectable, signal } from '@angular/core';
+import { Inject, Injectable, Optional, signal } from '@angular/core';
 
 import type { RuntimeEvent } from '../../core/events/runtime-event';
 import type { RuntimeScope } from '../../core/state/runtime-state-contracts';
+import {
+  projectSessionRuntimeScope,
+  type ProjectSessionContext,
+} from '../../core/context/project-session-context';
 import { InMemoryProjectPackageSource } from '../../infrastructure/persistence/in-memory-project-package-source';
 import { BrowserRuntimePersistenceAdapter } from '../../infrastructure/persistence/browser-runtime-persistence.adapter';
 import { InMemoryRuntimePersistenceAdapter } from '../../infrastructure/persistence/in-memory-runtime-persistence.adapter';
 import { LocalInvestigationRuntime } from '../../runtime/local-investigation-runtime';
+import {
+  PROJECT_CATALOG_ENTRY,
+  PROJECT_DEFINITION,
+  PROJECT_SESSION_CONTEXT,
+} from '../../runtime/project-launch/project-launch.tokens';
+import type { ProjectCatalogEntry } from '../project-catalog';
 import type { RuntimeStateSnapshot } from '../../templates/investigation/domain/runtime-state';
 import type { ProjectDefinitionGraph } from '../../templates/investigation/package/project-definition-graph';
 import type {
@@ -15,35 +25,19 @@ import type {
 } from '../../templates/investigation/ui/investigation-ui.models';
 import { SystemClock } from '../../core/time/clock';
 import { LegacyMysteryStateAdapter } from './legacy-mystery-state.adapter';
+import { requiredCaseClueIds } from './mystery-workbench.config';
 import {
   mysterySubstanceLocation,
   mysterySubstanceProjectPackage,
 } from './mystery-substance.package';
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class MysteryInvestigationService {
-  private readonly source = new InMemoryProjectPackageSource({
-    [mysterySubstanceLocation.reference]: mysterySubstanceProjectPackage,
-  });
   private readonly clock = new SystemClock();
   private readonly storage = browserStorage();
-  private readonly persistence =
-    this.storage === undefined
-      ? new InMemoryRuntimePersistenceAdapter<RuntimeStateSnapshot>(this.clock)
-      : new BrowserRuntimePersistenceAdapter<RuntimeStateSnapshot>(this.storage, this.clock);
-  private readonly runtime = new LocalInvestigationRuntime(
-    this.source,
-    this.clock,
-    this.persistence,
-  );
-  private readonly scope: RuntimeScope = {
-    tenantId: mysterySubstanceLocation.tenantId,
-    projectId: mysterySubstanceLocation.projectId,
-    projectVersion: mysterySubstanceLocation.projectVersion,
-    classId: 'local-class',
-    studentId: 'local-investigator',
-    scopeType: 'student',
-  };
+  private readonly runtime: LocalInvestigationRuntime;
+  private readonly scope: RuntimeScope;
+  private readonly location: typeof mysterySubstanceLocation;
   private graph?: ProjectDefinitionGraph;
   private initialization?: Promise<void>;
 
@@ -53,6 +47,44 @@ export class MysteryInvestigationService {
   readonly legacyDrafts = signal<Record<string, string>>({});
   readonly importedLegacyState = signal(false);
   readonly saveState = signal<'saved' | 'saving' | 'pending'>('saved');
+
+  constructor(
+    @Optional() @Inject(PROJECT_DEFINITION) projectDefinition?: unknown,
+    @Optional() @Inject(PROJECT_SESSION_CONTEXT) session?: ProjectSessionContext,
+    @Optional() @Inject(PROJECT_CATALOG_ENTRY) catalogEntry?: ProjectCatalogEntry,
+  ) {
+    this.location =
+      session === undefined
+        ? mysterySubstanceLocation
+        : {
+            tenantId: session.tenantId,
+            projectId: session.projectId,
+            projectVersion: session.projectVersion,
+            reference: catalogEntry?.packageReference ?? mysterySubstanceLocation.reference,
+          };
+    const packageFiles = isPackageFiles(projectDefinition)
+      ? projectDefinition
+      : mysterySubstanceProjectPackage;
+    const source = new InMemoryProjectPackageSource({
+      [this.location.reference]: packageFiles,
+    });
+    const persistence =
+      this.storage === undefined
+        ? new InMemoryRuntimePersistenceAdapter<RuntimeStateSnapshot>(this.clock)
+        : new BrowserRuntimePersistenceAdapter<RuntimeStateSnapshot>(this.storage, this.clock);
+    this.runtime = new LocalInvestigationRuntime(source, this.clock, persistence);
+    this.scope =
+      session === undefined
+        ? {
+            tenantId: mysterySubstanceLocation.tenantId,
+            projectId: mysterySubstanceLocation.projectId,
+            projectVersion: mysterySubstanceLocation.projectVersion,
+            classId: 'local-class',
+            studentId: 'local-investigator',
+            scopeType: 'student',
+          }
+        : projectSessionRuntimeScope(session, 'student');
+  }
 
   async initialize(): Promise<void> {
     if (this.initialization !== undefined) {
@@ -68,7 +100,17 @@ export class MysteryInvestigationService {
 
   async reviewEvidence(evidenceId: string): Promise<void> {
     await this.collectEvidence(evidenceId);
-    if (this.snapshot()?.activities['activity-evidence-locker']?.status !== 'complete') {
+    const evidence = this.snapshot()?.evidence;
+    const reviewedCaseClues = requiredCaseClueIds.every((id) => {
+      const status = evidence?.[id]?.status;
+      return (
+        status !== undefined && !['locked', 'hidden', 'available', 'unopened'].includes(status)
+      );
+    });
+    if (
+      reviewedCaseClues &&
+      this.snapshot()?.activities['activity-evidence-locker']?.status !== 'complete'
+    ) {
       await this.dispatch('activity.completed', 'activity-evidence-locker');
     }
   }
@@ -179,7 +221,7 @@ export class MysteryInvestigationService {
   }
 
   private async initializeRuntime(): Promise<void> {
-    const loaded = await this.runtime.loadProject(mysterySubstanceLocation);
+    const loaded = await this.runtime.loadProject(this.location);
     const errors = loaded.issues
       .filter((issue) => issue.severity === 'error')
       .map((issue) => issue.message);
@@ -291,9 +333,9 @@ export class MysteryInvestigationService {
     const event: RuntimeEvent = {
       id,
       clientEventId: `client-${id}`,
-      tenantId: mysterySubstanceLocation.tenantId,
+      tenantId: this.location.tenantId,
       eventType,
-      projectId: mysterySubstanceLocation.projectId,
+      projectId: this.location.projectId,
       timestamp: new Date().toISOString(),
       actor: { type: 'student', id: this.scope.studentId },
       sourceId,
@@ -329,4 +371,10 @@ function browserStorage(): Storage | undefined {
 
 function isOnline(): boolean {
   return typeof navigator === 'undefined' || navigator.onLine;
+}
+
+function isPackageFiles(value: unknown): value is Readonly<Record<string, unknown>> {
+  return (
+    typeof value === 'object' && value !== null && !Array.isArray(value) && 'project.json' in value
+  );
 }

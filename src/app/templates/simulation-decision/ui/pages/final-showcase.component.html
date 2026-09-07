@@ -52,7 +52,7 @@
     }
   </nav>
 
-  <main class="showcase-stage page-card" tabindex="-1">
+  <main #presentationStage class="showcase-stage page-card" tabindex="-1">
     <div class="slide-count">{{ activeSlide() + 1 }} / {{ slides.length }}</div>
     @switch (activeSlide()) {
       @case (0) {
@@ -79,7 +79,9 @@
           </div>
           <div class="headline-results">
             <article>
-              <small>Verified game score</small>
+              <small>{{
+                readOnly() ? 'Simulation score · not a grade' : 'Verified game score'
+              }}</small>
               <strong>{{ runtime.results().score }}<span>/100</span></strong>
             </article>
             <article>
@@ -286,8 +288,13 @@
                 <p>{{ event.reasoning || 'No written reasoning was recorded for this event.' }}</p>
               </blockquote>
               <div class="revision-prompt">
-                <strong>Defense sentence</strong>
-                <p>“When _____ changed by _____, we _____ because _____.”</p>
+                @if (readOnly()) {
+                  <strong>Our revised strategy</strong>
+                  <p>{{ reportHighlights().at(-1)?.state?.response }}</p>
+                } @else {
+                  <strong>Defense sentence</strong>
+                  <p>“When _____ changed by _____, we _____ because _____.”</p>
+                }
               </div>
             </div>
           } @else {

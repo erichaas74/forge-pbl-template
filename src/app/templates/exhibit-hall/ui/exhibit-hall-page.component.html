@@ -5,300 +5,283 @@
   [class.teacher-view]="runtime.role() === 'teacher'"
   [class.family-view]="runtime.role() === 'family'"
 >
-  <header class="topbar">
-    <a routerLink="/projects" class="brand" aria-label="Back to Forge PBL projects">
-      <span aria-hidden="true">F</span>
-      <span><strong>Forge PBL</strong><small>Class publishing studio</small></span>
-    </a>
-    <div class="project-title">
-      <span>{{ runtime.config.classLabel }}</span>
-      <strong>{{ runtime.config.title }}</strong>
-    </div>
-    <nav aria-label="Project spaces">
-      <button type="button" class="active" (click)="runtime.composerOpen.set(false)">
-        Exhibit hall
-      </button>
-      @if (runtime.role() === 'student') {
-        <button type="button" (click)="runtime.openComposer()">My exhibit</button>
-      }
-    </nav>
-    <div class="viewer-menu">
-      <span>Preview as</span>
-      <div role="group" aria-label="Preview role">
-        <button
-          type="button"
-          [class.active]="runtime.role() === 'student'"
-          [attr.aria-pressed]="runtime.role() === 'student'"
-          (click)="runtime.setRole('student')"
-        >
-          Student
-        </button>
-        <button
-          type="button"
-          [class.active]="runtime.role() === 'teacher'"
-          [attr.aria-pressed]="runtime.role() === 'teacher'"
-          (click)="runtime.setRole('teacher')"
-        >
-          Teacher
-        </button>
-        <button
-          type="button"
-          [class.active]="runtime.role() === 'family'"
-          [attr.aria-pressed]="runtime.role() === 'family'"
-          (click)="runtime.setRole('family')"
-        >
-          Family
-        </button>
+  <div [hidden]="runtime.composerOpen()">
+    <header class="topbar">
+      <div class="project-title">
+        <span>{{ runtime.config.classLabel }}</span>
+        <strong>{{ runtime.config.title }}</strong>
       </div>
-    </div>
-  </header>
-
-  <div class="hall-status" role="status">
-    <div>
-      <i></i><strong>{{ phaseLabel() }}</strong
-      ><span>{{ runtime.state().hall.controls.navigationMode.replace('_', ' ') }}</span>
-    </div>
-    <div class="opening-label">
-      <span aria-hidden="true">◷</span>{{ runtime.config.openingLabel }}
-    </div>
-    <div class="identity">
-      <span>{{ roleLabel() }}</span
-      ><small>{{ runtime.saveState().replace('_', ' ') }}</small>
-    </div>
-  </div>
-
-  <main id="hall-content">
-    @if (runtime.role() === 'family' && runtime.locations().length === 0) {
-      <section class="family-gate">
-        <div class="family-mark" aria-hidden="true">◇</div>
-        <span>Family publication is private by default</span>
-        <h1>The public gallery is not open yet</h1>
-        <p>
-          A teacher must close the live opening and enable the time-limited family view. Question
-          cards, defenses, grades, presence, private names, and empty locations will stay hidden.
-        </p>
-        <button type="button" (click)="runtime.setRole('teacher')">
-          Return to teacher preview
+      <nav aria-label="Project spaces">
+        <button
+          type="button"
+          class="active"
+          (click)="browsingHall.set(true); runtime.composerOpen.set(false)"
+        >
+          Exhibit hall
         </button>
-      </section>
-    } @else {
-      <section class="hall-introduction">
-        <div>
-          <span class="eyebrow">{{ runtime.config.template.vocabulary.hallName }}</span>
-          <h1>{{ runtime.config.title }}</h1>
-          <p>{{ runtime.config.subtitle }}</p>
-          <p class="prototype-scope">
-            <strong>Prototype experience</strong>
-            Research artifacts → curate a group → build a MetaSteps wing → record a video tour →
-            welcome student and family visitors.
-          </p>
-        </div>
-        <dl>
-          <div>
-            <dt>Published</dt>
-            <dd>
-              {{ runtime.publishedCount() }}<small>/ {{ runtime.config.teams.length }}</small>
-            </dd>
-          </div>
-          <div>
-            <dt>Visitors here</dt>
-            <dd>{{ runtime.connectedCount() }}</dd>
-          </div>
-          <div>
-            <dt>Session revision</dt>
-            <dd>{{ runtime.state().openingSession.revision }}</dd>
-          </div>
-        </dl>
-      </section>
-
-      <section class="hall-toolbar" aria-label="Gallery view controls">
-        <div class="view-switch" role="group" aria-label="Gallery view">
-          <button
-            type="button"
-            [class.active]="runtime.viewMode() === 'corridor'"
-            [attr.aria-pressed]="runtime.viewMode() === 'corridor'"
-            (click)="runtime.setViewMode('corridor')"
-          >
-            <span aria-hidden="true">▥</span> Immersive corridor
-          </button>
-          <button
-            type="button"
-            [class.active]="runtime.viewMode() === 'list'"
-            [attr.aria-pressed]="runtime.viewMode() === 'list'"
-            (click)="runtime.setViewMode('list')"
-          >
-            <span aria-hidden="true">☷</span> Accessible list
-          </button>
-        </div>
-        <p>
-          @if (runtime.state().hall.controls.navigationMode === 'teacher_follow') {
-            <strong>Following teacher.</strong> Your unfinished card draft is preserved before a
-            move.
-          } @else {
-            Preview all four Egyptian collections. The first wing is open now; the other walk-ups
-            are coming soon.
-          }
-        </p>
         @if (runtime.role() === 'student') {
-          <button type="button" class="my-board" (click)="runtime.openComposer()">
-            <span aria-hidden="true">＋</span>{{ runtime.config.template.vocabulary.composeAction }}
+          <button
+            type="button"
+            (click)="runtime.usingStarter() ? runtime.startOwnDraft() : runtime.openComposer()"
+          >
+            My exhibit
           </button>
         }
-      </section>
-
-      <div class="hall-layout" [class.with-desk]="runtime.role() === 'teacher'">
-        @if (runtime.role() === 'teacher') {
-          <app-teacher-hall-desk
-            [state]="runtime.state()"
-            [locations]="runtime.locations()"
-            [unpublishedTeams]="runtime.unpublishedTeams()"
-            [collapsed]="!runtime.teacherDeskOpen()"
-            (collapsedChanged)="runtime.teacherDeskOpen.set(!$event)"
-            (phaseChanged)="runtime.setHallPhase($event)"
-            (navigationChanged)="runtime.setNavigationMode($event)"
-            (controlToggled)="runtime.toggleControl($event)"
-            (pointed)="runtime.pointTo($event)"
-            (docentsSelected)="runtime.selectDocents($event)"
-            (resetRequested)="runtime.resetDemo()"
-          />
-        }
-
-        <section class="gallery-space" aria-label="Exhibit collection">
-          @if (runtime.viewMode() === 'corridor') {
-            <app-hall-corridor
-              [locations]="runtime.locations()"
-              [focusedHangingId]="runtime.focusedHangingId()"
-              [emptyLabel]="runtime.config.template.theme.emptyLocationLabel"
-              [teacherMode]="runtime.role() === 'teacher'"
-              (opened)="runtime.openHanging($event)"
-              (pointed)="runtime.pointTo($event)"
-            />
-          } @else {
-            <app-accessible-gallery-list
-              [locations]="runtime.locations()"
-              [focusedHangingId]="runtime.focusedHangingId()"
-              [emptyLabel]="runtime.config.template.theme.emptyLocationLabel"
-              (opened)="runtime.openHanging($event)"
-            />
-          }
-
-          @if (runtime.role() === 'student') {
-            <div class="gallery-progress">
-              <div>
-                <span>Gallery walk progress</span>
-                <strong
-                  >{{ runtime.visitProgress().current }} of
-                  {{ runtime.visitProgress().target }} visits</strong
-                >
-                <i
-                  ><b
-                    [style.width.%]="
-                      (runtime.visitProgress().current / runtime.visitProgress().target) * 100
-                    "
-                  ></b
-                ></i>
-              </div>
-              @if (runtime.comingSoonCount() > 0) {
-                <div>
-                  <span>Upcoming wings</span>
-                  <strong>{{ runtime.comingSoonCount() }} walk-ups coming soon</strong>
-                  <i><b [style.width.%]="25"></b></i>
-                </div>
-                <p>
-                  Tour the open Nile wing now. The remaining walk-ups and video presentations will
-                  be connected later.
-                </p>
-              } @else {
-                <div>
-                  <span>Question cards</span>
-                  <strong
-                    >{{ runtime.responseProgress().current }} of
-                    {{ runtime.responseProgress().target }} posted</strong
-                  >
-                  <i
-                    ><b
-                      [style.width.%]="
-                        (runtime.responseProgress().current / runtime.responseProgress().target) *
-                        100
-                      "
-                    ></b
-                  ></i>
-                </div>
-                <p>Visit every Egyptian collection and post two thoughtful questions.</p>
-              }
-            </div>
-          }
-        </section>
-      </div>
-    }
-  </main>
-
-  <footer class="site-footer">
-    <span>Research → curate → build in MetaSteps → record → showcase</span>
-    <span>Students and families explore the same published artifact collections.</span>
-  </footer>
-
-  @if (runtime.walkUpOpen() && runtime.selectedLocation(); as location) {
-    <section
-      class="walkup"
-      role="dialog"
-      aria-modal="true"
-      [attr.aria-labelledby]="'walkup-title-' + location.locationId"
-    >
-      <header class="walkup-header">
-        <button type="button" class="back" (click)="runtime.closeWalkUp()">
-          <span aria-hidden="true">←</span> Back to hall
+      </nav>
+      <details class="viewer-menu">
+        <summary>View</summary>
+        <span>Preview as</span>
+        <div role="group" aria-label="Preview role">
+          <button
+            type="button"
+            [class.active]="runtime.role() === 'student'"
+            [attr.aria-pressed]="runtime.role() === 'student'"
+            (click)="runtime.setRole('student')"
+          >
+            Student
+          </button>
+          <button
+            type="button"
+            [class.active]="runtime.role() === 'teacher'"
+            [attr.aria-pressed]="runtime.role() === 'teacher'"
+            (click)="runtime.setRole('teacher')"
+          >
+            Teacher
+          </button>
+          <button
+            type="button"
+            [class.active]="runtime.role() === 'family'"
+            [attr.aria-pressed]="runtime.role() === 'family'"
+            (click)="runtime.setRole('family')"
+          >
+            Family
+          </button>
+        </div>
+      </details>
+      <div class="view-switch" role="group" aria-label="Gallery view">
+        <button
+          type="button"
+          [class.active]="runtime.viewMode() === 'corridor'"
+          [attr.aria-pressed]="runtime.viewMode() === 'corridor'"
+          (click)="runtime.setViewMode('corridor')"
+        >
+          <span aria-hidden="true">▥</span> Immersive corridor
         </button>
-        <div>
-          <span>{{ location.team.displayName }} · Snapshot v{{ location.snapshot?.version }}</span>
-          <h1 [id]="'walkup-title-' + location.locationId">
-            {{ location.snapshot?.accessibleData?.title }}
-          </h1>
-        </div>
-        <div class="walkup-actions">
-          @if (location.hanging?.id === runtime.focusedHangingId()) {
-            <strong><i></i> Class standing here</strong>
-          }
-          <button type="button" (click)="runtime.printSelected()" aria-label="Print this exhibit">
-            Print
-          </button>
-          @if (runtime.role() === 'student') {
-            <button type="button" class="defend" (click)="runtime.openDefense()">Defend</button>
-          }
-        </div>
-      </header>
+        <button
+          type="button"
+          [class.active]="runtime.viewMode() === 'list'"
+          [attr.aria-pressed]="runtime.viewMode() === 'list'"
+          (click)="runtime.setViewMode('list')"
+        >
+          <span aria-hidden="true">☷</span> Accessible list
+        </button>
+      </div>
+      <app-task-guide title="Curator guide"
+        ><p>
+          Look closely at two objects. Find a connection. Use sources to check your idea, then build
+          the labels that help a visitor see it.
+        </p></app-task-guide
+      >
+    </header>
 
-      <div class="walkup-layout" [class.family]="runtime.role() === 'family'">
-        <main class="artifact-stage">
-          @if (location.snapshot) {
-            <app-exhibit-render-host [snapshot]="location.snapshot" mode="walkup" />
+    <div class="hall-status" role="status">
+      <div>
+        <i></i><strong>{{ phaseLabel() }}</strong
+        ><span>{{ runtime.state().hall.controls.navigationMode.replace('_', ' ') }}</span>
+      </div>
+      <div class="opening-label">
+        <span aria-hidden="true">◷</span>{{ runtime.config.openingLabel }}
+      </div>
+      <div class="identity">
+        <span>{{ roleLabel() }}</span
+        ><small>{{ runtime.saveState().replace('_', ' ') }}</small>
+      </div>
+    </div>
+
+    <main id="hall-content">
+      @if (runtime.role() === 'student' && !browsingHall()) {
+        <section class="curator-start">
+          <h1>What story can two objects tell?</h1>
+          @if (runtime.composerDraft().objects[0]?.model; as model) {
+            <app-object-model-viewer class="curator-object" [model]="model" [autoLoad]="true" />
           }
-          <nav aria-label="Adjacent exhibits">
-            <span>Location {{ location.position + 1 }} of {{ runtime.locations().length }}</span>
-            <button type="button" (click)="runtime.closeWalkUp()">Browse all frames</button>
-          </nav>
-        </main>
-        @if (runtime.role() !== 'family') {
-          <app-peer-response-rail
-            [prompt]="runtime.config.template.peerResponse.prompt"
-            [responseName]="runtime.config.template.vocabulary.peerResponseName"
-            [maxWords]="runtime.config.template.peerResponse.maxWords"
-            [responses]="runtime.selectedResponses()"
-            [draft]="runtime.selectedDraft()"
-            [canRespond]="runtime.canRespondAtSelected()"
-            [teacherMode]="runtime.role() === 'teacher'"
-            (draftChanged)="runtime.updatePeerDraft($event)"
-            (draftBlurred)="runtime.savePeerDraft()"
-            (posted)="runtime.postPeerResponse($event)"
-            (moderated)="runtime.moderateResponse($event.responseId, $event.action)"
-          />
+          <button
+            type="button"
+            (click)="runtime.usingStarter() ? runtime.startOwnDraft() : runtime.openComposer()"
+          >
+            {{ runtime.usingStarter() ? 'Examine my objects' : 'Continue my exhibit' }} →
+          </button>
+        </section>
+      }
+      <div [hidden]="runtime.role() === 'student' && !browsingHall()">
+        @if (runtime.role() === 'family' && runtime.locations().length === 0) {
+          <section class="family-gate">
+            <div class="family-mark" aria-hidden="true">◇</div>
+            <span>Family publication is private by default</span>
+            <h1>The public gallery is not open yet</h1>
+            <p>
+              A teacher must close the live opening and enable the time-limited family view.
+              Question cards, defenses, grades, presence, private names, and empty locations will
+              stay hidden.
+            </p>
+            <button type="button" (click)="runtime.setRole('teacher')">
+              Return to teacher preview
+            </button>
+          </section>
+        } @else {
+          <div class="hall-layout" [class.with-desk]="runtime.role() === 'teacher'">
+            @if (runtime.role() === 'teacher') {
+              <app-teacher-hall-desk
+                [state]="runtime.state()"
+                [locations]="runtime.locations()"
+                [unpublishedTeams]="runtime.unpublishedTeams()"
+                [collapsed]="!runtime.teacherDeskOpen()"
+                (collapsedChanged)="runtime.teacherDeskOpen.set(!$event)"
+                (phaseChanged)="runtime.setHallPhase($event)"
+                (navigationChanged)="runtime.setNavigationMode($event)"
+                (controlToggled)="runtime.toggleControl($event)"
+                (pointed)="runtime.pointTo($event)"
+                (docentsSelected)="runtime.selectDocents($event)"
+                (resetRequested)="runtime.resetDemo()"
+              />
+            }
+
+            <section class="gallery-space" aria-label="Exhibit collection">
+              @if (runtime.viewMode() === 'corridor') {
+                <app-hall-corridor
+                  [locations]="runtime.locations()"
+                  [focusedHangingId]="runtime.focusedHangingId()"
+                  [emptyLabel]="runtime.config.template.theme.emptyLocationLabel"
+                  [teacherMode]="runtime.role() === 'teacher'"
+                  (opened)="runtime.openHanging($event)"
+                  (pointed)="runtime.pointTo($event)"
+                />
+              } @else {
+                <app-accessible-gallery-list
+                  [locations]="runtime.locations()"
+                  [focusedHangingId]="runtime.focusedHangingId()"
+                  [emptyLabel]="runtime.config.template.theme.emptyLocationLabel"
+                  (opened)="runtime.openHanging($event)"
+                />
+              }
+
+              @if (runtime.role() === 'student') {
+                <div class="gallery-progress">
+                  <div>
+                    <span>Gallery walk progress</span>
+                    <strong
+                      >{{ runtime.visitProgress().current }} of
+                      {{ runtime.visitProgress().target }} visits</strong
+                    >
+                    <i
+                      ><b
+                        [style.width.%]="
+                          (runtime.visitProgress().current / runtime.visitProgress().target) * 100
+                        "
+                      ></b
+                    ></i>
+                  </div>
+                  @if (runtime.comingSoonCount() > 0) {
+                    <div>
+                      <span>Upcoming wings</span>
+                      <strong>{{ runtime.comingSoonCount() }} walk-ups coming soon</strong>
+                      <i><b [style.width.%]="25"></b></i>
+                    </div>
+                    <p>
+                      Tour the open Nile wing now. The remaining walk-ups and video presentations
+                      will be connected later.
+                    </p>
+                  } @else {
+                    <div>
+                      <span>Question cards</span>
+                      <strong
+                        >{{ runtime.responseProgress().current }} of
+                        {{ runtime.responseProgress().target }} posted</strong
+                      >
+                      <i
+                        ><b
+                          [style.width.%]="
+                            (runtime.responseProgress().current /
+                              runtime.responseProgress().target) *
+                            100
+                          "
+                        ></b
+                      ></i>
+                    </div>
+                    <p>Visit every Egyptian collection and post two thoughtful questions.</p>
+                  }
+                </div>
+              }
+            </section>
+          </div>
         }
       </div>
-    </section>
-  }
+    </main>
 
+    @if (runtime.walkUpOpen() && runtime.selectedLocation(); as location) {
+      <section
+        class="walkup"
+        role="dialog"
+        aria-modal="true"
+        [attr.aria-labelledby]="'walkup-title-' + location.locationId"
+      >
+        <header class="walkup-header">
+          <button type="button" class="back" (click)="runtime.closeWalkUp()">
+            <span aria-hidden="true">←</span> Back to hall
+          </button>
+          <div>
+            <span
+              >{{ location.team.displayName }} · Snapshot v{{ location.snapshot?.version }}</span
+            >
+            <h1 [id]="'walkup-title-' + location.locationId">
+              {{ location.snapshot?.accessibleData?.title }}
+            </h1>
+          </div>
+          <div class="walkup-actions">
+            @if (location.hanging?.id === runtime.focusedHangingId()) {
+              <strong><i></i> Class standing here</strong>
+            }
+            <button type="button" (click)="runtime.printSelected()" aria-label="Print this exhibit">
+              Print
+            </button>
+            @if (runtime.role() === 'student') {
+              <button type="button" class="defend" (click)="runtime.openDefense()">Defend</button>
+            }
+          </div>
+        </header>
+
+        <div class="walkup-layout" [class.family]="runtime.role() === 'family'">
+          <main class="artifact-stage">
+            @if (location.snapshot) {
+              <app-exhibit-render-host [snapshot]="location.snapshot" mode="walkup" />
+            }
+            <nav aria-label="Adjacent exhibits">
+              <span>Location {{ location.position + 1 }} of {{ runtime.locations().length }}</span>
+              <button type="button" (click)="runtime.closeWalkUp()">Browse all frames</button>
+            </nav>
+          </main>
+          @if (runtime.role() !== 'family') {
+            <app-peer-response-rail
+              [prompt]="runtime.config.template.peerResponse.prompt"
+              [responseName]="runtime.config.template.vocabulary.peerResponseName"
+              [maxWords]="runtime.config.template.peerResponse.maxWords"
+              [responses]="runtime.selectedResponses()"
+              [draft]="runtime.selectedDraft()"
+              [canRespond]="runtime.canRespondAtSelected()"
+              [teacherMode]="runtime.role() === 'teacher'"
+              (draftChanged)="runtime.updatePeerDraft($event)"
+              (draftBlurred)="runtime.savePeerDraft()"
+              (posted)="runtime.postPeerResponse($event)"
+              (moderated)="runtime.moderateResponse($event.responseId, $event.action)"
+            />
+          }
+        </div>
+      </section>
+    }
+  </div>
   @if (runtime.composerOpen()) {
     <app-artifact-composer
+      [starterExample]="runtime.usingStarter()"
       [draft]="runtime.composerDraft()"
       [previewSnapshot]="previewSnapshot()"
       [validation]="runtime.composerValidation()"

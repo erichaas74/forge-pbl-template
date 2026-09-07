@@ -4,7 +4,9 @@
       <span>Journey replay · {{ runtime.enrollment.studentDisplayName }}</span>
       <h1 id="replay-title">{{ runtime.config.replay.title }}</h1>
     </div>
-    <button type="button" class="close" (click)="close()">Return to journey</button>
+    @if (!readOnly()) {
+      <button type="button" class="close" (click)="close()">Return to journey</button>
+    }
   </header>
 
   <div class="replay-stage">
@@ -17,11 +19,15 @@
     @if (scene(); as currentScene) {
       <article class="scene-card" aria-live="polite">
         <span>Scene {{ sceneIndex() + 1 }} · {{ currentScene.type }}</span>
-        <h2>{{ currentScene.title }}</h2>
+        <h2 #sceneHeading tabindex="-1">{{ currentScene.title }}</h2>
         <p>{{ currentScene.systemNarration }}</p>
         @if (stepRecord(); as record) {
           <blockquote>
-            {{ record.studentResponse.text || record.studentResponse.transcript || 'Student audio response' }}
+            {{
+              record.studentResponse.text ||
+                record.studentResponse.transcript ||
+                'Student audio response'
+            }}
             <cite>Student reasoning · {{ record.studentResponse.responseMode }}</cite>
           </blockquote>
           @if (record.studentResponse.mediaAssetId && runtime.mediaPreviewUrl(); as audioUrl) {
@@ -45,23 +51,106 @@
   <footer class="replay-controls">
     <div class="transport" aria-label="Playback controls">
       <button type="button" (click)="previous()" [disabled]="sceneIndex() === 0">← Previous</button>
-      <button type="button" class="play" (click)="togglePlayback()" [disabled]="playableScenes().length === 0">
+      <button
+        type="button"
+        class="play"
+        (click)="togglePlayback()"
+        [disabled]="playableScenes().length === 0"
+      >
         {{ playing ? 'Pause' : 'Play my journey' }}
       </button>
-      <button type="button" (click)="next()" [disabled]="sceneIndex() >= playableScenes().length - 1">Next →</button>
+      <button
+        type="button"
+        (click)="next()"
+        [disabled]="sceneIndex() >= playableScenes().length - 1"
+      >
+        Next →
+      </button>
     </div>
     <div class="scene-editor" aria-label="Replay scene editor">
       @for (item of runtime.state().replayTimeline; track item.id) {
         <div [class.current]="scene()?.id === item.id" [class.hidden]="item.hidden">
-          <label>
-            <input type="checkbox" [checked]="!item.hidden" (change)="toggleScene(item.id, $event)" />
-            Include
-          </label>
+          @if (!readOnly()) {
+            <label>
+              <input
+                type="checkbox"
+                [checked]="!item.hidden"
+                (change)="toggleScene(item.id, $event)"
+              />
+              Include
+            </label>
+          }
           <button type="button" [disabled]="item.hidden" (click)="selectScene(item.id)">
-            <span>{{ item.order + 1 }}</span>{{ item.title }}
+            <span>{{ item.order + 1 }}</span
+            >{{ item.title }}
           </button>
         </div>
       }
     </div>
   </footer>
+  @if (readOnly()) {
+    @if (stepRecord(); as record) {
+      <details class="captain-record">
+        <summary>Read the Captain’s Log and supporting evidence</summary>
+        <h2>Captain’s Log · {{ scene()?.title }}</h2>
+        <div class="log-comparison">
+          <article>
+            <h3>Before the choice · Prediction</h3>
+            <p>{{ record.studentResponse.prediction }}</p>
+          </article>
+          <article>
+            <h3>After the choice · Recorded consequence</h3>
+            <p>{{ record.consequence }}</p>
+          </article>
+        </div>
+        <div class="resource-record">
+          @for (resource of runtime.config.resources; track resource.id) {
+            <span
+              >{{ resource.label }}
+              <strong
+                >{{ resourceValue(resource.id, false) }} → {{ resourceValue(resource.id, true) }}
+                {{ resource.unit }}</strong
+              ></span
+            >
+          }
+        </div>
+        <details>
+          <summary>Inspect the exact source paragraphs</summary>
+          @for (citation of record.studentResponse.citations || []; track citation.paragraphId) {
+            <article>
+              <h3>{{ source(citation.evidenceId)?.title }} · {{ citation.paragraphId }}</h3>
+              <blockquote>{{ paragraph(citation.evidenceId, citation.paragraphId) }}</blockquote>
+              <p><strong>Why the student cited it:</strong> {{ citation.explanation }}</p>
+              <small>{{ source(citation.evidenceId)?.attribution }}</small>
+            </article>
+          }
+        </details>
+        @if (record.responseRevisions?.length) {
+          <details>
+            <summary>See the first response, feedback, and revision</summary>
+            @for (revision of record.responseRevisions; track revision.revisedAt) {
+              <h3>Earlier response</h3>
+              <p>{{ revision.response.text }}</p>
+              <p><strong>Reason for revision:</strong> {{ revision.reason }}</p>
+            }
+            @for (turn of record.studentResponse.tutorTurns || []; track turn.id) {
+              <h3>Scripted scaffold question · advisory example</h3>
+              <p>{{ turn.question }}</p>
+              <p><strong>Student answer:</strong> {{ turn.answer }}</p>
+              <small
+                >Saved with the original response it questioned. No live AI call is made by this
+                sample.</small
+              >
+            }
+            <h3>Revised explanation</h3>
+            <p>{{ record.studentResponse.text }}</p>
+          </details>
+        }
+        <p class="assessment-note">
+          These records show evidence collected. Completion and resource totals do not assign a
+          mastery level. Route conditions and source accounts are classroom reconstructions.
+        </p>
+      </details>
+    }
+  }
 </section>

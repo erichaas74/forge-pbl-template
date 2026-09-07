@@ -10,17 +10,18 @@
 
   @if (runtime.state().room === 'chamber') {
     <header class="chamber-order">
-      <a
-        class="republic-seal"
-        routerLink="/projects"
-        aria-label="Leave the Senate and return to projects"
-      >
-        <span aria-hidden="true">SPQR</span>
-        <small>Leave chamber</small>
-      </a>
       <div class="session-title">
         <span>{{ runtime.config.historicalSetting }}</span>
         <strong>{{ runtime.config.title }}</strong>
+      </div>
+      <div class="debate-question">
+        <small>Question before the class</small>
+        <strong>{{ runtime.config.centralQuestion }}</strong>
+      </div>
+      <div class="round-status">
+        <small>Current phase</small>
+        <strong>{{ runtime.currentRound().label }}</strong>
+        <span>{{ runtime.chamberHeadline() }}</span>
       </div>
       <div class="shared-status" [class.connected]="runtime.connectionState() === 'shared'">
         <i></i>
@@ -35,9 +36,31 @@
         </span>
         <small>Revision {{ runtime.session().revision }}</small>
       </div>
+      <nav class="senate-tools" aria-label="Senate tools">
+        <button
+          type="button"
+          [attr.aria-expanded]="docketOpen()"
+          aria-controls="debate-docket"
+          (click)="toggleDocket()"
+        >
+          Docket
+        </button>
+      </nav>
+      <app-task-guide title="Senate guide"
+        ><p>{{ runtime.config.centralQuestion }}</p>
+        <p>
+          Hear the other side. Mark the words you want to answer. Use evidence to build your
+          response.
+        </p>
+        @if (runtime.config.viewer.allowTeacherPreview) {
+          <button type="button" (click)="runtime.toggleTeacherPreview()">
+            {{ runtime.teacherPreview() ? 'Student seat' : 'Moderator preview' }}
+          </button>
+        }
+      </app-task-guide>
     </header>
 
-    <main id="senate-floor" class="chamber" tabindex="-1">
+    <main id="senate-floor" class="chamber persistent-debate" tabindex="-1">
       <span class="sr-only">{{ runtime.config.chamberImageAlt }}</span>
       <div class="sun-shaft" aria-hidden="true"></div>
       <div class="chamber-vignette" aria-hidden="true"></div>
@@ -46,24 +69,12 @@
         class="left-faction-rail"
         [faction]="runtime.config.factions[0]"
         side="left"
+        (turnSelected)="reviewTurn($event)"
+        (buildRequested)="openBuilder()"
+        (evidenceRequested)="openBuilder('evidence')"
       />
 
       <section class="chamber-center" aria-labelledby="debate-status">
-        <button
-          class="docket-marker"
-          type="button"
-          [attr.aria-expanded]="docketOpen()"
-          aria-controls="debate-docket"
-          (click)="toggleDocket()"
-        >
-          <span>The Senate Docket</span>
-          <strong>{{ runtime.currentRound().label }}</strong>
-          <small>
-            {{ runtime.filedTurnCount() }} of {{ runtime.session().turns.length }} arguments filed
-            <b aria-hidden="true">{{ docketOpen() ? '−' : '+' }}</b>
-          </small>
-        </button>
-
         @if (docketOpen()) {
           <aside id="debate-docket" class="docket-details">
             <header>
@@ -92,66 +103,10 @@
           </aside>
         }
 
-        <div class="floor-focus" [class.workbench-open]="runtime.state().activeStation">
-          @if (runtime.pendingModeratorPrompt() && runtime.canManageModerator()) {
-            <article class="chair-decree teacher-decree">
-              <span>Moderator review waiting</span>
-              <h1 id="debate-status">The chair must approve the next question</h1>
-              <p>{{ runtime.pendingModeratorPrompt()!.question }}</p>
-              <button type="button" (click)="runtime.openStation('moderator')">
-                Review the proposed decree
-              </button>
-            </article>
-          } @else if (
-            runtime.chamberStage() === 'moderator' && runtime.currentModeratorPrompt();
-            as prompt
-          ) {
-            <article class="chair-decree">
-              <div class="decree-seal" aria-hidden="true">
-                {{ runtime.config.moderator.initials }}
-              </div>
-              <span>Decree of the presiding chair</span>
-              <h1 id="debate-status">{{ prompt.question }}</h1>
-              <p>{{ prompt.reason }}</p>
-              <div class="decree-actions">
-                <button type="button" (click)="runtime.speak(prompt.question)">
-                  Hear the Consul
-                </button>
-                <button class="primary" type="button" (click)="runtime.markModeratorHeard()">
-                  Question received · open our response
-                </button>
-              </div>
-            </article>
-          } @else {
-            <article class="floor-call">
-              <span class="record-alert">{{ runtime.currentRound().label }}</span>
-              <h1 id="debate-status">{{ runtime.chamberHeadline() }}</h1>
-              <p>{{ runtime.chamberDetail() }}</p>
-
-              @if (runtime.chamberStage() === 'opponent') {
-                <div class="floor-direction opponent-direction">
-                  <i aria-hidden="true">←</i>
-                  <span
-                    >Open the glowing argument on the opposing rail to hear it in the chamber.</span
-                  >
-                  <i aria-hidden="true">→</i>
-                </div>
-              } @else if (runtime.chamberStage() === 'your-turn') {
-                <div class="floor-direction own-direction">
-                  <span>Your response tablet is illuminated on your faction rail.</span>
-                </div>
-              }
-
-              <blockquote>{{ runtime.config.centralQuestion }}</blockquote>
-            </article>
-          }
-        </div>
-
         @if (!runtime.preOpinion()) {
-          <aside class="initial-opinion" aria-labelledby="initial-opinion-title">
-            <span>Private clay token</span>
-            <h2 id="initial-opinion-title">Initial Senate Opinion</h2>
-            <p>Seal your view now. It will be compared with your vote after the debate.</p>
+          <aside class="initial-opinion centered-opinion" aria-labelledby="initial-opinion-title">
+            <h2 id="initial-opinion-title">What do you think?</h2>
+            <p>{{ runtime.config.centralQuestion }}</p>
             <div>
               @for (option of runtime.config.opinionOptions; track option.id) {
                 <button type="button" (click)="runtime.castPreOpinion(option.id)">
@@ -160,31 +115,17 @@
               }
             </div>
           </aside>
-        }
-
-        <aside
-          class="session-building"
-          [class.ready]="runtime.session().status === 'premiere-ready'"
-        >
-          <div>
-            <span>
-              {{
-                runtime.session().status === 'premiere-ready'
-                  ? 'The complete record is ready'
-                  : 'The Senate session is building'
-              }}
-            </span>
-            <small>{{ runtime.program().length }} broadcast segments assembled</small>
-          </div>
+        } @else {
+          <app-debate-thread />
+          <app-debate-composer-dock />
           @if (runtime.session().status === 'premiere-ready') {
-            <button type="button" (click)="runtime.openStation('premiere')">
-              Convene the full Senate
-            </button>
+            <aside class="premiere-ready-callout">
+              <span>The complete class record is ready.</span>
+              <button type="button" (click)="runtime.openStation('premiere')">
+                Explore the finished debate
+              </button>
+            </aside>
           }
-        </aside>
-
-        @if (runtime.state().activeStation) {
-          <app-debate-workbench />
         }
       </section>
 
@@ -192,6 +133,9 @@
         class="right-faction-rail"
         [faction]="runtime.config.factions[1]"
         side="right"
+        (turnSelected)="reviewTurn($event)"
+        (buildRequested)="openBuilder()"
+        (evidenceRequested)="openBuilder('evidence')"
       />
 
       @if (runtime.filingAnimation()) {
@@ -202,22 +146,6 @@
         </div>
       }
     </main>
-
-    <footer class="chamber-whisper">
-      <div>
-        <strong>{{ runtime.viewerFaction()?.railLabel ?? runtime.viewerFaction()?.name }}</strong>
-        <span>
-          {{ runtime.config.viewer.studentDisplayName }} ·
-          {{ runtime.roleLabel(runtime.currentTurn()) }}
-        </span>
-      </div>
-      <p>Listen to what the other side actually said. Then answer it before the Senate.</p>
-      @if (runtime.config.viewer.allowTeacherPreview) {
-        <button type="button" (click)="runtime.toggleTeacherPreview()">
-          {{ runtime.teacherPreview() ? 'Return to student seat' : 'Open moderator preview' }}
-        </button>
-      }
-    </footer>
   } @else {
     <app-debate-showcase />
   }

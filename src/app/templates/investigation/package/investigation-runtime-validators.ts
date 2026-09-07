@@ -130,9 +130,133 @@ export class InvestigationCoreReferenceValidator
   }
 }
 
+export class InvestigationValueValidator
+  implements ProjectValidator<ProjectDefinitionGraph, CapabilityRegistryView>
+{
+  readonly id = 'investigation-values';
+
+  validate(graph: ProjectDefinitionGraph): ValidationIssue[] {
+    const issues: ValidationIssue[] = [];
+    if (graph.investigation.phases.length === 0) {
+      issues.push({
+        code: 'INVESTIGATION_PHASES_EMPTY',
+        severity: 'error',
+        entityId: graph.investigation.id,
+        message: 'An investigation requires at least one phase.',
+      });
+    }
+    collectDuplicateNumbers(
+      graph.investigation.phases.map((phase) => ({ id: phase.id, value: phase.order })),
+      'PHASE_ORDER_DUPLICATE',
+      issues,
+    );
+    collectDuplicateNumbers(
+      graph.caseBoard.sections.map((section) => ({ id: section.id, value: section.order })),
+      'BOARD_SECTION_ORDER_DUPLICATE',
+      issues,
+    );
+    for (const section of graph.finalSubmission.sections) {
+      if ((section.minEvidenceCount ?? 0) < 0) {
+        issues.push({
+          code: 'FINAL_EVIDENCE_COUNT_INVALID',
+          severity: 'error',
+          entityId: section.id,
+          message: `Final section "${section.id}" cannot require a negative evidence count.`,
+        });
+      }
+    }
+    for (const resource of graph.resourcesById.values()) {
+      if (
+        (resource.min !== undefined && resource.initialAmount < resource.min) ||
+        (resource.max !== undefined && resource.initialAmount > resource.max) ||
+        (resource.min !== undefined && resource.max !== undefined && resource.min > resource.max)
+      ) {
+        issues.push({
+          code: 'RESOURCE_BOUNDS_INVALID',
+          severity: 'error',
+          entityId: resource.id,
+          message: `Resource "${resource.id}" has inconsistent initial/minimum/maximum values.`,
+        });
+      }
+    }
+    return issues;
+  }
+}
+
+export class InvestigationPublicationValidator
+  implements ProjectValidator<ProjectDefinitionGraph, CapabilityRegistryView>
+{
+  readonly id = 'investigation-publication';
+
+  validate(graph: ProjectDefinitionGraph): ValidationIssue[] {
+    const issues: ValidationIssue[] = [];
+    if (graph.manifest.status !== 'published') {
+      issues.push({
+        code: 'PROJECT_NOT_PUBLISHED',
+        severity: 'warning',
+        entityId: graph.manifest.id,
+        message: `Project "${graph.manifest.id}" is in ${graph.manifest.status} status.`,
+        suggestion: 'Publish the package before assigning it to a classroom.',
+      });
+    }
+    for (const phase of graph.investigation.phases) {
+      const hasWork = (phase.activityIds?.length ?? 0) + (phase.lessonIds?.length ?? 0) > 0;
+      const hasCompletion = (phase.completionRuleIds?.length ?? 0) > 0;
+      if (!phase.optional && !hasWork && !hasCompletion) {
+        issues.push({
+          code: 'PHASE_WITHOUT_PROGRESS_PATH',
+          severity: 'warning',
+          entityId: phase.id,
+          phaseId: phase.id,
+          message: `Required phase "${phase.id}" has no configured work or completion rule.`,
+        });
+      }
+    }
+    if (graph.finalSubmission.sections.length === 0) {
+      issues.push({
+        code: 'FINAL_SUBMISSION_EMPTY',
+        severity: 'error',
+        entityId: graph.finalSubmission.id,
+        message: 'A final submission requires at least one configured section.',
+      });
+    }
+    return issues;
+  }
+}
+
+function collectDuplicateNumbers(
+  entries: readonly { readonly id: string; readonly value: number }[],
+  code: string,
+  issues: ValidationIssue[],
+): void {
+  const seen = new Map<number, string>();
+  for (const entry of entries) {
+    if (!Number.isFinite(entry.value) || entry.value < 0) {
+      issues.push({
+        code: 'ORDER_VALUE_INVALID',
+        severity: 'error',
+        entityId: entry.id,
+        message: `Order for "${entry.id}" must be a non-negative number.`,
+      });
+      continue;
+    }
+    const prior = seen.get(entry.value);
+    if (prior !== undefined) {
+      issues.push({
+        code,
+        severity: 'error',
+        entityId: entry.id,
+        relatedEntityIds: [prior],
+        message: `Order ${entry.value} is shared by "${prior}" and "${entry.id}".`,
+      });
+    } else {
+      seen.set(entry.value, entry.id);
+    }
+  }
+}
+
 function investigationExtension(value: unknown): InvestigationActivityExtension | undefined {
   return typeof value === 'object' && value !== null
     ? (value as InvestigationActivityExtension)
     : undefined;
 }
-

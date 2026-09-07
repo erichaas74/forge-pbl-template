@@ -1,0 +1,311 @@
+<section class="decision-opening" [class]="'decision-opening ' + config().interaction">
+  <header class="episode-header">
+    <span class="project-name">{{ config().kicker.split(' · ')[0] }}</span>
+    <div class="header-actions">
+      <button type="button" (click)="reset()">↺ Restart</button>
+      <button type="button" (click)="finish(true)">Project preview</button>
+      <app-task-guide [title]="stage() === 'thinking' ? 'One step at a time' : 'About this scene'">
+        @if (prologue(); as story) {
+          <p>{{ story.setting }}</p>
+        } @else if (stage() === 'thinking' && config().cargo) {
+          <p>
+            {{
+              mathStep() === 'cost'
+                ? 'Add the purchase prices of your two supplies.'
+                : mathStep() === 'remaining'
+                  ? 'Start with your purse. Subtract what you spent.'
+                  : mathStep() === 'sale'
+                    ? 'Add the two offers from buyers. This is your sales total.'
+                    : 'Profit is sales minus the amount you paid for your cargo.'
+            }}
+          </p>
+          <p>Try drawing the coins or writing the calculation on paper.</p>
+        } @else if (stage() === 'thinking') {
+          <p>{{ selected()?.thinking?.guide }}</p>
+        } @else {
+          <p>{{ config().invitation }}</p>
+          <p>{{ config().sceneCaption }}</p>
+        }
+        @for (line of lines(); track $index) {
+          <p>
+            <b>{{ line.speaker }}:</b> {{ line.text }}
+          </p>
+        }
+        @if (lines().length) {
+          <button type="button" (click)="toggleVoice()">
+            {{ voices() ? 'Mute voices' : 'Play voices' }}
+          </button>
+          <p role="status">{{ audioNotice() }}</p>
+        }
+      </app-task-guide>
+    </div>
+  </header>
+  @if (prologue(); as story) {
+    <main class="task-stage story-stage">
+      <p class="step-mark">The story begins</p>
+      <h1 #sceneHeading tabindex="-1">{{ story.title }}</h1>
+      <div class="story-layout">
+        <div class="story-illustration">
+          <app-opening-media [media]="story.media" />
+        </div>
+        <div class="story-copy">
+          <p class="story-setting">{{ story.setting }}</p>
+          <button class="story-audio" type="button" (click)="listenToStory()">
+            {{ activeLine() >= 0 ? 'Stop narration' : 'Listen to the story' }}
+          </button>
+          <div class="story-dialogue">
+            @for (line of story.dialogue; track $index) {
+              <blockquote [class.speaking]="activeLine() === $index">
+                @if ($first || story.dialogue[$index - 1].speaker !== line.speaker) {
+                  <cite>{{ line.speaker }}</cite>
+                }
+                <p>“{{ line.text }}”</p>
+              </blockquote>
+            }
+          </div>
+          <p class="story-audio-notice" role="status">{{ audioNotice() }}</p>
+          <button class="primary-action" type="button" (click)="continuePrologue()">
+            {{ story.continueLabel }} →
+          </button>
+        </div>
+      </div>
+    </main>
+  } @else if (stage() === 'briefing') {
+    <main class="task-stage">
+      <p class="step-mark">
+        {{ config().interaction === 'dispatch' ? config().sceneLabel : '1 · Choose' }}
+      </p>
+      <h1 #sceneHeading tabindex="-1">
+        {{ config().interaction === 'dispatch' ? config().headline : config().prompt }}
+      </h1>
+      @if (config().interaction === 'dispatch') {
+        <p class="dispatch-invitation">{{ config().invitation }}</p>
+      }
+      @if (config().cargo; as cargo) {
+        <div class="purse">
+          <span>◉ {{ cargo.startingCoins }} coins</span
+          ><span>▣ {{ cargoItems().length }} / {{ cargo.capacity }} spaces</span>
+        </div>
+        @if (cargoItems().length) {
+          <app-cargo-wagon
+            class="wagon-preview"
+            [image]="cargo.vehicleImage"
+            [alt]="cargo.vehicleAlt"
+            [items]="cargoItems()"
+          />
+        }
+      } @else if (config().speeches; as speeches) {
+        <app-opening-speeches [speeches]="speeches" />
+      } @else {
+        <div class="scene-visual">
+          @for (key of [replayKey()]; track key) {
+            <app-opening-media
+              [media]="
+                videoFinished() ? (config().afterVideoMedia ?? config().media) : config().media
+              "
+              (playbackEnded)="videoFinished.set(true)"
+            />
+          }
+          @if (config().afterVideoMedia && !videoFinished()) {
+            <button class="chart-action" type="button" (click)="videoFinished.set(true)">
+              Open chart →
+            </button>
+          }
+        </div>
+      }
+      @if (config().interaction === 'dispatch') {
+        <p class="dispatch-caption">{{ config().sceneCaption }}</p>
+        <h2 class="dispatch-prompt">{{ config().prompt }}</h2>
+      }
+      <div
+        class="choice-deck"
+        [class.three-choices]="config().choices.length === 3"
+        [class.four-choices]="config().choices.length === 4"
+      >
+        @for (choice of config().choices; track choice.id) {
+          <button
+            type="button"
+            class="scene-choice"
+            [disabled]="choiceDisabled(choice)"
+            [class.chosen]="isLoaded(choice) || selected()?.id === choice.id"
+            [attr.aria-pressed]="config().cargo ? isLoaded(choice) : null"
+            (click)="choose(choice.id)"
+          >
+            @if (choice.image) {
+              <img [src]="choice.image" [alt]="choice.imageAlt" />
+            }
+            @if (choice.model) {
+              <span class="object-mark" aria-hidden="true">◈</span>
+            }
+            <span class="choice-copy"
+              ><strong>{{ isLoaded(choice) ? '✓ ' + choice.cargo?.name : choice.label }}</strong>
+              @if (choice.cargo) {
+                <b class="price">{{ choice.cargo.cost }} coins</b>
+              } @else {
+                <small>{{ choice.detail }}</small>
+              }
+            </span>
+          </button>
+        }
+      </div>
+      @if (config().cargo; as cargo) {
+        <button
+          class="primary-action"
+          type="button"
+          [disabled]="cargoItems().length !== cargo.capacity"
+          (click)="depart()"
+        >
+          Work out the cost →
+        </button>
+      }
+      @if (transitioning()) {
+        <p role="status">{{ config().transition?.label }}</p>
+      }
+    </main>
+  } @else if (stage() === 'thinking' && config().cargo; as cargo) {
+    <main class="task-stage math-stage">
+      <p class="step-mark">{{ mathIndex() < 2 ? '2 · Buy' : '3 · Sell' }}</p>
+      <h1 #revealHeading tabindex="-1">{{ mathPrompt() }}</h1>
+      @if (mathStep() === 'cost' || mathStep() === 'sale') {
+        <div class="price-equation">
+          @for (item of cargoItems(); track item.id; let first = $first) {
+            @if (!first) {
+              <span class="operator" aria-hidden="true">+</span>
+            }
+            <figure>
+              <img [src]="item.image" [alt]="item.cargo!.name" />
+              <figcaption>
+                {{ item.cargo!.name
+                }}<strong
+                  >{{ mathStep() === 'cost' ? item.cargo!.cost : item.cargo!.sale }} coins</strong
+                ><small>{{ mathStep() === 'cost' ? 'Price to buy' : 'Buyer’s offer' }}</small>
+              </figcaption>
+            </figure>
+          }
+        </div>
+      } @else {
+        <div class="price-equation">
+          <figure>
+            <span class="coin-art" aria-hidden="true">◉</span>
+            <figcaption>
+              {{ mathStep() === 'remaining' ? 'Your purse' : 'Your sales'
+              }}<strong
+                >{{
+                  mathStep() === 'remaining' ? cargo.startingCoins : cargoBalance().sale
+                }}
+                coins</strong
+              >
+            </figcaption>
+          </figure>
+          <span class="operator" aria-hidden="true">−</span>
+          <figure>
+            <span class="coin-art" aria-hidden="true">▣</span>
+            <figcaption>
+              You spent<strong>{{ cargoBalance().cost }} coins</strong>
+            </figcaption>
+          </figure>
+        </div>
+      }
+      <form class="answer-form" (ngSubmit)="checkMath()">
+        <label for="coin-answer">{{ mathStep() === 'profit' ? 'My profit' : 'My total' }}</label>
+        <div>
+          <input
+            id="coin-answer"
+            name="coins"
+            inputmode="decimal"
+            autocomplete="off"
+            maxlength="12"
+            [ngModel]="answer()"
+            (ngModelChange)="answer.set($event)"
+            aria-describedby="math-feedback"
+          /><span>coins</span>
+        </div>
+        <p id="math-feedback" class="feedback" role="status">{{ feedback() }}</p>
+        <button class="primary-action" type="submit">Check my math →</button>
+      </form>
+    </main>
+  } @else if (stage() === 'thinking' && selected(); as choice) {
+    <main class="task-stage thought-stage">
+      <p class="step-mark">2 · My thinking</p>
+      <h1 #revealHeading tabindex="-1">{{ choice.thinking!.prompt }}</h1>
+      <div class="thinking-desk">
+        <div class="thought-object">
+          @if (choice.model; as model) {
+            <app-object-model-viewer [model]="model" [autoLoad]="true" />
+          } @else if (choice.image) {
+            <img [src]="choice.image" [alt]="choice.imageAlt" />
+          }
+          <strong>{{ choice.label }}</strong>
+          <p>{{ choice.detail }}</p>
+          @if (choice.result.source; as source) {
+            <a class="source-link" [href]="source.url" target="_blank" rel="noopener noreferrer"
+              >{{ source.label }} ↗</a
+            >
+          }
+        </div>
+        <form class="thought-form" (ngSubmit)="saveThought()">
+          @if (choice.thinking!.evidence; as evidence) {
+            <fieldset>
+              <legend>A clue I will use</legend>
+              @for (clue of evidence; track clue.id) {
+                <label class="evidence-choice" [class.selected]="evidenceId() === clue.id"
+                  ><input
+                    type="radio"
+                    name="clue"
+                    [value]="clue.id"
+                    [ngModel]="evidenceId()"
+                    (ngModelChange)="evidenceId.set($event)"
+                  />{{ clue.text }}</label
+                >
+              }
+            </fieldset>
+          }
+          <label for="first-thought">{{ choice.thinking!.starter }}</label>
+          <textarea
+            id="first-thought"
+            name="thought"
+            rows="3"
+            maxlength="1000"
+            [ngModel]="answer()"
+            (ngModelChange)="answer.set($event)"
+          ></textarea>
+          <button class="primary-action" type="submit" [disabled]="!canSaveThought()">
+            Keep my idea →
+          </button>
+        </form>
+      </div>
+    </main>
+  } @else if (selected(); as choice) {
+    <main class="task-stage result-stage">
+      <p class="step-mark">{{ config().cargo ? '✓ Math checked' : '3 · Your first idea' }}</p>
+      <h1 #revealHeading tabindex="-1">
+        {{
+          config().cargo ? 'Your first trade, worked out by you.' : 'You have an idea to build on.'
+        }}
+      </h1>
+      @if (config().cargo) {
+        <div class="math-receipt">
+          <p>
+            <span>You bought</span><strong>{{ cargoBalance().cost }} coins</strong>
+          </p>
+          <p>
+            <span>You sold</span><strong>{{ cargoBalance().sale }} coins</strong>
+          </p>
+          <p>
+            <span>Your profit</span><strong>{{ cargoBalance().profit }} coins</strong>
+          </p>
+        </div>
+      } @else {
+        <blockquote class="student-thought">{{ answer() || choice.label }}</blockquote>
+        <p class="next-clue">{{ choice.result.evidence }}</p>
+      }
+      <button class="primary-action" type="button" (click)="finish()">
+        {{ config().mission.finishButton }} →
+      </button>
+      <details class="outcome-detail">
+        <summary>See the scene’s outcome</summary>
+        <p>{{ choice.result.text }}</p>
+      </details>
+    </main>
+  }
+</section>

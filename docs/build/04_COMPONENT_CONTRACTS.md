@@ -612,6 +612,14 @@ export interface FinalSubmissionComponentContract {
 
 The final submission should reference already-collected evidence instead of forcing duplicate uploads.
 
+### Completed-sample presentation extension (September 2026)
+
+Native final presentation components may expose an optional `readOnly: boolean` input, defaulting to `false`. In this mode they retain evidence inspection and local presentation controls while suppressing editing, submission, voting, and other authority actions. The completed-sample host supplies cloned native records and isolated adapters; the UI flag does not establish authorization for real student data.
+
+Investigation previews render the existing `InvestigationEvidenceItem.resultMatrix`, provenance, and notes. Exhibit collection presentations accept native `HallLocationView[]` plus `ExhibitCuratorRecord[]` containing the transcript and revision trail; this is a presentation contract, not a change to the persisted publication schema. Journey playback can render embedded when used as a read-only sample.
+
+See [completed project showcases](../architecture/COMPLETED_PROJECT_SHOWCASES.md) for composition, isolation, extension points, and tests. The final submission command and persistence contracts above remain unchanged.
+
 ---
 
 # 27. Evidence Picker

@@ -40,6 +40,7 @@ export function createInitialDebateWorkspace(): DebateWorkspaceState {
 export function createInitialDebateSession(
   config: DebateStudioProjectConfig,
   now = new Date().toISOString(),
+  tenantId = 'local-preview',
 ): DebateSession {
   const turns = createTurnPlan(config).map((turn) => {
     const seed = config.seedTurns.find((item) => item.turnId === turn.id);
@@ -71,6 +72,7 @@ export function createInitialDebateSession(
     {
       schemaVersion: '2.0',
       id: config.sessionId,
+      tenantId,
       projectId: config.projectId,
       projectVersion: config.projectVersion,
       classId: config.viewer.classId,

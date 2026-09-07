@@ -109,7 +109,6 @@ export class HttpJourneyReplayAuthorityAdapter implements JourneyReplayAuthority
 }
 
 export class HttpJourneyReplayMediaAdapter implements AssetStorageAdapter {
-  private readonly localAssetIds = new Set<string>();
 
   constructor(
     private readonly locator: JourneyAuthorityLocator,
@@ -139,21 +138,35 @@ export class HttpJourneyReplayMediaAdapter implements AssetStorageAdapter {
     } catch (error) {
       if (this.fallback !== undefined && isLocalApiUnavailable(error)) {
         const asset = await this.fallback.upload(input);
-        this.localAssetIds.add(asset.id);
-        return asset;
+        return {...asset,id:`local:${asset.id}`};
       }
       throw error;
     }
   }
 
   async getReference(assetId: string): Promise<StoredAsset> {
-    if (this.localAssetIds.has(assetId) && this.fallback !== undefined) {
-      return this.fallback.getReference(assetId);
+    if (assetId.startsWith('local:') && this.fallback !== undefined) {
+      return this.fallback.getReference(assetId.slice(6));
     }
+    // Recover legacy local UUIDs before falling back to the remote endpoint.
+    if (this.fallback) { try { return await this.fallback.getReference(assetId); } catch { /* Not a device asset. */ } }
     return {
       id: assetId,
       reference: `${this.baseUrl}/media/${encodeURIComponent(assetId)}`,
     };
+  }
+
+  async promoteLocalAsset(assetId: string): Promise<StoredAsset> {
+    if (!assetId.startsWith('local:') || !this.fallback) return this.getReference(assetId);
+    const local = await this.fallback.getReference(assetId.slice(6));
+    try {
+      const blob = await (await fetch(local.reference)).blob();
+      const data = new FormData(); data.set('file',blob,local.fileName ?? 'response.webm'); data.set('locator',JSON.stringify(this.locator)); data.set('metadata',JSON.stringify(local.metadata ?? {}));
+      const response = await this.fetcher(`${this.baseUrl}/media`,{method:'POST',body:data,credentials:'same-origin',headers:{accept:'application/json'}});
+      const body = await responseBody(response);
+      if (!response.ok) throw new JourneyAuthorityHttpError(response.status,isErrorBody(body) ? body.error : 'AUDIO_SYNC_FAILED');
+      return body as StoredAsset;
+    } finally { if (local.reference.startsWith('blob:')) URL.revokeObjectURL(local.reference); }
   }
 }
 

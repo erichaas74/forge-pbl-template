@@ -7,122 +7,206 @@
   </p>
 
   @if (theory() === undefined || editing() || creatingAlternative()) {
-    <!-- One question at a time, not a five-field form. -->
-    <form class="theory-form" (submit)="$event.preventDefault(); next()">
-      <p class="slip-progress">
-        Slip {{ step() + 1 }} of {{ steps().length }}
-        @if (theory() !== undefined && !creatingAlternative()) {
-          · revising
-        }
-      </p>
-
-      @switch (currentStep()) {
-        @case ('statement') {
-          <label class="slip">
-            {{
-              creatingAlternative()
-                ? 'What is a different explanation for the same evidence?'
-                : 'What do you think right now?'
-            }}
+    @if (singlePage()) {
+      <form class="theory-form" (submit)="$event.preventDefault(); saveTheory()">
+        <label class="slip"
+          >My idea
+          <textarea
+            rows="3"
+            name="statement"
+            [ngModel]="statement()"
+            (ngModelChange)="statement.set($event)"
+            placeholder="I think the four vials are…"
+          ></textarea>
+        </label>
+        <fieldset class="slip">
+          <legend>Evidence I am using</legend>
+          <p>Choose records here or use “Use in my explanation” beside the bench.</p>
+          <div class="evidence-picker">
+            @for (item of availableEvidence(); track item.id) {
+              <label
+                ><input
+                  #recordCheck
+                  type="checkbox"
+                  [checked]="evidenceIds().includes(item.id)"
+                  (change)="toggleEvidence(item.id, recordCheck.checked)"
+                /><span>{{ item.title }}</span></label
+              >
+            }
+          </div>
+        </fieldset>
+        <label class="slip"
+          >Why this evidence supports my idea
+          <textarea
+            rows="3"
+            name="reasoning"
+            [ngModel]="reasoning()"
+            (ngModelChange)="reasoning.set($event)"
+            placeholder="These results matter because…"
+          ></textarea>
+        </label>
+        <label class="slip"
+          >What I am still unsure about
+          <textarea
+            rows="2"
+            name="remainingQuestion"
+            [ngModel]="remainingQuestion()"
+            (ngModelChange)="remainingQuestion.set($event)"
+            placeholder="I still need to find out…"
+          ></textarea>
+        </label>
+        <label class="confidence-control"
+          ><span
+            >How sure am I? <strong>{{ confidence() }}%</strong></span
+          ><input
+            type="range"
+            min="0"
+            max="100"
+            step="5"
+            name="confidence"
+            [ngModel]="confidence()"
+            (ngModelChange)="confidence.set(+$event)"
+        /></label>
+        @if (theory() && !creatingAlternative()) {
+          <label class="slip"
+            >Why my thinking changed
             <textarea
-              rows="3"
-              [ngModel]="statement()"
-              (ngModelChange)="statement.set($event)"
-              name="statement"
-              placeholder="I think the four vials are…"
-            ></textarea>
-          </label>
-
-          <label class="confidence-control">
-            <span
-              >How sure are you? <strong>{{ confidence() }}%</strong></span
-            >
-            <input
-              type="range"
-              min="0"
-              max="100"
-              step="5"
-              [ngModel]="confidence()"
-              (ngModelChange)="confidence.set(+$event)"
-              name="confidence"
-            />
-          </label>
-        }
-
-        @case ('reasoning') {
-          <label class="slip">
-            Why does your evidence support this idea?
-            <textarea
-              rows="4"
-              [ngModel]="reasoning()"
-              (ngModelChange)="reasoning.set($event)"
-              name="reasoning"
-              placeholder="This evidence matters because…"
-            ></textarea>
-          </label>
-        }
-
-        @case ('question') {
-          <label class="slip">
-            What are you still unsure about?
-            <textarea
-              rows="3"
-              [ngModel]="remainingQuestion()"
-              (ngModelChange)="remainingQuestion.set($event)"
-              name="remainingQuestion"
-              placeholder="I still need to know…"
-            ></textarea>
-          </label>
-        }
-
-        @case ('change') {
-          <label class="slip">
-            Why did your thinking change?
-            <textarea
-              rows="3"
+              rows="2"
+              name="reasonForChange"
               [ngModel]="reasonForChange()"
               (ngModelChange)="reasonForChange.set($event)"
-              name="reasonForChange"
               placeholder="New evidence showed…"
             ></textarea>
-            <small>Your earlier thinking is kept, not erased.</small>
+            <small>Your earlier explanation stays in the investigation record.</small>
           </label>
         }
+        <div class="form-actions">
+          @if (theory()) {
+            <button type="button" (click)="cancelEditing()">Cancel revision</button>
+          }
+          <button class="primary" type="submit" [disabled]="!statement().trim()">
+            Save my explanation
+          </button>
+        </div>
+      </form>
+    } @else {
+      <!-- One question at a time, not a five-field form. -->
+      <form class="theory-form" (submit)="$event.preventDefault(); next()">
+        <p class="slip-progress">
+          Slip {{ step() + 1 }} of {{ steps().length }}
+          @if (theory() !== undefined && !creatingAlternative()) {
+            · revising
+          }
+        </p>
 
-        @case ('evidence') {
-          <fieldset class="slip">
-            <legend>Which records is this built on?</legend>
-            <div class="evidence-picker">
-              @for (item of availableEvidence(); track item.id) {
-                <label>
-                  <input
-                    #evidenceCheckbox
-                    type="checkbox"
-                    [checked]="evidenceIds().includes(item.id)"
-                    (change)="toggleEvidence(item.id, evidenceCheckbox.checked)"
-                  />
-                  <span
-                    ><strong>{{ item.title }}</strong
-                    ><small>{{ item.classification ?? 'not analyzed' }}</small></span
-                  >
-                </label>
-              }
-            </div>
-          </fieldset>
-        }
-      }
+        @switch (currentStep()) {
+          @case ('statement') {
+            <label class="slip">
+              {{
+                creatingAlternative()
+                  ? 'What is a different explanation for the same evidence?'
+                  : 'What do you think right now?'
+              }}
+              <textarea
+                rows="3"
+                [ngModel]="statement()"
+                (ngModelChange)="statement.set($event)"
+                name="statement"
+                placeholder="I think the four vials are…"
+              ></textarea>
+            </label>
 
-      <div class="form-actions">
-        @if (step() > 0) {
-          <button type="button" (click)="back()">Back</button>
-        } @else if (theory() !== undefined) {
-          <button type="button" (click)="cancelEditing()">Cancel</button>
+            <label class="confidence-control">
+              <span
+                >How sure are you? <strong>{{ confidence() }}%</strong></span
+              >
+              <input
+                type="range"
+                min="0"
+                max="100"
+                step="5"
+                [ngModel]="confidence()"
+                (ngModelChange)="confidence.set(+$event)"
+                name="confidence"
+              />
+            </label>
+          }
+
+          @case ('reasoning') {
+            <label class="slip">
+              Why does your evidence support this idea?
+              <textarea
+                rows="4"
+                [ngModel]="reasoning()"
+                (ngModelChange)="reasoning.set($event)"
+                name="reasoning"
+                placeholder="This evidence matters because…"
+              ></textarea>
+            </label>
+          }
+
+          @case ('question') {
+            <label class="slip">
+              What are you still unsure about?
+              <textarea
+                rows="3"
+                [ngModel]="remainingQuestion()"
+                (ngModelChange)="remainingQuestion.set($event)"
+                name="remainingQuestion"
+                placeholder="I still need to know…"
+              ></textarea>
+            </label>
+          }
+
+          @case ('change') {
+            <label class="slip">
+              Why did your thinking change?
+              <textarea
+                rows="3"
+                [ngModel]="reasonForChange()"
+                (ngModelChange)="reasonForChange.set($event)"
+                name="reasonForChange"
+                placeholder="New evidence showed…"
+              ></textarea>
+              <small>Your earlier thinking is kept, not erased.</small>
+            </label>
+          }
+
+          @case ('evidence') {
+            <fieldset class="slip">
+              <legend>Which records is this built on?</legend>
+              <div class="evidence-picker">
+                @for (item of availableEvidence(); track item.id) {
+                  <label>
+                    <input
+                      #evidenceCheckbox
+                      type="checkbox"
+                      [checked]="evidenceIds().includes(item.id)"
+                      (change)="toggleEvidence(item.id, evidenceCheckbox.checked)"
+                    />
+                    <span
+                      ><strong>{{ item.title }}</strong
+                      ><small>{{ item.classification ?? 'not analyzed' }}</small></span
+                    >
+                  </label>
+                }
+              </div>
+            </fieldset>
+          }
         }
-        <button class="primary" type="submit" [disabled]="!canAdvance()">
-          {{ onLastStep() ? 'Save theory' : 'Next' }}
-        </button>
-      </div>
-    </form>
+
+        <div class="form-actions">
+          @if (step() > 0) {
+            <button type="button" (click)="back()">Back</button>
+          } @else if (theory() !== undefined) {
+            <button type="button" (click)="cancelEditing()">Cancel</button>
+          }
+          <button class="primary" type="submit" [disabled]="!canAdvance()">
+            {{ onLastStep() ? 'Save theory' : 'Next' }}
+          </button>
+        </div>
+      </form>
+    }
   } @else if (theory(); as current) {
     @if (theories().length > 1 && !compact()) {
       <nav class="theory-tabs" aria-label="Possible explanations">

@@ -1,0 +1,19 @@
+.investigation-shell {
+  max-width: 88rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+  color: #17212b;
+}
+.investigation-shell > header,
+.phase-list { display: flex; gap: 1rem; flex-wrap: wrap; }
+.investigation-shell > header { align-items: center; }
+.investigation-shell h1 { margin: 0.2rem 0; }
+.phase-list article,
+.issues {
+  flex: 1 1 16rem;
+  padding: 1rem;
+  border: 1px solid #cbc2b3;
+  border-radius: 0.75rem;
+  background: #fffdf8;
+}
+.investigation-shell > section { margin-top: 2rem; }

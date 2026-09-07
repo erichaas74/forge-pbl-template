@@ -1,6 +1,5 @@
 @if (runtime.state().status === 'not_started') {
   <div class="setup-shell">
-    <a class="project-link" routerLink="/projects">← Project homepage</a>
     <app-simulation-company-setup />
   </div>
 } @else {
@@ -11,172 +10,64 @@
     [class.cargo-mode]="runtime.state().lastView === 'cargo'"
     [class.journey-mode]="runtime.state().lastView === 'events'"
   >
-    <header class="mission-bar">
-      <div class="brand">
-        <span class="compass" aria-hidden="true">✥</span>
-        <div>
-          <strong>{{ runtime.config.title }}</strong
-          ><small>{{ runtime.state().companyName }}</small>
-        </div>
-      </div>
-      <dl>
-        <div>
-          <dt>Season phase</dt>
-          <dd>{{ phase() }}</dd>
-        </div>
-        <div>
-          <dt>Current location</dt>
-          <dd>{{ runtime.currentLocation()?.shortName }}</dd>
-        </div>
-        <div>
-          <dt>Day / travel step</dt>
-          <dd>Day {{ runtime.state().currentDay }} of {{ runtime.config.maxSeasonDays }}</dd>
-        </div>
-        <div>
-          <dt>Save status</dt>
-          <dd>{{ saveLabel() }}</dd>
-        </div>
-      </dl>
-      <div class="mission-actions">
-        <a routerLink="/projects">← Projects</a
-        ><button type="button" (click)="helpOpen.set(true)">? Help / Rules</button>
-      </div>
-      <div
-        class="season-track"
-        role="progressbar"
-        aria-label="Trading season progress"
-        aria-valuemin="0"
-        aria-valuemax="100"
-        [attr.aria-valuenow]="seasonPercent()"
-      >
-        <span [style.width.%]="seasonPercent()"><i aria-hidden="true">◆</i></span>
-      </div>
-    </header>
-
-    <aside class="navigation-rail">
-      <div class="rail-emblem" aria-hidden="true">{{ runtime.config.emblems[0]?.symbol }}</div>
-      <nav aria-label="Main game spaces">
-        @for (item of primaryNavigation; track item.space; let index = $index) {
+    <header class="mission-bar compact-project-header">
+      <strong class="trading-title">{{
+        runtime.state().companyName || runtime.config.title
+      }}</strong>
+      <nav class="project-tools" aria-label="Trading workspaces">
+        @for (item of expeditionNavigation; track item.view) {
           <button
             type="button"
-            [class.active]="currentSpace() === item.space"
-            [class.attention]="item.space === 'travel' && runtime.state().pendingEventId"
-            [attr.aria-keyshortcuts]="'' + (index + 1)"
-            (click)="navigateSpace(item.space)"
+            [class.active]="runtime.state().lastView === item.view"
+            [disabled]="locked(item.view)"
+            (click)="navigate(item.view)"
           >
-            <span aria-hidden="true">{{ item.icon }}</span
-            ><strong>{{ item.label }}</strong>
-            @if (item.space === 'travel' && runtime.state().pendingEventId) {
-              <small>Decision</small>
-            } @else {
-              <kbd aria-hidden="true">{{ index + 1 }}</kbd>
-            }
+            {{ item.icon }} {{ item.label }}
           </button>
         }
-      </nav>
-      <button class="teacher-link" type="button" (click)="teacherTools()">
-        <span aria-hidden="true">⚙</span
-        ><strong>{{
-          runtime.state().lastView === 'teacher' ? 'Student view' : 'Teacher tools'
-        }}</strong>
-      </button>
-      <div class="rail-sign"><span>Frontier</span><strong>Trading Co.</strong></div>
-    </aside>
-
-    <main class="simulation-main">
-      <section class="hud" aria-label="Live company status">
-        <article [class.resource-flash]="cashFeedbackActive()">
-          <span aria-hidden="true">$</span>
+        <button
+          type="button"
+          [class.active]="currentSpace() === 'travel'"
+          (click)="navigateSpace('travel')"
+        >
+          ⌁ Travel
+        </button>
+        <details class="header-menu">
+          <summary>My record</summary>
           <div>
-            <small>Cash on hand</small><strong>{{ runtime.money(runtime.cash()) }}</strong>
-          </div>
-        </article>
-        <article [class.resource-flash]="cargoFeedbackActive()">
-          <span aria-hidden="true">▣</span>
-          <div>
-            <small>Cargo used / capacity</small
-            ><strong>{{ runtime.usedCargo() }} / {{ runtime.capacity() }}</strong
-            ><i><b [style.width.%]="cargoPercent()"></b></i>
-          </div>
-        </article>
-        <article>
-          <span aria-hidden="true">◇</span>
-          <div>
-            <small>Current cargo value</small
-            ><strong>{{ runtime.money(runtime.cargoValue()) }}</strong>
-          </div>
-        </article>
-        <article>
-          <span aria-hidden="true">±</span>
-          <div>
-            <small>Profit / loss</small
-            ><strong
-              [class.signed-positive]="runtime.profit() >= 0"
-              [class.signed-negative]="runtime.profit() < 0"
-              >{{ runtime.money(runtime.profit(), true) }}</strong
-            >
-          </div>
-        </article>
-        <article>
-          <span aria-hidden="true">★</span>
-          <div>
-            <small>Live game score</small><strong>{{ runtime.results().score }} / 100</strong
-            ><em
-              >Trade {{ runtime.results().tradingScore }}/40 · Math
-              {{ runtime.results().mathScore }}/40 · Explain
-              {{ runtime.results().explanationScore }}/20</em
-            >
-            <i class="goal-meter"><b [style.width.%]="runtime.results().score"></b></i>
-          </div>
-        </article>
-      </section>
-
-      @if (currentSpace() !== 'teacher') {
-        @if (contextNavigation().length > 0) {
-          <nav class="context-navigation" [attr.aria-label]="contextTitle() + ' tools'">
-            <div>
-              <small>{{
-                currentSpace() === 'plan' ? 'One planning board' : 'Your final work'
-              }}</small>
-              <strong>{{ contextTitle() }}</strong>
-            </div>
-            @for (item of contextNavigation(); track item.view) {
-              <button
-                type="button"
-                [class.active]="runtime.state().lastView === item.view"
-                [class.next]="nextMission().actionView === item.view"
-                [disabled]="locked(item.view)"
-                (click)="navigate(item.view)"
-              >
-                <span aria-hidden="true">{{ item.icon }}</span
-                >{{ item.label }}
-                @if (locked(item.view)) {
-                  <small>Locked</small>
-                }
+            @for (item of journalNavigation; track item.view) {
+              <button type="button" [disabled]="locked(item.view)" (click)="navigate(item.view)">
+                {{ item.label }}
               </button>
             }
-          </nav>
-        }
-
-        <section class="next-mission" aria-labelledby="next-mission-title" aria-live="polite">
-          <div class="mission-number" aria-hidden="true">GO</div>
-          <div class="mission-copy">
-            <small>{{ nextMission().eyebrow }}</small>
-            <h2 id="next-mission-title">{{ nextMission().title }}</h2>
-            <p>{{ nextMission().description }}</p>
-            @if (nextMission().progressLabel; as progressLabel) {
-              <div class="mission-progress">
-                <i><b [style.width.%]="missionProgressPercent()"></b></i>
-                <span>{{ progressLabel }}</span>
-              </div>
-            }
+            <button type="button" (click)="teacherTools()">Teacher tools</button>
           </div>
-          <button type="button" (click)="runNextMission()">
-            {{ nextMission().actionLabel }} <span aria-hidden="true">→</span>
-          </button>
-        </section>
-      }
-
+        </details>
+      </nav>
+      <app-task-guide title="Trading guide"
+        ><h3>{{ nextMission().title }}</h3>
+        <p>{{ nextMission().description }}</p>
+        <p>{{ runtime.config.mission }}</p>
+        <p>
+          Buy goods, compare route costs, predict your profit, then travel. Your money record keeps
+          the calculations you complete.
+        </p>
+        <p>Profit = sales − all costs.</p>
+        <app-choice-progression-panel
+          [progression]="progression()"
+          choiceLabel="supplies open"
+          [availableCount]="progression().currentStage.availableGoodIds.length"
+          [totalCount]="runtime.config.goods.length"
+      /></app-task-guide>
+      <div class="trade-status" aria-label="Company status">
+        <span
+          >{{ runtime.currentLocation()?.shortName }} · Day {{ runtime.state().currentDay }}</span
+        ><span>◉ {{ runtime.money(runtime.cash()) }}</span
+        ><span>▣ {{ runtime.usedCargo() }} / {{ runtime.capacity() }}</span
+        ><small>{{ saveLabel() }}</small>
+      </div>
+    </header>
+    <main class="simulation-main">
       @if (runtime.state().status === 'paused_by_teacher') {
         <section class="paused-banner" role="status">
           <strong>Simulation paused by teacher controls.</strong
@@ -240,19 +131,6 @@
         }
       </div>
     </main>
-
-    <nav class="mobile-nav" aria-label="Mobile game spaces">
-      @for (item of primaryNavigation; track item.space) {
-        <button
-          type="button"
-          [class.active]="currentSpace() === item.space"
-          (click)="navigateSpace(item.space)"
-        >
-          <span aria-hidden="true">{{ item.icon }}</span
-          ><small>{{ item.label }}</small>
-        </button>
-      }
-    </nav>
 
     @if (resourceFeedback(); as feedback) {
       <aside class="resource-feedback {{ feedback.direction }}" role="status" aria-live="polite">

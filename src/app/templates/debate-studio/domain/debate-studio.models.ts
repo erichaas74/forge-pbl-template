@@ -134,6 +134,7 @@ export interface DebateStudioProjectConfig {
   };
   readonly projectId: string;
   readonly projectVersion: string;
+  /** @deprecated Supplied by ProjectSessionContext at launch; retained for package compatibility. */
   readonly sessionId: string;
   readonly title: string;
   readonly subtitle: string;
@@ -148,6 +149,7 @@ export interface DebateStudioProjectConfig {
   readonly moderator: DebateModeratorConfig;
   readonly opinionOptions: readonly DebateOpinionOption[];
   readonly voteCategories: readonly DebateVoteCategory[];
+  /** @deprecated Supplied by ProjectSessionContext at launch; retained for package compatibility. */
   readonly viewer: DebateViewer;
   readonly seedTurns: readonly SeedDebateTurn[];
   readonly seedModeratorPrompts: readonly SeedModeratorPrompt[];
@@ -252,6 +254,7 @@ export interface DebateReflection {
 export interface DebateSession {
   readonly schemaVersion: '2.0';
   readonly id: string;
+  readonly tenantId: string;
   readonly projectId: string;
   readonly projectVersion: string;
   readonly classId: string;

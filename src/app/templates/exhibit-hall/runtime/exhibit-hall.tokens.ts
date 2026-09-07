@@ -2,6 +2,7 @@ import { InjectionToken, type Type } from '@angular/core';
 
 import type { ExhibitProjectConfig } from '../domain/exhibit-types';
 import type { ExhibitPersistenceAdapter } from '../persistence/exhibit-persistence';
+import type { ProjectSessionContext } from '../../../core/context/project-session-context';
 
 export interface ExhibitRendererComponentInputs {
   data: unknown;
@@ -16,6 +17,9 @@ export interface ExhibitRendererComponentRegistration {
 export const EXHIBIT_HALL_CONFIG = new InjectionToken<ExhibitProjectConfig>('EXHIBIT_HALL_CONFIG');
 export const EXHIBIT_HALL_PERSISTENCE = new InjectionToken<ExhibitPersistenceAdapter>(
   'EXHIBIT_HALL_PERSISTENCE',
+);
+export const EXHIBIT_HALL_SESSION_CONTEXT = new InjectionToken<ProjectSessionContext>(
+  'EXHIBIT_HALL_SESSION_CONTEXT',
 );
 export const EXHIBIT_RENDERER_COMPONENTS = new InjectionToken<
   readonly ExhibitRendererComponentRegistration[]

@@ -1,0 +1,37 @@
+<section class="moment-guide" aria-label="Enter the moment guide">
+  <header>
+    <p class="eyebrow">{{ historicalEvent() }}</p>
+    <h2>Look around before you write.</h2>
+    <p>
+      Open a category in either side panel. Read its short descriptions, then choose a record to
+      examine. The panels stay with you throughout My Work.
+    </p>
+    @if (headline()) {
+      <p class="story-context"><span>Your developing story</span> {{ headline() }}</p>
+    }
+  </header>
+  <div class="guide-grid">
+    @for (part of guide; track part.category) {
+      <article>
+        <span class="eyebrow">{{ part.label }}</span>
+        <h3>{{ part.title }}</h3>
+        <p>{{ part.lookFor }}</p>
+        <button type="button" (click)="shelf.open(part.category)">Open {{ part.label }} →</button>
+      </article>
+    }
+  </div>
+  <section class="observation-note">
+    <h3>Keep a record of what you find.</h3>
+    <p>
+      Note names, dates, places, actions, and exact words. Keep the source’s words separate from
+      your own notes. Pin records you want to return to; they remain available while you write and
+      prepare your presentation.
+    </p>
+    <p>Then decide what you want to investigate.</p>
+  </section>
+  <footer>
+    <button type="button" class="build-story-button" (click)="buildStory.emit()">
+      Build My Story →
+    </button>
+  </footer>
+</section>

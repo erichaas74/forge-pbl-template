@@ -1,0 +1,78 @@
+<main [class]="'launch-page ' + config.theme">
+  <nav class="launch-nav" aria-label="Project navigation">
+    <a routerLink="/projects" class="library-link"
+      ><span aria-hidden="true">←</span> Project library</a
+    >
+    <span class="brand">FORGE <b>PBL</b></span>
+    <a [routerLink]="['/projects', config.projectId, 'final-demo']" class="demo-link"
+      >Explore a finished project <span aria-hidden="true">↗</span></a
+    >
+  </nav>
+
+  @if (loading()) {
+    <section class="loading-panel" role="status">Preparing your project…</section>
+  } @else if (config.teaser && teaserVisible()) {
+    <section class="opening-stage" aria-label="Your project opening">
+      <app-project-teaser-host [config]="config.teaser" (completed)="finishTeaser($event)" />
+    </section>
+  } @else {
+    <section class="project-reveal" aria-labelledby="product-heading">
+      <div class="hero-copy">
+        <p class="eyebrow">
+          <span class="signal-dot" aria-hidden="true"></span> YOUR IDEAS. SOMETHING WORTH SHARING.
+        </p>
+        <h1 #productHeading id="product-heading" tabindex="-1">{{ config.headline }}</h1>
+        <p class="story">{{ config.challenge.takeaway }}</p>
+        <div class="role-line">
+          <span>YOU ARE THE</span><strong>{{ config.role }}</strong>
+        </div>
+        <p class="driving-question">{{ config.hook }}</p>
+        <section class="first-task" aria-label="Your first task">
+          <strong>Your first task</strong>
+          <p>{{ config.mission[0] }}</p>
+          <button
+            type="button"
+            class="primary-button"
+            [disabled]="entering() || runtime.saving()"
+            (click)="enter()"
+          >
+            {{ entering() ? 'Opening your project…' : config.action }} →
+          </button>
+          <small>You will create: {{ config.finalExample.format }}</small>
+        </section>
+      </div>
+      <app-project-product-preview [config]="config" />
+    </section>
+
+    <details class="project-details">
+      <summary>How the project develops</summary>
+      <p>{{ config.story }}</p>
+      <section class="creation-path" aria-labelledby="creation-title">
+        <div>
+          <p class="eyebrow">FROM A FIRST IDEA TO A FINISHED PROJECT</p>
+          <h2 id="creation-title">Make it yours.</h2>
+        </div>
+        <ol>
+          @for (task of config.mission; track task; let index = $index) {
+            <li>
+              <span class="path-number">{{ index + 1 }}</span>
+              <p>{{ task }}</p>
+            </li>
+          }
+        </ol>
+      </section>
+    </details>
+  }
+
+  @if (runtime.error(); as error) {
+    <div #saveError class="save-error" role="alert" tabindex="-1">
+      <strong>Your opening scene could not be saved.</strong>
+      <p>{{ error }}</p>
+      @if (teaserVisible() && pendingReceipt(); as receipt) {
+        <button type="button" (click)="finishTeaser(receipt)">Try saving and continue</button>
+      } @else {
+        <button type="button" (click)="runtime.saveDraft()">Try saving again</button>
+      }
+    </div>
+  }
+</main>

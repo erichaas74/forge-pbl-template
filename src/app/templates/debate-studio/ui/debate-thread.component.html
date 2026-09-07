@@ -1,0 +1,108 @@
+<section class="debate-thread" aria-labelledby="thread-title">
+  <header class="thread-heading">
+    <div>
+      <span>Live argument thread</span>
+      <h2 id="thread-title">{{ runtime.currentRound().label }}</h2>
+    </div>
+    <button type="button" (click)="scrollToLatest()">Jump to latest</button>
+  </header>
+
+  <div #threadScroller class="thread-scroll" tabindex="0" aria-label="Debate transcript thread">
+    <ol class="thread-list">
+      @for (segment of runtime.program(); track segment.id) {
+        @if (segment.kind === 'round-title') {
+          <li class="round-break" aria-label="Start of {{ segment.roundLabel }}">
+            <span></span><strong>{{ segment.roundLabel }}</strong
+            ><span></span>
+          </li>
+        } @else if (segment.kind === 'moderator') {
+          <li class="moderator-break" [id]="'debate-prompt-' + segment.promptId" tabindex="-1">
+            <span class="moderator-seal" aria-hidden="true">{{
+              runtime.config.moderator.initials
+            }}</span>
+            <div>
+              <small>Moderator question · neutral</small>
+              <strong>{{ segment.transcript }}</strong>
+            </div>
+          </li>
+        } @else if (segment.kind === 'student') {
+          <li
+            class="speech-row"
+            [class.left-speech]="isLeft(segment)"
+            [class.right-speech]="!isLeft(segment)"
+          >
+            <article
+              class="speech-bubble"
+              [class.expanded]="isExpanded(segment)"
+              [style.--faction-accent]="faction(segment)?.accent"
+              [id]="'debate-turn-' + segment.turnId"
+              tabindex="-1"
+            >
+              <header>
+                <span>{{ faction(segment)?.emblem }}</span>
+                <div>
+                  <small>{{ faction(segment)?.railLabel ?? faction(segment)?.name }}</small>
+                  <strong>{{ segment.speakerDisplayName }}</strong>
+                </div>
+                <time>{{ runtime.formatTime(segment.durationSeconds) }}</time>
+              </header>
+              <p>{{ segment.transcript }}</p>
+              @if (isExpanded(segment)) {
+                <div class="speech-detail" [id]="'speech-detail-' + segment.id">
+                  @if (segment.evidenceIds.length) {
+                    <p class="evidence-used">
+                      <strong>Evidence cited:</strong>
+                      @for (evidenceId of segment.evidenceIds; track evidenceId) {
+                        <span>{{ evidenceTitle(evidenceId) }}</span>
+                      }
+                    </p>
+                  }
+                  @if (turn(segment)?.teacherFeedback; as feedback) {
+                    <p class="teacher-note"><strong>Teacher feedback:</strong> {{ feedback }}</p>
+                  }
+                </div>
+              }
+              <button
+                type="button"
+                [attr.aria-expanded]="isExpanded(segment)"
+                [attr.aria-controls]="'speech-detail-' + segment.id"
+                (click)="toggleSegment(segment)"
+              >
+                {{ isExpanded(segment) ? 'Show less' : 'Review argument' }}
+              </button>
+            </article>
+          </li>
+        }
+      }
+
+      @if (runtime.currentTurn(); as turn) {
+        @if (turn.status !== 'filed') {
+          <li
+            class="speech-row draft-row"
+            [class.left-speech]="turn.factionId === runtime.config.factions[0].id"
+            [class.right-speech]="turn.factionId === runtime.config.factions[1].id"
+          >
+            <article class="speech-bubble draft-bubble">
+              <header>
+                <span aria-hidden="true">✎</span>
+                <div>
+                  <small>{{
+                    runtime.viewerFaction()?.railLabel ?? runtime.viewerFaction()?.name
+                  }}</small>
+                  <strong>{{ runtime.config.viewer.studentDisplayName }} · composing now</strong>
+                </div>
+                <b>LIVE</b>
+              </header>
+              <p>
+                {{
+                  runtime.state().draft ||
+                    'Your next response will appear here while you build it in the panel below.'
+                }}
+              </p>
+            </article>
+          </li>
+        }
+      }
+    </ol>
+  </div>
+</section>

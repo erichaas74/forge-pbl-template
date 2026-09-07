@@ -27,6 +27,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "*.mp4",
+                "input": "docs/debate-studio",
+                "output": "/debate-studio/openings"
               }
             ],
             "styles": ["src/styles.scss"]

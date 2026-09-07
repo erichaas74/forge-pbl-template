@@ -1,9 +1,17 @@
-<main class="showcase" [style.--chamber-image]="'url(' + runtime.config.chamberImageUrl + ')'">
+<main
+  class="showcase"
+  [class.sample-view]="readOnly()"
+  [style.--chamber-image]="'url(' + runtime.config.chamberImageUrl + ')'"
+>
   @switch (runtime.state().room) {
     @case ('premiere') {
-      <section class="premiere" aria-labelledby="premiere-title">
+      <section class="premiere" aria-label="Senate debate premiere">
         <header class="broadcast-order">
-          <button type="button" (click)="runtime.enterRoom('chamber')">← Return to chamber</button>
+          @if (!readOnly()) {
+            <button type="button" (click)="runtime.enterRoom('chamber')">
+              ← Return to chamber
+            </button>
+          }
           <div>
             <span>{{ runtime.config.sessionDateLabel }}</span
             ><strong>{{ runtime.config.title }}</strong>
@@ -15,10 +23,12 @@
             "
           >
             {{
-              runtime.session().status === 'premiere' ||
-              runtime.session().status === 'premiere-ready'
-                ? 'Senate session ready'
-                : 'Record-in-progress preview'
+              readOnly()
+                ? 'Completed fictional session'
+                : runtime.session().status === 'premiere' ||
+                    runtime.session().status === 'premiere-ready'
+                  ? 'Senate session ready'
+                  : 'Record-in-progress preview'
             }}
           </p>
         </header>
@@ -32,7 +42,33 @@
             <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
           </div>
 
-          <aside class="broadcast-docket" aria-label="Assembled debate program">
+          <aside
+            class="broadcast-docket"
+            aria-label="Assembled debate program — scroll for more entries"
+            tabindex="0"
+          >
+            @if (readOnly()) {
+              <nav class="program-navigation" aria-label="Programme navigation">
+                <button
+                  type="button"
+                  [disabled]="runtime.state().activeSegmentIndex === 0"
+                  (click)="selectEntry(runtime.state().activeSegmentIndex - 1)"
+                >
+                  ← Previous
+                </button>
+                <span
+                  >{{ runtime.state().activeSegmentIndex + 1 }} /
+                  {{ runtime.program().length }}</span
+                >
+                <button
+                  type="button"
+                  [disabled]="runtime.state().activeSegmentIndex >= runtime.program().length - 1"
+                  (click)="selectEntry(runtime.state().activeSegmentIndex + 1)"
+                >
+                  Next →
+                </button>
+              </nav>
+            }
             <span>The Senate broadcast</span>
             <ol>
               @for (segment of runtime.program(); track segment.id; let index = $index) {
@@ -42,8 +78,21 @@
                 >
                   <b>{{ (index + 1).toString().padStart(2, '0') }}</b>
                   <div>
-                    <small>{{ segment.roundLabel }}</small
-                    ><strong>{{ segment.speakerDisplayName ?? segment.title }}</strong>
+                    <small>{{ segment.roundLabel }}</small>
+                    @if (readOnly()) {
+                      <button
+                        type="button"
+                        class="entry-link"
+                        [attr.aria-current]="
+                          runtime.state().activeSegmentIndex === index ? 'step' : null
+                        "
+                        (click)="selectEntry(index)"
+                      >
+                        {{ segment.speakerDisplayName ?? segment.title }}
+                      </button>
+                    } @else {
+                      <strong>{{ segment.speakerDisplayName ?? segment.title }}</strong>
+                    }
                   </div>
                 </li>
               }
@@ -51,7 +100,12 @@
           </aside>
 
           @if (runtime.activeSegment(); as segment) {
-            <article class="live-floor" [class.faction-floor]="segment.kind === 'student'">
+            <article
+              #entryHeading
+              tabindex="-1"
+              class="live-floor"
+              [class.faction-floor]="segment.kind === 'student'"
+            >
               @if (
                 segment.kind === 'ceremony' ||
                 segment.kind === 'round-title' ||
@@ -106,7 +160,18 @@
                 <aside class="evidence-projection">
                   <span>Evidence entered</span>
                   @for (evidenceId of segment.evidenceIds; track evidenceId) {
-                    <strong>{{ runtime.evidenceTitle(evidenceId) }}</strong>
+                    @if (readOnly()) {
+                      <details>
+                        <summary>{{ runtime.evidenceTitle(evidenceId) }}</summary>
+                        <p>{{ evidence(evidenceId)?.excerpt }}</p>
+                        <p>{{ evidence(evidenceId)?.context }}</p>
+                        <small
+                          >{{ evidence(evidenceId)?.citation }} · Classroom source summary</small
+                        >
+                      </details>
+                    } @else {
+                      <strong>{{ runtime.evidenceTitle(evidenceId) }}</strong>
+                    }
                   }
                 </aside>
               }
@@ -160,94 +225,108 @@
             →
           </button>
           @if (runtime.session().status === 'voting' || runtime.session().status === 'complete') {
-            <button class="urn" type="button" (click)="runtime.openBallot()">
-              Open voting urns
-            </button>
+            @if (readOnly()) {
+              <button class="urn" type="button" (click)="revealSample()">
+                Reveal class judgment
+              </button>
+            } @else {
+              <button class="urn" type="button" (click)="runtime.openBallot()">
+                Open voting urns
+              </button>
+            }
           }
         </footer>
       </section>
     }
 
     @case ('ballot') {
-      <section class="ballot-chamber" aria-labelledby="ballot-title">
-        <header>
-          <span>The complete student debate has ended</span>
-          <h1 id="ballot-title">The Judgment of the Senate</h1>
-          <p>Cast a private post-debate opinion, then place one clay token for each judgment.</p>
-        </header>
+      @if (!readOnly()) {
+        <section class="ballot-chamber" aria-labelledby="ballot-title">
+          <header>
+            <span>The complete student debate has ended</span>
+            <h1 id="ballot-title">The Judgment of the Senate</h1>
+            <p>Cast a private post-debate opinion, then place one clay token for each judgment.</p>
+          </header>
 
-        <fieldset class="opinion-vote">
-          <legend>
-            <strong>Post-Debate Senate Opinion</strong
-            ><small>Did the debate change your view?</small>
-          </legend>
-          <div>
-            @for (option of runtime.config.opinionOptions; track option.id) {
-              <button
-                type="button"
-                [class.selected]="runtime.postOpinion() === option.id"
-                (click)="runtime.castPostOpinion(option.id)"
-              >
-                <span>◆</span>{{ option.label }}
-              </button>
+          <fieldset class="opinion-vote">
+            <legend>
+              <strong>Post-Debate Senate Opinion</strong
+              ><small>Did the debate change your view?</small>
+            </legend>
+            <div>
+              @for (option of runtime.config.opinionOptions; track option.id) {
+                <button
+                  type="button"
+                  [class.selected]="runtime.postOpinion() === option.id"
+                  (click)="runtime.castPostOpinion(option.id)"
+                >
+                  <span>◆</span>{{ option.label }}
+                </button>
+              }
+            </div>
+          </fieldset>
+
+          <div class="ballot-table">
+            @for (
+              category of runtime.config.voteCategories;
+              track category.id;
+              let index = $index
+            ) {
+              <fieldset>
+                <legend>
+                  <span>{{ (index + 1).toString().padStart(2, '0') }}</span
+                  ><strong>{{ category.label }}</strong
+                  ><small>{{ category.prompt }}</small>
+                </legend>
+                <div class="token-options">
+                  @for (option of runtime.voteOptions(category); track option.id) {
+                    <button
+                      type="button"
+                      [class.selected]="
+                        runtime.state().categorySelections[category.id] === option.id
+                      "
+                      [attr.aria-pressed]="
+                        runtime.state().categorySelections[category.id] === option.id
+                      "
+                      (click)="runtime.castCategory(category.id, option.id)"
+                    >
+                      <span>{{ option.emblem ?? '◆' }}</span
+                      ><strong>{{ option.label }}</strong
+                      ><small>{{ option.detail }}</small>
+                    </button>
+                  }
+                </div>
+              </fieldset>
             }
           </div>
-        </fieldset>
 
-        <div class="ballot-table">
-          @for (category of runtime.config.voteCategories; track category.id; let index = $index) {
-            <fieldset>
-              <legend>
-                <span>{{ (index + 1).toString().padStart(2, '0') }}</span
-                ><strong>{{ category.label }}</strong
-                ><small>{{ category.prompt }}</small>
-              </legend>
-              <div class="token-options">
-                @for (option of runtime.voteOptions(category); track option.id) {
-                  <button
-                    type="button"
-                    [class.selected]="runtime.state().categorySelections[category.id] === option.id"
-                    [attr.aria-pressed]="
-                      runtime.state().categorySelections[category.id] === option.id
-                    "
-                    (click)="runtime.castCategory(category.id, option.id)"
-                  >
-                    <span>{{ option.emblem ?? '◆' }}</span
-                    ><strong>{{ option.label }}</strong
-                    ><small>{{ option.detail }}</small>
-                  </button>
-                }
-              </div>
-            </fieldset>
-          }
-        </div>
+          <label class="reflection-tablet">
+            <span>Reflection · required individual record</span>
+            <strong>What argument most changed, challenged, or strengthened your thinking?</strong>
+            <textarea
+              rows="4"
+              [value]="runtime.state().reflection"
+              (input)="updateReflection($event)"
+            ></textarea>
+            <button
+              type="button"
+              [disabled]="runtime.state().reflection.trim().length < 20"
+              (click)="runtime.submitReflection()"
+            >
+              Enter reflection into my record
+            </button>
+          </label>
 
-        <label class="reflection-tablet">
-          <span>Reflection · required individual record</span>
-          <strong>What argument most changed, challenged, or strengthened your thinking?</strong>
-          <textarea
-            rows="4"
-            [value]="runtime.state().reflection"
-            (input)="updateReflection($event)"
-          ></textarea>
           <button
+            class="seal-urn"
             type="button"
-            [disabled]="runtime.state().reflection.trim().length < 20"
-            (click)="runtime.submitReflection()"
+            [disabled]="!runtime.ballotComplete()"
+            (click)="runtime.sealBallot()"
           >
-            Enter reflection into my record
+            <span aria-hidden="true">◆</span> Seal the voting urn
           </button>
-        </label>
-
-        <button
-          class="seal-urn"
-          type="button"
-          [disabled]="!runtime.ballotComplete()"
-          (click)="runtime.sealBallot()"
-        >
-          <span aria-hidden="true">◆</span> Seal the voting urn
-        </button>
-      </section>
+        </section>
+      }
     }
 
     @case ('verdict') {
@@ -256,8 +335,11 @@
           <span>The seals are broken before the class</span>
           <h1 id="verdict-title">Did the Debate Move the Senate?</h1>
           <p>
-            Initial opinion is compared with the judgment entered after the authentic student
-            exchange.
+            {{
+              readOnly()
+                ? 'Fictional aggregate classroom results. These totals describe persuasion today; they do not assign mastery or reveal individual ballots.'
+                : 'Initial opinion is compared with the judgment entered after the authentic student exchange.'
+            }}
           </p>
         </header>
 
@@ -285,7 +367,17 @@
             @if (runtime.state().verdictStep > index) {
               <article>
                 <span>{{ category.label }}</span>
-                <h2>{{ choiceLabel(category, runtime.winningChoice(category.id)) }}</h2>
+                @if (readOnly()) {
+                  <h2>
+                    {{
+                      category.id === 'final-verdict'
+                        ? 'Most persuasive today'
+                        : 'Class judgment by category'
+                    }}
+                  </h2>
+                } @else {
+                  <h2>{{ choiceLabel(category, runtime.winningChoice(category.id)) }}</h2>
+                }
                 @for (option of runtime.voteOptions(category); track option.id) {
                   <div class="vote-line">
                     <small>{{ option.label }} · {{ tally(category.id, option.id) }}</small
@@ -300,14 +392,20 @@
 
         @if (runtime.state().verdictStep > runtime.config.voteCategories.length) {
           <article class="final-verdict">
-            <span>The official record remains</span>
+            <span>{{
+              readOnly() ? 'The completed sample record' : 'The official record remains'
+            }}</span>
             <h2>{{ runtime.config.title }}</h2>
             <p>
               The Senate can now see not only which argument prevailed, but whether the class
               changed its mind.
             </p>
             <div>
-              <button type="button" (click)="runtime.enterRoom('chamber')">Return to chamber</button
+              <button
+                type="button"
+                (click)="readOnly() ? selectEntry(2) : runtime.enterRoom('chamber')"
+              >
+                {{ readOnly() ? 'Replay the arguments' : 'Return to chamber' }}</button
               ><a routerLink="/projects">Leave the Senate</a>
             </div>
           </article>

@@ -25,14 +25,20 @@ import type {
 import {
   SIMULATION_DECISION_CONFIG,
   SIMULATION_DECISION_PERSISTENCE,
+  SIMULATION_DECISION_SESSION_CONTEXT,
 } from './simulation-decision.tokens';
+import { projectSessionRuntimeScope } from '../../../core/context/project-session-context';
 
 @Injectable()
 export class SimulationDecisionRuntimeService {
   readonly planning = new SimulationPlanning();
   readonly config = inject(SIMULATION_DECISION_CONFIG);
+  private readonly session = inject(SIMULATION_DECISION_SESSION_CONTEXT, { optional: true });
   private readonly persistence = inject(SIMULATION_DECISION_PERSISTENCE);
-  readonly state = signal(createSimulationState(this.config));
+  private readonly runtimeScope = this.session === null
+    ? undefined
+    : projectSessionRuntimeScope(this.session, 'student');
+  readonly state = signal(createSimulationState(this.config, 20_260_902, this.runtimeScope));
   readonly errors = signal<readonly string[]>([]);
   readonly saveState = signal<'saved' | 'saving' | 'offline_local' | 'save_failed'>('saved');
   readonly marketIntent = signal<{ goodId: string; direction: 'buy' | 'sell' } | undefined>(
@@ -58,7 +64,11 @@ export class SimulationDecisionRuntimeService {
   constructor() {
     const saved = this.persistence.load(this.config.projectId, this.config.projectVersion);
     if (saved !== undefined) {
-      this.state.set({ ...saved, marketDiscoveries: saved.marketDiscoveries ?? {} });
+      this.state.set({
+        ...saved,
+        runtimeScope: this.runtimeScope ?? saved.runtimeScope,
+        marketDiscoveries: saved.marketDiscoveries ?? {},
+      });
     }
   }
 
@@ -90,7 +100,7 @@ export class SimulationDecisionRuntimeService {
   startCompany(companyName: string, emblemId: string, transportId: string): boolean {
     const changed = this.apply({ type: 'company.started', companyName, emblemId, transportId });
     if (changed) {
-      this.navigate('market');
+      this.navigate('route');
     }
     return changed;
   }

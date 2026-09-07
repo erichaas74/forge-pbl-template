@@ -18,7 +18,11 @@
           @if (location.hanging.id === focusedHangingId()) {
             <span class="standing-plate"><i></i> Class standing here</span>
           }
-          @if (location.snapshot.corridorPreview; as preview) {
+          @if (modelPreview(location.snapshot.visitorSafeData); as model) {
+            <div class="frame model-frame">
+              <app-object-model-viewer [model]="model" />
+            </div>
+          } @else if (location.snapshot.corridorPreview; as preview) {
             @if (preview.walkUpAvailable) {
               <button
                 type="button"

@@ -82,14 +82,6 @@ export class SourceWallComponent {
     this.evidence.set([...this.evidence().filter((link) => link.sourceId !== id), updated]);
     this.saveDraft();
   }
-  recommended(id: string): boolean {
-    return (
-      this.runtime.config.storyLeads
-        .find((lead) => lead.id === this.runtime.state().pitch.leadId)
-        ?.sourceIds?.includes(id) ?? false
-    );
-  }
-
   setFilter(value: SourcePerspective | 'all'): void {
     this.filter.set(value);
   }

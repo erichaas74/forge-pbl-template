@@ -1,0 +1,46 @@
+[
+  {
+    "check": "Complete five chapters, round-trip every record, reconstruct final replay route",
+    "result": "PASS",
+    "routePoints": 7,
+    "destination": "recife"
+  },
+  {
+    "check": "Azores coordinates are saved but its intermediate location ID is omitted",
+    "result": "REPRODUCED"
+  },
+  {
+    "check": "All configured choice combinations reach a five-scene replay",
+    "result": "PASS",
+    "combinations": 162
+  },
+  {
+    "check": "Clicking the already-selected choice erases its draft",
+    "result": "REPRODUCED"
+  },
+  {
+    "check": "Twelve repeated letters pass the response gate",
+    "result": "REPRODUCED"
+  },
+  {
+    "check": "Server policy accepts completed IDs/tags without answers, route, or replay",
+    "result": "REPRODUCED"
+  },
+  {
+    "check": "Browser cache key includes project/version/student only; no class or tenant",
+    "result": "CONFIRMED",
+    "key": "forge:journey-replay:race-around-the-world:1.0.0:audit-student"
+  },
+  {
+    "check": "Recreating media adapter loses locally stored audio routing",
+    "result": "REPRODUCED"
+  },
+  {
+    "check": "Loading older authoritative state replaces newer local chapter and its cache",
+    "result": "REPRODUCED"
+  },
+  {
+    "check": "Local storage failure still advances chapter and clears the error",
+    "result": "REPRODUCED"
+  }
+]

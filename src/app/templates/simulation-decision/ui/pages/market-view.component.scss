@@ -152,9 +152,6 @@ small {
   min-width: 0;
   overflow: hidden;
 }
-.market-page > app-choice-progression-panel {
-  grid-column: 1;
-}
 .market-world > header,
 .market-board > header {
   display: flex;
@@ -171,31 +168,14 @@ small {
 .market-world > header .status-chip {
   white-space: nowrap;
 }
-.living-market {
-  position: relative;
-  padding: 3rem 0.8rem 0.8rem;
-  overflow: hidden;
-  background: linear-gradient(#a5cede 0 48%, #90a67b 49% 64%, #dec18d 65%);
-}
 .storefronts {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.6rem;
   align-items: stretch;
 }
 .stall {
   --awning: #964c32;
-  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  border: 2px solid #75502e;
-  border-radius: 0.3rem;
-  padding: 1.1rem 0.3rem 0.5rem;
-  background: #fff0cd;
-  color: #382716;
-  box-shadow: 0 0.25rem 0.2rem #57392344;
 }
 .stall:nth-child(2) {
   --awning: #2c6565;
@@ -209,14 +189,6 @@ small {
 .stall[aria-pressed='true'] {
   outline: 3px solid #176778;
   outline-offset: 2px;
-  background: #fff8df;
-}
-.stall.mission-target:not([aria-pressed='true']) {
-  outline: 3px solid #d59528;
-  outline-offset: 2px;
-  box-shadow:
-    0 0.25rem 0.2rem #57392344,
-    0 0 0.9rem #f0ba4a;
 }
 .stall strong {
   font-size: 0.88rem;
@@ -308,8 +280,6 @@ dd {
   min-width: 0;
   padding: 1rem;
   position: sticky;
-  top: 6rem;
-  max-height: calc(100dvh - 7rem);
   overflow: auto;
 }
 .trade-builder header p {
@@ -318,13 +288,6 @@ dd {
   margin-top: 0.3rem;
 }
 .market-wagon {
-  position: relative;
-  margin: 1rem 0.4rem 1.8rem;
-  border: 0.3rem solid #593c26;
-  border-radius: 1.5rem 1.5rem 0.3rem 0.3rem;
-  padding: 0.7rem;
-  background: linear-gradient(#976c42, #724a2e);
-  color: #fff5d7;
   text-align: center;
 }
 .market-wagon strong {
@@ -332,15 +295,6 @@ dd {
 }
 .market-wagon small {
   font-size: 0.7rem;
-}
-.market-wagon > div {
-  display: flex;
-  gap: 0.2rem;
-  flex-wrap: wrap;
-  justify-content: center;
-  min-height: 2.5rem;
-  align-items: center;
-  margin: 0.3rem 0;
 }
 .market-wagon > div > span {
   font-size: 0.8rem;
@@ -692,11 +646,7 @@ dd {
 }
 @media (max-width: 620px) {
   .living-market {
-    min-height: 30rem;
     padding: 7rem 0.55rem 0.7rem;
-  }
-  .storefronts {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .stall {
     min-height: 10.5rem;
@@ -720,13 +670,8 @@ dd {
 
 /* Full-width market world: the shops are the primary game board. */
 @media (min-width: 801px) {
-  .market-page {
-    grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.34fr);
-    gap: 0.8rem;
-  }
   .market-world {
     position: relative;
-    grid-column: 1 / -1;
     border: 0.22rem solid #775027;
     border-radius: 0.7rem;
     background: #24170d;
@@ -784,13 +729,10 @@ dd {
     border-top: 0.15rem solid #9f7944;
     background: linear-gradient(90deg, #fff2d7, #ead2a8);
   }
-  .market-page > app-choice-progression-panel,
   .market-board {
     grid-column: 1;
   }
   .trade-builder {
-    grid-column: 2;
-    grid-row: 2 / span 2;
     top: 5.4rem;
     border: 0.18rem solid #936b36;
     box-shadow: 0 0.6rem 1.4rem #120b0770;
@@ -1007,13 +949,6 @@ dd {
   border-color: #c59c59;
   color: #fff2d0;
   background: #4b311e;
-}
-
-.shop-instruction {
-  margin: 0.15rem 0 0;
-  color: #ead7b2;
-  font-size: clamp(0.62rem, 1vw, 0.76rem);
-  font-weight: 700;
 }
 
 .market-board .merchant-rumor {
@@ -1350,11 +1285,6 @@ dd {
     grid-row: 1;
   }
 
-  .market-page > app-choice-progression-panel {
-    grid-column: 1;
-    grid-row: 2;
-  }
-
   .trade-builder {
     grid-column: 2;
     grid-row: 1 / span 2;
@@ -1399,7 +1329,6 @@ dd {
 
   .market-board .merchant-rumor {
     top: 6.6rem;
-    width: calc(100% - 1.5rem);
   }
 
   .market-board .route-clue {
@@ -1442,5 +1371,75 @@ dd {
   .town-scene-background,
   .market-board.shop-counter {
     animation: none;
+  }
+}
+
+.trade-builder {
+  top: 12px;
+  max-height: calc(100dvh - 24px);
+  scrollbar-gutter: stable;
+}
+.trade-builder header p {
+  margin: 4px 0;
+}
+.trade-builder .selection {
+  padding: 12px 0;
+}
+.trade-builder .selection > .primary {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  min-height: 44px;
+  box-shadow: 0 -6px 12px #fff8;
+}
+.account-status {
+  font-size: 14px;
+  font-weight: 700;
+}
+.wagon-details summary {
+  cursor: pointer;
+  font-size: 14px;
+  padding: 10px 0;
+}
+.trade-builder .trade-math {
+  margin: 10px 0;
+}
+@media (min-width: 1000px) {
+  .stall {
+    min-height: 280px;
+  }
+}
+
+.market-page.choosing-shop {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 850px;
+  margin: auto;
+}
+.choosing-shop .living-market:not(.interior-open) {
+  min-height: 0;
+  aspect-ratio: 3 / 2;
+}
+.choosing-shop .living-market:not(.interior-open) .stall {
+  min-height: 0;
+}
+.choosing-shop .market-world > header {
+  padding: 12px 16px;
+}
+.choosing-shop .market-world > header p {
+  margin: 4px 0 0;
+}
+@media (max-width: 620px) {
+  .choosing-shop .living-market:not(.interior-open) {
+    min-height: 340px;
+  }
+  .choosing-shop .storefronts {
+    inset: 15% 2% 5%;
+    gap: 8px;
+  }
+  .choosing-shop .storefront-plaque strong {
+    font-size: 13px;
+  }
+  .choosing-shop .storefront-plaque small {
+    display: none;
   }
 }

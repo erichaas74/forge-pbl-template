@@ -9,10 +9,22 @@ import {
   EMPTY_PITCH,
   interleaveBroadcastSegments,
   isPitchReady,
+  pitchMissingRequirements,
   validateHistoryLiveVisualConfig,
 } from './history-live-state';
 
 describe('history live state helpers', () => {
+  it('names the remaining pitch requirements and keeps them consistent with the submission gate', () => {
+    const missing = pitchMissingRequirements(EMPTY_PITCH);
+    expect(missing).toContain('Working headline: at least 8 characters');
+    expect(missing).toContain('Report as of: choose a date');
+    expect(pitchMissingRequirements({ ...EMPTY_PITCH, headline: '        ' })).toContain(
+      'Working headline: at least 8 characters',
+    );
+    expect(
+      pitchMissingRequirements({ ...EMPTY_PITCH, headline: 'A specific headline' }),
+    ).not.toContain('Working headline: at least 8 characters');
+  });
   it('requires a focused, evidence-aware story pitch', () => {
     expect(isPitchReady(EMPTY_PITCH)).toBe(false);
     const pitch: HistoryLivePitch = {

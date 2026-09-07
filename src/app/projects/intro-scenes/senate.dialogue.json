@@ -1,0 +1,35 @@
+{
+  "welcome": [
+    {
+      "speaker": "Senator Lucius",
+      "text": "Rome needs stability. I say a strong leader can act while the Senate argues. I have prepared a very impressive speech. It even has hand gestures.",
+      "audioUrl": "/project-intros/senate/lucius-welcome.wav"
+    },
+    {
+      "speaker": "Senator Cassius",
+      "text": "And I say power needs limits. A dramatic hand gesture is not a system of government. New senator, choose one of our claims to challenge. Ask the question that makes us explain ourselves.",
+      "audioUrl": "/project-intros/senate/cassius-welcome.wav"
+    }
+  ],
+  "leadership": [
+    {
+      "speaker": "Senator Lucius",
+      "text": "Who would stop a strong leader from abusing power? That is inconveniently good. My speech did not get that far. I will need evidence about leadership and accountability. Apparently the hand gestures were not enough.",
+      "audioUrl": "/project-intros/senate/lucius-reveal.wav"
+    }
+  ],
+  "limits": [
+    {
+      "speaker": "Senator Cassius",
+      "text": "How would the Senate solve a crisis if its members cannot agree? Fair challenge. Saying that power needs limits does not prove our institutions will work. I need evidence for that part of my argument too.",
+      "audioUrl": "/project-intros/senate/cassius-reveal.wav"
+    }
+  ],
+  "handoff": [
+    {
+      "speaker": "The Senate Clerk",
+      "text": "Your seat is ready. Bring a claim, bring evidence, and be ready for someone to disagree. The laurel wreath adds exactly zero evidence. You may still wear it with confidence.",
+      "audioUrl": "/project-intros/senate/clerk-handoff.wav"
+    }
+  ]
+}

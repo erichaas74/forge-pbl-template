@@ -1,7 +1,21 @@
-import { Component, OnDestroy, computed, effect, input, output, signal } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  ElementRef,
+  inject,
+  Injector,
+  OnDestroy,
+  computed,
+  effect,
+  input,
+  output,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import type { RuntimeStateSnapshot } from '../domain/runtime-state';
+import { DraftAutosaveController } from '../../../shared/drafts';
 import type { FinalCaseDraft, InvestigationEvidenceItem } from './investigation-ui.models';
 
 @Component({
@@ -14,6 +28,9 @@ export class InvestigationFinalCaseComponent implements OnDestroy {
   readonly runtime = input.required<RuntimeStateSnapshot>();
   readonly evidence = input.required<readonly InvestigationEvidenceItem[]>();
   readonly ready = input(false);
+  readonly readOnly = input(false);
+  private readonly injector = inject(Injector);
+  private readonly previewHeading = viewChild<ElementRef<HTMLElement>>('previewHeading');
   readonly missingReadiness = input<readonly string[]>([]);
   readonly saveState = input<'saved' | 'saving' | 'pending'>('saved');
 
@@ -37,7 +54,9 @@ export class InvestigationFinalCaseComponent implements OnDestroy {
     'all' | 'supports' | 'contradicts' | 'uncertain' | 'important' | 'studentCreated'
   >('all');
 
-  private saveTimer?: ReturnType<typeof setTimeout>;
+  private readonly autosave = new DraftAutosaveController<FinalCaseDraft>((draft) =>
+    this.draftSaved.emit(draft),
+  );
 
   readonly eligibleEvidence = computed(() =>
     this.evidence().filter(
@@ -117,11 +136,7 @@ export class InvestigationFinalCaseComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.saveTimer !== undefined) {
-      clearTimeout(this.saveTimer);
-      this.saveTimer = undefined;
-      this.draftSaved.emit(this.currentDraft());
-    }
+    void this.autosave.flush();
   }
 
   connectionAvailable(): boolean {
@@ -139,16 +154,19 @@ export class InvestigationFinalCaseComponent implements OnDestroy {
       | 'individualContribution',
     value: string,
   ): void {
+    if (this.readOnly()) return;
     this[field].set(value);
     this.queueSave();
   }
 
   updateConfidence(value: number): void {
+    if (this.readOnly()) return;
     this.confidence.set(value);
     this.queueSave();
   }
 
   toggleEvidence(evidenceId: string, selected: boolean): void {
+    if (this.readOnly()) return;
     this.selectedEvidenceIds.update((current) =>
       selected
         ? current.includes(evidenceId)
@@ -160,14 +178,13 @@ export class InvestigationFinalCaseComponent implements OnDestroy {
   }
 
   saveDraft(): void {
-    if (this.saveTimer !== undefined) {
-      clearTimeout(this.saveTimer);
-      this.saveTimer = undefined;
-    }
+    if (this.readOnly()) return;
+    this.autosave.cancel();
     this.draftSaved.emit(this.currentDraft());
   }
 
   requestSubmit(): void {
+    if (this.readOnly()) return;
     this.saveDraft();
     if (this.missingSections().length === 0 && this.connectionAvailable()) {
       this.confirmSubmit.set(true);
@@ -175,13 +192,19 @@ export class InvestigationFinalCaseComponent implements OnDestroy {
   }
 
   private queueSave(): void {
-    if (this.saveTimer !== undefined) {
-      clearTimeout(this.saveTimer);
-    }
-    this.saveTimer = setTimeout(() => {
-      this.saveTimer = undefined;
-      this.draftSaved.emit(this.currentDraft());
-    }, 700);
+    this.autosave.schedule(this.currentDraft());
+  }
+
+  previewEvidenceRecord(id: string): void {
+    this.previewEvidenceId.set(id);
+    afterNextRender(
+      () => {
+        const element = this.previewHeading()?.nativeElement;
+        element?.scrollIntoView({ block: 'nearest' });
+        element?.focus({ preventScroll: true });
+      },
+      { injector: this.injector },
+    );
   }
 
   private currentDraft(): FinalCaseDraft {

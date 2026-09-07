@@ -1,0 +1,46 @@
+<section class="history-launch" aria-labelledby="history-launch-title">
+  <div class="history-launch-art">
+    <img [src]="runtime.config.launchImage" [alt]="runtime.config.launchImageAlt" />
+    <div>
+      <span>Storm signal · Incoming</span>
+      <h2 id="history-launch-title">What will happen to this person?</h2>
+      <p>
+        A real moment has already begun. Choose it, meet your fictional survivor, and launch an
+        adventure whose ending no one can see yet.
+      </p>
+    </div>
+  </div>
+  <div class="history-choice-grid" aria-label="Historical story settings">
+    @for (setting of runtime.config.historicalSettings; track setting.id) {
+      <button
+        type="button"
+        [class.selected]="runtime.state().historicalSettingId === setting.id"
+        [attr.aria-pressed]="runtime.state().historicalSettingId === setting.id"
+        (click)="runtime.selectHistoricalSetting(setting.id)"
+      >
+        <span>{{ setting.eraLabel }}</span>
+        <strong>{{ setting.title }}</strong>
+        <small>{{ setting.historicalEvent }}</small>
+        <i>{{ setting.fictionalRole }}</i>
+      </button>
+    }
+  </div>
+  @if (runtime.selectedHistoricalSetting(); as setting) {
+    <article class="history-ignition" aria-live="polite">
+      <div>
+        <span>Possible opening spark · Change it or ignore it</span>
+        <h2>{{ setting.openingLine }}</h2>
+        <p>{{ setting.survivalPressure }}</p>
+      </div>
+      <aside>
+        <strong>History you must protect</strong>
+        <p>{{ setting.accuracyBoundary }}</p>
+        <a [href]="setting.sourceUrl" target="_blank" rel="noopener noreferrer">
+          Check the historical source ↗
+        </a>
+      </aside>
+    </article>
+  } @else {
+    <p class="history-prompt">Choose one moment to reveal your character’s first crisis.</p>
+  }
+</section>

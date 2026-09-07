@@ -11,10 +11,51 @@
 .atlas {
   position: relative;
   overflow: hidden;
-  border: 1px solid #967a49;
+  border: 1px solid #aa8c50;
   border-radius: 0.6rem;
   background: #151d1c;
-  box-shadow: 0 1.2rem 3rem #05090899;
+  box-shadow:
+    0 1.2rem 3rem #05090899,
+    inset 0 0 0 3px #b79a5820;
+}
+
+.chart-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.15rem;
+  background: linear-gradient(115deg, #173b3c, #0c2429);
+}
+.chart-kicker {
+  color: #dbb86f;
+  font:
+    800 0.6rem ui-sans-serif,
+    sans-serif;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.chart-heading h2 {
+  margin: 0.25rem 0 0;
+  color: #f3e6c6;
+  font:
+    400 clamp(1.25rem, 2vw, 1.8rem) Georgia,
+    serif;
+}
+.chart-edition {
+  color: #d8c794;
+  font:
+    italic 0.8rem Georgia,
+    serif;
+  text-align: right;
+}
+.chart-edition small {
+  display: block;
+  margin-top: 0.35rem;
+  color: #9bb6b1;
+  font:
+    0.6rem ui-sans-serif,
+    sans-serif;
 }
 
 .atlas-tools,
@@ -45,7 +86,10 @@ button {
   padding: 0.42rem 0.66rem;
   color: #e9ddbd;
   background: #283c34;
-  font: 750 0.76rem/1.1 ui-sans-serif, system-ui, sans-serif;
+  font:
+    750 0.76rem/1.1 ui-sans-serif,
+    system-ui,
+    sans-serif;
   text-transform: capitalize;
   cursor: pointer;
 }
@@ -71,40 +115,118 @@ button:focus-visible,
 output {
   min-width: 3.4rem;
   color: #ddc88e;
-  font: 750 0.75rem ui-monospace, monospace;
+  font:
+    750 0.75rem ui-monospace,
+    monospace;
   text-align: center;
 }
 
 .map-stage {
   position: relative;
-  min-height: 31rem;
+  min-height: 28rem;
   overflow: hidden;
-  background: #93b8b2;
+  background: #143c44;
+}
+
+.map-stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 4rem #031a2480,
+    inset 0 0 0 5px #d4bd7524;
 }
 
 .world-map {
   display: block;
   width: 100%;
-  height: clamp(31rem, calc(100dvh - 15rem), 50rem);
-  min-height: 31rem;
-  background: #b7d0c6;
+  height: clamp(28rem, calc(100dvh - 22rem), 46rem);
+  min-height: 28rem;
+  background: #143c44;
   transition: background 180ms ease;
 }
 
-.continents path {
-  fill: #c8ad74;
-  stroke: #5a5135;
-  stroke-width: 2.2;
-  filter: url(#ink-shadow);
+.navigation-layer {
+  pointer-events: none;
+}
+.equator {
+  fill: none;
+  stroke: #efe0a8;
+  stroke-width: 0.5;
+  stroke-dasharray: 3 5;
+  opacity: 0.3;
+}
+.ocean-label {
+  fill: #c1d8cb;
+  opacity: 0.68;
+  font:
+    italic 9px Georgia,
+    serif;
+  letter-spacing: 2px;
+  text-anchor: middle;
+}
+.land-label {
+  fill: #f2e4b8;
+  font:
+    7px Georgia,
+    serif;
+  letter-spacing: 1.7px;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: #463e26;
+  stroke-width: 0.5;
 }
 
-.candidate-routes path {
+.candidate-route {
+  cursor: pointer;
+}
+
+.candidate-route:focus {
+  outline: none;
+}
+
+.candidate-route .route-option {
   fill: none;
-  stroke: #6d6248;
+  stroke: #fff0bd;
   stroke-width: 3;
-  stroke-dasharray: 7 8;
-  opacity: 0.72;
+  stroke-dasharray: 5 7;
+  opacity: 0.9;
   vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 0 4px #0b2a2d);
+  pointer-events: none;
+}
+
+.candidate-route .route-hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 18;
+  vector-effect: non-scaling-stroke;
+  pointer-events: stroke;
+}
+
+.candidate-route:hover .route-option,
+.candidate-route:focus-visible .route-option,
+.candidate-route.selected .route-option {
+  stroke: #ffe08a;
+  stroke-width: 6;
+  stroke-dasharray: none;
+  opacity: 1;
+  filter: drop-shadow(0 0 8px #102d32) drop-shadow(0 0 3px #fff1b9);
+}
+
+.route-choice-label {
+  fill: #fff5d6;
+  font:
+    800 8px ui-sans-serif,
+    system-ui,
+    sans-serif;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: #13363a;
+  stroke-width: 3.5;
+  stroke-linejoin: round;
+  pointer-events: none;
 }
 
 .route-shadow,
@@ -113,6 +235,10 @@ output {
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
+}
+
+.voyage-routes {
+  pointer-events: none;
 }
 
 .route-shadow {
@@ -128,11 +254,40 @@ output {
   animation: route-reveal 850ms ease-out both;
 }
 
-.pattern-long-dash .route-line { stroke-dasharray: 20 10; }
-.pattern-short-dash .route-line { stroke-dasharray: 8 7; }
-.pattern-dot-dash .route-line { stroke-dasharray: 2 7 15 7; }
-.pattern-double .route-line { stroke-width: 8; }
-.pattern-double .double-line { stroke: #1d2a26; stroke-width: 2; }
+.voyage.context-route {
+  opacity: 0.32;
+}
+.voyage.context-route .route-line {
+  stroke-width: 3;
+  filter: none;
+}
+.voyage.context-route .route-shadow {
+  opacity: 0.35;
+}
+.voyage.featured .route-line {
+  stroke-width: 6;
+  filter: drop-shadow(0 0 6px #fff7);
+}
+.voyage.featured .route-shadow {
+  stroke-width: 10;
+}
+
+.pattern-long-dash .route-line {
+  stroke-dasharray: 20 10;
+}
+.pattern-short-dash .route-line {
+  stroke-dasharray: 8 7;
+}
+.pattern-dot-dash .route-line {
+  stroke-dasharray: 2 7 15 7;
+}
+.pattern-double .route-line {
+  stroke-width: 8;
+}
+.pattern-double .double-line {
+  stroke: #1d2a26;
+  stroke-width: 2;
+}
 
 .event-marker circle {
   fill: #f0dbc0;
@@ -143,7 +298,9 @@ output {
 
 .event-marker text {
   fill: #33251a;
-  font: 900 16px Georgia, serif;
+  font:
+    900 16px Georgia,
+    serif;
   text-anchor: middle;
 }
 
@@ -166,7 +323,9 @@ output {
 .risk-layer text,
 .trade-layer text {
   fill: #edf4e9;
-  font: 800 11px ui-sans-serif, sans-serif;
+  font:
+    800 11px ui-sans-serif,
+    sans-serif;
   letter-spacing: 0.12em;
   text-anchor: middle;
 }
@@ -186,7 +345,9 @@ output {
   opacity: 0.75;
 }
 
-.trade-layer text { fill: #654124; }
+.trade-layer text {
+  fill: #654124;
+}
 
 .location {
   cursor: pointer;
@@ -199,27 +360,80 @@ output {
   vector-effect: non-scaling-stroke;
 }
 
-.pin-center { fill: #765126; }
-.location-ring { fill: none; stroke: transparent; stroke-width: 4; vector-effect: non-scaling-stroke; }
+.pin-center {
+  fill: #765126;
+}
+.location-ring {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 4;
+  vector-effect: non-scaling-stroke;
+}
 .location:hover .location-ring,
 .location:focus-visible .location-ring,
-.location.inspected .location-ring { stroke: #eff5d6; }
-.location.shared .location-ring { stroke: #7b2e66; stroke-dasharray: 4 4; }
-.location:focus { outline: none; }
+.location.inspected .location-ring {
+  stroke: #eff5d6;
+}
+.location.candidate-destination .location-ring,
+.location.candidate-map-option .location-ring {
+  stroke: #ffe08a;
+  stroke-dasharray: 3 3;
+  animation: destination-pulse 1.6s ease-in-out infinite alternate;
+}
+.location.selected-destination .location-ring {
+  stroke: #fff2b8;
+  stroke-width: 7;
+  stroke-dasharray: none;
+}
+.location.active-decision .port-pin {
+  fill: #f7cb65;
+  stroke: #173e3d;
+}
+.location.active-decision .location-label {
+  fill: #fff6d7;
+  font-weight: 900;
+}
+.location.shared .location-ring {
+  stroke: #7b2e66;
+  stroke-dasharray: 4 4;
+}
+.location:focus {
+  outline: none;
+}
 
 .location-label,
-.shared-count {
-  fill: #172823;
-  font: 800 13px Georgia, serif;
+.shared-count,
+.map-option-label {
+  fill: #fff1cc;
+  font:
+    700 11px Georgia,
+    serif;
   paint-order: stroke;
-  stroke: #dce4c9;
-  stroke-width: 4;
+  stroke: #102d32;
+  stroke-width: 3;
   stroke-linejoin: round;
+}
+
+.map-option-label {
+  fill: #ffe08a;
+  font:
+    800 7px ui-sans-serif,
+    system-ui,
+    sans-serif;
+  text-anchor: middle;
+  text-transform: uppercase;
+}
+
+.regional .location-label {
+  font-size: 7px;
+  stroke-width: 2.4;
 }
 
 .shared-count {
   fill: #6b245c;
-  font: 800 10px ui-sans-serif, sans-serif;
+  font:
+    800 10px ui-sans-serif,
+    sans-serif;
   text-anchor: middle;
 }
 
@@ -230,28 +444,128 @@ output {
   pointer-events: none;
 }
 
-.ship ellipse { fill: #1c2a27aa; }
-.ship path { fill: #67462a; stroke: #f3dfab; stroke-width: 2; vector-effect: non-scaling-stroke; }
-.ship path + path { fill: #f5e3bc; }
-.ship circle { fill: none; stroke: #f5df95; stroke-width: 2; stroke-dasharray: 5 5; vector-effect: non-scaling-stroke; animation: ship-pulse 1.6s ease-in-out infinite alternate; }
+.ship ellipse {
+  fill: #041a20aa;
+}
+.ship path {
+  stroke: #e2be73;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.ship .ship-hull {
+  fill: #694024;
+}
+.ship .ship-rigging {
+  fill: none;
+  stroke: #704a2d;
+}
+.ship .ship-sails {
+  fill: #fff1c9;
+  stroke: #9f7c43;
+}
+.ship .ship-flag {
+  fill: #d87144;
+}
+.ship circle {
+  fill: none;
+  stroke: #f5df95;
+  stroke-width: 2;
+  stroke-dasharray: 5 5;
+  vector-effect: non-scaling-stroke;
+  animation: ship-pulse 1.6s ease-in-out infinite alternate;
+}
 
 .knowledge-fog path {
-  fill: #e8dfc9cc;
-  stroke: #8e8065;
-  stroke-width: 2;
-  stroke-dasharray: 6 9;
+  fill: #143c4430;
+  stroke: none;
 }
 
 .knowledge-fog text {
-  fill: #7d6c4e;
-  font: italic 22px Georgia, serif;
+  fill: #e3d7af;
+  font:
+    italic 13px Georgia,
+    serif;
   letter-spacing: 0.14em;
   text-anchor: middle;
 }
 
-.compass-rose circle { fill: #ead9a6aa; stroke: #71592f; stroke-width: 2; }
-.compass-rose path { fill: #72542d; stroke: #e4cf91; stroke-width: 1; }
-.compass-rose text { fill: #49391f; font: 900 15px Georgia, serif; text-anchor: middle; }
+.knowledge-fog {
+  pointer-events: none;
+}
+.chart-compass {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  width: 5.2rem;
+  pointer-events: none;
+  opacity: 0.9;
+  filter: drop-shadow(0 2px 4px #031c24);
+}
+.chart-compass svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+.chart-compass circle {
+  fill: #12313b80;
+  stroke: #c3a05a;
+  stroke-width: 0.65;
+}
+.chart-compass path {
+  fill: #c4a25d;
+  stroke: #f3deb0;
+  stroke-width: 0.5;
+}
+.chart-compass .compass-light {
+  fill: #f6eac8;
+}
+.chart-compass text {
+  fill: #f3e6c5;
+  font:
+    9px Georgia,
+    serif;
+  text-anchor: middle;
+}
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1.2rem;
+  padding: 0.65rem 0.85rem;
+  background: #102b30;
+  color: #c2d3cb;
+  font:
+    0.65rem ui-sans-serif,
+    sans-serif;
+}
+.chart-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.chart-legend i {
+  display: inline-block;
+  width: 1.1rem;
+}
+.legend-port {
+  width: 0.45rem !important;
+  height: 0.45rem;
+  border: 1px solid #f9e9bc;
+  border-radius: 50%;
+  background: #bd9551;
+}
+.legend-route {
+  border-top: 2px dashed #efdfab;
+}
+.legend-voyage {
+  height: 3px;
+  border-radius: 2px;
+}
+.legend-class {
+  height: 3px;
+  border-radius: 2px;
+  background: #aab7ae;
+  opacity: 0.45;
+}
 
 .pan-pad {
   position: absolute;
@@ -262,7 +576,10 @@ output {
   gap: 0.25rem;
 }
 
-.pan-pad button { width: 2.5rem; padding: 0; }
+.pan-pad button {
+  width: 2.5rem;
+  padding: 0;
+}
 
 .lens-tray {
   justify-content: flex-start;
@@ -273,30 +590,109 @@ output {
 .lens-tray > span {
   margin-right: 0.35rem;
   color: #c8b681;
-  font: 850 0.68rem ui-sans-serif, sans-serif;
+  font:
+    850 0.68rem ui-sans-serif,
+    sans-serif;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
-.lens-tray button { min-height: 2.15rem; font-size: 0.68rem; }
+.lens-tray button {
+  min-height: 2.15rem;
+  font-size: 0.68rem;
+}
 
 @keyframes route-reveal {
-  from { opacity: 0; stroke-dashoffset: 40; }
+  from {
+    opacity: 0;
+    stroke-dashoffset: 40;
+  }
 }
 
 @keyframes ship-pulse {
-  to { r: 25; opacity: 0.3; }
+  to {
+    r: 15;
+    opacity: 0.3;
+  }
+}
+
+@keyframes destination-pulse {
+  to {
+    stroke-width: 7;
+    opacity: 0.55;
+  }
 }
 
 @media (max-width: 760px) {
-  .atlas-tools { align-items: stretch; flex-direction: column; }
+  .atlas-tools {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .chart-heading {
+    padding: 0.85rem;
+  }
+  .chart-edition {
+    display: none;
+  }
   .cover-switch,
-  .zoom-tools { justify-content: center; flex-wrap: wrap; }
-  .world-map { height: auto; min-height: 24rem; aspect-ratio: 4 / 3; }
+  .zoom-tools {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .world-map {
+    height: auto;
+    min-height: 24rem;
+    aspect-ratio: 4 / 3;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .route-line,
-  .ship circle { animation: none; }
-  .ship { transition: none; }
+  .ship circle,
+  .location.candidate-destination .location-ring,
+  .location.candidate-map-option .location-ring {
+    animation: none;
+  }
+  .ship {
+    transition: none;
+  }
+}
+
+.map-stage {
+  min-height: var(--journey-map-min-height, 28rem);
+}
+.world-map,
+.regional .world-map {
+  height: var(--journey-map-height, clamp(28rem, calc(100dvh - 22rem), 46rem));
+  min-height: var(--journey-map-min-height, 28rem);
+}
+
+.atlas.immersive {
+  display: grid;
+  height: 100%;
+  min-height: 0;
+  grid-template-rows: minmax(0, 1fr);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.atlas.immersive .map-stage,
+.atlas.immersive .world-map,
+.atlas.immersive.regional .world-map {
+  height: 100%;
+  min-height: 0;
+}
+
+@media (max-width: 760px) {
+  .atlas.immersive .world-map,
+  .atlas.immersive.regional .world-map {
+    height: 100%;
+    min-height: 20rem;
+    aspect-ratio: auto;
+  }
+
+  .atlas.immersive {
+    grid-template-rows: minmax(0, 1fr);
+  }
 }

@@ -1,0 +1,82 @@
+<section class="story-tree" aria-label="Branching story map">
+  <div
+    class="map-scroll"
+    tabindex="0"
+    role="region"
+    aria-label="Story map. Scroll to explore all branches."
+  >
+    <div class="tree-canvas" [style.width.px]="layout().width" [style.height.px]="layout().height">
+      <svg [attr.viewBox]="'0 0 ' + layout().width + ' ' + layout().height" aria-hidden="true">
+        @for (edge of layout().edges; track edge.id) {
+          <path
+            [attr.d]="edge.path"
+            [attr.class]="'choice-line choice-' + (edge.choiceIndex + 1)"
+          />
+          <circle
+            [attr.cx]="edge.labelX"
+            [attr.cy]="edge.labelY"
+            r="12"
+            [attr.class]="'choice-marker choice-' + (edge.choiceIndex + 1)"
+          />
+          <text [attr.x]="edge.labelX" [attr.y]="edge.labelY + 4" class="choice-number">
+            {{ edge.choiceIndex + 1 }}
+          </text>
+        }
+      </svg>
+      @for (item of layout().nodes; track item.node.id) {
+        <button
+          type="button"
+          class="tree-node"
+          [class.active]="item.node.id === activeNodeId()"
+          [class.ending]="item.node.kind === 'ending'"
+          [class.death]="item.node.endingOutcome === 'death'"
+          [class.complete]="words(item.node.id) >= 20"
+          [style.left.px]="item.x"
+          [style.top.px]="item.y"
+          [attr.data-node-id]="item.node.id"
+          [attr.aria-label]="nodeAccessibleLabel(item)"
+          [attr.aria-pressed]="item.node.id === activeNodeId()"
+          (click)="nodeSelected.emit(item.node.id)"
+        >
+          <span class="node-state">{{
+            item.node.id === config().startNodeId
+              ? 'Start here'
+              : item.node.kind === 'ending'
+                ? item.node.endingOutcome === 'death'
+                  ? 'Dead end · Character dies'
+                  : 'Survival ending'
+                : item.node.choices.length
+                  ? 'Story continues'
+                  : 'Write this branch'
+          }}</span>
+          <strong>{{ scene(item.node.id)?.title || item.node.suggestedTitle }}</strong>
+          @if (item.node.choices.length) {
+            <span class="node-options">
+              @for (choice of item.node.choices; track choice.id; let index = $index) {
+                <span [title]="choiceLabel(item.node.id, choice)"
+                  ><i>{{ index + 1 }}</i
+                  ><span>{{ choiceLabel(item.node.id, choice) }}</span></span
+                >
+              }
+            </span>
+          } @else {
+            <span class="node-hint">{{
+              item.node.kind === 'ending' ? 'This path stops here.' : 'Continue or end this path.'
+            }}</span>
+          }
+          <small
+            >{{ words(item.node.id) }} words{{
+              item.node.id === activeNodeId() ? ' · Selected' : ''
+            }}</small
+          >
+        </button>
+      }
+    </div>
+  </div>
+  <footer class="tree-legend">
+    <span><i class="active-key"></i>Selected scene</span
+    ><span><i class="ending-key"></i>Survival ending</span
+    ><span><i class="death-key"></i>Character dies</span
+    ><span>Follow 1 or 2 to the next scene</span>
+  </footer>
+</section>

@@ -16,28 +16,28 @@ export interface ReactionTestDefinition {
 export const physicalTests: readonly PhysicalTestDefinition[] = [
   {
     id: 'appearance',
-    title: 'Optical scan',
+    title: 'Look closely',
     instrument: '6× magnifier',
     scenePosition: 'left top',
     prompt: 'Compare particle shape under equal lighting.',
   },
   {
     id: 'solubility',
-    title: 'Water trial',
+    title: 'Test in water',
     instrument: '50 mL water cup',
     scenePosition: 'right top',
     prompt: 'Use equal mass, water volume, and mixing time.',
   },
   {
     id: 'conductivity',
-    title: 'Probe trial',
+    title: 'Measure conductivity',
     instrument: 'Calibrated probe',
     scenePosition: 'left bottom',
     prompt: 'Measure only after the same water trial.',
   },
   {
     id: 'texture',
-    title: 'Surface scan',
+    title: 'Compare texture',
     instrument: 'Non-contact scanner',
     scenePosition: 'right bottom',
     prompt: 'Compare particle size without touching the unknown.',

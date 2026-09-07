@@ -12,10 +12,10 @@ describe('MuseumBoardComponent', () => {
     fixture.detectChanges();
 
     const element = fixture.nativeElement as HTMLElement;
-    expect(element.querySelector('h2')?.textContent).toContain('Life Along the Nile');
-    expect(element.querySelectorAll('.object-card h3')).toHaveLength(3);
+    expect(element.querySelector('h2')?.textContent).toContain('Materials and Skilled Making');
+    expect(element.querySelectorAll('.object-card h3')).toHaveLength(2);
     expect(element.querySelectorAll('footer li')).toHaveLength(2);
-    expect(element.textContent).toContain('Nile Life Curators');
+    expect(element.textContent).toContain('Material & Craft Curators');
     expect(element.textContent).toContain('MetaSteps Wing 1');
     expect(element.textContent).toContain('Prototype video station');
     expect(element.querySelector('iframe')?.getAttribute('title')).toContain('MetaSteps Wing 1');

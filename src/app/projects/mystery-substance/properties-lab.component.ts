@@ -2,7 +2,10 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
+  input,
+  OnDestroy,
   output,
   signal,
 } from '@angular/core';
@@ -15,6 +18,7 @@ import { buildGrainSpecs, defaultGrainProfile, grainProfiles } from './lab-kit/g
 import { RenderQualityService } from './lab-kit/render-quality.service';
 import { stationArt } from './station-art.config';
 import type { StationCapture } from './station-workspaces';
+import { persistWorkspaceDraft } from '../../shared/drafts/persist-workspace-draft';
 
 export type PhysicalTestId = (typeof physicalTests)[number]['id'];
 export type TrialPhase = 'idle' | 'running' | 'settled';
@@ -37,8 +41,17 @@ const waterTrialSeconds = 60;
   styleUrl: './properties-lab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PropertiesLabComponent {
+export class PropertiesLabComponent implements OnDestroy {
   readonly captured = output<StationCapture>();
+  readonly selectedVialId = input<string>();
+  readonly vialChanged = output<string>();
+  readonly embedded = input(false);
+  readonly savedResults = input<readonly { outputs?: Record<string, unknown> }[]>([]);
+  private readonly drafts = new Map<
+    string,
+    { observation: string; result?: Record<string, unknown> }
+  >();
+  private flushDraft = () => {};
 
   readonly vials = mysteryVials;
   readonly tests = physicalTests;
@@ -68,6 +81,61 @@ export class PropertiesLabComponent {
       id: 'physical-property-comparison',
       settings: { keyFields: ['specimen', 'test'], outcomeTable: physicalOutcomeTable },
     });
+    this.flushDraft = persistWorkspaceDraft(
+      'properties-lab',
+      () => ({
+        vialId: this.vialId(),
+        testId: this.testId(),
+        observation: this.observation(),
+        result: this.phase() === 'settled' ? this.result() : undefined,
+        drafts: [...this.drafts.entries()],
+      }),
+      (saved) => {
+        if (this.vials.some((v) => v.vialId === saved.vialId)) this.vialId.set(saved.vialId);
+        if (this.tests.some((t) => t.id === saved.testId)) this.testId.set(saved.testId);
+        if (typeof saved.observation === 'string') this.observation.set(saved.observation);
+        if (saved.result && typeof saved.result === 'object') {
+          this.result.set(saved.result);
+          this.phase.set('settled');
+          this.progress.set(1);
+        }
+        if (Array.isArray(saved.drafts))
+          for (const [key, value] of saved.drafts) this.drafts.set(key, value);
+      },
+    );
+    effect(() => {
+      const id = this.selectedVialId();
+      if (id && id !== this.vialId()) this.selectVial(id);
+    });
+    effect(() => {
+      const results = this.savedResults();
+      const records: TrialRecord[] = [];
+      const covered: string[] = [];
+      for (const [index, result] of results.entries()) {
+        const trial = result.outputs;
+        const inputs = trial?.['inputs'] as Record<string, unknown> | undefined;
+        const output = trial?.['outputs'] as Record<string, unknown> | undefined;
+        const vial = this.vials.find((v) => v.vialId === inputs?.['specimen']);
+        const test = this.tests.find((t) => t.id === inputs?.['test']);
+        if (!vial || !test || !output) continue;
+        covered.push(`${test.id}::${vial.vialId}`);
+        records.push({
+          id: index,
+          vialCode: vial.code,
+          testTitle: test.title,
+          headline: String(output['reading'] ?? 'Recorded'),
+        });
+      }
+      if (records.length) {
+        this.trials.set(records.reverse());
+        this.covered.set([...new Set(covered)]);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.stopTimer();
+    this.flushDraft();
   }
 
   readonly activeTest = computed(
@@ -151,19 +219,41 @@ export class PropertiesLabComponent {
   }
 
   selectTest(id: PhysicalTestId): void {
-    if (this.running()) {
+    if (this.running() || id === this.testId()) {
       return;
     }
+    this.keepDraft();
     this.testId.set(id);
     this.resetTrial();
+    this.restoreDraft();
   }
 
   selectVial(id: string): void {
-    if (this.running()) {
+    if (this.running() || id === this.vialId()) {
       return;
     }
+    this.keepDraft();
     this.vialId.set(id);
     this.resetTrial();
+    this.restoreDraft();
+    this.vialChanged.emit(id);
+  }
+
+  private keepDraft(): void {
+    this.drafts.set(`${this.testId()}::${this.vialId()}`, {
+      observation: this.observation(),
+      result: this.phase() === 'settled' ? this.result() : undefined,
+    });
+  }
+  private restoreDraft(): void {
+    const draft = this.drafts.get(`${this.testId()}::${this.vialId()}`);
+    if (!draft) return;
+    this.observation.set(draft.observation);
+    if (draft.result) {
+      this.result.set(draft.result);
+      this.phase.set('settled');
+      this.progress.set(1);
+    }
   }
 
   setLightAngle(value: number): void {
@@ -256,6 +346,7 @@ export class PropertiesLabComponent {
       },
       note: this.observation().trim(),
     });
+    this.drafts.delete(`${this.testId()}::${this.vialId()}`);
     this.resetTrial();
   }
 

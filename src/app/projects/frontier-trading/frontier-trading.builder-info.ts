@@ -28,13 +28,13 @@ export const frontierTradingBuilderInfo: SimulationDecisionBuilderInfoDefinition
     },
     {
       label: 'Student game',
-      path: '/frontier-trading',
+      path: '/projects/frontier-trading-company',
       purpose: 'Current individual practice experience.',
       kind: 'app',
     },
     {
       label: 'Builder brief',
-      path: '/frontier-trading/builder-info',
+      path: '/projects/frontier-trading-company/builder-info',
       purpose: 'This current-state and roadmap page.',
       kind: 'app',
     },
@@ -52,9 +52,9 @@ export const frontierTradingBuilderInfo: SimulationDecisionBuilderInfoDefinition
       kind: 'source',
     },
     {
-      label: 'Feature routes',
-      path: 'src/app/features/frontier-trading/frontier-trading.routes.ts',
-      purpose: 'Student and builder-info Angular route composition.',
+      label: 'Template launcher',
+      path: 'src/app/runtime/project-launch/template-launchers/simulation-decision.launcher.ts',
+      purpose: 'Project package, runtime providers, and student/builder component composition.',
       kind: 'source',
     },
     {

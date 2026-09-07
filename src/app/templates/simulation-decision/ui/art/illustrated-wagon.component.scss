@@ -31,6 +31,14 @@
   user-select: none;
 }
 
+.wagon-photo-fallback {
+  border-radius: 48% 48% 30% 30%;
+  background:
+    radial-gradient(circle at 25% 78%, #34261d 0 9%, transparent 10%),
+    radial-gradient(circle at 75% 78%, #34261d 0 9%, transparent 10%),
+    linear-gradient(165deg, transparent 0 32%, #a9814f 33% 68%, transparent 69%);
+}
+
 .ground-shadow {
   position: absolute;
   z-index: 0;
@@ -66,6 +74,15 @@
 .package-stack img {
   position: absolute;
   inset: 0;
+}
+
+.cargo-fallback {
+  position: absolute;
+  inset: 15%;
+  border-radius: 0.2rem;
+  background: #b88851;
+  transform: translate(calc(var(--piece) * 8%), calc(var(--piece) * -14%))
+    scale(calc(1 - var(--piece) * 0.06));
 }
 
 .package-stack img {

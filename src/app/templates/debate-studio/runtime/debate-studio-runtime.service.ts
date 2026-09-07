@@ -44,7 +44,7 @@ import {
   DEBATE_STUDIO_SESSION,
   type DebateSessionLocator,
 } from '../persistence/debate-studio.persistence';
-import { DEBATE_STUDIO_CONFIG } from './debate-studio.tokens';
+import { DEBATE_STUDIO_CONFIG, DEBATE_STUDIO_TENANT_ID } from './debate-studio.tokens';
 
 export interface DebateChoiceView {
   readonly id: string;
@@ -57,12 +57,18 @@ export interface DebateChoiceView {
 @Injectable()
 export class DebateStudioRuntimeService {
   readonly config = inject(DEBATE_STUDIO_CONFIG);
+  private readonly tenantId = inject(DEBATE_STUDIO_TENANT_ID, { optional: true }) ?? 'local-preview';
   private readonly sessionAdapter = inject(DEBATE_STUDIO_SESSION);
   private readonly mediaAdapter = inject(DEBATE_STUDIO_MEDIA);
   private readonly workspacePersistence = inject(DEBATE_STUDIO_PERSISTENCE);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly seedSession = createInitialDebateSession(this.config);
+  private readonly seedSession = createInitialDebateSession(
+    this.config,
+    new Date().toISOString(),
+    this.tenantId,
+  );
   private readonly locator: DebateSessionLocator = {
+    tenantId: this.tenantId,
     projectId: this.config.projectId,
     projectVersion: this.config.projectVersion,
     classId: this.config.viewer.classId,

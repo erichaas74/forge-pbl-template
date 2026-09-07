@@ -110,6 +110,7 @@ header p {
 }
 
 .object-portrait::after {
+  pointer-events: none;
   position: absolute;
   inset: 0.5rem;
   border: 1px solid #fff5c763;
@@ -496,4 +497,22 @@ footer > p span {
   .embed-help {
     color: #221c18;
   }
+}
+.object-sources {
+  border-top: 1px solid #d9cdb5;
+  padding-top: 10px;
+  margin-top: 12px !important;
+}
+.object-sources small {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+.object-sources a,
+.object-sources span {
+  display: block;
+  color: #48605c;
+  font-size: 0.7rem;
+  line-height: 1.6;
+  margin-top: 4px;
 }

@@ -19,6 +19,11 @@ The built-in `Race Around the World` configuration proves the loop across five A
 ## Reusable capabilities
 
 - `livingJourneyMap` uses one latitude/longitude coordinate system for active navigation, replay, and class comparison.
+- The journey shell keeps `livingJourneyMap` mounted as the primary workspace. Chapter tasks, route facts, place reports, resources, logs, replay, and class views open as overlays above the same map instead of replacing it. Its immersive presentation removes the map's duplicate heading and footer bars; scale, zoom, and lens controls live in the scrollable chapter sheet.
+- Candidate routes are labeled, keyboard-operable map controls. Their destination pins are highlighted, selected routes retain a stronger highlight, and route inspection exposes configured distance, risk, wind, and rationale before the student commits the matching choice.
+- Optional `choice.planning` configuration keeps a step's primary goal choices editable while the learner investigates goal-specific map targets. Route, sponsor, and exploration modes share one target contract; each target can reference a location, route, comparison facts, and a configured decision response.
+- Each planning choice may define a reusable map focus. Selecting a goal can fit the world, restore the configured regional chart, or focus custom geographic bounds without remounting the map.
+- Planning selections and proposal text are student runtime data. They are preserved separately for each goal draft, validated before chapter completion, and copied into the recorded student response without modifying the published project package.
 - `journeyChoices` records a selected branch without modifying published project configuration.
 - `studentResponses` attaches text, transcript, and optional durable IndexedDB audio metadata to the correct step.
 - `journeyReplay` reconstructs scenes from saved choices, evidence, responses, consequences, mastery-evidence tags, and route points.
@@ -42,14 +47,14 @@ The `journey-replay` package descriptor requires:
 - `map.json`
 - `replay.json`
 
-Validation covers manifest/template identity, stable and duplicate IDs, coordinate route geometry, location/route/evidence references, and installed capabilities.
+Validation covers manifest/template identity, stable and duplicate IDs (including planning targets), coordinate route geometry, location/route/evidence/planning references, and installed capabilities.
 
 ## Reuse audit
 
 - Reused unchanged: shared template registry, project package loader, capability registry, validation service, asset storage contract, and IndexedDB asset adapter.
 - Extended generically: local template composition with the `journey-replay` registration.
 - Added trusted renderer: `living-journey-map-v1`.
-- Core contract changes: none.
+- Core contract changes: backward-compatible optional planning fields on journey choices and response drafts.
 - Project-specific code: only the Age of Exploration configuration and catalog entry.
 
 ## Authoritative runtime capabilities

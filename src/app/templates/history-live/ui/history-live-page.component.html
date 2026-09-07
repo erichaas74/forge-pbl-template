@@ -60,62 +60,117 @@
           <i></i><span><small>ASSIGNMENT</small>Unassigned</span>
         }
       </div>
-      <div class="header-meta">
-        <span>{{ runtime.viewer.classLabel }}</span>
-        <span class="save-state"
-          ><i></i
-          >{{
-            runtime.saveState() === 'saved'
-              ? runtime.isDemo
-                ? 'Saved on this device'
-                : 'Saved'
-              : runtime.saveState()
-          }}</span
+      <details class="header-meta">
+        <summary>My work</summary>
+        <div class="meta-menu-content">
+          <span>{{ runtime.viewer.classLabel }}</span>
+          <span class="save-state"
+            ><i></i
+            >{{
+              runtime.saveState() === 'saved'
+                ? runtime.isDemo
+                  ? 'Saved on this device'
+                  : 'Saved'
+                : runtime.saveState()
+            }}</span
+          >
+          @if (runtime.isDemo) {
+            <label>
+              <span class="sr-only">Demo view as</span>
+              <select [value]="runtime.state().role" (change)="chooseRole($event)">
+                <option value="student">Demo reporter</option>
+                <option value="producer">Demo producer</option>
+              </select>
+            </label>
+          }
+          <button type="button" (click)="runtime.exportWork()">Export work</button>
+        </div>
+      </details>
+      <nav class="story-progress" aria-label="News package progress">
+        <div
+          class="progress-meter"
+          aria-label="{{ runtime.completion() }} of 8 newsroom checks complete"
         >
-        @if (runtime.isDemo) {
-          <label>
-            <span class="sr-only">Demo view as</span>
-            <select [value]="runtime.state().role" (change)="chooseRole($event)">
-              <option value="student">Demo reporter</option>
-              <option value="producer">Demo producer</option>
-            </select>
-          </label>
-        }
-        <button type="button" (click)="runtime.exportWork()">Export work</button>
-      </div>
-    </header>
-
-    @if (runtime.isDemo) {
-      <p class="demo-banner">
-        Local demonstration · reviews are simulated by you; work and media stay in this browser.
-      </p>
-    }
-    <nav class="story-progress" aria-label="News package progress">
-      <div
-        class="progress-meter"
-        aria-label="{{ runtime.completion() }} of 8 newsroom checks complete"
-      >
-        <span [style.width.%]="runtime.completion() * 12.5"></span>
-      </div>
-      <div class="progress-scroll">
-        @for (stage of stages; track stage.id; let index = $index) {
-          @if (stage.id !== 'opening') {
-            <button
-              type="button"
-              [class.active]="runtime.state().stage === stage.id"
-              [class.available]="runtime.canOpen(stage.id)"
-              [attr.aria-disabled]="!runtime.canOpen(stage.id)"
-              [attr.aria-current]="runtime.state().stage === stage.id ? 'step' : null"
-              [title]="runtime.stageIssues(stage.id).join(' ')"
-              (click)="runtime.goTo(stage.id)"
-            >
-              <span>{{ index.toString().padStart(2, '0') }}</span
-              >{{ stage.shortLabel }}
-            </button>
+          <span [style.width.%]="runtime.completion() * 12.5"></span>
+        </div>
+        <div class="progress-scroll">
+          @for (stage of stages; track stage.id; let index = $index) {
+            @if (
+              stage.id !== 'opening' &&
+              (runtime.canOpen(stage.id) || runtime.state().stage === stage.id)
+            ) {
+              <button
+                type="button"
+                [class.active]="runtime.state().stage === stage.id"
+                [class.available]="runtime.canOpen(stage.id)"
+                [attr.aria-disabled]="!runtime.canOpen(stage.id)"
+                [attr.aria-current]="runtime.state().stage === stage.id ? 'step' : null"
+                [title]="runtime.stageIssues(stage.id).join(' ')"
+                (click)="runtime.goTo(stage.id)"
+              >
+                <span>{{ index.toString().padStart(2, '0') }}</span
+                >{{ stage.shortLabel }}
+              </button>
+            }
+          }
+        </div>
+      </nav>
+      @if (assignmentDesk(); as desk) {
+        @if (runtime.state().stage === 'assignment') {
+          <details class="desk-menu" #beatsMenu>
+            <summary>News beats</summary>
+            <div>
+              @for (beat of runtime.config.beats; track beat.id) {
+                <button type="button" (click)="desk.openBeat(beat.id); beatsMenu.open = false">
+                  {{ beat.label }}
+                </button>
+              }
+            </div>
+          </details>
+          <button type="button" (click)="runtime.pitchOwnStory()">+ My own story</button>
+        } @else {
+          <nav class="pitch-task-nav" aria-label="Pitch tasks">
+            @for (label of desk.pitchSteps; track label; let index = $index) {
+              @if (index <= desk.pitchStep() + 1) {
+                <button
+                  type="button"
+                  [attr.aria-current]="desk.pitchStep() === index ? 'step' : null"
+                  (click)="desk.setPitchStep(index)"
+                >
+                  {{ index + 1 }} · {{ label }}
+                </button>
+              }
+            }
+          </nav>
+          @if (desk.pitchStep() < desk.pitchSteps.length - 1) {
+            <button type="button" (click)="desk.setPitchStep(desk.pitchStep() + 1)">Next →</button>
           }
         }
-      </div>
-    </nav>
+      }
+      <app-task-guide title="Reporting guide"
+        ><p>
+          Follow a lead. Check its claims against sources. Show your audience what the evidence
+          supports.
+        </p>
+        <p>
+          Ask an answerable question. Separate facts from interpretations, name uncertainty, and
+          consider the other network's strongest challenge.
+        </p>
+        <p>
+          A document's publication date alone does not prove your reporter could access it. Check
+          the reporting date, place, and available sources.
+        </p>
+        <dl>
+          @for (criterion of runtime.config.rubric || []; track criterion.id) {
+            <dt>{{ criterion.label }}</dt>
+            <dd>{{ criterion.expectation }}</dd>
+          }
+        </dl>
+        @if (runtime.isDemo) {
+          <p>Local practice: reviews are simulated and your work stays on this device.</p>
+        }
+      </app-task-guide>
+    </header>
 
     @if (runtime.notification() || runtime.error()) {
       <div class="notice" [class.error]="runtime.error()" role="status">
@@ -126,91 +181,76 @@
       </div>
     }
 
-    <main class="newsroom-main" [attr.aria-busy]="runtime.busy()">
-      <details class="learning-rubric">
-        <summary>Reporting rubric and learning goals</summary>
-        <dl>
-          @for (criterion of runtime.config.rubric || []; track criterion.id) {
-            <dt>{{ criterion.label }}</dt>
-            <dd>{{ criterion.expectation }}</dd>
-          }
-        </dl>
-      </details>
-      @switch (runtime.state().stage) {
-        @case ('side') {
-          <section class="side-choice" aria-labelledby="choose-network-title">
-            <header class="station-heading">
-              <div>
-                <span>NEWSROOM CREDENTIALS · STEP 01</span>
-                <h1 id="choose-network-title">Choose your reporting network</h1>
-              </div>
-              <p>
-                Your network shapes your reporting lens. It never changes the standard for evidence.
-              </p>
-            </header>
+    <div
+      class="work-layout"
+      [class.has-research]="
+        runtime.state().stage !== 'side' && runtime.state().stage !== 'assignment'
+      "
+    >
+      <app-history-live-research-panel class="research-rail left-rail" side="left" />
+      <main class="newsroom-main" [attr.aria-busy]="runtime.busy()">
+        @switch (runtime.state().stage) {
+          @case ('side') {
+            <section class="side-choice" aria-labelledby="choose-network-title">
+              <header class="station-heading">
+                <div>
+                  <span>NEWSROOM CREDENTIALS · STEP 01</span>
+                  <h1 id="choose-network-title">Choose your reporting network</h1>
+                </div>
+                <p>
+                  Your network shapes your reporting lens. It never changes the standard for
+                  evidence.
+                </p>
+              </header>
 
-            <div class="network-stage">
-              @for (network of runtime.config.networks; track network.id) {
-                <article [class]="'network-card ' + network.side">
-                  <img
-                    class="network-art"
-                    [src]="network.deskImageUrl"
-                    [alt]="network.deskImageAlt"
-                  />
-                  <div class="network-signal"><span></span><i></i></div>
-                  <div class="network-monogram">{{ network.monogram || network.shortName }}</div>
-                  <span class="network-eyebrow"
-                    >{{ network.deskLabel }} · {{ network.deskLocationLabel }}</span
-                  >
-                  <h2>{{ network.name }}</h2>
-                  <p>{{ network.perspective }}</p>
-                  <ul>
-                    @for (community of network.communities || []; track community) {
-                      <li>{{ community }}</li>
-                    }
-                  </ul>
-                  <button type="button" (click)="chooseSide(network.side)">
-                    Join {{ network.shortName }} <span aria-hidden="true">→</span>
-                  </button>
-                </article>
-              }
-              <div class="versus" aria-hidden="true">
-                <span>CHOOSE</span><b>YOUR</b><span>LENS</span>
+              <div class="network-stage">
+                @for (network of runtime.config.networks; track network.id) {
+                  <article [class]="'network-card ' + network.side">
+                    <img
+                      class="network-art"
+                      [src]="network.deskImageUrl"
+                      [alt]="network.deskImageAlt"
+                    />
+                    <span class="network-eyebrow"
+                      >{{ network.deskLabel }} · {{ network.deskLocationLabel }}</span
+                    >
+                    <h2>{{ network.name }}</h2>
+                    <p>{{ network.perspective }}</p>
+                    <button type="button" (click)="chooseSide(network.side)">
+                      Join {{ network.shortName }} <span aria-hidden="true">→</span>
+                    </button>
+                  </article>
+                }
               </div>
-            </div>
-            <aside class="accuracy-rule">
-              <strong>THE HISTORY LIVE STANDARD</strong>
-              <p>Modern television style is fictional. Historical claims are not.</p>
-              <span>Evidence first</span><span>Fact ≠ interpretation</span
-              ><span>Challenge your own side</span>
-            </aside>
-          </section>
+            </section>
+          }
+          @case ('assignment') {
+            <app-history-live-assignment-desk />
+          }
+          @case ('pitch') {
+            <app-history-live-assignment-desk />
+          }
+          @case ('sources') {
+            <app-history-live-source-wall />
+          }
+          @case ('script') {
+            <app-history-live-script-desk />
+          }
+          @case ('production') {
+            <app-history-live-production-studio />
+          }
+          @case ('broadcast') {
+            <app-history-live-broadcast-player />
+          }
+          @case ('schedule') {
+            <app-history-live-producer-console />
+          }
+          @case ('showcase') {
+            <app-history-live-broadcast-player />
+          }
         }
-        @case ('assignment') {
-          <app-history-live-assignment-desk />
-        }
-        @case ('pitch') {
-          <app-history-live-assignment-desk />
-        }
-        @case ('sources') {
-          <app-history-live-source-wall />
-        }
-        @case ('script') {
-          <app-history-live-script-desk />
-        }
-        @case ('production') {
-          <app-history-live-production-studio />
-        }
-        @case ('broadcast') {
-          <app-history-live-broadcast-player />
-        }
-        @case ('schedule') {
-          <app-history-live-producer-console />
-        }
-        @case ('showcase') {
-          <app-history-live-broadcast-player />
-        }
-      }
-    </main>
+      </main>
+      <app-history-live-research-panel class="research-rail right-rail" side="right" />
+    </div>
   }
 </div>

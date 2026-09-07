@@ -1,4 +1,5 @@
 import { stageIssues } from './history-live-quality';
+import type { RuntimeScope } from '../../../core/state/runtime-state-contracts';
 import type {
   BroadcastSegment,
   HistoryLivePitch,
@@ -41,8 +42,10 @@ export const EMPTY_PITCH: HistoryLivePitch = {
 
 export function createInitialHistoryLiveState(
   config: HistoryLiveProjectConfig,
+  runtimeScope?: RuntimeScope,
 ): HistoryLiveRuntimeState {
   return {
+    runtimeScope,
     schemaVersion: '1.0',
     revision: 1,
     stage: 'opening',
@@ -103,17 +106,29 @@ export function createInitialHistoryLiveState(
   };
 }
 
+export function pitchMissingRequirements(pitch: HistoryLivePitch): readonly string[] {
+  const fields = [
+    ['News beat', pitch.beatId, 1],
+    ['Working headline', pitch.headline, 8],
+    ['Story question', pitch.storyQuestion, 12],
+    ['Why this deserves airtime', pitch.whyAirtime, 12],
+    ['Evidence you need', pitch.evidenceNeeded, 8],
+    ['Initial prediction', pitch.initialPrediction, 12],
+    ['Opposing-network check', pitch.opposingChallenge, 12],
+  ] as const;
+  const missing = fields
+    .filter(([, value, minimum]) => value.trim().length < minimum)
+    .map(
+      ([label, , minimum]) =>
+        `${label}: ${minimum === 1 ? 'choose a beat' : `at least ${minimum} characters`}`,
+    );
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(pitch.asOfDate ?? ''))
+    missing.push('Report as of: choose a date');
+  return missing;
+}
+
 export function isPitchReady(pitch: HistoryLivePitch): boolean {
-  return (
-    pitch.beatId.trim().length > 0 &&
-    pitch.headline.trim().length >= 8 &&
-    pitch.storyQuestion.trim().length >= 12 &&
-    pitch.whyAirtime.trim().length >= 12 &&
-    pitch.evidenceNeeded.trim().length >= 8 &&
-    pitch.initialPrediction.trim().length >= 12 &&
-    pitch.opposingChallenge.trim().length >= 12 &&
-    /^\d{4}-\d{2}-\d{2}$/.test(pitch.asOfDate ?? '')
-  );
+  return pitchMissingRequirements(pitch).length === 0;
 }
 
 export function canOpenStage(state: HistoryLiveRuntimeState, stage: HistoryLiveStage): boolean {

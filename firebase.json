@@ -1,0 +1,33 @@
+{
+  "apphosting": {
+    "backendId": "forge-pbl-template",
+    "rootDir": ".",
+    "alwaysDeployFromSource": true,
+    "ignore": [
+      "node_modules",
+      ".git",
+      ".angular",
+      "dist",
+      "tmp",
+      "coverage",
+      "**/*-serve.log",
+      "**/*-serve.err.log",
+      "docs/*.md",
+      "docs/**/*.md",
+      "docs/architecture",
+      "docs/exhibit-hall",
+      "docs/journey-replay/audit",
+      "docs/narrative-studio",
+      "public/exhibit-hall/afterlife-3d.png",
+      "public/exhibit-hall/builders-3d.png",
+      "public/exhibit-hall/nile-life-3d.png",
+      "public/exhibit-hall/scribes-power-3d.png",
+      "public/history-live/british-assignment-newsroom.png",
+      "public/history-live/continental-news-desk-v2.png",
+      "public/history-live/crown-news-desk-v2.png",
+      "public/history-live/patriot-assignment-newsroom.png",
+      "firebase-debug.log",
+      "firebase-debug.*.log"
+    ]
+  }
+}

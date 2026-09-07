@@ -1,7 +1,9 @@
 import {
   Component,
   ElementRef,
+  Injector,
   OnDestroy,
+  afterNextRender,
   computed,
   inject,
   signal,
@@ -18,8 +20,21 @@ import {
 import type { RouteDefinition, RouteHistoryEntry } from '../../domain/simulation-decision.models';
 import { SimulationDecisionRuntimeService } from '../../runtime/simulation-decision-runtime.service';
 import { ReviewDialogDirective } from '../review-dialog.directive';
-import { RouteAtlasComponent, type AtlasTrail } from '../map/route-atlas.component';
+import {
+  RouteAtlasComponent,
+  type AtlasTrail,
+  type AtlasMarketPrice,
+} from '../map/route-atlas.component';
 import { ChoiceProgressionPanelComponent } from '../progression/choice-progression-panel.component';
+
+export interface RoutePriceProjection {
+  readonly goodId: string;
+  readonly name: string;
+  readonly icon: string;
+  readonly buyPriceCents: number;
+  readonly sellPriceCents: number;
+  readonly marginCents: number;
+}
 
 @Component({
   selector: 'app-simulation-route-map',
@@ -33,6 +48,7 @@ import { ChoiceProgressionPanelComponent } from '../progression/choice-progressi
   styleUrl: './route-map.component.scss',
 })
 export class SimulationRouteMapComponent implements OnDestroy {
+  private readonly injector = inject(Injector);
   readonly runtime = inject(SimulationDecisionRuntimeService);
   readonly plan = this.runtime.planning.at(this.runtime.state().currentLocationId);
   readonly progression = computed(() =>
@@ -41,13 +57,19 @@ export class SimulationRouteMapComponent implements OnDestroy {
   readonly availableRouteCount = computed(
     () => this.progression().currentStage.availableRouteIds.length,
   );
-  readonly reachableRoutes = computed(() =>
+  readonly routeOptions = computed(() =>
     this.runtime.config.routes.filter(
-      (route) =>
-        route.fromLocationId === this.runtime.state().currentLocationId &&
-        routeIsUnlocked(this.runtime.config, this.runtime.state(), route.id),
+      (route) => route.fromLocationId === this.runtime.state().currentLocationId,
     ),
   );
+  readonly reachableRoutes = computed(() =>
+    this.routeOptions().filter((route) => this.routeUnlocked(route)),
+  );
+  readonly planningGoods = computed(() => {
+    const unlockedIds = new Set(this.progression().currentStage.availableGoodIds);
+    this.runtime.state().inventory.forEach((item) => unlockedIds.add(item.goodId));
+    return this.runtime.config.goods.filter((good) => unlockedIds.has(good.id));
+  });
   readonly selectedRouteId = this.plan.routeId;
   readonly compareIds = this.plan.compareIds;
   readonly rationale = computed(() => this.plan.rationales()[this.selectedRouteId()] ?? '');
@@ -61,13 +83,49 @@ export class SimulationRouteMapComponent implements OnDestroy {
   readonly journeyLaunching = signal(false);
   readonly compareOnly = signal(false);
   readonly historyOpen = signal(false);
-  readonly plannerOpen = signal(this.selectedRouteId().length > 0);
+  readonly plannerOpen = signal(false);
+  readonly predictionOpen = signal(false);
+  readonly highlightedRouteId = signal('');
+  readonly predictionPanel = viewChild<ElementRef<HTMLElement>>('predictionPanel');
   readonly atlas = viewChild(RouteAtlasComponent);
   readonly tripCard = viewChild<ElementRef<HTMLElement>>('tripCard');
   readonly historyPanel = viewChild<ElementRef<HTMLDetailsElement>>('historyPanel');
   private launchTimer?: ReturnType<typeof setTimeout>;
   readonly selectedRoute = computed(() =>
     this.reachableRoutes().find((route) => route.id === this.selectedRouteId()),
+  );
+  readonly highlightedRoute = computed(() =>
+    this.routeOptions().find((route) => route.id === this.highlightedRouteId()),
+  );
+  readonly currentMarketPrices = computed<readonly AtlasMarketPrice[]>(() => {
+    const state = this.runtime.state();
+    if (state.activeTravel) return [];
+    const available = new Set(this.progression().currentStage.availableGoodIds);
+    return this.runtime.config.goods
+      .filter((good) => available.has(good.id))
+      .flatMap((good) => {
+        const price = marketPrice(this.runtime.config, state.currentLocationId, good.id, 'buy');
+        return price === undefined
+          ? []
+          : [{ goodId: good.id, name: good.name, price: this.runtime.money(price) }];
+      });
+  });
+  readonly destinationMarkets = computed<Readonly<Record<string, readonly AtlasMarketPrice[]>>>(
+    () =>
+      this.runtime.state().activeTravel
+        ? {}
+        : Object.fromEntries(
+            this.reachableRoutes()
+              .filter((route) => this.compatible(route))
+              .map((route) => [
+                route.toLocationId,
+                this.routePriceProjections(route).map((price) => ({
+                  goodId: price.goodId,
+                  name: price.name,
+                  price: this.runtime.money(price.sellPriceCents),
+                })),
+              ]),
+          ),
   );
   readonly selectedDestination = computed(() =>
     this.runtime.config.locations.find(
@@ -134,7 +192,11 @@ export class SimulationRouteMapComponent implements OnDestroy {
   ]);
   readonly mapRouteId = computed(
     () =>
-      this.activeRoute()?.id ?? (this.selectedRouteId() || this.journeyHistory()[0]?.routeId || ''),
+      this.activeRoute()?.id ??
+      ((this.predictionOpen() ? this.highlightedRouteId() : '') ||
+        this.selectedRouteId() ||
+        this.journeyHistory()[0]?.routeId ||
+        ''),
   );
   readonly mapTravel = computed(() => {
     const route = this.activeRoute();
@@ -149,6 +211,7 @@ export class SimulationRouteMapComponent implements OnDestroy {
   readonly atlasTrails = computed<readonly AtlasTrail[]>(() =>
     this.runtime.config.routes.map((route) => ({
       route,
+      costLabel: this.runtime.money(route.supplyCostCents),
       compared: this.compareIds().includes(route.id),
       state:
         route.id === this.activeRoute()?.id
@@ -203,16 +266,62 @@ export class SimulationRouteMapComponent implements OnDestroy {
   compatible(route: RouteDefinition): boolean {
     return routeIsCompatible(this.runtime.config, this.runtime.state(), route);
   }
+  routeUnlocked(route: RouteDefinition): boolean {
+    return routeIsUnlocked(this.runtime.config, this.runtime.state(), route.id);
+  }
+  highlightRoute(routeId: string): void {
+    if (
+      !this.plannerOpen() &&
+      !this.predictionOpen() &&
+      !this.runtime.state().activeTravel &&
+      this.routeOptions().some((route) => route.id === routeId)
+    ) {
+      this.highlightedRouteId.set(routeId);
+    }
+  }
+  previewRoute(routeId: string): void {
+    if (this.runtime.state().activeTravel) return;
+    if (this.predictionOpen() && this.highlightedRouteId() === routeId) {
+      this.closePrediction();
+      return;
+    }
+    this.plannerOpen.set(false);
+    this.predictionOpen.set(false);
+    this.highlightRoute(routeId);
+    if (this.routeOptions().some((route) => route.id === routeId)) {
+      this.predictionOpen.set(true);
+      this.atlas()?.revealRoutePrediction(routeId);
+      this.afterViewChange(() => this.focusPanel(this.predictionPanel()?.nativeElement));
+    } else if (this.journeyHistory().some((entry) => entry.routeId === routeId)) {
+      this.showJourneyRecord();
+    }
+  }
+  closePrediction(): void {
+    this.atlas()?.focusRouteCost(this.highlightedRouteId());
+    this.predictionOpen.set(false);
+  }
+  chooseRoute(routeId: string): void {
+    this.highlightRoute(routeId);
+    if (this.routeOptions().some((route) => route.id === routeId && this.routeUnlocked(route))) {
+      this.selectRoute(routeId);
+    }
+  }
   selectRoute(routeId: string): void {
     if (this.reachableRoutes().some((route) => route.id === routeId)) {
+      this.highlightedRouteId.set(routeId);
       this.selectedRouteId.set(routeId);
+      this.predictionOpen.set(false);
       this.plannerOpen.set(true);
-      this.afterViewChange(() => this.atlas()?.focusRoute());
+      this.afterViewChange(() => this.focusPanel(this.tripCard()?.nativeElement));
     } else if (this.journeyHistory().some((entry) => entry.routeId === routeId)) {
       this.showJourneyRecord();
     }
   }
   showTripDetails(): void {
+    if (this.predictionOpen()) {
+      this.afterViewChange(() => this.focusPanel(this.predictionPanel()?.nativeElement));
+      return;
+    }
     if (!this.reachableRoutes().length && this.journeyHistory().length) {
       this.showJourneyRecord();
       return;
@@ -222,7 +331,10 @@ export class SimulationRouteMapComponent implements OnDestroy {
   }
   closePlanner(): void {
     this.plannerOpen.set(false);
-    this.afterViewChange(() => this.atlas()?.focusSelected());
+    this.afterViewChange(() => {
+      this.atlas()?.focusSelected();
+      this.predictionOpen.set(false);
+    });
   }
   showJourneyRecord(): void {
     this.historyOpen.set(true);
@@ -238,9 +350,12 @@ export class SimulationRouteMapComponent implements OnDestroy {
     element?.focus({ preventScroll: true });
   }
   private afterViewChange(callback: () => void): void {
-    queueMicrotask(() => {
-      if (!this.destroyed) callback();
-    });
+    afterNextRender(
+      () => {
+        if (!this.destroyed) callback();
+      },
+      { injector: this.injector },
+    );
   }
   pinHistory(entry: RouteHistoryEntry): void {
     const route = entry.knownInfoSnapshot;
@@ -278,6 +393,32 @@ export class SimulationRouteMapComponent implements OnDestroy {
   }
   goodName(goodId: string): string {
     return this.runtime.config.goods.find((good) => good.id === goodId)?.name ?? goodId;
+  }
+  routePriceProjections(route: RouteDefinition): readonly RoutePriceProjection[] {
+    return this.planningGoods().map((good) => {
+      const buyPriceCents =
+        marketPrice(this.runtime.config, this.runtime.state().currentLocationId, good.id, 'buy') ??
+        0;
+      const sellPriceCents =
+        marketPrice(this.runtime.config, route.toLocationId, good.id, 'sell') ?? 0;
+      return {
+        goodId: good.id,
+        name: good.name,
+        icon: good.icon,
+        buyPriceCents,
+        sellPriceCents,
+        marginCents: sellPriceCents - buyPriceCents,
+      };
+    });
+  }
+  routeRiskPrediction(route: RouteDefinition): string {
+    if (route.risk === 'low') {
+      return 'Fewer interruptions are expected, but the crew should still protect a small cash reserve.';
+    }
+    if (route.risk === 'moderate') {
+      return 'Plan for a weather delay, crossing cost, or repair expense before counting the profit.';
+    }
+    return 'Difficult terrain raises the chance of delays, emergency costs, or damaged cargo.';
   }
   toggleCompare(routeId: string): void {
     this.compareIds.update((ids) =>

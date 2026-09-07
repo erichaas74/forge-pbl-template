@@ -22,6 +22,8 @@ export interface CommandExecutionContext<TDefinitions = unknown> {
   definitions?: TDefinitions;
   stateDefinitions?: ReadonlyMap<string, StateVariableConstraint>;
   authorityMode?: 'localMock' | 'serverConfirmed';
+  /** Explicitly enabled only by local/demo composition roots. */
+  allowLocalAuthorityBypass?: boolean;
 }
 
 export interface CommandExecutionResult<TSnapshot = unknown> {

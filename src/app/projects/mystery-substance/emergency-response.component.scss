@@ -630,8 +630,22 @@ h3 {
   }
 }
 
-@media (max-width: 60rem) {
+@container (max-width: 60rem) {
   .bay-grid {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+:host {
+  container-type: inline-size;
+}
+:host(.workbench-station) {
+  position: relative;
+  inset: auto;
+}
+:host(.workbench-station) .bay-canvas {
+  position: relative;
+  inset: auto;
+  min-height: 34rem;
+  overflow: visible;
 }

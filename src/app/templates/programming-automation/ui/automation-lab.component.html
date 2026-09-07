@@ -1,0 +1,225 @@
+<main class="lab">
+  <header class="masthead">
+    <div class="brand-icon" aria-hidden="true">⌘</div>
+    <div>
+      <p>PROGRAMMING & AUTOMATION · GRADE 5</p>
+      <h1>{{ runtime.config.title }}</h1>
+    </div>
+    <span class="save" role="status">{{
+      runtime.sample ? 'Finished student example' : runtime.saveStatus()
+    }}</span>
+  </header>
+  <nav class="main-nav" aria-label="Lab sections">
+    <button [class.active]="panel() === 'workspace'" (click)="panel.set('workspace')">
+      Mission control</button
+    ><button [class.active]="panel() === 'evidence'" (click)="panel.set('evidence')">
+      Trials & portfolio <span>{{ runtime.state().trials.length }}</span></button
+    ><button [class.active]="panel() === 'championship'" (click)="panel.set('championship')">
+      Championship
+    </button>
+  </nav>
+  @if (panel() === 'workspace') {
+    <section class="mission">
+      <div class="mission-choice">
+        <label for="robot-mission">YOUR MISSION</label
+        ><select
+          id="robot-mission"
+          [value]="runtime.challenge().id"
+          (change)="choose($any($event.target).value)"
+        >
+          @for (challenge of runtime.config.challenges; track challenge.id) {
+            <option
+              [value]="challenge.id"
+              [selected]="challenge.id === runtime.challenge().id"
+              [disabled]="
+                challenge.id === runtime.config.championshipChallengeId &&
+                !runtime.state().championship.revealed
+              "
+            >
+              Week {{ challenge.week }} · {{ challenge.title
+              }}{{ runtime.state().drafts[challenge.id].completedAt ? ' ✓' : '' }}
+            </option>
+          }
+        </select>
+      </div>
+      <div>
+        <p>{{ runtime.challenge().mission }}</p>
+        <details>
+          <summary>Need a starting point?</summary>
+          <p>{{ runtime.challenge().hint }}</p>
+        </details>
+      </div>
+    </section>
+    <nav class="mobile-nav" aria-label="Workspace panes">
+      @for (pane of ['course', 'code', 'math']; track pane) {
+        <button [class.active]="mobilePane() === pane" (click)="mobilePane.set(pane)">
+          {{ pane === 'course' ? 'Course' : pane === 'code' ? 'Code' : 'Math' }}
+        </button>
+      }
+    </nav>
+    <div class="workspace">
+      <section class="course-panel" [class.mobile-hidden]="mobilePane() !== 'course'">
+        <div class="section-top">
+          <div>
+            <small>TEST</small>
+            <h2>{{ shownCourse().name }}</h2>
+          </div>
+          <span class="live-badge">{{
+            replay.playing() ? '● Replaying' : replayMode() ? 'Recorded trial' : '● Ready'
+          }}</span>
+        </div>
+        <div class="course-toolbar">
+          <label
+            >Parking target<select
+              aria-label="Parking target"
+              [value]="shownTarget()"
+              (change)="changeTarget($any($event.target).value)"
+              [disabled]="!runtime.canEdit() || replayMode()"
+            >
+              @for (target of shownCourse().targets; track $index) {
+                <option [value]="$index" [selected]="$index === shownTarget()">
+                  {{ target.label }}
+                </option>
+              }
+            </select></label
+          ><label class="check"
+            ><input
+              type="checkbox"
+              [checked]="trace()"
+              (change)="trace.set($any($event.target).checked)"
+            />Show path</label
+          >
+        </div>
+        <div class="run-controls">
+          @if (!replayMode()) {
+            <button
+              class="run"
+              (click)="run()"
+              [disabled]="runtime.sample || !runtime.draft().program.commands.length"
+            >
+              ▶ Run program
+            </button>
+          } @else {
+            <button class="run" (click)="replay.playing() ? replay.pause() : replay.play()">
+              {{ replay.playing() ? 'Ⅱ Pause' : '▶ Play replay' }}</button
+            ><button (click)="replay.step()" [disabled]="replay.playing()">Step</button
+            ><button (click)="replay.reset()">Reset replay</button>
+            @if (!runtime.sample) {
+              <button (click)="edit()">Edit current program</button>
+            }
+          }
+          <label
+            >Speed<select
+              aria-label="Replay speed"
+              [value]="replay.speed()"
+              (change)="replay.speed.set(+$any($event.target).value)"
+            >
+              <option value="0.5">0.5×</option>
+              <option value="1">1×</option>
+              <option value="2">2×</option>
+              <option value="4">4×</option>
+            </select></label
+          >
+        </div>
+        <app-robot-course
+          [course]="shownCourse()"
+          [targetIndex]="shownTarget()"
+          [sample]="replay.current()"
+          [samples]="replay.trial()?.pathSamples ?? []"
+          [showTrace]="trace()"
+        />
+        <div class="telemetry">
+          <div>
+            <small>POSITION</small
+            ><strong
+              >{{ pose().xCm | number: '1.0-1' }}, {{ pose().yCm | number: '1.0-1' }}
+              <em>cm</em></strong
+            >
+          </div>
+          <div>
+            <small>HEADING</small><strong>{{ pose().headingDeg | number: '1.0-0' }}°</strong>
+          </div>
+          <div>
+            <small>TIME</small
+            ><strong>{{ replay.timeMs() / 1000 | number: '1.1-1' }} <em>s</em></strong>
+          </div>
+          <div>
+            <small>BATTERY USED</small
+            ><strong
+              >{{ replay.current()?.batteryUsed ?? 0 | number: '1.1-1' }}
+              <em
+                >/
+                {{
+                  runtime.challenge().batteryCapacity ?? runtime.config.robot.batteryCapacity
+                }}</em
+              ></strong
+            >
+          </div>
+        </div>
+
+        @if (replayMode()) {
+          <label class="scrubber"
+            >Replay timeline<input
+              type="range"
+              min="0"
+              [max]="replay.duration()"
+              step="50"
+              [value]="replay.timeMs()"
+              (input)="replay.seek(+$any($event.target).value)"
+          /></label>
+        }
+        @if (replay.trial(); as trial) {
+          <div class="run-result" [class.success]="trial.completedMission">
+            <strong>{{
+              trial.completedMission ? '✓ Mission complete' : 'Review your result'
+            }}</strong>
+            <p>{{ trial.stoppedReason }}</p>
+            <div>
+              {{ trial.distanceCm | number: '1.0-1' }} cm travelled ·
+              {{ trial.stoppingErrorCm | number: '1.0-1' }} cm parking error ·
+              {{ trial.deliveriesCompleted }} deliveries · {{ trial.collisions }} collisions
+            </div>
+            <button (click)="panel.set('evidence')">Compare trials & explain your changes →</button>
+          </div>
+          <details class="events">
+            <summary>Command results</summary>
+            @for (event of trial.events; track $index) {
+              <button (click)="replay.seek(event.timeMs); runtime.selectCommand(event.commandId)">
+                {{ event.timeMs / 1000 | number: '1.1-1' }} s · {{ event.message }}
+              </button>
+            }
+          </details>
+        } @else {
+          <div class="first-steps">
+            <strong>01 Calculate → 02 Code → 03 Test</strong>
+            <p>
+              Start by choosing a command in Your program. The robot follows exactly what you write.
+            </p>
+          </div>
+        }
+      </section>
+      <section class="code-panel" [class.mobile-hidden]="mobilePane() !== 'code'">
+        <app-command-editor
+          [snapshot]="replayMode() ? replay.trial()?.version?.program : undefined"
+          [activeId]="replay.current()?.activeCommandId ?? ''"
+        />
+      </section>
+      <section class="math-panel" [class.mobile-hidden]="mobilePane() !== 'math'">
+        <app-math-workbench [allowLink]="!replayMode()" />
+      </section>
+    </div>
+  } @else if (panel() === 'evidence') {
+    <section class="wide-panel"><app-automation-evidence (replay)="showTrial($event)" /></section>
+  } @else {
+    <section class="wide-panel">
+      <app-championship-panel
+        (replay)="showTrial($event)"
+        (selected)="edit(); panel.set('workspace')"
+      />
+    </section>
+  }
+  <footer>
+    <p role="status">{{ runtime.message() }}</p>
+    <span>Think in centimeters. Build with evidence.</span>
+  </footer>
+</main>

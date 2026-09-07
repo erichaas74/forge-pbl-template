@@ -54,7 +54,11 @@
                 <button type="button" (click)="runtime.speak(turn.transcript ?? '')">
                   Read transcript aloud
                 </button>
-                <button type="button" (click)="runtime.markOpponentPlaybackComplete()">
+                <button
+                  type="button"
+                  [disabled]="passageIndex() < runtime.opponentPassages().length - 1"
+                  (click)="runtime.markOpponentPlaybackComplete()"
+                >
                   I finished reading the full transcript
                 </button>
               }
@@ -71,27 +75,54 @@
                 <span>Captions and argument marking</span
                 ><strong>Select the claim, then name what you will do with it.</strong>
               </header>
-              @for (passage of runtime.opponentPassages(); track passage) {
-                <section class="passage" [class.marked]="runtime.annotationFor(passage)">
-                  <blockquote>“{{ passage }}”</blockquote>
-                  <div class="passage-marks">
-                    @for (mark of argumentMarks; track mark.value) {
-                      <button
-                        type="button"
-                        [class.selected]="runtime.annotationFor(passage)?.marker === mark.value"
-                        [attr.aria-pressed]="runtime.annotationFor(passage)?.marker === mark.value"
-                        (click)="runtime.markOpponentPassage(passage, mark.value)"
-                      >
-                        {{ mark.label }}
-                      </button>
-                    }
-                  </div>
-                </section>
+              <nav class="passage-navigation" aria-label="Argument passages">
+                <button
+                  type="button"
+                  [disabled]="passageIndex() === 0"
+                  (click)="setPassage(passageIndex() - 1)"
+                >
+                  ← Previous passage
+                </button>
+                <span
+                  >Passage {{ passageIndex() + 1 }} of {{ runtime.opponentPassages().length }}</span
+                >
+                <button
+                  type="button"
+                  [disabled]="passageIndex() >= runtime.opponentPassages().length - 1"
+                  (click)="setPassage(passageIndex() + 1)"
+                >
+                  Next passage →
+                </button>
+              </nav>
+              @for (passage of runtime.opponentPassages(); track passage; let index = $index) {
+                @if (index === passageIndex()) {
+                  <section class="passage" [class.marked]="runtime.annotationFor(passage)">
+                    <blockquote>“{{ passage }}”</blockquote>
+                    <div class="passage-marks">
+                      @for (mark of argumentMarks; track mark.value) {
+                        <button
+                          type="button"
+                          [class.selected]="runtime.annotationFor(passage)?.marker === mark.value"
+                          [attr.aria-pressed]="
+                            runtime.annotationFor(passage)?.marker === mark.value
+                          "
+                          (click)="runtime.markOpponentPassage(passage, mark.value)"
+                        >
+                          {{ mark.label }}<small>{{ markerHelp[mark.value] }}</small>
+                        </button>
+                      }
+                    </div>
+                  </section>
+                }
               }
             </article>
           </div>
 
           <footer class="station-actions">
+            <small
+              >Read or play the full argument and mark at least one claim. Use the final passage to
+              confirm you finished reading.</small
+            >
             <span
               >{{ runtime.state().annotations.length }} opponent claim{{
                 runtime.state().annotations.length === 1 ? '' : 's'

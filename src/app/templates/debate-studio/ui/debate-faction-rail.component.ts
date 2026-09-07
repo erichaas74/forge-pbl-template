@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
 
 import type { DebateFaction, DebateTurn } from '../domain/debate-studio.models';
 import { DebateStudioRuntimeService } from '../runtime/debate-studio-runtime.service';
@@ -19,7 +19,12 @@ export class DebateFactionRailComponent {
   readonly runtime = inject(DebateStudioRuntimeService);
   readonly faction = input.required<DebateFaction>();
   readonly side = input.required<'left' | 'right'>();
+  readonly turnSelected = output<string>();
+  readonly buildRequested = output<void>();
+  readonly evidenceRequested = output<void>();
   readonly expandedTurnId = signal<string | undefined>(undefined);
+  readonly replayTurnId = signal<string | undefined>(undefined);
+  readonly evidenceTurnId = signal<string | undefined>(undefined);
 
   readonly turns = computed(() =>
     this.runtime
@@ -50,12 +55,30 @@ export class DebateFactionRailComponent {
     return this.hasIncomingArgument() && this.runtime.previousOpponentTurn()?.id === turn.id;
   }
 
-  toggleReplay(turn: DebateTurn): void {
+  toggleTurn(turn: DebateTurn): void {
+    this.expandedTurnId.update((id) => (id === turn.id ? undefined : turn.id));
+    this.replayTurnId.set(undefined);
+    this.evidenceTurnId.set(undefined);
+  }
+
+  hearTurn(turn: DebateTurn): void {
     if (turn.recording === undefined) {
       this.runtime.speak(turn.transcript ?? '');
       return;
     }
-    this.expandedTurnId.update((id) => (id === turn.id ? undefined : turn.id));
+    this.replayTurnId.update((id) => (id === turn.id ? undefined : turn.id));
+  }
+
+  toggleEvidence(turn: DebateTurn): void {
+    this.evidenceTurnId.update((id) => (id === turn.id ? undefined : turn.id));
+  }
+
+  evidenceTitle(evidenceId: string): string {
+    return this.runtime.config.evidence.find((item) => item.id === evidenceId)?.title ?? evidenceId;
+  }
+
+  reviewTurn(turn: DebateTurn): void {
+    this.turnSelected.emit(turn.id);
   }
 
   openIncoming(): void {
@@ -63,7 +86,7 @@ export class DebateFactionRailComponent {
   }
 
   openResponse(): void {
-    this.runtime.openStation('lectern');
+    this.buildRequested.emit();
   }
 
   romanNumeral(turn: DebateTurn): string {

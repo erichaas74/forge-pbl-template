@@ -1,0 +1,45 @@
+{
+  "welcome": [
+    {
+      "speaker": "scientist",
+      "text": "Welcome, junior scientist! Professor Pip here. Two samples. Same color. Same appearance. Obviously the same substance. Case closed! I would test them, of course, but my genius is usually faster. See that big button? You may confirm my brilliance.",
+      "audioUrl": "/project-intros/lab-surprise/welcome-scientist.wav"
+    },
+    {
+      "speaker": "robot",
+      "text": "Beep. Confidence: one hundred percent. Evidence collected: zero. I recommend the button.",
+      "audioUrl": "/project-intros/lab-surprise/welcome-robot.wav"
+    }
+  ],
+  "testing": [
+    {
+      "speaker": "scientist",
+      "text": "And sample A turns blue. Beautiful. Completely predicta...",
+      "audioUrl": "/project-intros/lab-surprise/testing-scientist.wav"
+    }
+  ],
+  "reveal": [
+    {
+      "speaker": "scientist",
+      "text": "Excellent! We have discovered two things. Appearances can fool us... and I need a hat. You saw that, right? Same-looking liquids. Different color results. My theory could use a little work. So could my hair.",
+      "audioUrl": "/project-intros/lab-surprise/reveal-scientist.wav"
+    },
+    {
+      "speaker": "robot",
+      "text": "Updating case file. Sample A: blue. Sample B: pink. Updating hairstyle: spectacular. The giant puff is our cartoon joke. The different colors are our evidence.",
+      "audioUrl": "/project-intros/lab-surprise/reveal-robot.wav"
+    }
+  ],
+  "handoff": [
+    {
+      "speaker": "robot",
+      "text": "Four unlabeled vials. One unsolved case. Perhaps YOU should lead this investigation. Collect observations. Compare tests. Find the evidence that Professor Pip skipped.",
+      "audioUrl": "/project-intros/lab-surprise/handoff-robot.wav"
+    },
+    {
+      "speaker": "scientist",
+      "text": "I shall supervise! From a slightly greater distance. Go on, detective. Give those mystery vials an explanation worth believing. And if anyone asks, this hairstyle was intentional.",
+      "audioUrl": "/project-intros/lab-surprise/handoff-scientist.wav"
+    }
+  ]
+}

@@ -5,94 +5,480 @@
         <span>{{ step.kicker }}</span>
         <h2 id="journey-step-title">Chapter {{ step.chapter }} · {{ step.title }}</h2>
       </div>
-      <small>{{ runtime.state().completedSteps.length + 1 }} / {{ runtime.config.steps.length }}</small>
+      <small
+        >{{ runtime.state().completedSteps.length + 1 }} / {{ runtime.config.steps.length }}</small
+      >
     </header>
 
-    <p class="mission">{{ step.mission }}</p>
-    <fieldset>
-      <legend>{{ step.choicePrompt }}</legend>
-      <div class="choices">
-        @for (choice of step.choices; track choice.id) {
-          <button
-            type="button"
-            [class.selected]="runtime.choice()?.id === choice.id"
-            [attr.aria-pressed]="runtime.choice()?.id === choice.id"
-            (click)="runtime.selectChoice(choice.id)"
-          >
-            <span>{{ choice.label }}</span>
-            <small>{{ choice.summary }}</small>
-          </button>
-        }
-      </div>
-    </fieldset>
+    @if (runtime.choice(); as selected) {
+      <p class="selected-choice">
+        Your decision: <strong>{{ selected.label }}</strong>
+      </p>
+    }
+    <div
+      class="step-body"
+      tabindex="-1"
+      role="region"
+      [attr.aria-label]="workSteps[workStep()] + ' task content — scroll for details'"
+    >
+      <div [hidden]="workStep() !== 0">
+        @if (step.choices[0]?.planning) {
+          <section class="mission-planning" aria-labelledby="mission-planning-title">
+            @if (runtime.choice(); as choice) {
+              @if (choice.planning; as planning) {
+                <span>{{
+                  planning.mode === 'sponsor' ? 'Sponsor planning' : 'Voyage planning'
+                }}</span>
+                <h3 id="mission-planning-title">{{ planning.targetPrompt }}</h3>
+                <p>{{ planning.prompt }}</p>
+                <p class="map-instruction">
+                  Select a highlighted place or route on the map, or inspect an option below.
+                </p>
+                <div class="planning-targets" role="list" [attr.aria-label]="planning.targetPrompt">
+                  @for (target of planning.targets; track target.id) {
+                    <button
+                      type="button"
+                      role="listitem"
+                      [class.inspected]="inspectedPlanningTarget()?.id === target.id"
+                      [class.selected]="
+                        runtime.state().responseDraft.planningTargetId === target.id
+                      "
+                      (click)="inspectPlanningTarget(target.id)"
+                    >
+                      <strong>{{ target.label }}</strong>
+                      <small>{{ target.summary }}</small>
+                    </button>
+                  }
+                </div>
 
-    @if (runtime.choice(); as choice) {
-      <section class="reasoning" aria-labelledby="captains-question">
-        <div class="evidence-strip">
-          <span>Evidence on the chart</span>
-          @for (item of evidence(); track item.id) {
-            <details>
-              <summary>{{ item.title }}</summary>
-              <small>{{ item.sourceLabel }}</small>
-              <p>{{ item.summary }}</p>
-            </details>
-          }
-        </div>
-        <p class="hint"><strong>Navigator’s note:</strong> {{ choice.rationaleHint }}</p>
-        <h3 id="captains-question">Captain’s question</h3>
-        <p class="question">{{ choice.question }}</p>
+                @if (inspectedPlanningTarget(); as target) {
+                  <article class="planning-detail" tabindex="-1">
+                    <span>{{
+                      planning.mode === 'sponsor' ? 'Potential sponsor' : 'Potential voyage'
+                    }}</span>
+                    <h3>{{ target.label }}</h3>
+                    <p>{{ target.details }}</p>
+                    @if (planningRoute(); as route) {
+                      <dl>
+                        <div>
+                          <dt>Distance</dt>
+                          <dd>{{ route.distanceLabel }}</dd>
+                        </div>
+                        <div>
+                          <dt>Risk</dt>
+                          <dd>{{ route.risk }}</dd>
+                        </div>
+                        <div>
+                          <dt>Conditions</dt>
+                          <dd>{{ route.windLabel }}</dd>
+                        </div>
+                      </dl>
+                    }
+                    @if (target.facts?.length) {
+                      <dl>
+                        @for (fact of target.facts; track fact.label) {
+                          <div>
+                            <dt>{{ fact.label }}</dt>
+                            <dd>{{ fact.value }}</dd>
+                          </div>
+                        }
+                      </dl>
+                    }
+                    <button
+                      type="button"
+                      class="select-planning-target"
+                      [attr.aria-pressed]="
+                        runtime.state().responseDraft.planningTargetId === target.id
+                      "
+                      (click)="selectPlanningTarget(target.id)"
+                    >
+                      {{
+                        runtime.state().responseDraft.planningTargetId === target.id
+                          ? 'Selected: ' + target.label
+                          : planning.selectionLabel
+                      }}
+                    </button>
+                  </article>
+                }
 
-        <div class="response-modes" role="group" aria-label="Answer format">
-          <button type="button" [attr.aria-pressed]="runtime.state().responseDraft.responseMode === 'text'" (click)="runtime.setResponseMode('text')">Write</button>
-          <button type="button" [attr.aria-pressed]="runtime.state().responseDraft.responseMode === 'audio'" (click)="runtime.setResponseMode('audio')">Speak</button>
-        </div>
+                @if (runtime.state().responseDraft.planningTargetId && planning.planPrompt) {
+                  <section class="sponsor-plan" aria-labelledby="sponsor-plan-title">
+                    <h3 id="sponsor-plan-title">Build your proposal</h3>
+                    <label for="planning-response">{{ planning.planPrompt }}</label>
+                    <textarea
+                      id="planning-response"
+                      rows="5"
+                      [value]="runtime.state().responseDraft.planningText ?? ''"
+                      [placeholder]="planning.planPlaceholder ?? ''"
+                      (input)="planningTextInput($event)"
+                      (blur)="runtime.flushDraft()"
+                    ></textarea>
+                    <button
+                      type="button"
+                      class="send-plan"
+                      [disabled]="!canSubmitPlanning()"
+                      (click)="sendPlanning()"
+                    >
+                      {{ planning.submitLabel ?? 'Confirm plan' }}
+                    </button>
+                  </section>
+                }
 
-        @if (runtime.state().responseDraft.responseMode === 'text') {
-          <label for="journey-response">Explain your decision</label>
-          <textarea
-            id="journey-response"
-            rows="5"
-            [value]="runtime.state().responseDraft.text"
-            placeholder="Use the evidence to explain what you chose and why."
-            (input)="responseInput($event)"
-            (blur)="runtime.flushDraft()"
-          ></textarea>
-        } @else {
-          <div class="audio-workspace">
-            <div class="audio-actions">
-              @if (recordingSupported) {
-                @if (!recording()) {
-                  <button type="button" class="record" (click)="startRecording()">● Record answer</button>
-                } @else {
-                  <button type="button" class="stop" (click)="stopRecording()">■ Stop recording</button>
+                @if (planningReady()) {
+                  <section class="planning-result" aria-live="polite">
+                    <strong>{{
+                      planning.mode === 'sponsor' ? 'Sponsor response' : 'Mission target selected'
+                    }}</strong>
+                    <p>
+                      {{
+                        selectedPlanningTarget()?.decisionResponse ??
+                          'This destination is now part of your mission plan. You may still change the goal or target before recording the chapter.'
+                      }}
+                    </p>
+                  </section>
                 }
               }
-              <label class="file-button">
-                Attach audio
-                <input type="file" accept="audio/*" capture="user" (change)="audioFileSelected($event)" />
-              </label>
-              <span>{{ runtime.mediaState() === 'uploading' ? 'Saving audio…' : runtime.mediaState() === 'ready' ? 'Audio saved' : '' }}</span>
-            </div>
-            @if (runtime.mediaPreviewUrl(); as audioUrl) {
-              <audio controls [src]="audioUrl">Your browser does not support audio playback.</audio>
+            } @else {
+              <section class="choose-goal-message">
+                <span>First decision</span>
+                <h3 id="mission-planning-title">Choose a goal above</h3>
+                <p>
+                  The map will reveal different routes, sponsors, or unknown regions based on your
+                  goal.
+                </p>
+              </section>
             }
-            <label for="journey-transcript">Transcript or key sentence</label>
+          </section>
+        } @else {
+          <fieldset>
+            <legend>{{ step.choicePrompt }}</legend>
+            <div class="choices" [class.visual-choices]="step.choices[0]?.icon">
+              @for (choice of step.choices; track choice.id) {
+                <button
+                  type="button"
+                  [class.selected]="runtime.choice()?.id === choice.id"
+                  [attr.aria-pressed]="runtime.choice()?.id === choice.id"
+                  (click)="choose(choice.id)"
+                >
+                  @if (choice.icon) {
+                    <span class="choice-icon" aria-hidden="true">{{ choice.icon }}</span>
+                  }
+                  <span>{{ choice.label }}</span>
+                  <small>{{ choice.summary }}</small>
+                </button>
+              }
+            </div>
+          </fieldset>
+
+          @if (routeOptions().length > 0) {
+            <section class="route-comparison" aria-label="Compare available routes">
+              <span>Compare before deciding</span>
+              <div>
+                @for (item of routeOptions(); track item.choice.id) {
+                  <article [class.selected]="runtime.choice()?.id === item.choice.id">
+                    <strong>{{ item.choice.label }}</strong>
+                    <small>{{ item.route?.windLabel }}</small>
+                    <dl>
+                      <div>
+                        <dt>Distance</dt>
+                        <dd>{{ item.route?.distanceLabel ?? '—' }}</dd>
+                      </div>
+                      <div>
+                        <dt>Risk</dt>
+                        <dd>{{ item.route?.risk ?? '—' }}</dd>
+                      </div>
+                    </dl>
+                  </article>
+                }
+              </div>
+            </section>
+          }
+        }
+      </div>
+      @if (runtime.choice(); as choice) {
+        <section class="reasoning" aria-labelledby="captains-question" tabindex="-1">
+          <div class="evidence-strip" [hidden]="workStep() !== 1">
+            <span>Evidence on the chart</span>
+            @for (item of evidence(); track item.id) {
+              <details (toggle)="evidenceToggled(item.id, $event)">
+                <summary>{{ item.title }}</summary>
+                <small>{{ item.sourceLabel }}</small>
+                <p>{{ item.summary }}</p>
+                @for (paragraph of item.paragraphs ?? []; track paragraph.id; let number = $index) {
+                  <blockquote>
+                    <b>Paragraph {{ number + 1 }}</b>
+                    @if (paragraph.perspective) {
+                      <em>{{ paragraph.perspective }}</em>
+                    }
+                    <p>{{ paragraph.text }}</p>
+                  </blockquote>
+                }
+              </details>
+            }
+          </div>
+          <div class="prediction-task" [hidden]="workStep() !== 2">
+            <h3>What might happen?</h3>
+            <label for="journey-prediction">Predict the consequence</label>
             <textarea
-              id="journey-transcript"
+              id="journey-prediction"
               rows="3"
-              [value]="runtime.state().responseDraft.transcript"
-              placeholder="Add a transcript so every listener can follow your reasoning."
-              (input)="transcriptInput($event)"
+              [value]="runtime.state().responseDraft.prediction ?? ''"
+              placeholder="I predict this choice will… because…"
+              (input)="runtime.setPrediction($any($event.target).value)"
               (blur)="runtime.flushDraft()"
             ></textarea>
           </div>
-        }
+          <div [hidden]="workStep() !== 3">
+            <h3 id="captains-question" class="question">{{ choice.question }}</h3>
 
-        <button class="continue" type="button" [disabled]="!runtime.canComplete()" (click)="runtime.completeCurrentStep()">
-          Record chapter & continue <span aria-hidden="true">→</span>
+            <div class="response-modes" role="group" aria-label="Answer format">
+              <button
+                type="button"
+                [attr.aria-pressed]="runtime.state().responseDraft.responseMode === 'text'"
+                (click)="runtime.setResponseMode('text')"
+              >
+                Write
+              </button>
+              <button
+                type="button"
+                [attr.aria-pressed]="runtime.state().responseDraft.responseMode === 'audio'"
+                (click)="runtime.setResponseMode('audio')"
+              >
+                Speak
+              </button>
+            </div>
+
+            @if (runtime.state().responseDraft.responseMode === 'text') {
+              <label for="journey-response">Explain your decision</label>
+              <textarea
+                id="journey-response"
+                rows="5"
+                [value]="runtime.state().responseDraft.text"
+                placeholder="Use the evidence to explain what you chose and why."
+                (input)="responseInput($event)"
+                (blur)="runtime.flushDraft()"
+              ></textarea>
+            } @else {
+              <div class="audio-workspace">
+                <div class="audio-actions">
+                  @if (recordingSupported) {
+                    @if (!recording()) {
+                      <button type="button" class="record" (click)="startRecording()">
+                        ● Record answer
+                      </button>
+                    } @else {
+                      <button type="button" class="stop" (click)="stopRecording()">
+                        ■ Stop recording
+                      </button>
+                    }
+                  }
+                  <label class="file-button">
+                    Attach audio
+                    <input
+                      type="file"
+                      accept="audio/*"
+                      capture="user"
+                      (change)="audioFileSelected($event)"
+                    />
+                  </label>
+                  <span>{{
+                    runtime.mediaState() === 'uploading'
+                      ? 'Saving audio…'
+                      : runtime.mediaState() === 'ready'
+                        ? 'Audio saved'
+                        : ''
+                  }}</span>
+                </div>
+                @if (runtime.mediaPreviewUrl(); as audioUrl) {
+                  <audio controls [src]="audioUrl">
+                    Your browser does not support audio playback.
+                  </audio>
+                }
+                <label for="journey-transcript">Transcript or key sentence</label>
+                <textarea
+                  id="journey-transcript"
+                  rows="3"
+                  [value]="runtime.state().responseDraft.transcript"
+                  placeholder="Add a transcript so every listener can follow your reasoning."
+                  (input)="transcriptInput($event)"
+                  (blur)="runtime.flushDraft()"
+                ></textarea>
+              </div>
+            }
+
+            @if (runtime.config.learning?.requireCitation) {
+              <section class="citation-builder" aria-labelledby="citation-title">
+                <header>
+                  <div>
+                    <span>Source connection</span>
+                    <h3 id="citation-title">Cite one exact paragraph</h3>
+                  </div>
+                  <small>{{ runtime.state().responseDraft.citations?.length ?? 0 }} added</small>
+                </header>
+                <p class="response-frame">{{ runtime.config.learning.responseFrame }}</p>
+                <div class="citation-fields">
+                  <label>
+                    Source
+                    <select
+                      [value]="citationSource()"
+                      (change)="sourceChanged($any($event.target).value)"
+                    >
+                      <option value="">Choose a source</option>
+                      @for (item of evidence(); track item.id) {
+                        <option [value]="item.id">{{ item.title }}</option>
+                      }
+                    </select>
+                  </label>
+                  <label>
+                    Paragraph
+                    <select
+                      [value]="citationParagraph()"
+                      (change)="citationParagraph.set($any($event.target).value)"
+                      [disabled]="citationParagraphs().length === 0"
+                    >
+                      <option value="">Choose a paragraph</option>
+                      @for (
+                        paragraph of citationParagraphs();
+                        track paragraph.id;
+                        let number = $index
+                      ) {
+                        <option [value]="paragraph.id">Paragraph {{ number + 1 }}</option>
+                      }
+                    </select>
+                  </label>
+                </div>
+                @for (paragraph of citationParagraphs(); track paragraph.id) {
+                  @if (paragraph.id === citationParagraph()) {
+                    <blockquote class="selected-source">{{ paragraph.text }}</blockquote>
+                  }
+                }
+                <label for="citation-explanation"
+                  >How does this detail support your decision?</label
+                >
+                <textarea
+                  id="citation-explanation"
+                  rows="3"
+                  [value]="citationExplanation()"
+                  placeholder="This matters because…"
+                  (input)="citationExplanation.set($any($event.target).value)"
+                ></textarea>
+                <button
+                  type="button"
+                  class="add-citation"
+                  [disabled]="!citationReady()"
+                  (click)="addCitation()"
+                >
+                  Add source connection
+                </button>
+                <div class="citation-list">
+                  @for (
+                    citation of runtime.state().responseDraft.citations ?? [];
+                    track citation.evidenceId + citation.paragraphId;
+                    let index = $index
+                  ) {
+                    <article>
+                      <div>
+                        <strong
+                          >{{ evidenceTitle(citation.evidenceId) }} ·
+                          {{ paragraphLabel(citation.evidenceId, citation.paragraphId) }}</strong
+                        >
+                        <p>{{ citation.explanation }}</p>
+                      </div>
+                      <button
+                        type="button"
+                        (click)="removeCitation(index)"
+                        aria-label="Remove this source connection"
+                      >
+                        Remove
+                      </button>
+                    </article>
+                  } @empty {
+                    <p>Read a source, choose a paragraph, and explain why it matters.</p>
+                  }
+                </div>
+              </section>
+            }
+          </div>
+          <div [hidden]="workStep() !== 4">
+            <h3>Ready to record this chapter?</h3>
+            <p>
+              Defend the voyage with reasoning, not speed. Check your explanation and its exact
+              source connection.
+            </p>
+            <blockquote>
+              {{ runtime.state().responseDraft.text || runtime.state().responseDraft.transcript }}
+            </blockquote>
+            <p>
+              {{ runtime.state().responseDraft.citations?.length ?? 0 }} explained source
+              connections saved.
+            </p>
+            <details>
+              <summary>Optional: test your explanation with the reasoning coach</summary>
+              <section class="tutor-workspace" aria-labelledby="reasoning-coach-title">
+                <header>
+                  <div>
+                    <span>Reasoning coach</span>
+                    <h3 id="reasoning-coach-title">Test your explanation</h3>
+                  </div>
+                  <small>{{
+                    runtime.tutorAvailable ? 'Tutor connection ready' : 'Built-in question'
+                  }}</small>
+                </header>
+                @for (turn of runtime.state().responseDraft.tutorTurns ?? []; track turn.id) {
+                  <article>
+                    <strong>{{ turn.question }}</strong>
+                    @if (turn.explanation) {
+                      <p>{{ turn.explanation }}</p>
+                    }
+                    <label>
+                      Your reply
+                      <textarea
+                        rows="3"
+                        [value]="turn.answer ?? ''"
+                        (input)="runtime.answerTutor(turn.id, $any($event.target).value)"
+                        (blur)="runtime.flushDraft()"
+                      ></textarea>
+                    </label>
+                  </article>
+                }
+                <button type="button" (click)="runtime.askTutor()" [disabled]="runtime.tutorBusy()">
+                  {{
+                    runtime.tutorBusy() ? 'Preparing a question…' : 'Ask for a reasoning question'
+                  }}
+                </button>
+              </section>
+            </details>
+          </div>
+        </section>
+      }
+    </div>
+    <footer class="work-actions">
+      @if (workStep() > 0) {
+        <button type="button" (click)="goToWorkStep(workStep() - 1)">← Back</button>
+      }
+      @if (workStep() < 4) {
+        <button
+          type="button"
+          class="continue"
+          [disabled]="!canVisitWorkStep(workStep() + 1)"
+          (click)="goToWorkStep(workStep() + 1)"
+        >
+          Complete {{ workSteps[workStep()] }} · Continue to {{ workSteps[workStep() + 1] }} →
         </button>
-      </section>
-    }
+      } @else {
+        @if (!runtime.canComplete()) {
+          <p class="continue-help">{{ completionHint() }}</p>
+        }
+        <button
+          class="continue"
+          type="button"
+          [disabled]="!runtime.canComplete()"
+          (click)="recordChapter()"
+        >
+          Complete chapter & continue →
+        </button>
+      }
+    </footer>
   } @else {
     <section class="journey-complete">
       <span>Expedition record complete</span>

@@ -1,0 +1,51 @@
+<aside class="coach-panel">
+  <header>
+    <div class="coach-mark" aria-hidden="true">✦</div>
+    <div>
+      <strong>{{ runtime.config.coachName }}</strong
+      ><small>Prototype chat · AI integration comes later</small>
+    </div>
+  </header>
+  <p class="coach-promise">{{ runtime.config.coachPromise }}</p>
+  <div class="coach-tools" aria-label="Writing coach tools">
+    <button type="button" (click)="useTool('question')">Ask a follow-up</button>
+    <button type="button" (click)="useTool('possibilities')">Help me compare ideas</button>
+    <button type="button" class="storm-tool" (click)="useTool('storm')">Question the pressure</button>
+    <button type="button" (click)="useTool('continuity')">Check history & continuity</button>
+    <button type="button" (click)="useTool('stakes')">Challenge the stakes</button>
+  </div>
+  <div class="coach-conversation" aria-live="polite">
+    @if (!latestTurns().length) {
+      <p class="coach-empty">
+        Tell me what you want this scene to change. What should the person decide, discover, or
+        risk? I will respond with a question—not write the answer for you.
+      </p>
+    }
+    @for (turn of latestTurns(); track turn.id) {
+      <article [class.student]="turn.role === 'student'">
+        <strong>{{ turn.role === 'coach' ? runtime.config.coachName : 'You' }}</strong>
+        <p>{{ turn.text }}</p>
+      </article>
+    }
+    @if (runtime.coachBusy()) {
+      <p class="thinking">Reading your scene…</p>
+    }
+  </div>
+  <label class="coach-reply"
+    ><span>Reply with your thinking</span
+    ><textarea
+      rows="3"
+      [value]="replyDraft()"
+      (input)="updateReply($event)"
+      placeholder="My idea is… I chose it because…"
+    ></textarea>
+  </label>
+  <button
+    class="send-reply"
+    type="button"
+    [disabled]="!replyDraft().trim() || runtime.coachBusy()"
+    (click)="sendReply()"
+  >
+    Send my thinking
+  </button>
+</aside>

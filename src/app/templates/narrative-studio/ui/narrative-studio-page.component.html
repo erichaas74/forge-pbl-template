@@ -1,0 +1,496 @@
+<div class="studio-shell">
+  <header class="studio-header">
+    <a class="brand" routerLink="/projects" aria-label="Return to project catalog">
+      <span aria-hidden="true">SI</span>
+      <div>
+        <strong>{{ runtime.config.title }}</strong
+        ><small>{{ runtime.config.subtitle }}</small>
+      </div>
+    </a>
+    <div class="save-status" aria-live="polite">
+      <i [class.error]="runtime.saveStatus() === 'error'"></i>
+      {{
+        runtime.saveStatus() === 'saving'
+          ? 'Saving…'
+          : runtime.saveStatus() === 'error'
+            ? 'Save failed'
+            : 'Saved locally'
+      }}
+    </div>
+    <nav class="stage-nav" aria-label="Narrative Studio stages">
+      @for (stage of stages; track stage.id; let index = $index) {
+        <button
+          type="button"
+          [class.active]="runtime.state().stage === stage.id"
+          [class.recommended]="
+            runtime.state().stage !== stage.id && recommendation().stage === stage.id
+          "
+          [attr.aria-current]="runtime.state().stage === stage.id ? 'step' : null"
+          [attr.aria-label]="
+            stage.label +
+            (stage.optional ? ', optional' : '') +
+            (runtime.state().stage !== stage.id && recommendation().stage === stage.id
+              ? ', recommended next step'
+              : '')
+          "
+          (click)="openStage(stage.id)"
+        >
+          <span class="stage-number">0{{ index + 1 }}</span>
+          <span class="stage-label">{{ stage.label }}</span>
+          @if (stage.optional) {
+            <small>Optional</small>
+          }
+        </button>
+      }
+    </nav>
+    <app-task-guide title="Story guide">
+      @if (runtime.state().stage === 'write' || runtime.state().stage === 'map') {
+        <app-narrative-coach-panel />
+      }
+      <p>{{ recommendation().purpose }}</p>
+      <p>
+        Coaching and planning are optional. Your words, branch choices, and story decisions always
+        stay yours.
+      </p></app-task-guide
+    >
+  </header>
+
+  <main class="story-workspace" [class.overlay-active]="runtime.state().stage !== 'map'">
+    <section class="story-map-backdrop">
+      <header class="map-heading">
+        <span>CHOOSE YOUR OWN ADVENTURE</span>
+        <h2>Your story, one choice at a time</h2>
+        <p>
+          Write an opening. Fill in two choices. Write what happens on each branch, then keep going
+          or end that path.
+        </p>
+        <small
+          >{{ runtime.storyConfig().nodes.length }} scenes ·
+          {{ runtime.completedSceneCount() }} drafted</small
+        >
+      </header>
+      <app-narrative-story-map
+        [config]="runtime.state().stage === 'playtest' ? readerConfig() : runtime.storyConfig()"
+        [scenes]="
+          publishedPreview() && runtime.state().stage === 'playtest'
+            ? runtime.state().published!.scenes
+            : runtime.state().scenes
+        "
+        [activeNodeId]="
+          runtime.state().stage === 'playtest' ? playNodeId() : runtime.state().selectedNodeId
+        "
+        [recommendedNodeId]="nextBranchId()"
+        (nodeSelected)="selectMapNode($event)"
+      />
+    </section>
+
+    @if (runtime.state().stage === 'map' || runtime.state().stage === 'write') {
+      <section class="writer-stage work-overlay">
+        @if (chooseNextBranch()) {
+          <div class="next-branch-prompt" tabindex="-1" aria-live="polite">
+            <span aria-hidden="true">✓</span>
+            <p>
+              <strong>Saved in this spot.</strong>
+              Choose another scene on the map, or playtest your story to try its choices.
+            </p>
+          </div>
+        }
+        <article class="writing-desk">
+          <label class="scene-title story-name"
+            ><span>Story title</span
+            ><input
+              [value]="runtime.state().storyTitle"
+              placeholder="Give your adventure a name"
+              (input)="runtime.updateStoryTitle(inputValue($event))"
+              (blur)="runtime.flushSave()"
+          /></label>
+          <header>
+            <div>
+              <span>{{ runtime.selectedNode().mapLabel }}</span>
+              <h1>
+                {{ runtime.selectedScene().title || runtime.selectedNode().suggestedTitle }}
+              </h1>
+              <small>{{ runtime.selectedNode().purpose }}</small>
+            </div>
+            <strong>{{ sceneWords() }} words</strong>
+          </header>
+          <label class="scene-title"
+            ><span>Scene title</span
+            ><input
+              [value]="runtime.selectedScene().title"
+              (input)="runtime.updateSceneTitle(inputValue($event))"
+              (blur)="runtime.checkpointScene()"
+          /></label>
+          <div class="craft-prompt">
+            <span aria-hidden="true">✦</span>
+            <p><strong>Craft target</strong>{{ runtime.selectedNode().craftPrompt }}</p>
+          </div>
+          <label class="scene-copy"
+            ><span>Write the scene in your words</span
+            ><textarea
+              [value]="runtime.selectedScene().text"
+              rows="8"
+              spellcheck="true"
+              placeholder="Start with what changes for your character in this moment…"
+              (input)="runtime.updateSceneText(inputValue($event))"
+              (blur)="runtime.checkpointScene()"
+            ></textarea>
+          </label>
+          @if (runtime.selectedNode().choices.length) {
+            <fieldset class="choice-writer">
+              <legend>{{ runtime.selectedNode().choiceQuestion }}</legend>
+              <p class="choice-explanation">
+                Write the two decisions the reader can make. Each option follows its matching
+                numbered line on the story map.
+              </p>
+              @for (choice of runtime.selectedNode().choices; track choice.id; let index = $index) {
+                <label
+                  ><span
+                    >Choice {{ index + 1 }}
+                    <small>leads to {{ destinationTitle(choice.nextNodeId) }}</small></span
+                  ><input
+                    [value]="runtime.selectedScene().choiceLabels[choice.id]"
+                    [placeholder]="choice.prompt"
+                    (input)="runtime.updateChoice(choice.id, inputValue($event))"
+                    (blur)="runtime.checkpointScene()"
+                /></label>
+                <button
+                  class="write-destination"
+                  type="button"
+                  [disabled]="!runtime.selectedScene().choiceLabels[choice.id]?.trim()"
+                  (click)="selectBranch(choice.nextNodeId)"
+                >
+                  Write the story for choice {{ index + 1 }} <span aria-hidden="true">→</span>
+                </button>
+              }
+            </fieldset>
+          }
+          <div class="branch-outcome" tabindex="-1">
+            @if (runtime.selectedNode().kind === 'ending') {
+              <strong>{{
+                runtime.selectedNode().endingOutcome === 'death'
+                  ? '× Dead end · The character dies'
+                  : '✦ Survival ending'
+              }}</strong>
+              <p>
+                {{
+                  runtime.selectedNode().endingOutcome === 'death'
+                    ? 'Write how this choice leads to the fictional character’s death. This path has no more choices.'
+                    : 'Write the final moment that shows how the character survives and what changes for them.'
+                }}
+              </p>
+            } @else if (!runtime.selectedNode().choices.length) {
+              <strong>What happens after this scene?</strong>
+              <p>
+                Add two choices to keep going, end this path with the character’s death, or write a
+                survival ending.
+              </p>
+            }
+            <div class="branch-actions">
+              @if (!runtime.selectedNode().choices.length) {
+                <button type="button" (click)="changeBranch('branch')">
+                  {{
+                    runtime.selectedScene().parkedChoices?.length
+                      ? 'Restore my continuation'
+                      : 'Add two choices'
+                  }}
+                </button>
+              }
+              @if (runtime.selectedNode().id !== runtime.config.startNodeId) {
+                @if (runtime.selectedNode().endingOutcome !== 'death') {
+                  <button type="button" class="end-path" (click)="changeBranch('end')">
+                    Dead end · Character dies
+                  </button>
+                }
+                @if (runtime.selectedNode().endingOutcome !== 'survival') {
+                  <button type="button" class="survival-path" (click)="changeBranch('finish')">
+                    Survival ending
+                  </button>
+                }
+              }
+            </div>
+            @if (
+              runtime.selectedNode().choices.length &&
+              runtime.selectedNode().id !== runtime.config.startNodeId
+            ) {
+              <small>Ending here keeps later drafts so you can restore them.</small>
+            }
+          </div>
+          <footer>
+            <span
+              >{{ runtime.selectedScene().revisions.length }} checkpoints · Draft saves locally; a
+              checkpoint preserves a revision.</span
+            ><button type="button" (click)="checkpointAndChooseNext()">
+              Save here & choose next
+            </button>
+          </footer>
+        </article>
+      </section>
+    }
+
+    @switch (runtime.state().stage) {
+      @case ('conversation') {
+        <section class="conversation-stage stage-pad work-overlay">
+          <app-narrative-planning-conversation />
+        </section>
+      }
+      @case ('bible') {
+        <section class="bible-stage stage-pad work-overlay">
+          <header class="stage-heading">
+            <div>
+              <span>Optional · Keep ideas nearby</span>
+              <h1>Your Story Notes</h1>
+            </div>
+            <p>
+              Your conversation filled these notes. Revise anything that does not sound like you.
+            </p>
+          </header>
+          <div class="bible-grid">
+            <label class="title-field"
+              >Story title
+              <input
+                [value]="runtime.state().storyTitle"
+                placeholder="Name the story you want readers to enter"
+                (input)="runtime.updateStoryTitle(inputValue($event))"
+              />
+            </label>
+            <label
+              >Protagonist
+              <textarea
+                rows="2"
+                [value]="runtime.state().bible.protagonist"
+                [placeholder]="runtime.config.storyBiblePrompts.protagonist"
+                (input)="updateBible('protagonist', $event)"
+              ></textarea>
+            </label>
+            <label
+              >Immediate goal
+              <textarea
+                rows="2"
+                [value]="runtime.state().bible.immediateGoal"
+                [placeholder]="runtime.config.storyBiblePrompts.immediateGoal"
+                (input)="updateBible('immediateGoal', $event)"
+              ></textarea>
+            </label>
+            <label
+              >Inner fear or flaw
+              <textarea
+                rows="2"
+                [value]="runtime.state().bible.innerFear"
+                [placeholder]="runtime.config.storyBiblePrompts.innerFear"
+                (input)="updateBible('innerFear', $event)"
+              ></textarea>
+            </label>
+            <label
+              >Unknown truth or mystery
+              <textarea
+                rows="2"
+                [value]="runtime.state().bible.islandSecret"
+                [placeholder]="runtime.config.storyBiblePrompts.islandSecret"
+                (input)="updateBible('islandSecret', $event)"
+              ></textarea>
+            </label>
+            <label
+              >Companion, rival, or mystery presence
+              <textarea
+                rows="2"
+                [value]="runtime.state().bible.companion"
+                [placeholder]="runtime.config.storyBiblePrompts.companion"
+                (input)="updateBible('companion', $event)"
+              ></textarea>
+            </label>
+            <label
+              >One important object
+              <textarea
+                rows="2"
+                [value]="runtime.state().bible.importantObject"
+                [placeholder]="runtime.config.storyBiblePrompts.importantObject"
+                (input)="updateBible('importantObject', $event)"
+              ></textarea>
+            </label>
+            <label
+              >Point of view
+              <select
+                [value]="runtime.state().bible.pointOfView"
+                (change)="updateBible('pointOfView', $event)"
+              >
+                <option value="first">First person — I</option>
+                <option value="third">Third person — they</option>
+              </select>
+            </label>
+            <label
+              >Tone
+              <select [value]="runtime.state().bible.tone" (change)="updateBible('tone', $event)">
+                <option value="adventure">Adventure</option>
+                <option value="mystery">Mystery</option>
+                <option value="suspense">Suspense</option>
+                <option value="hopeful">Hopeful</option>
+              </select>
+            </label>
+          </div>
+          <footer class="stage-action">
+            <button
+              type="button"
+              [disabled]="!runtime.selectedHistoricalSetting()"
+              (click)="openStage('map')"
+            >
+              Return to the story map <span aria-hidden="true">→</span>
+            </button>
+          </footer>
+        </section>
+      }
+      @case ('playtest') {
+        <section class="playtest-stage stage-pad work-overlay">
+          <header class="stage-heading">
+            <div>
+              <span>03 · Walk every trail</span>
+              <h1>Read it like a player</h1>
+            </div>
+            <p>Try different routes. The studio records completed paths, not every click.</p>
+          </header>
+          <div class="reader-frame">
+            <header>
+              <span>{{
+                (publishedPreview()
+                  ? runtime.state().published?.title
+                  : runtime.state().storyTitle) || 'Untitled island story'
+              }}</span
+              ><small>Path {{ playPath().length }} · {{ playNode().mapLabel }}</small>
+            </header>
+            <article>
+              @if (runtime.selectedHistoricalSetting(); as setting) {
+                <p class="reader-history">{{ setting.eraLabel }} · {{ setting.historicalEvent }}</p>
+              }
+              <p class="reader-weather">{{ playStorm().label }}</p>
+              <h2>{{ playScene()?.title || playNode().suggestedTitle }}</h2>
+              <div class="story-copy">
+                {{ playScene()?.text || 'This scene is still waiting to be written.' }}
+              </div>
+              @if (playNode().choices.length) {
+                <h3 class="reader-question">{{ playNode().choiceQuestion }}</h3>
+                <div class="reader-choices">
+                  @for (choice of playNode().choices; track choice.id; let index = $index) {
+                    <button type="button" (click)="choosePath(choice)">
+                      <span
+                        ><i>{{ index + 1 }}</i
+                        >{{ playScene()?.choiceLabels?.[choice.id] || choice.prompt }}</span
+                      ><span aria-hidden="true">→</span>
+                    </button>
+                  }
+                </div>
+              } @else if (playNode().kind === 'ending') {
+                <div class="ending-mark">
+                  <span aria-hidden="true">✦</span
+                  ><strong>You reached {{ playNode().mapLabel }}</strong>
+                  <p>
+                    {{
+                      playNode().endingOutcome === 'death'
+                        ? 'The character has died. This path ends here. Try again and make a different choice.'
+                        : 'The character survives. Try another path to discover a different outcome.'
+                    }}
+                  </p>
+                </div>
+              } @else {
+                <div class="ending-mark">
+                  <strong>This branch is still being written.</strong>
+                  <p>Add choices or mark it as an ending in the Scene Writer.</p>
+                </div>
+              }
+            </article>
+            <footer>
+              <button type="button" (click)="restartStory(publishedPreview())">
+                Restart from the opening</button
+              ><span
+                >{{ runtime.state().playtests.length }} unique path{{
+                  runtime.state().playtests.length === 1 ? '' : 's'
+                }}
+                tested</span
+              >
+            </footer>
+          </div>
+        </section>
+      }
+      @case ('publish') {
+        <section class="publish-stage stage-pad work-overlay">
+          <header class="stage-heading">
+            <div>
+              <span>04 · Send out the signal</span>
+              <h1>Publish a story someone can play</h1>
+            </div>
+            <p>
+              Publishing freezes a reader-ready copy. You can keep revising your private draft
+              afterward.
+            </p>
+          </header>
+          <div class="publish-grid">
+            <article class="readiness-card">
+              <header>
+                <div>
+                  <span>Launch check</span>
+                  <h2>
+                    {{
+                      runtime.readiness().length
+                        ? runtime.readiness().length + ' things to finish'
+                        : 'Ready to publish'
+                    }}
+                  </h2>
+                </div>
+                <strong>{{ runtime.totalWords() }} words</strong>
+              </header>
+              @if (runtime.readiness().length) {
+                <ul>
+                  @for (issue of runtime.readiness(); track issue.code + issue.message) {
+                    <li>
+                      <span aria-hidden="true">○</span>{{ issue.message }}
+                      @if (issue.nodeId) {
+                        <button type="button" (click)="runtime.selectNode(issue.nodeId)">
+                          Fix scene
+                        </button>
+                      }
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <p class="ready-message">
+                  Every scene has substance, the choices are distinct, and you tested more than one
+                  ending. Optional planning notes do not affect publication.
+                </p>
+              }
+              <button
+                class="publish-button"
+                type="button"
+                [disabled]="runtime.readiness().length > 0"
+                (click)="publish()"
+              >
+                Publish playable story
+              </button>
+            </article>
+            <article class="rubric-card">
+              <span>Author’s field guide</span>
+              <h2>What strong stories reveal</h2>
+              <dl>
+                @for (item of runtime.config.rubric; track item.id) {
+                  <div>
+                    <dt>{{ item.label }}</dt>
+                    <dd>{{ item.expectation }}</dd>
+                  </div>
+                }
+              </dl>
+            </article>
+          </div>
+          @if (runtime.state().published; as publication) {
+            <aside class="published-card">
+              <div>
+                <span>Published copy</span><strong>{{ publication.title }}</strong
+                ><small
+                  >by {{ publication.authorDisplayName }} · {{ publication.publishedAt }}</small
+                >
+              </div>
+              <button type="button" (click)="playPublished()">Play published story</button>
+            </aside>
+          }
+        </section>
+      }
+    }
+  </main>
+</div>
