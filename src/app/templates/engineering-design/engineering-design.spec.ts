@@ -20,11 +20,15 @@ import {
   type DesignCapture,
   type BlockDesign,
 } from '../../shared/engineering/block-design';
-import { DesignSimulationRegistry } from '../../shared/engineering/design-simulation.registry';
+import {
+  DESIGN_SIMULATIONS,
+  DesignSimulationRegistry,
+} from '../../shared/engineering/design-simulation.registry';
 import { BrowserEngineeringDesignAdapter } from '../../infrastructure/persistence/browser-engineering-design.adapter';
 import { createLocalPreviewSession } from '../../core/context/project-session-context';
 import { BlockBuilderComponent } from './ui/block-builder.component';
 import { DesignOpticsBuilderComponent } from './ui/design-optics-builder.component';
+import { EngineeringDesignPageComponent } from './ui/engineering-design-page.component';
 @Component({ template: '' })
 class ExampleSimulation {}
 describe('engineering design template', () => {
@@ -84,27 +88,132 @@ describe('engineering design template', () => {
     expect(blocksOverlap(block, { ...block, y: 0.1 })).toBe(false);
     expect(blocksOverlap({ ...block, width: 0.4, rotation: 90 }, { ...block, z: 0.15 })).toBe(true);
   });
+  it('validates every gallery model and rejects duplicate or malformed sample definitions', () => {
+    expect(calendarMonumentConfig.designSamples).toHaveLength(6);
+    for (const sample of calendarMonumentConfig.designSamples ?? [])
+      expect(isBlockDesign(sample.design)).toBe(true);
+    const sample = calendarMonumentConfig.designSamples![0];
+    for (const designSamples of [
+      [sample, sample],
+      [{ ...sample, design: { blocks: [{}], targets: [] } }],
+      [null],
+    ]) {
+      expect(() =>
+        requireEngineeringConfig({ ...calendarMonumentConfig, designSamples }, 'calendar-monument'),
+      ).toThrow('CONFIG_INVALID');
+    }
+    expect(
+      requireEngineeringConfig(
+        { ...calendarMonumentConfig, designSamples: undefined },
+        'calendar-monument',
+      ).designSamples,
+    ).toBeUndefined();
+  });
+  it('previews samples without saving them and returns to the student design', () => {
+    const registry = new DesignSimulationRegistry();
+    registry.register(calendarMonumentConfig.simulationId, ExampleSimulation);
+    TestBed.configureTestingModule({
+      providers: [{ provide: DESIGN_SIMULATIONS, useValue: registry }],
+    });
+    TestBed.overrideComponent(EngineeringDesignPageComponent, { set: { template: '' } });
+    const fixture = TestBed.createComponent(EngineeringDesignPageComponent),
+      page = fixture.componentInstance;
+    const before = structuredClone(page.runtime.snapshot());
+    page.previewSample('round-portal');
+    expect(page.simulationInputs().design.blocks[0].aperture?.diameter).toBe(0.8);
+    expect(page.simulationInputs().readOnly).toBe(true);
+    expect(page.runtime.snapshot()).toEqual(before);
+    expect(saved).toBeUndefined();
+    page.stopPreview();
+    expect(page.simulationInputs().design).toEqual(before.design);
+    expect(page.simulationInputs().readOnly).toBe(false);
+  });
+  it('loads a sample atomically, preserves notes/evidence, and restores the prior design after reload', () => {
+    const runtime = TestBed.inject(EngineeringDesignRuntime);
+    runtime.saveDesign(opticalDesign);
+    const checks = [{ scenarioId: 'march', targetId: 'color-marker', expectedValue: 'blue light' }];
+    runtime.saveChecks(checks);
+    runtime.saveResearch('moon', 'My Moon observations');
+    runtime.capture({ ...calendarMonumentSample.trials[0], design: opticalDesign });
+    const revision = runtime.snapshot().revision;
+    runtime.useDesignSample('pierced-pyramid');
+    expect(runtime.snapshot().revision).toBe(revision + 1);
+    expect(runtime.snapshot().design.blocks).toHaveLength(4);
+    expect(runtime.snapshot().checks).toEqual([]);
+    expect(runtime.snapshot().trials[0].design).toEqual(opticalDesign);
+    expect(runtime.snapshot().research['moon']).toBe('My Moon observations');
+    const loaded = TestBed.runInInjectionContext(() => new EngineeringDesignRuntime());
+    loaded.restoreDesignBackup();
+    expect(loaded.snapshot().design).toEqual(opticalDesign);
+    expect(loaded.snapshot().checks).toEqual(checks);
+    expect(loaded.snapshot().designBackup).toBeUndefined();
+    expect(() => loaded.useDesignSample('missing')).toThrow('STATE_INVALID');
+    expect(
+      isEngineeringSnapshot({ ...loaded.snapshot(), designBackup: { design: {}, checks: [] } }),
+    ).toBe(false);
+  });
   const opticalDesign: BlockDesign = {
-    blocks: [{ id: 'window', x: 0, y: .6, z: 0, width: .8, height: .8, depth: .06, rotation: 0,
-      aperture: { axis: 'z', diameter: .48, insert: 'jewel', color: 'blue' } }],
+    blocks: [
+      {
+        id: 'window',
+        x: 0,
+        y: 0.6,
+        z: 0,
+        width: 0.8,
+        height: 0.8,
+        depth: 0.06,
+        rotation: 0,
+        aperture: { axis: 'z', diameter: 0.48, insert: 'jewel', color: 'blue' },
+      },
+    ],
     targets: [{ id: 'color-marker', label: 'Blue marker', x: 0, z: -1 }],
-    displayObject: { model: 'crystal', material: 'porcelain', x: 0, y: 0, z: -.7, width: .4, height: .65, rotation: 25 },
+    displayObject: {
+      model: 'crystal',
+      material: 'porcelain',
+      x: 0,
+      y: 0,
+      z: -0.7,
+      width: 0.4,
+      height: 0.65,
+      rotation: 25,
+    },
   };
   it('validates optical dimensions, installed models, and reserved sculpture space without breaking old designs', () => {
     expect(isBlockDesign(opticalDesign)).toBe(true);
     expect(isBlockDesign(calendarMonumentConfig.starterDesign)).toBe(true);
     const b = opticalDesign.blocks[0];
-    for (const aperture of [null, { ...b.aperture, diameter: .75 }, { ...b.aperture, axis: 'x' }, { ...b.aperture, color: 'unknown' }]) {
+    for (const aperture of [
+      null,
+      { ...b.aperture, diameter: 0.75 },
+      { ...b.aperture, axis: 'x' },
+      { ...b.aperture, color: 'unknown' },
+    ]) {
       expect(isBlockDesign({ ...opticalDesign, blocks: [{ ...b, aperture }] })).toBe(false);
     }
-    expect(isBlockDesign({ ...opticalDesign, displayObject: { ...opticalDesign.displayObject, model: 'missing-model' } })).toBe(false);
-    expect(isBlockDesign({ ...opticalDesign, displayObject: { ...opticalDesign.displayObject, y: .6, z: 0 } })).toBe(false);
+    expect(
+      isBlockDesign({
+        ...opticalDesign,
+        displayObject: { ...opticalDesign.displayObject, model: 'missing-model' },
+      }),
+    ).toBe(false);
+    expect(
+      isBlockDesign({
+        ...opticalDesign,
+        displayObject: { ...opticalDesign.displayObject, y: 0.6, z: 0 },
+      }),
+    ).toBe(false);
   });
   it('persists holes, inserts, sculpture and colored expectations with immutable trial replay', () => {
     const runtime = TestBed.inject(EngineeringDesignRuntime);
     runtime.saveDesign(opticalDesign);
-    runtime.saveChecks([{ scenarioId: 'march', targetId: 'color-marker', expectedValue: 'blue light' }]);
-    runtime.capture({ ...calendarMonumentSample.trials[0], id: 'optics-trial', design: opticalDesign });
+    runtime.saveChecks([
+      { scenarioId: 'march', targetId: 'color-marker', expectedValue: 'blue light' },
+    ]);
+    runtime.capture({
+      ...calendarMonumentSample.trials[0],
+      id: 'optics-trial',
+      design: opticalDesign,
+    });
     runtime.saveDesign({ ...opticalDesign, displayObject: undefined });
     const loaded = TestBed.runInInjectionContext(() => new EngineeringDesignRuntime());
     expect(loaded.snapshot().trials[0].design.displayObject?.rotation).toBe(25);
@@ -117,7 +226,10 @@ describe('engineering design template', () => {
     fixture.componentRef.setInput('design', opticalDesign);
     fixture.detectChanges();
     let emitted = opticalDesign;
-    fixture.componentInstance.changed.subscribe(value => { emitted = value; fixture.componentRef.setInput('design', value); });
+    fixture.componentInstance.changed.subscribe((value) => {
+      emitted = value;
+      fixture.componentRef.setInput('design', value);
+    });
     fixture.componentInstance.select('window');
     fixture.componentInstance.width = 100;
     fixture.componentInstance.update();
@@ -135,8 +247,13 @@ describe('engineering design template', () => {
     fixture.componentRef.setInput('design', calendarMonumentConfig.starterDesign);
     fixture.detectChanges();
     let emitted: BlockDesign = calendarMonumentConfig.starterDesign;
-    fixture.componentInstance.changed.subscribe(value => { emitted = value; fixture.componentRef.setInput('design', value); });
-    fixture.componentInstance.selected.subscribe(id => fixture.componentRef.setInput('selectedId', id));
+    fixture.componentInstance.changed.subscribe((value) => {
+      emitted = value;
+      fixture.componentRef.setInput('design', value);
+    });
+    fixture.componentInstance.selected.subscribe((id) =>
+      fixture.componentRef.setInput('selectedId', id),
+    );
     fixture.componentInstance.addWindow();
     fixture.detectChanges();
     expect(emitted.blocks).toHaveLength(13);

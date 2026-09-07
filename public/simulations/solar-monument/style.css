@@ -1,12 +1,12 @@
 :root {
-  --page: #eef5f0;
-  --panel: #ffffff;
-  --panel-strong: #f7faf8;
-  --ink: #12232f;
-  --muted: #5e7280;
-  --line: rgba(18, 35, 47, 0.14);
-  --stage: #08151c;
-  --stage-2: #102d35;
+  --page: #f1ede3;
+  --panel: #fcf9f1;
+  --panel-strong: #eee7d9;
+  --ink: #332e25;
+  --muted: #716958;
+  --line: rgba(96, 76, 42, 0.22);
+  --stage: #302f29;
+  --stage-2: #49483e;
   --sun: #f6b940;
   --moon: #d9e7f8;
   --season: #34a77b;
@@ -650,3 +650,16 @@ h1 {
   .scene-tools .shadow-info { columns: 1; }
 }
 .optics-readout { margin: 8px 0; color: #244d45; font-size: 12px; line-height: 1.6; }
+
+/* Warm limestone and aged bronze frame the measured stone court. */
+.workspace-bar { background: #f7f2e7; border-bottom: 1px solid #b8a583; }
+.stage { background: #393b34; }
+.scene-tools { background: #f1ede3; border: 1px solid #c5b798; }
+.scene-tools .shadow-info { background: #3c4038; color: #fcf7e9; }
+.optics-readout { color: #56513f; }
+.overlay-label { background: #353b32e6; color: #fbf4df; border: 1px solid #c4b18a88; font: 600 12px Georgia, serif; letter-spacing: .035em; }
+.camera-controls button[aria-pressed="true"] { background: #dbc38c; color: #3c3423; }
+button:hover { background: #f5ecd8; border-color: #aa8550; }
+.tab.active { background: #e9dec5; color: #453c29; }
+.status-chip { background: #ebe5d7; border-color: #c7bba2; color: #514c3e; }
+.canvas-panel { border-color: #9b8c70; box-shadow: inset 0 0 0 1px #e6d9b94d; }

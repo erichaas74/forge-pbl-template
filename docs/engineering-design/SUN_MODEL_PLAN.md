@@ -64,3 +64,6 @@ Added `public/simulations/solar-monument/sky-model.js` and `scripts/check-solar-
 Architecture remains the registered engineering-design template plus astronomy plugin, with bounded trial persistence. Camera and path changes are local visual state. No breaking contracts or specification deviations; no additional template capability is required for the implemented lab view. The future live opening and Earth-tilt view are explicitly pending.
 
 Validation results are recorded in [README.md](README.md). Recommended next phase: outdoor calibration and a linked Earth-tilt teaching view, followed by the live opening activity.
+## Optical extension update
+
+The source-inspection history below describes the initial geometric-shadow integration. Current captures use `solar-optics-2.0`: analytic rays replace opaque ground polygons so cylindrical bores, colored inserts and a central sculpture can transmit or block direct light consistently in the canvas and evidence. See [the implemented optical design extension](OPTICS_AND_SCULPTURE.md) for its contracts, classroom investigation, verification and limits.

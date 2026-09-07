@@ -1,5 +1,7 @@
 # Build a Calendar Monument
 
+The lab now includes a visible [six-model sample gallery](SAMPLE_MODELS.md): gates, round openings, colored windows, a pierced pyramid, a shadow crown and twin tunnels. Preview without changing saved work, or adopt a sample and retain a restorable previous design.
+
 Open `/projects/calendar-monument` for the student launch, `/projects/calendar-monument/experience` for the workspace, or `/projects/calendar-monument/final-demo` for the fictional example.
 
 The Grade 5 project asks students to research Sun and Moon patterns, compare seasonal Sun angles, construct matching physical/digital block monuments, test equinoxes and solstices, revise, and explain the evidence. Plan approximately 10–12 lessons: observe; research; compare; design; construct; test; revise; exhibit. Extend Moon observations across about a month.
@@ -8,7 +10,7 @@ The first challenge is a tower with three seasonal ground markers. In Colorado S
 
 The [Sun-model integration plan](SUN_MODEL_PLAN.md) records the source inspection and outdoor calibration procedure. The lab now opens directly on the **3D monument and shadow canvas**. Block tools, research, and evidence open in supporting panels. Place/time and sky paths are optional guides. The camera moves around a fixed monument.
 
-Choose **Final demonstration** to walk through both equinoxes and both solstices on that same canvas. Define a target and expected shadow/sunlight for each date. The live comparison shows what matches and what needs revision; recording it saves all four tests together. The fictional final example now demonstrates this same interactive final product. Target-centre checks do not establish a unique event date: test nearby dates and compare a physical build too.
+Choose **Final demonstration** to walk through both equinoxes and both solstices on that same canvas. Define a target and expected shadow, sunlight or colored light for each date. The live comparison shows what matches and what needs revision; recording it saves all four tests together. The fictional final example demonstrates this same interactive final product. Target-centre checks do not establish a unique event date: test nearby dates and compare a physical build too. The new [optical design extension](OPTICS_AND_SCULPTURE.md) adds cylindrical holes, glass/jewel filters and a central sculpture with changing surface illumination.
 
 ## Implementation map
 
@@ -63,3 +65,8 @@ Initial integration:
 - Standalone geometric-shadow and seasonal-date checks passed.
 - Browser checks confirmed trial capture, saved prediction/design evidence, June sunlit versus December shaded target, and the completed example. The browser tool subsequently timed out opening the launch page; launch registration and opening behavior are also covered by the passing tests.
 - Repository-wide architecture check still reports two findings outside this change: `core/index.ts` imports its own `./templates` barrel (the checker matches the segment name), and `projects/mystery-substance/lab-kit/render-quality.service.ts` is project-specific service code. No engineering-design boundary violation was reported. These findings were left outside this project's scope.
+# Optical windows and central sculpture (2026-09-07)
+
+Added measured cylindrical openings, colored glass/jewel inserts, a central sculpture library with real directional/material lighting, colored target expectations and face samples in final seasonal evidence. The 3D canvas remains the main workspace. See [contracts, physics, validation, classroom reproduction and remaining optics scope](OPTICS_AND_SCULPTURE.md).
+
+Validation: production build; 17 Angular engineering/plugin tests; four Node geometry/scene/season/optics scripts, including 2,394 independent mesh-ray comparisons; browser four-season color comparison and reload. Existing unrelated SCSS budget warnings remain. No new package, backend, deployment or project-specific behavior was introduced. Three built-in sculpture models are available; refracting/focusing lenses and arbitrary imported models remain a documented future capability.

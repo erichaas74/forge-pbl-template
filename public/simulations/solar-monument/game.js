@@ -296,10 +296,10 @@
     shadow.camera.position.set(6, 5, 8);
     shadow.camera.lookAt(0, 0.9, 0);
 
-    shadow.ambient = new THREE.HemisphereLight(0xe3f4ff, 0x324c2d, 0.55);
+    shadow.ambient = new THREE.HemisphereLight(0xdbe7ed, 0x827462, 0.55);
     shadow.scene.add(shadow.ambient);
 
-    shadow.sunLight = new THREE.DirectionalLight(0xffefbc, 2.4);
+    shadow.sunLight = new THREE.DirectionalLight(0xfff5e4, 2.4);
     shadow.sunLight.castShadow = true;
     shadow.sunLight.shadow.mapSize.width = 2048;
     shadow.sunLight.shadow.mapSize.height = 2048;
@@ -320,22 +320,26 @@
     solarOptics = window.createSolarOpticsRenderer(THREE);
 
     const groundGeo = new THREE.PlaneGeometry(2000, 2000);
-    const groundMat = solarOptics.material({
-      color: 0xc9c3b1,
-      roughness: 0.95,
-      metalness: 0
-    });
+    const groundMat = solarOptics.floorMaterial();
     shadow.ground = new THREE.Mesh(groundGeo, groundMat);
     shadow.ground.rotation.x = -Math.PI / 2;
+    shadow.ground.name = 'carved-stone-court';
     // Analytic rays resolve holes, filters and object occlusion at each visible surface point.
     shadow.ground.receiveShadow = false;
     shadow.scene.add(shadow.ground);
 
-    const grid = new THREE.GridHelper(28, 28, 0xa9be8b, 0x57734b);
+    const grid = new THREE.GridHelper(28, 28, 0x615240, 0x897a64);
     grid.position.y = .003;
-    grid.material.opacity = 0.65;
+    grid.material.opacity = 0.4;
     grid.material.transparent = true;
     shadow.scene.add(grid);
+    grid.visible = false;
+    document.getElementById('gridToggle').addEventListener('click', event => {
+      grid.visible = !grid.visible;
+      event.currentTarget.setAttribute('aria-pressed', String(grid.visible));
+      updateSceneLabel();
+      sceneDirty = true;
+    });
 
     addCompassMarkers();
     rebuildShadowObject();
@@ -785,9 +789,11 @@
 
     const visible = sun.altitudeDeg > 0;
     shadow.sunLight.intensity = visible ? 2.6 : 0;
-    shadow.ambient.intensity = visible ? 0.38 : 0.18;
+    shadow.ambient.intensity = visible ? 0.72 : 0.18;
     renderMonumentShadows(sun);
     updateSolarSky(sun);
+    // Every design/time change needs a new frame, including when the sky guide is closed.
+    updateMonumentCamera();
 
     const shadowBearing = (sun.compassDeg + 180) % 360;
     const shadowLength = visible ? state.objectHeight / Math.tan(altRad) : Infinity;
@@ -1172,7 +1178,7 @@
     disposeGroup(shadow.objectGroup);
     shadow.objectGroup = new THREE.Group();
     for (const block of monumentDesign.blocks) {
-      const mesh = new THREE.Mesh(solarOptics.blockGeometry(block), solarOptics.material({ color: 0xe9d5ab, roughness: .9 }));
+      const mesh = new THREE.Mesh(solarOptics.blockGeometry(block), solarOptics.stoneMaterial(block));
       mesh.name = `design-block:${block.id}`;
       mesh.position.set(block.x, block.y + block.height / 2, block.z);
       mesh.rotation.y = degToRad(block.rotation);
@@ -1181,8 +1187,6 @@
       const insert = solarOptics.insertMesh(block);
       if (insert) mesh.add(insert);
       shadow.objectGroup.add(mesh);
-      const edges = new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry), new THREE.LineBasicMaterial({ color: 0x66583f }));
-      mesh.add(edges);
     }
     if (monumentDesign.displayObject) shadow.objectGroup.add(solarOptics.objectMesh(monumentDesign.displayObject));
     document.getElementById('sculptureView').disabled = !monumentDesign.displayObject;
@@ -1201,10 +1205,11 @@
       targetMarkers.add(ring);
       const label = makeTextSprite(target.label);
       label.position.set(target.x, .13, target.z);
-      label.scale.set(1.2, .6, 1);
+      label.scale.set(.65, .325, 1);
       targetMarkers.add(label);
     }
     shadow.scene.add(targetMarkers);
+    if (!monumentDesign.displayObject && cameraMode === 'sculpture') setCameraMode('angle');
   }
 
   function renderMonumentShadows(sun) {
@@ -1222,6 +1227,7 @@
     const span = Number(document.getElementById('cameraZoom').value);
     shadow.camera.up.set(0, 1, 0);
     const o = monumentDesign.displayObject;
+    targetMarkers?.children.forEach(marker => { if (marker.isSprite) marker.visible = cameraMode !== 'sculpture'; });
     const focus = cameraMode === 'sculpture' && o ? new THREE.Vector3(o.x, o.y + o.height / 2, o.z) : new THREE.Vector3();
     if (cameraMode === 'sky') {
       const bearing = Number(document.getElementById('cameraBearing').value);
@@ -1270,7 +1276,6 @@
       }));
     }
     solarSky.update({ radius: skyRadius(), key, tracks: skyTracks, sunPosition: sun, moonPosition: getMoonPosition(getSelectedJSDate(), state.lat, state.lon), showMoon: state.showMoon, showLabels: state.showLabels });
-    updateMonumentCamera();
   }
 
   function setCameraMode(mode) {
@@ -1284,8 +1289,15 @@
     document.getElementById('zoomControl').hidden = mode === 'sky' || mode === 'sculpture';
     document.getElementById('skyLegend').hidden = mode !== 'sky';
     document.getElementById('skyDescription').hidden = mode !== 'sky';
-    document.getElementById('sceneLabel').textContent = mode === 'sky' ? 'Your local sky · north stays fixed' : 'Measured monument · 1 grid square = 1 metre';
+    updateSceneLabel();
     resizeCanvases(); resizeShadowRenderer(); updateAll();
+  }
+
+  function updateSceneLabel() {
+    document.getElementById('sceneLabel').textContent = cameraMode === 'sky'
+      ? 'Your local sky · north stays fixed'
+      : document.getElementById('gridToggle').getAttribute('aria-pressed') === 'true'
+        ? 'Measurement grid · 1 square = 1 metre' : 'Carved stone court · true north';
   }
 
   function validMonument(design) {

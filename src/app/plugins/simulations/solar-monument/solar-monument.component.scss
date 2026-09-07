@@ -1,7 +1,7 @@
 :host {
   display: block;
   min-width: 0;
-  color: #173c36;
+  color: #3b3e32;
 }
 .lab-toolbar {
   display: flex;
@@ -9,8 +9,9 @@
   align-items: center;
   gap: 16px;
   padding: 12px 16px;
-  background: #163e39;
-  color: #fff;
+  background: linear-gradient(120deg, #363e33, #535342);
+  color: #fcf4df;
+  border: 1px solid #a99265;
   border-radius: 12px 12px 0 0;
 }
 .lab-toolbar p {
@@ -21,10 +22,10 @@ button,
 select {
   font: inherit;
   min-height: 42px;
-  border: 1px solid #afc1b7;
+  border: 1px solid #c4b699;
   border-radius: 7px;
   padding: 8px 12px;
-  color: #173c36;
+  color: #3b3e32;
   background: #fffdf7;
 }
 button {
@@ -46,7 +47,7 @@ select:focus-visible {
 iframe {
   width: 100%;
   height: 790px;
-  border: 1px solid #bacbc0;
+  border: 1px solid #b3a381;
   box-sizing: border-box;
   display: block;
   background: #07131a;
@@ -69,7 +70,7 @@ iframe {
   margin-top: 5px;
 }
 .current {
-  background: #1d5b4d;
+  background: #454c3c;
   color: white;
 }
 .demonstration {

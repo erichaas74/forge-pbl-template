@@ -1,7 +1,7 @@
 :host {
   display: block;
-  color: #173c36;
-  background: #f3f3e9;
+  color: #393b31;
+  background: #f3efe5;
   min-height: 100vh;
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
 }
@@ -38,22 +38,59 @@ button {
   min-height: 42px;
   padding: 9px 14px;
   background: #fffdf7;
-  border: 1px solid #adbdad;
+  border: 1px solid #c2b69d;
   border-radius: 8px;
   color: inherit;
   cursor: pointer;
 }
 .active,
 button[aria-expanded='true'] {
-  background: #1d5b4d;
+  background: #454c3c;
   color: white;
-  border-color: #1d5b4d;
+  border-color: #454c3c;
 }
 .workspace {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 18px;
   align-items: start;
+}
+.sample-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  margin: 0 0 14px;
+  border: 1px solid #cfb879;
+  border-radius: 10px;
+  background: #fff5d9;
+}
+.sample-notice strong {
+  font-size: 17px;
+}
+.sample-notice p {
+  margin: 5px 0;
+  max-width: 850px;
+}
+.sample-notice small {
+  color: #665c3d;
+}
+.sample-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex-shrink: 0;
+}
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+@media (max-width: 900px) {
+  .sample-notice {
+    flex-direction: column;
+    align-items: start;
+  }
 }
 .workspace.with-panel {
   grid-template-columns: minmax(0, 1fr) 340px;

@@ -1,4 +1,5 @@
 import type { EngineeringDesignConfig } from '../../templates/engineering-design/domain/engineering-design.models';
+import { calendarMonumentDesignSamples } from './calendar-monument.design-samples';
 export const calendarMonumentConfig: EngineeringDesignConfig = {
   schemaVersion: '1.0',
   projectId: 'calendar-monument',
@@ -8,6 +9,7 @@ export const calendarMonumentConfig: EngineeringDesignConfig = {
   mission:
     'How can a monument use sunlight and shadows to mark an equinox or solstice? Research the sky, build with measured blocks, and test your evidence.',
   simulationId: 'simulation.solar-monument',
+  designSamples: calendarMonumentDesignSamples,
   research: [
     {
       id: 'daily-sun',
@@ -57,9 +59,14 @@ export const calendarMonumentConfig: EngineeringDesignConfig = {
     {
       id: 'colored-light',
       title: 'Build with light and color',
-      explanation: 'A hole is a tunnel: a ray must clear both openings to pass through. A colored transparent material transmits some colors of light and absorbs others. A sculpture’s faces look different as the light direction changes.',
-      prompt: 'Compare an empty hole, a colored window, and a deeper hole at the same Sun angle. Predict which sculpture faces will catch the color in March, June, September, and December. Which prediction does your evidence support?',
-      source: { label: 'Color filters absorb parts of white light · Exploratorium', url: 'https://annex.exploratorium.edu/xref/exhibits/color_removal.html' },
+      explanation:
+        'A hole is a tunnel: a ray must clear both openings to pass through. A colored transparent material transmits some colors of light and absorbs others. A sculpture’s faces look different as the light direction changes.',
+      prompt:
+        'Compare an empty hole, a colored window, and a deeper hole at the same Sun angle. Predict which sculpture faces will catch the color in March, June, September, and December. Which prediction does your evidence support?',
+      source: {
+        label: 'Color filters absorb parts of white light · Exploratorium',
+        url: 'https://annex.exploratorium.edu/xref/exhibits/color_removal.html',
+      },
     },
   ],
   designBrief:

@@ -13,7 +13,11 @@
     >
       Monument lab
     </button>
-    <button [attr.aria-expanded]="panel() === 'build'" (click)="togglePanel('build')">
+    <button
+      [disabled]="!!preview()"
+      [attr.aria-expanded]="panel() === 'build'"
+      (click)="togglePanel('build')"
+    >
       Blocks & targets
     </button>
     <button [attr.aria-expanded]="panel() === 'research'" (click)="togglePanel('research')">
@@ -31,6 +35,34 @@
       </button>
     }
   </nav>
+  @if (config.designSamples?.length && !presenting()) {
+    <app-design-sample-gallery
+      [samples]="config.designSamples!"
+      [selectedId]="sampleId()"
+      (preview)="previewSample($event)"
+    />
+  }
+  @if (preview(); as sample) {
+    <section class="sample-notice" aria-label="Sample preview">
+      <div>
+        <strong>Exploring: {{ sample.title }}</strong>
+        <p>{{ sample.description }}</p>
+        <small
+          >Change the date, time, or camera below. Use this model to edit it and record your
+          tests.</small
+        >
+      </div>
+      <div class="sample-actions">
+        <button class="active" (click)="useSample()">Use this model & edit</button
+        ><button (click)="stopPreview()">Back to my design</button>
+      </div>
+    </section>
+  } @else if (runtime.snapshot().designBackup) {
+    <div class="sample-notice">
+      <p>Your previous design is saved, along with its seasonal expectations.</p>
+      <button (click)="restorePreviousDesign()">Restore previous design</button>
+    </div>
+  }
   <div class="workspace" [class.with-panel]="!!panel()">
     <section #canvasRegion class="simulation" tabindex="-1" aria-label="Monument canvas workspace">
       <ng-container *ngComponentOutlet="simulation; inputs: simulationInputs()" />
@@ -136,7 +168,7 @@
     {{ runtime.saveStatus() }} · {{ researchCount() }}/{{ config.research.length }} research notes ·
     {{ runtime.snapshot().trials.length }} recorded tests
   </p>
-  @if (presenting()) {
+  @if (presenting() && !preview()) {
     <details class="supporting-record">
       <summary>Supporting explanation, blueprint & recorded evidence</summary>
       <app-engineering-exhibit [title]="config.title" [snapshot]="runtime.snapshot()" />

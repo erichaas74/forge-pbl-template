@@ -68,6 +68,21 @@ export class EngineeringDesignRuntime {
       throw new Error('STATE_INVALID: Check block dimensions and positions.');
     this.commit(engineeringEvents.design, { design });
   }
+  useDesignSample(id: string): void {
+    const sample = this.config.designSamples?.find((s) => s.id === id);
+    if (!sample || !isBlockDesign(sample.design))
+      throw new Error('STATE_INVALID: Unknown or invalid sample design.');
+    const current = this.snapshot();
+    this.commit(engineeringEvents.design, {
+      design: sample.design,
+      checks: [],
+      designBackup: { design: current.design, checks: current.checks ?? [] },
+    });
+  }
+  restoreDesignBackup(): void {
+    const backup = this.snapshot().designBackup;
+    if (backup) this.commit(engineeringEvents.design, { ...backup, designBackup: undefined });
+  }
   saveResearch(id: string, answer: string): void {
     if (!this.config.research.some((r) => r.id === id))
       throw new Error('STATE_INVALID: Unknown research question.');

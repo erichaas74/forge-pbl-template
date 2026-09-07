@@ -106,22 +106,39 @@ export function isBlockDesign(v: unknown): v is BlockDesign {
     !blocks.some((a: DesignBlock, i: number) =>
       blocks.slice(i + 1).some((b: DesignBlock) => blocksOverlap(a, b)),
     ) &&
-    (v['displayObject'] === undefined || (isDesignDisplayObject(v['displayObject']) &&
-      !blocks.some((b: DesignBlock) => blocksOverlap(b, displayObjectEnvelope(v['displayObject'] as DesignDisplayObject)))))
+    (v['displayObject'] === undefined ||
+      (isDesignDisplayObject(v['displayObject']) &&
+        !blocks.some((b: DesignBlock) =>
+          blocksOverlap(b, displayObjectEnvelope(v['displayObject'] as DesignDisplayObject)),
+        )))
   );
 }
 export function isDesignAperture(a: unknown, b: Record<string, unknown>): a is DesignAperture {
   if (!record(a) || !['x', 'y', 'z'].includes(String(a['axis']))) return false;
-  const cross = a['axis'] === 'x' ? [b['height'], b['depth']] : a['axis'] === 'y' ? [b['width'], b['depth']] : [b['width'], b['height']];
-  return finite(a['diameter'], .005, Math.min(...cross.map(Number)) * .9) &&
+  const cross =
+    a['axis'] === 'x'
+      ? [b['height'], b['depth']]
+      : a['axis'] === 'y'
+        ? [b['width'], b['depth']]
+        : [b['width'], b['height']];
+  return (
+    finite(a['diameter'], 0.005, Math.min(...cross.map(Number)) * 0.9) &&
     ['open', 'glass', 'jewel'].includes(String(a['insert'])) &&
-    ['clear', 'red', 'amber', 'green', 'blue', 'violet'].includes(String(a['color']));
+    ['clear', 'red', 'amber', 'green', 'blue', 'violet'].includes(String(a['color']))
+  );
 }
 export function isDesignDisplayObject(v: unknown): v is DesignDisplayObject {
-  return record(v) && ['sphere', 'crystal', 'obelisk'].includes(String(v['model'])) &&
+  return (
+    record(v) &&
+    ['sphere', 'crystal', 'obelisk'].includes(String(v['model'])) &&
     ['limestone', 'bronze', 'porcelain'].includes(String(v['material'])) &&
-    finite(v['x'], -12, 12) && finite(v['z'], -12, 12) && finite(v['y'], 0, 10) &&
-    finite(v['width'], .05, 5) && finite(v['height'], .05, 5) && finite(v['rotation'], 0, 359);
+    finite(v['x'], -12, 12) &&
+    finite(v['z'], -12, 12) &&
+    finite(v['y'], 0, 10) &&
+    finite(v['width'], 0.05, 5) &&
+    finite(v['height'], 0.05, 5) &&
+    finite(v['rotation'], 0, 359)
+  );
 }
 export function displayObjectEnvelope(v: DesignDisplayObject): DesignBlock {
   return { ...v, id: 'display-object-envelope', depth: v.width };

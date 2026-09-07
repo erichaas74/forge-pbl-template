@@ -18,13 +18,19 @@ const context2d = new Proxy({
   createRadialGradient: () => ({ addColorStop() {} }),
 }, { get: (target, key) => target[key] ?? (() => {}) });
 w.HTMLCanvasElement.prototype.getContext = () => context2d;
-for (const file of ['vendor/three.min.js', 'vendor/suncalc.js', 'vendor/luxon.min.js', 'vendor/tz.js', 'seasons.js', 'geometry.js', 'optics.js', 'optics-renderer.js', 'sky-model.js', 'season-review.js']) w.eval(fs.readFileSync(path.join(root, file), 'utf8'));
+for (const file of ['vendor/three.min.js', 'vendor/suncalc.js', 'vendor/luxon.min.js', 'vendor/tz.js', 'seasons.js', 'geometry.js', 'optics.js', 'monument-surfaces.js', 'optics-renderer.js', 'sky-model.js', 'season-review.js']) w.eval(fs.readFileSync(path.join(root, file), 'utf8'));
 let renderedScene;
+let renderCount = 0;
+let renderedBlocks = [];
 w.THREE.WebGLRenderer = class {
   shadowMap = {};
   setPixelRatio() {}
   setSize() {}
-  render(scene) { renderedScene = scene; }
+  render(scene) {
+    renderedScene = scene; renderCount++;
+    renderedBlocks = [];
+    scene.traverse(object => { if (object.name.startsWith('design-block:')) renderedBlocks.push(object.name); });
+  }
 };
 const controls = {};
 const globe = new Proxy({}, { get: (_, key) => key === 'controls' ? () => controls : () => globe });
@@ -42,6 +48,17 @@ const block = renderedScene.children.flatMap(child => child.children).find(mesh 
 assert.ok(block, 'The supplied physical block must be rendered.');
 renderedScene.updateMatrixWorld(true);
 const before = block.matrixWorld.elements.slice();
+const court = renderedScene.getObjectByName('carved-stone-court');
+assert.ok(court, 'The stone court must receive the measured shadows.');
+const courtPoint = new w.THREE.Vector3().fromBufferAttribute(court.geometry.attributes.position, 0).applyMatrix4(court.matrixWorld);
+assert.ok(Math.abs(courtPoint.y) < 1e-10, 'Carving must preserve the y=0 measurement plane.');
+const grid = renderedScene.children.find(child => child.isGridHelper || child.type === 'GridHelper');
+assert.equal(grid.visible, false);
+w.document.getElementById('gridToggle').click();
+assert.equal(grid.visible, true);
+assert.match(w.document.getElementById('sceneLabel').textContent, /1 square = 1 metre/);
+w.document.getElementById('gridToggle').click();
+assert.equal(grid.visible, false);
 for (let i = 0; i < 120; i++) frames.shift()();
 renderedScene.updateMatrixWorld(true);
 assert.deepEqual(block.matrixWorld.elements, before, 'Animation must never rotate a measured monument.');
@@ -49,6 +66,18 @@ w.document.getElementById('cameraBearing').value = '145';
 w.document.getElementById('cameraBearing').dispatchEvent(new w.Event('input'));
 renderedScene.updateMatrixWorld(true);
 assert.deepEqual(block.matrixWorld.elements, before, 'Camera orbit must not change the design.');
+frames.shift()();
+let previousRenders = renderCount;
+const replacement = { ...design, blocks: [{ ...design.blocks[0], id: 'new-sample' }] };
+send({ type: 'design', design: replacement });
+frames.shift()();
+assert.equal(renderCount, previousRenders + 1, 'Choosing a sample must refresh the canvas without moving the camera.');
+assert.deepEqual(renderedBlocks, ['design-block:new-sample']);
+previousRenders = renderCount;
+send({ type: 'restore', capture: { design, settings: { latitude: 38.83, longitude: -104.82, localDate: '2026-12-21', minutes: 720 } } });
+frames.shift()();
+assert.equal(renderCount, previousRenders + 1, 'Changing the date must refresh the monument while the sky guide is closed.');
+assert.deepEqual(renderedBlocks, ['design-block:asymmetric']);
 for (const id of ['topView', 'angleView', 'skyView']) w.document.getElementById(id).click();
 send({ type: 'restore', capture: { design, settings: { latitude: 38.83, longitude: -104.82, localDate: '2026-06-21', minutes: 782 } } });
 send({ type: 'capture', id: 'trial-sky', design });

@@ -58,6 +58,7 @@
     }
   `;
   window.createSolarOpticsRenderer = (THREE) => {
+    const surfaces = window.createMonumentSurfaces(THREE);
     const data = new Float32Array(4 * 100 * 4);
     const texture = new THREE.DataTexture(data, 4, 100, THREE.RGBAFormat, THREE.FloatType);
     texture.needsUpdate = true;
@@ -66,8 +67,8 @@
       solarObject: { value: new THREE.Vector4() }, solarObjectShape: { value: new THREE.Vector4(1, 1, 1, 1) },
       solarObjectSin: { value: 0 }, solarPlanes: { value: Array.from({ length: 8 }, () => new THREE.Vector4()) }, solarPlaneCount: { value: 0 },
     };
-    function material(options, skipObject = false) {
-      const m = new THREE.MeshStandardMaterial(options);
+    function material(options, skipObject = false, physical = false) {
+      const m = physical ? new THREE.MeshPhysicalMaterial(options) : new THREE.MeshStandardMaterial(options);
       m.onBeforeCompile = shader => {
         Object.assign(shader.uniforms, uniforms, { solarSkipObject: { value: skipObject } });
         shader.vertexShader = 'varying vec3 vSolarWorld;\n' + shader.vertexShader.replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\nvSolarWorld=(modelMatrix*vec4(transformed,1.0)).xyz;');
@@ -114,16 +115,24 @@
     function insertMesh(b) {
       const a = b.aperture;
       if (!a || a.insert === 'open') return null;
-      // A visible flat insert at the bore centre; facets describe its finish, not a refracting volume.
-      const geometry = orient(new THREE.CircleGeometry(a.diameter / 2, 96), a.axis);
-      const tint = window.SolarOptics.colors[a.color];
-      const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({ color: new THREE.Color(...tint), roughness: a.insert === 'jewel' ? .13 : .25, metalness: .08, transparent: true, opacity: .58, side: THREE.DoubleSide, depthWrite: false }));
-      mesh.name = 'colored-insert';
+      // Surface normals give jewels facets while the measured aperture remains circular.
+      // This is a glass finish on a color filter, not a refracting/focusing volume.
+      let geometry = new THREE.CircleGeometry(a.diameter / 2, a.insert === 'jewel' ? 32 : 96);
       if (a.insert === 'jewel') {
-        const facets = orient(new THREE.CircleGeometry(a.diameter / 2, 12), a.axis);
-        mesh.add(new THREE.LineSegments(new THREE.WireframeGeometry(facets), new THREE.LineBasicMaterial({ color: 0xffefc4, transparent: true, opacity: .45 })));
-        facets.dispose();
+        const indexed = geometry;
+        geometry = indexed.toNonIndexed(); indexed.dispose();
+        const normals = geometry.attributes.normal;
+        for (let i = 0; i < normals.count; i += 3) {
+          const theta = (i / 3 + .5) * Math.PI / 16;
+          const n = new THREE.Vector3(Math.cos(theta) * .22, Math.sin(theta) * .22, 1).normalize();
+          for (let j = 0; j < 3; j++) normals.setXYZ(i + j, n.x, n.y, n.z);
+        }
       }
+      orient(geometry, a.axis);
+      const tint = window.SolarOptics.colors[a.color];
+      const glass = surfaces.glass(material({ color: new THREE.Color(...tint), roughness: a.insert === 'jewel' ? .065 : .12, metalness: 0, clearcoat: 1, clearcoatRoughness: .06, ior: 1.5, specularIntensity: 1, transparent: true, opacity: .6, side: THREE.DoubleSide, depthWrite: false }, false, true));
+      const mesh = new THREE.Mesh(geometry, glass);
+      mesh.name = 'colored-insert';
       return mesh;
     }
     function objectMesh(o) {
@@ -136,13 +145,26 @@
         g.rotateY(Math.PI / 4);
       }
       g.scale(o.width / 2, o.height / 2, o.width / 2);
-      const finishes = { limestone: { color: 0xe4d8bc, roughness: .86, metalness: 0 }, porcelain: { color: 0xf3f0e8, roughness: .24, metalness: 0 }, bronze: { color: 0xb58348, roughness: .32, metalness: .72 } };
-      const mesh = new THREE.Mesh(g, material({ ...finishes[o.material], flatShading: o.model !== 'sphere' }, true));
+      const finishes = { limestone: { color: 0xcfc8b8, roughness: .88, metalness: 0 }, porcelain: { color: 0xf3f0e8, roughness: .19, metalness: 0 }, bronze: { color: 0x977345, roughness: .4, metalness: .72 } };
+      let finish = material({ ...finishes[o.material], flatShading: o.model !== 'sphere' }, true);
+      if (o.material === 'limestone') finish = surfaces.dress(finish);
+      else finish = surfaces.glass(finish);
+      const mesh = new THREE.Mesh(g, finish);
       mesh.name = 'central-display-object';
       mesh.position.set(o.x, o.y + o.height / 2, o.z);
       mesh.rotation.y = o.rotation * Math.PI / 180;
       return mesh;
     }
-    return { material, setDesign, blockGeometry, insertMesh, objectMesh, uniforms, setSun: d => uniforms.solarDirection.value.set(d.x, d.y, d.z), dispose: () => texture.dispose() };
+    return {
+      material, setDesign, blockGeometry, insertMesh, objectMesh, uniforms,
+      stoneMaterial(b) {
+        const variation = Array.from(b.id).reduce((hash, char) => (hash * 31 + char.charCodeAt(0)) >>> 0, 0) % 11;
+        const color = new THREE.Color(0xc9c2b2).offsetHSL(0, 0, (variation - 5) * .006);
+        return surfaces.dress(material({ color, roughness: .87 }), { half: [b.width / 2, b.height / 2, b.depth / 2], relief: Math.min(.002, Math.min(b.width, b.height, b.depth) * .02) });
+      },
+      floorMaterial: () => surfaces.dress(material({ color: 0xded9cd, roughness: .94 }), { floor: true, relief: .0007 }),
+      setSun(d) { uniforms.solarDirection.value.set(d.x, d.y, d.z); surfaces.setSun(d); },
+      dispose() { texture.dispose(); surfaces.dispose(); },
+    };
   };
 })();

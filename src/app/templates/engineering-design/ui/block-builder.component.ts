@@ -28,8 +28,8 @@ import {
       /></label>
       <label>Base Y (m)<input type="number" min="0" max="10" step="0.05" [(ngModel)]="y" /></label>
       <label
-        >Rotation (°)<input type="number" min="0" max="359" step="1" [(ngModel)]="rotation" /></label
-      >
+        >Rotation (°)<input type="number" min="0" max="359" step="1" [(ngModel)]="rotation"
+      /></label>
     </div>
     <div class="actions">
       <button (click)="add()" [disabled]="design().blocks.length >= 100">Add block</button
@@ -51,7 +51,12 @@ import {
       {{ design().blocks.length }} / 100 blocks. Check that every block is supported when you build
       the physical model.
     </p>
-    <app-design-optics-builder [design]="design()" [selectedId]="selected()" (changed)="change($event)" (selected)="select($event)" />
+    <app-design-optics-builder
+      [design]="design()"
+      [selectedId]="selected()"
+      (changed)="change($event)"
+      (selected)="select($event)"
+    />
     <details>
       <summary>Place ground targets</summary>
       <p>Each small ring marks a point to test for sunlight or shadow.</p>
@@ -162,7 +167,9 @@ export class BlockBuilderComponent {
   targetLabel = 'Season marker';
   targetX = 0;
   targetZ = -1;
-  constructor() { effect(() => this.select(this.selected())); }
+  constructor() {
+    effect(() => this.select(this.selected()));
+  }
   private block(id: string = crypto.randomUUID()): DesignBlock {
     return {
       id,
@@ -193,7 +200,9 @@ export class BlockBuilderComponent {
   update(): void {
     this.change({
       ...this.design(),
-      blocks: this.design().blocks.map((b) => (b.id === this.selected() ? { ...b, ...this.block(b.id) } : b)),
+      blocks: this.design().blocks.map((b) =>
+        b.id === this.selected() ? { ...b, ...this.block(b.id) } : b,
+      ),
     });
   }
   select(id: string): void {

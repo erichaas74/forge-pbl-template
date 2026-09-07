@@ -25,6 +25,13 @@ export interface EngineeringDesignConfig {
   readonly testInstructions: readonly string[];
   readonly exhibitPrompts: readonly string[];
   readonly starterDesign: BlockDesign;
+  readonly designSamples?: readonly EngineeringDesignSample[];
+}
+export interface EngineeringDesignSample {
+  readonly id: string;
+  readonly title: string;
+  readonly description: string;
+  readonly design: BlockDesign;
 }
 export interface EngineeringSnapshot {
   readonly schemaVersion: '1.0';
@@ -34,6 +41,7 @@ export interface EngineeringSnapshot {
   readonly prediction: string;
   readonly exhibit: string;
   readonly checks?: readonly DesignCheck[];
+  readonly designBackup?: { readonly design: BlockDesign; readonly checks: readonly DesignCheck[] };
   readonly trials: readonly (DesignCapture & { readonly prediction: string })[];
   readonly events: readonly {
     readonly id: string;
@@ -74,6 +82,21 @@ export function requireEngineeringConfig(v: unknown, projectId: string): Enginee
     throw new Error('CONFIG_INVALID: The engineering design package is incomplete or unsupported.');
   }
   const config = v as unknown as EngineeringDesignConfig;
+  if (
+    config.designSamples !== undefined &&
+    (!Array.isArray(config.designSamples) ||
+      config.designSamples.length > 12 ||
+      config.designSamples.some(
+        (s) =>
+          !record(s) ||
+          !text(s['id']) ||
+          !text(s['title']) ||
+          !text(s['description']) ||
+          !isBlockDesign(s['design']),
+      ) ||
+      new Set(config.designSamples.map((s) => s.id)).size !== config.designSamples.length)
+  )
+    throw new Error('CONFIG_INVALID: Invalid sample design library.');
   if (new Set(config.research.map((r) => r.id)).size !== config.research.length)
     throw new Error('CONFIG_INVALID: Research IDs must be unique.');
   return config;
@@ -93,6 +116,10 @@ export function isEngineeringSnapshot(v: unknown): v is EngineeringSnapshot {
     typeof v['exhibit'] === 'string' &&
     v['exhibit'].length <= 10000 &&
     (v['checks'] === undefined || isDesignChecks(v['checks'])) &&
+    (v['designBackup'] === undefined ||
+      (record(v['designBackup']) &&
+        isBlockDesign(v['designBackup']['design']) &&
+        isDesignChecks(v['designBackup']['checks']))) &&
     Array.isArray(v['trials']) &&
     v['trials'].length <= 40 &&
     v['trials'].every(

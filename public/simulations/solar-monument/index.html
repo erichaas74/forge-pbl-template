@@ -13,6 +13,7 @@
   <script defer src="seasons.js"></script>
   <script defer src="geometry.js"></script>
   <script defer src="optics.js"></script>
+  <script defer src="monument-surfaces.js"></script>
   <script defer src="optics-renderer.js"></script>
   <script defer src="sky-model.js"></script>
   <script defer src="season-review.js"></script>
@@ -171,7 +172,7 @@
           </section>
           <section class="canvas-panel">
             <canvas id="shadowCanvas" aria-label="3D Sun path and measured monument shadows" aria-describedby="skyDescription"></canvas>
-            <div class="overlay-label" id="sceneLabel">Measured monument · 1 grid square = 1 metre</div>
+            <div class="overlay-label" id="sceneLabel">Carved stone court · true north</div>
           </section>
           <div class="scene-tools">
             <div id="shadowInfo" class="shadow-info">Shadow info</div>
@@ -181,6 +182,7 @@
               <button id="angleView" type="button" aria-pressed="true">3D monument</button>
               <button id="sculptureView" type="button" aria-pressed="false" disabled>Inspect sculpture</button>
               <button id="topView" type="button" aria-pressed="false">Plan view</button>
+              <button id="gridToggle" type="button" aria-pressed="false">Metre grid</button>
               <label id="zoomControl">View size<input id="cameraZoom" type="range" min="1" max="40" step="0.5" value="3" /></label>
             </div>
             <div class="orbit-controls" id="orbitControls">

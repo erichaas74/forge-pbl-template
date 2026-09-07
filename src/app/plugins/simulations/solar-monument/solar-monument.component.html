@@ -12,7 +12,10 @@
     </p>
   </div>
   @if (!readOnly() && !presentation()) {
-    <button (click)="capture()" [disabled]="!ready() || busy() || (!design().blocks.length && !design().displayObject)">
+    <button
+      (click)="capture()"
+      [disabled]="!ready() || busy() || (!design().blocks.length && !design().displayObject)"
+    >
       {{ busy() ? 'Recording…' : 'Record this test' }}
     </button>
   }
@@ -92,8 +95,11 @@
       <p>Add ground targets with the block tools to define what your monument should do.</p>
     }
     @if (design().displayObject) {
-      <p><strong>Sculpture at this Sun angle:</strong> {{ measurement(current(), 'Sculpture surface samples') }}.
-        Samples describe face centres; compare the full illuminated surface in the canvas.</p>
+      <p>
+        <strong>Sculpture at this Sun angle:</strong>
+        {{ measurement(current(), 'Sculpture surface samples') }}. Samples describe face centres;
+        compare the full illuminated surface in the canvas.
+      </p>
     }
     <div class="table-scroll">
       <table>
@@ -153,7 +159,9 @@
     not simulated. Compare with an outdoor build before claiming a physical accuracy tolerance.
     Cylindrical holes have their measured depth. Glass and jewel inserts filter parallel sunlight;
     displayed colors are illustrative RGB transmission. Lens focusing, refraction, prism rainbows,
-    the Sun’s finite disk and soft shadow edges are not modeled. Sculpture shapes and materials
-    are selectable built-in models, and the saved design includes their dimensions and orientation.
+    the Sun’s finite disk and soft shadow edges are not modeled. Sculpture shapes and materials are
+    selectable built-in models, and the saved design includes their dimensions and orientation.
+    The stone court has decorative compass carvings; its rings are not calibrated seasonal markers.
+    Surface texture adds the look of shallow carving while the measured floor stays level.
   </p>
 </details>
