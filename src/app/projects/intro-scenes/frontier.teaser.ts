@@ -16,6 +16,16 @@ export const frontierTeaser: DecisionSceneConfig = {
   invitation:
     'The wagon leaves soon. Your trading company has two empty cargo spaces—and you get to fill them.',
   sceneLabel: 'DEPARTURE BOARD · NEXT STOP: MILL CREEK',
+  speeches: [
+    {
+      id: 'rowan-recruitment',
+      speaker: 'Rowan · Returning trader',
+      title: 'Your first trade with Rowan',
+      summary:
+        'Rowan invites you to help choose goods for the road. Try a practice trade with 30 coins and two cargo spaces: choose supplies, check your costs, and discover what buyers will offer.',
+      video: '/project-intros/frontier/trading-town-launch.mp4',
+    },
+  ],
   prologue: {
     title: 'The road is full of opportunity.',
     setting:

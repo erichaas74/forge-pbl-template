@@ -23,7 +23,7 @@ export const projectIntros: readonly ProjectIntroConfig[] = [
     kicker: 'Incoming case · Four vials. Zero labels.',
     headline: 'Someone mixed up the labels. Can you uncover the truth?',
     story:
-      'The lab is ready. The samples are waiting. But the labels have vanished from four mystery vials. Your team has been called in to sort out what happened—and a good guess will not close this case.',
+      'Professor Pip is certain two clear samples are identical. His robot, Beep, is less convinced. One test, one spectacular POOF, and four unlabeled mystery vials later, the lab needs a new lead scientist. That’s you. Follow the evidence and solve the case Pip’s confidence couldn’t.',
     hook: 'If two substances look the same, how could you prove they are different?',
     role: 'Lead evidence scientist',
     challenge: {
@@ -138,8 +138,8 @@ export const projectIntros: readonly ProjectIntroConfig[] = [
     teaser: frontierTeaser,
     version: '1.0.1',
     theme: 'frontier',
-    image: '/frontier-trading/shop-scenes/town-street.webp',
-    imageAlt: 'A frontier trading street with shops and supplies ready for a trading expedition.',
+    image: '/project-intros/frontier/trading-town-launch-poster.png',
+    imageAlt: 'Rowan welcomes you beside his trading wagon and ledger at sunset.',
     kicker: 'Your charter is waiting · Make every dollar count',
     headline: 'An empty wagon. A new company. Your big move.',
     story:

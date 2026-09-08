@@ -10,9 +10,17 @@ import {
   untracked,
   viewChild,
   TemplateRef,
+  afterNextRender,
+  Injector,
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import {
+  solarMarkerRecord,
+  markerClock,
+  markerLights,
+  type SolarMarkerRecord,
+} from './solar-marker-record';
 import {
   DESIGN_CAPTURE,
   DESIGN_CAPTURE_BATCH,
@@ -27,6 +35,7 @@ import {
   type BlockDesign,
   type DesignCapture,
   type DesignCheck,
+  type DesignTarget,
 } from '../../../shared/engineering/block-design';
 
 @Component({
@@ -51,6 +60,37 @@ export class SolarMonumentComponent {
   readonly toolsOpen = signal(false);
   readonly reviewOpen = signal(false);
   readonly eventSelection = signal('');
+  readonly markersOpen = signal(false);
+  readonly markerPlacing = signal(false);
+  readonly markerDraft = signal<DesignTarget | undefined>(undefined);
+  readonly markerSelected = signal('');
+  readonly markerNow = signal('');
+  readonly markerFeedback = signal('');
+  readonly markerTarget = computed(
+    () => this.markerDraft() ?? this.design().targets.find((t) => t.id === this.markerSelected()),
+  );
+  readonly markerRecord = computed(() => solarMarkerRecord(this.markerTarget()));
+  readonly canMark = computed(
+    () =>
+      this.ready() &&
+      this.active() &&
+      !this.readOnly() &&
+      !this.presentation() &&
+      !this.activity().startsWith('sundial-') &&
+      !!this.onDesign,
+  );
+  readonly removedMarker = signal<DesignTarget | undefined>(undefined);
+  readonly markerSeason = computed(() =>
+    this.cases.find((c) => 'calendar-' + c.id === this.markerRecord()?.markerKind),
+  );
+  markerName = '';
+  markerX = 0;
+  markerZ = 0;
+  private markerRequestId = '';
+  private readonly markerPanel = viewChild<ElementRef<HTMLElement>>('markerPanel');
+  private readonly markerNameInput = viewChild<ElementRef<HTMLInputElement>>('markerNameInput');
+  private readonly injector = inject(Injector);
+
   readonly ui = signal({
     date: '',
     clock: '',
@@ -127,7 +167,13 @@ export class SolarMonumentComponent {
     });
     effect(() => {
       const design = this.design();
-      if (this.connected()) this.send({ type: 'design', design });
+      untracked(() => this.cancelMarkerDraft());
+      if (this.connected()) {
+        this.send({ type: 'design', design });
+        const targetId = untracked(this.markerSelected);
+        if (design.targets.some((t) => t.id === targetId))
+          this.send({ type: 'marker-focus', targetId });
+      }
     });
     effect(() => {
       const capture = this.restore();
@@ -135,10 +181,16 @@ export class SolarMonumentComponent {
     });
     effect(() => {
       const active = this.active();
+      if (!active) untracked(() => this.closeMarkers());
       if (this.connected()) this.send({ type: 'visibility', active });
     });
     effect(() => {
       const activity = this.activity();
+      untracked(() => {
+        this.closeMarkers();
+        this.removedMarker.set(undefined);
+        this.markerSelected.set('');
+      });
       this.eventSelection.set('');
       if (!this.connected()) return;
       clearTimeout(this.timer);
@@ -160,6 +212,7 @@ export class SolarMonumentComponent {
     effect(() => {
       const readOnly = this.readOnly(),
         building = this.building();
+      if (readOnly) untracked(() => this.cancelMarkerDraft());
       if (this.connected()) {
         this.send({ type: 'view-policy', readOnly });
         this.send({ type: 'build-view', building: building && !readOnly });
@@ -171,9 +224,160 @@ export class SolarMonumentComponent {
       const presenting = this.presentation(),
         ready = this.connected();
       this.results.set([]);
+      if (presenting) untracked(() => this.cancelMarkerDraft());
       if (ready) this.send({ type: 'presentation', active: presenting });
       if (presenting && ready) this.runReview();
     });
+  }
+  toggleMarkers(): void {
+    if (this.markersOpen()) {
+      this.closeMarkers();
+      return;
+    }
+    this.markersOpen.set(true);
+    if (!this.markerSelected() && this.design().targets[0])
+      this.selectMarker(this.design().targets[0]);
+    this.focusMarkerPanel();
+  }
+  closeMarkers(): void {
+    this.markersOpen.set(false);
+    this.cancelMarkerDraft();
+  }
+  cancelMarkerDraft(): void {
+    this.markerRequestId = '';
+    this.markerPlacing.set(false);
+    this.markerDraft.set(undefined);
+    if (this.ready()) this.send({ type: 'marker-cancel' });
+  }
+  startMarker(point?: { x: number; z: number }): void {
+    if (!this.canMark() || this.design().targets.length >= 12) return;
+    this.cancelMarkerDraft();
+    this.markerFeedback.set('');
+    this.markerNow.set('');
+    this.markerRequestId = crypto.randomUUID();
+    this.markerPlacing.set(true);
+    this.send({
+      type: 'marker-start',
+      requestId: this.markerRequestId,
+      ...(point ? { point } : {}),
+    });
+  }
+  measuredMarker(): void {
+    this.startMarker({ x: this.markerX / 100, z: this.markerZ / 100 });
+  }
+  saveMarker(): void {
+    const target = this.markerDraft();
+    if (!this.canMark() || !target || !solarMarkerRecord(target)) return;
+    const label = this.markerName.trim();
+    if (!label || label.length > 80) {
+      this.markerFeedback.set('Give your stone a name, up to 80 letters.');
+      return;
+    }
+    const design = { ...this.design(), targets: [...this.design().targets, { ...target, label }] };
+    if (!isBlockDesign(design)) {
+      this.markerFeedback.set('Check the marker position and the 12-marker limit.');
+      return;
+    }
+    try {
+      this.onDesign?.(design);
+      this.cancelMarkerDraft();
+      this.selectMarker({ ...target, label });
+      this.markerFeedback.set('Sunstone saved. Its place and observation stay fixed.');
+    } catch (error) {
+      this.markerFeedback.set(
+        error instanceof Error ? error.message : 'The marker could not be saved.',
+      );
+    }
+  }
+  selectMarker(target: DesignTarget): void {
+    this.cancelMarkerDraft();
+    this.markerSelected.set(target.id);
+    this.markerName = target.label;
+    this.markerNow.set('');
+    this.markerFeedback.set('');
+    this.send({ type: 'marker-focus', targetId: target.id });
+  }
+  renameMarker(): void {
+    if (!this.canMark() || this.markerDraft()) return;
+    const label = this.markerName.trim(),
+      target = this.markerTarget();
+    if (!target || !label || label.length > 80) return;
+    this.onDesign?.({
+      ...this.design(),
+      targets: this.design().targets.map((t) => (t.id === target.id ? { ...t, label } : t)),
+    });
+  }
+  removeMarker(): void {
+    const target = this.markerTarget();
+    if (!this.canMark() || !target || this.markerDraft()) return;
+    this.onDesign?.({
+      ...this.design(),
+      targets: this.design().targets.filter((t) => t.id !== target.id),
+    });
+    this.removedMarker.set(target);
+    this.markerSelected.set('');
+    this.markerFeedback.set('Marker removed. You can undo this.');
+  }
+  undoMarker(): void {
+    const target = this.removedMarker();
+    if (!target || !this.canMark()) return;
+    const next = { ...this.design(), targets: [...this.design().targets, target] };
+    if (!isBlockDesign(next)) {
+      this.markerFeedback.set('Make room for this marker first.');
+      return;
+    }
+    this.onDesign?.(next);
+    this.removedMarker.set(undefined);
+    this.selectMarker(target);
+  }
+  revisitMarker(): void {
+    const target = this.markerTarget();
+    if (!target || !this.markerRecord() || this.presentation()) return;
+    this.cancelMarkerDraft();
+    this.send({ type: 'marker-revisit', targetId: target.id });
+    this.markerFeedback.set(
+      'Returned to this stone’s recorded date, time and place. Compare the light now.',
+    );
+  }
+  useMarkerForTest(): void {
+    const target = this.markerTarget(),
+      record = this.markerRecord(),
+      season = this.markerSeason();
+    if (!this.canMark() || !target || !record || !season || this.markerDraft() || !this.onChecks)
+      return;
+    const check: DesignCheck = {
+      scenarioId: season.id,
+      targetId: target.id,
+      expectedValue: record.light,
+      settings: { observationRule: 'clock', minutes: markerClock(record) },
+    };
+    this.onChecks([...this.checks().filter((c) => c.scenarioId !== season.id), check]);
+    this.markerFeedback.set(`${season.label} test set to this marker, light and local clock time.`);
+  }
+  markerWhen(record: SolarMarkerRecord | undefined): string {
+    return record
+      ? new Intl.DateTimeFormat('en', {
+          timeZone: record.zone,
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          second: '2-digit',
+        }).format(new Date(record.utcInstant))
+      : 'No observation recorded';
+  }
+  recordFor(target: DesignTarget): SolarMarkerRecord | undefined {
+    return solarMarkerRecord(target);
+  }
+  private focusMarkerPanel(name = false): void {
+    afterNextRender(
+      () =>
+        (name ? this.markerNameInput()?.nativeElement : this.markerPanel()?.nativeElement)?.focus({
+          preventScroll: true,
+        }),
+      { injector: this.injector },
+    );
   }
   private connected(): boolean {
     this.connection();
@@ -256,9 +460,11 @@ export class SolarMonumentComponent {
       return;
     const existing = this.checkFor(id);
     if (!existing) return;
+    if (clock !== undefined && !/^([01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d{1,3})?)?$/.test(clock))
+      return;
     const parts = clock?.split(':').map(Number);
     const minutes = parts
-      ? parts[0] * 60 + parts[1]
+      ? parts[0] * 60 + parts[1] + (parts[2] ?? 0) / 60
       : Number(existing.settings?.['minutes'] ?? 720);
     if (!Number.isFinite(minutes) || minutes < 0 || minutes >= 1440) return;
     this.onChecks(
@@ -271,7 +477,12 @@ export class SolarMonumentComponent {
   }
   clockFor(id: string): string {
     const minutes = Number(this.checkFor(id)?.settings?.['minutes'] ?? 720);
-    return `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
+    const milliseconds = Math.round(minutes * 60000);
+    const time = `${String(Math.floor(milliseconds / 3600000)).padStart(2, '0')}:${String(Math.floor(milliseconds / 60000) % 60).padStart(2, '0')}`;
+    const remainder = milliseconds % 60000;
+    return remainder
+      ? `${time}:${String(Math.floor(remainder / 1000)).padStart(2, '0')}.${String(remainder % 1000).padStart(3, '0')}`
+      : time;
   }
   viewNearby(offset: number): void {
     const capture = this.current();
@@ -322,6 +533,53 @@ export class SolarMonumentComponent {
       return;
     const data = event.data as Record<string, unknown>;
     if (data['channel'] !== 'forge.design-simulation.v1') return;
+    if (data['type'] === 'marker-selected' && !this.activity().startsWith('sundial-')) {
+      const target = this.design().targets.find((t) => t.id === data['targetId']);
+      if (target) {
+        this.markersOpen.set(true);
+        this.selectMarker(target);
+        this.focusMarkerPanel();
+      }
+      return;
+    }
+    if (
+      data['type'] === 'marker-reading' &&
+      data['targetId'] === this.markerSelected() &&
+      markerLights.concat('unavailable').includes(String(data['light']))
+    ) {
+      this.markerNow.set(String(data['light']));
+      return;
+    }
+    if (data['requestId'] === this.markerRequestId && this.markerRequestId) {
+      if (data['type'] === 'marker-cancelled') {
+        this.cancelMarkerDraft();
+        return;
+      }
+      if (
+        data['type'] === 'marker-error' &&
+        typeof data['message'] === 'string' &&
+        data['message'].length <= 300
+      ) {
+        this.markerFeedback.set(data['message']);
+        return;
+      }
+      if (
+        data['type'] === 'marker-picked' &&
+        this.canMark() &&
+        isBlockDesign({ blocks: [], targets: [data['target']] })
+      ) {
+        const target = data['target'] as DesignTarget;
+        if (target.id !== 'sunstone-' + this.markerRequestId || !solarMarkerRecord(target)) return;
+        this.markerDraft.set(target);
+        this.markerName = target.label;
+        this.markerPlacing.set(false);
+        this.markerX = target.x * 100;
+        this.markerZ = target.z * 100;
+        this.markerFeedback.set('Name your sunstone, then carve it into the floor.');
+        this.focusMarkerPanel(true);
+        return;
+      }
+    }
     if (data['type'] === 'toolbar-state') {
       const s = data['state'] as Record<string, unknown> | undefined;
       if (
@@ -371,7 +629,7 @@ export class SolarMonumentComponent {
     }
     if (data['type'] === 'ready') {
       this.ready.set(true);
-      this.connection.update(value => value + 1);
+      this.connection.update((value) => value + 1);
       this.status.set(
         this.activity().startsWith('sundial-')
           ? 'Play day to test your sundial. Your post and marks save automatically.'

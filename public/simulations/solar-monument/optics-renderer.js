@@ -130,7 +130,7 @@
       }
       orient(geometry, a.axis);
       const tint = window.SolarOptics.colors[a.color];
-      const glass = surfaces.glass(material({ color: new THREE.Color(...tint), roughness: a.insert === 'jewel' ? .065 : .12, metalness: 0, clearcoat: 1, clearcoatRoughness: .06, ior: 1.5, specularIntensity: 1, transparent: true, opacity: .6, side: THREE.DoubleSide, depthWrite: false }, false, true));
+      const glass = surfaces.glass(material({ color: new THREE.Color(...tint).convertSRGBToLinear(), roughness: a.insert === 'jewel' ? .055 : .10, metalness: .08, clearcoat: 1, clearcoatRoughness: .035, ior: 1.5, specularIntensity: 1, transparent: true, opacity: .92, side: THREE.DoubleSide, depthWrite: false }, false, true));
       const mesh = new THREE.Mesh(geometry, glass);
       mesh.name = 'colored-insert';
       return mesh;
@@ -145,7 +145,7 @@
         g.rotateY(Math.PI / 4);
       }
       g.scale(o.width / 2, o.height / 2, o.width / 2);
-      const finishes = { limestone: { color: 0xcfc8b8, roughness: .88, metalness: 0 }, porcelain: { color: 0xf3f0e8, roughness: .19, metalness: 0 }, bronze: { color: 0x977345, roughness: .4, metalness: .72 } };
+      const finishes = { limestone: { color: 0xe9d7b2, roughness: .82, metalness: 0 }, porcelain: { color: 0xfffcf2, roughness: .15, metalness: 0 }, bronze: { color: 0xdcb056, roughness: .23, metalness: .78 } };
       let finish = material({ ...finishes[o.material], flatShading: o.model !== 'sphere' }, true);
       if (o.material === 'limestone') finish = surfaces.dress(finish);
       else finish = surfaces.glass(finish);
@@ -159,10 +159,10 @@
       material, setDesign, blockGeometry, insertMesh, objectMesh, uniforms,
       stoneMaterial(b) {
         const variation = Array.from(b.id).reduce((hash, char) => (hash * 31 + char.charCodeAt(0)) >>> 0, 0) % 11;
-        const color = new THREE.Color(0xc9c2b2).offsetHSL(0, 0, (variation - 5) * .006);
-        return surfaces.dress(material({ color, roughness: .87 }), { half: [b.width / 2, b.height / 2, b.depth / 2], relief: Math.min(.002, Math.min(b.width, b.height, b.depth) * .02) });
+        const color = new THREE.Color(0xe9cc96).offsetHSL(0, (variation - 5) * .008, (variation - 5) * .008);
+        return surfaces.dress(material({ color, roughness: .79 }), { half: [b.width / 2, b.height / 2, b.depth / 2], relief: Math.min(.003, Math.min(b.width, b.height, b.depth) * .025) });
       },
-      floorMaterial: () => surfaces.dress(material({ color: 0xded9cd, roughness: .94 }), { floor: true, relief: .0007 }),
+      floorMaterial: () => surfaces.dress(material({ color: 0xffebca, roughness: .88 }), { floor: true, relief: .001 }),
       setSun(d) { uniforms.solarDirection.value.set(d.x, d.y, d.z); surfaces.setSun(d); },
       dispose() { texture.dispose(); surfaces.dispose(); },
     };

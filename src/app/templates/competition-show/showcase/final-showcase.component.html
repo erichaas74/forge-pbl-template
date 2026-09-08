@@ -1,0 +1,61 @@
+<div class="showcase" [style.--broadcast-accent]="theme.palette.accent">
+  <header><a [routerLink]="['/projects', project.projectId]">← Championship setup</a><span>THE CHAMPIONSHIP SHOW <b>FICTIONAL FINAL</b></span>
+    <button (click)="playing() ? pause() : play()">{{ playing() ? 'Pause demo' : 'Play demo' }}</button></header>
+  <main #area tabindex="-1">
+    @if (chapter() === 0) {
+      <section class="opening"><img [src]="demo.openingImage" alt="A realistic championship TV studio with four podiums and the title Three weeks. One final." />
+        <div class="opening-overlay"><span>AN ENTIRE PROJECT. ONE UNFORGETTABLE FINAL.</span><p>Meet the teams. Relive the mistakes. Watch the comeback.</p>
+          <button class="gold" (click)="play()">▶ Play the fictional final</button><button (click)="selectChapter(2)">Explore the bracket</button></div>
+      </section>
+      <div class="pitch"><h1>Make the learning feel like it led somewhere.</h1><p>This invented final shows how a season of challenges becomes a shared championship: a warm-up reel, a seeded bracket, a real game show rhythm, and room to laugh.</p></div>
+    } @else if (chapter() === 1) {
+      <section class="reel" [style.background-image]="'url(' + demo.openingImage + ')'">
+        @if (demo.recapVideo && !videoFailed()) {
+          <video #video [src]="demo.recapVideo" [poster]="demo.openingImage" controls playsinline [autoplay]="playing()" (ended)="videoEnded()" (error)="videoError()">
+            @if (demo.recapCaptions) { <track kind="captions" [src]="demo.recapCaptions" srclang="en" label="English" default /> }
+          </video>
+        } @else {
+          <div class="reel-content"><div class="reel-tag">SEASON REWIND <span>MOCK HIGHLIGHT REEL</span></div>
+            <small>{{ demo.highlights[highlight()].week }}</small><h1>{{ demo.highlights[highlight()].title }}</h1><p>{{ demo.highlights[highlight()].caption }}</p>
+            <div class="skill">{{ demo.highlights[highlight()].skill }}</div>
+            <div class="reel-progress">@for (h of demo.highlights; track h.id; let i = $index) { <button [attr.aria-pressed]="highlight() === i" (click)="showHighlight(i)">{{ h.week }}</button> }</div>
+          </div>
+        }
+      </section>
+      <div class="two-column"><article><small>NARRATOR / CAPTION SCRIPT</small><p class="narration">“{{ demo.highlights[highlight()].narration }}”</p></article>
+        <article><small>HOW PAST EVENTS BECOME THE OPENING</small><p>The reel revisits saved challenge moments: a first attempt, a useful correction, and a comeback. The same event results supply the seeds below. Academic evidence stays attached to the original response.</p><p>These moments are invented. This preview plays a storyboard until a mock video is supplied.</p></article></div>
+    } @else if (chapter() === 2) {
+      <section class="chapter-heading" [style.background-image]="'url(' + demo.openingImage + ')'"><small>THE CHAMPIONSHIP PICTURE</small><h1>Eight stories. Four places on stage.</h1><p>Qualification points come from the three events you just revisited.</p></section>
+      <div class="seed-strip">@for (team of model.seeded.teams; track team.id; let i = $index) { <div><small>SEED {{ i + 1 }}</small><strong>{{ team.name }}</strong><span>{{ team.qualificationPoints }} qualifier pts</span></div> }</div>
+      <app-competition-bracket [matches]="bracketRevealed() ? model.qualified.matches : model.seeded.matches" [teams]="model.seeded.teams" [hybrid]="true" />
+      <button class="gold" (click)="bracketRevealed.set(true)">Reveal the fictional quarterfinal results</button>
+      @if (bracketRevealed()) { <p class="callout">Nova, Falcons, Atlas, and Comets advance. Every team stays part of the show through the audience breaks.</p> }
+    } @else if (chapter() === 4 || chapter() === 6) {
+      <app-quiz-break [image]="demo.mysteryImage" [initialGame]="chapter() === 6 ? 'wrong' : 'zoom'" />
+    } @else {
+      <app-television-stage [view]="view()" [theme]="theme" />
+      @if (chapter() === 8) {
+        <section class="champion-result"><small>FROM A MISSED DELIVERY CHARGE TO THE FINAL ANSWER</small><h1>{{ name(model.champion.championId!) }} takes the championship.</h1><p>The opening reel introduced the mistake. The final wager brings the story back around: this time, Nova remembers delivery.</p></section>
+        <div class="final-scores">@for (id of finalRanking; track id) { <article [class.winning]="id === model.champion.championId"><small>{{ id === model.champion.championId ? 'CHAMPIONS' : 'FINALIST' }}</small><h2>{{ name(id) }}</h2><strong>{{ model.champion.scores[id] }}</strong><span>points</span></article> }</div>
+        <div class="two-column"><article><h3>The result is public. The learning remains inspectable.</h3><p>{{ model.champion.evidence.length }} invented team responses were preserved by the same evidence engine used in rehearsal. Winning points do not become academic grades.</p></article><article><h3>Make the warm-up reel</h3><p>The video kit includes the opening frame, narration, shot timing, captions, and the handoff to the live bracket.</p><a [href]="'/projects/' + project.projectId + '/mock-recap-script.md'" download>Download the mock-video script ↗</a><br/><a [href]="demo.openingImage" download>Download the opening image ↗</a></article></div>
+        <button class="gold" (click)="selectChapter(0)">Return to the opening</button>
+      } @else {
+        <div class="round-controls"><div><small>{{ chapter() === 7 ? 'EVERYTHING CAN CHANGE' : 'LIVE FINAL · SCRIPTED REPLAY' }}</small><h1>{{ round().title }}</h1></div>
+          <button class="gold" [disabled]="questionOpen() || director.cue() !== null" (click)="openQuestion()">Reveal question</button>
+          <button [disabled]="!questionOpen() || resultShown() || director.cue() !== null" (click)="showResult()">Reveal scripted result</button></div>
+        @if (questionOpen()) { <p class="readable-question">{{ round().prompt }}</p> }
+        @if (resultShown()) {
+          <article class="result"><small>THE EXPLANATION</small><p>{{ demo.answers[round().id] }}</p>
+            @if (chapter() === 5) { <p>Atlas buzzes first and takes a 100-point lead. The camera goes straight to their podium.</p> }
+            @if (chapter() === 7) { <p>Atlas risks 200 and misses the delivery charge. Nova risks 100 and gets it right. Comets risks 80; Falcons risks 40. One detail changes the ending.</p> }
+            @if (chapter() === 3) { <p>All four teams answer correctly and earn 100 competition points. Their explanations are saved separately as evidence.</p> }
+          </article>
+          <div class="final-scores">@for (team of view().teams; track team.id) { <article><h3>{{ team.name }}</h3><strong>{{ team.score }}</strong><span>points</span></article> }</div>
+        } @else if (chapter() === 7) { <p class="callout">Atlas has the lead. Every team has locked a wager. The prompt stays hidden until the host cues it.</p> }
+      }
+    }
+  </main>
+  <nav class="rundown" aria-label="Fictional final chapters">@for (title of chapters; track title; let i = $index) { <button [attr.aria-current]="chapter() === i ? 'step' : null" (click)="selectChapter(i)"><span>{{ (i + 1).toString().padStart(2, '0') }}</span>{{ title }}</button> }</nav>
+  <footer><p>Illustrative demo · All teams, highlights, answers, and results are fictional. No student records are read or changed.</p>
+    @if (chapter() > 0 && chapter() < 8) { <button (click)="next()">Next: {{ chapters[chapter() + 1] }} →</button> }</footer>
+</div>

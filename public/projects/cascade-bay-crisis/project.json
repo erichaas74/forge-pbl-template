@@ -1,0 +1,599 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "cascade-bay-crisis",
+  "projectVersion": "1.0.0",
+  "template": {
+    "id": "crisis-operations",
+    "version": "1.0"
+  },
+  "title": "Cascade Bay",
+  "region": "Coastal district · Sector 07",
+  "operationCode": "CB / 072",
+  "roomImage": "/crisis-center/operations-room-integrated-stations.png",
+  "newsImage": "/crisis-center/river-camera.png",
+  "workstations": [
+    {
+      "id": "river-weather",
+      "name": "River & weather",
+      "description": "Track the river, forecast, and exposed routes.",
+      "side": "left",
+      "roleIds": ["earth", "geography"],
+      "instrument": "telemetry",
+      "roomSurface": {
+        "bounds": [0, 31, 20, 34],
+        "screen": [
+          [1.15, 33.8],
+          [15.35, 37.25],
+          [15.35, 48.1],
+          [1.15, 49.6]
+        ]
+      },
+      "weather": {
+        "title": "Cascade Bay weather",
+        "network": "CASCADE WEATHER",
+        "satelliteImage": "/crisis-center/watershed-satellite.png",
+        "frames": [
+          { "stage": 0, "minute": 22, "x": 400, "y": 250, "intensity": 0.45 },
+          { "stage": 0, "minute": 27, "x": 470, "y": 265, "intensity": 0.55 },
+          { "stage": 0, "minute": 32, "x": 535, "y": 280, "intensity": 0.64 },
+          { "stage": 1, "minute": 32, "x": 535, "y": 280, "intensity": 0.64 },
+          { "stage": 1, "minute": 37, "x": 565, "y": 255, "intensity": 0.82 },
+          { "stage": 1, "minute": 42, "x": 590, "y": 235, "intensity": 0.95 },
+          { "stage": 2, "minute": 42, "x": 590, "y": 235, "intensity": 0.95 },
+          { "stage": 2, "minute": 47, "x": 610, "y": 242, "intensity": 0.9 },
+          { "stage": 2, "minute": 52, "x": 650, "y": 255, "intensity": 0.84 },
+          { "stage": 3, "minute": 52, "x": 650, "y": 255, "intensity": 0.84 },
+          { "stage": 3, "minute": 57, "x": 735, "y": 245, "intensity": 0.6 },
+          { "stage": 3, "minute": 62, "x": 840, "y": 230, "intensity": 0.32 }
+        ]
+      }
+    },
+    {
+      "id": "field-operations",
+      "name": "Field operations",
+      "description": "Coordinate field reports, crews, and critical services.",
+      "side": "right",
+      "roleIds": ["operations", "command"],
+      "instrument": "resources",
+      "roomSurface": {
+        "bounds": [80, 31, 20, 34],
+        "screen": [
+          [84.65, 37.25],
+          [98.85, 33.8],
+          [98.85, 49.6],
+          [84.65, 48.1]
+        ]
+      },
+      "conference": {
+        "title": "Field operations",
+        "participants": [
+          {
+            "id": "field-lead",
+            "name": "Maya Chen",
+            "role": "Field coordinator · Pine Valley",
+            "locationId": "pine",
+            "portrait": "/crisis-center/field-coordinator.png",
+            "evidenceIds": ["field-01", "response-03", "waiting-03"]
+          },
+          {
+            "id": "logistics-lead",
+            "name": "Avery Brooks",
+            "role": "Logistics lead · Ridge shelter",
+            "locationId": "shelter",
+            "portrait": "/crisis-center/logistics-coordinator.png",
+            "evidenceIds": ["resources-01", "hospital-02"]
+          },
+          {
+            "id": "bridge-lead",
+            "name": "Jonah Reed",
+            "role": "Infrastructure engineer · North bridge",
+            "locationId": "bridge",
+            "portrait": "/crisis-center/infrastructure-engineer.png",
+            "evidenceIds": ["bridge-02", "harbor-03"]
+          }
+        ]
+      }
+    }
+  ],
+  "startHour": 14,
+  "crews": 8,
+  "evidenceLimit": 3,
+  "bulletinIntervalSeconds": 75,
+  "roles": [
+    {
+      "id": "command",
+      "name": "Communications & command",
+      "shortName": "Command",
+      "focus": "Track field reports, weigh conflicting accounts, and coordinate the response."
+    },
+    {
+      "id": "earth",
+      "name": "Earth systems analyst",
+      "shortName": "Earth systems",
+      "focus": "Read the river gauges and rainfall forecast. Connect conditions upstream to risk downstream."
+    },
+    {
+      "id": "geography",
+      "name": "Geography analyst",
+      "shortName": "Geography",
+      "focus": "Compare elevation, exposed communities, and the routes that can still carry people out."
+    },
+    {
+      "id": "operations",
+      "name": "Operations officer",
+      "shortName": "Operations",
+      "focus": "Match available crews to routes, shelters, and critical infrastructure."
+    }
+  ],
+  "locations": [
+    {
+      "id": "pine",
+      "name": "Pine Valley",
+      "kind": "community",
+      "x": 578,
+      "y": 246,
+      "population": 1240,
+      "elevation": 8,
+      "detail": "Low-lying homes beside the river. The east ridge road is the only route above the projected flood line."
+    },
+    {
+      "id": "bridge",
+      "name": "North bridge",
+      "kind": "bridge",
+      "x": 516,
+      "y": 337,
+      "population": 0,
+      "elevation": 6,
+      "detail": "A vital river crossing. Water is approaching the deck; structural condition needs field verification."
+    },
+    {
+      "id": "harbor",
+      "name": "Old harbor",
+      "kind": "community",
+      "x": 383,
+      "y": 436,
+      "population": 680,
+      "elevation": 3,
+      "detail": "Waterfront streets and businesses. Low ground is exposed to river overflow and the afternoon high tide."
+    },
+    {
+      "id": "hospital",
+      "name": "Bay hospital",
+      "kind": "hospital",
+      "x": 690,
+      "y": 400,
+      "population": 180,
+      "elevation": 22,
+      "detail": "180 patients. Backup power is ready, but fuel arrives by the lower river road."
+    },
+    {
+      "id": "shelter",
+      "name": "Ridge shelter",
+      "kind": "shelter",
+      "x": 775,
+      "y": 210,
+      "population": 900,
+      "elevation": 64,
+      "detail": "Space for 900 residents. Access is via the east ridge road, safely above the modeled flood area."
+    },
+    {
+      "id": "gauge",
+      "name": "Upstream gauge",
+      "kind": "sensor",
+      "x": 705,
+      "y": 100,
+      "population": 0,
+      "elevation": 38,
+      "detail": "Automatic river-level station. Reports every five simulated minutes; debris may affect the sensor."
+    }
+  ],
+  "evidence": [
+    {
+      "id": "field-01",
+      "title": "Water reaches the lower river road",
+      "source": "District response team",
+      "channel": "FIELD RADIO",
+      "confidence": "Confirmed",
+      "minute": 30,
+      "stage": 0,
+      "locationId": "pine",
+      "roleIds": [],
+      "body": "A responder has confirmed standing water across the lower river road. Vehicles can still use the east ridge road. Residents in Pine Valley have not yet received an evacuation instruction."
+    },
+    {
+      "id": "gauge-01",
+      "title": "River rising 0.4 m per hour",
+      "source": "Hydrology station U-04",
+      "channel": "SENSOR TELEMETRY",
+      "confidence": "Confirmed",
+      "minute": 31,
+      "stage": 0,
+      "locationId": "gauge",
+      "roleIds": ["earth"],
+      "body": "The river gauge reads 4.2 m, up from 3.8 m one hour ago. The local flood threshold is 4.8 m. At the current rate it would be reached in about 90 minutes, but upstream rainfall could accelerate the rise.",
+      "reading": {
+        "value": "4.2",
+        "label": "River level",
+        "unit": "m",
+        "trend": [3.5, 3.55, 3.7, 3.8, 3.9, 4.05, 4.2]
+      }
+    },
+    {
+      "id": "elevation-01",
+      "title": "One route stays above the flood line",
+      "source": "District terrain survey",
+      "channel": "GEOGRAPHIC INTELLIGENCE",
+      "confidence": "Confirmed",
+      "minute": 28,
+      "stage": 0,
+      "locationId": "shelter",
+      "roleIds": ["geography"],
+      "body": "The lower river road lies at 5–7 m elevation. The east ridge road climbs to 32 m and reaches Ridge shelter at 64 m. North bridge lies on the lower route and may become impassable."
+    },
+    {
+      "id": "resources-01",
+      "title": "Eight crews; shelter capacity is limited",
+      "source": "Operations dispatch",
+      "channel": "RESOURCE STATUS",
+      "confidence": "Confirmed",
+      "minute": 29,
+      "stage": 0,
+      "locationId": "shelter",
+      "roleIds": ["operations"],
+      "body": "Eight response crews are available for this operation. Ridge shelter can receive 900 people; Pine Valley has 1,240 residents. Additional evacuees will need onward transport. Crews committed to a task remain assigned for the rest of this exercise."
+    },
+    {
+      "id": "rumor-01",
+      "title": "Social posts claim the bridge has failed",
+      "source": "Unverified community post",
+      "channel": "COMMUNITY WIRE",
+      "confidence": "Unverified",
+      "minute": 32,
+      "stage": 0,
+      "locationId": "bridge",
+      "roleIds": ["command"],
+      "body": "A widely shared post says North bridge has collapsed. There is no timestamped image or responder confirmation. The latest camera still shows the deck standing. Treat the structure's condition as unknown until a field assessment arrives."
+    },
+    {
+      "id": "rain-02",
+      "title": "Heavy rain stalls over the headwaters",
+      "source": "Regional weather desk",
+      "channel": "WEATHER ADVISORY",
+      "confidence": "Forecast",
+      "minute": 40,
+      "stage": 1,
+      "locationId": "gauge",
+      "roleIds": [],
+      "body": "Radar indicates a slow-moving rain band over the upper watershed. Another 25–40 mm is possible over the next hour. This is a forecast range, not an observed total; river rise may accelerate.",
+      "reading": {
+        "value": "25–40",
+        "label": "Expected rainfall",
+        "unit": "mm",
+        "trend": [8, 12, 14, 24, 28, 32, 38]
+      }
+    },
+    {
+      "id": "bridge-02",
+      "title": "Bridge standing; approach is unsafe",
+      "source": "Bridge inspection unit",
+      "channel": "VERIFIED FIELD REPORT",
+      "confidence": "Confirmed",
+      "minute": 41,
+      "stage": 1,
+      "locationId": "bridge",
+      "roleIds": [],
+      "body": "Inspectors confirm the bridge deck is intact. Debris is collecting at the piers and floodwater covers the western approach. The collapse rumor was inaccurate, but civilian traffic should be diverted."
+    },
+    {
+      "id": "hospital-02",
+      "title": "Hospital fuel delivery interrupted",
+      "source": "Bay hospital facilities lead",
+      "channel": "PRIORITY RADIO",
+      "confidence": "Confirmed",
+      "minute": 42,
+      "stage": 1,
+      "locationId": "hospital",
+      "roleIds": ["operations", "command"],
+      "body": "The scheduled generator-fuel delivery cannot use the lower river road. The hospital has 180 patients. A logistics crew can move reserve fuel by the ridge route before surface access becomes slower."
+    },
+    {
+      "id": "gauge-03",
+      "title": "Flood threshold exceeded",
+      "source": "Hydrology station U-04",
+      "channel": "SENSOR TELEMETRY",
+      "confidence": "Confirmed",
+      "minute": 50,
+      "stage": 2,
+      "locationId": "gauge",
+      "roleIds": [],
+      "body": "Water has reached 5.1 m, exceeding the 4.8 m flood threshold. The river is now spilling into the low-lying floodplain. Earlier forecasts underestimated the speed of the rise.",
+      "reading": {
+        "value": "5.1",
+        "label": "River level",
+        "unit": "m",
+        "trend": [3.8, 3.9, 4.05, 4.2, 4.5, 4.8, 5.1]
+      }
+    },
+    {
+      "id": "harbor-03",
+      "title": "Harbor streets filling with water",
+      "source": "Harbor response unit",
+      "channel": "FIELD RADIO",
+      "confidence": "Confirmed",
+      "minute": 51,
+      "stage": 2,
+      "locationId": "harbor",
+      "roleIds": [],
+      "body": "Water is entering ground-floor businesses at Old harbor. Responders need boats to move isolated residents to higher ground. Road vehicles cannot safely enter the waterfront."
+    },
+    {
+      "id": "weather-04",
+      "title": "Rain band moving east; rivers still high",
+      "source": "Regional weather desk",
+      "channel": "WEATHER ADVISORY",
+      "confidence": "Forecast",
+      "minute": 60,
+      "stage": 3,
+      "locationId": "gauge",
+      "roleIds": [],
+      "body": "The heaviest rain is moving away from the headwaters. Water levels remain high and could rise again if debris clears upstream. Keep routes restricted until a field team verifies them."
+    },
+    {
+      "id": "response-03",
+      "title": "Pine Valley convoy is using the ridge road",
+      "source": "Evacuation transport lead",
+      "channel": "RESPONSE UPDATE",
+      "confidence": "Confirmed",
+      "minute": 52,
+      "stage": 2,
+      "locationId": "pine",
+      "roleIds": [],
+      "requiresActionId": "evacuate",
+      "body": "The earlier evacuation order put transport crews on the ridge route before the low road flooded. Residents are moving toward high ground. The intake team is checking shelter capacity and arranging onward transport for people beyond the 900-space limit."
+    },
+    {
+      "id": "waiting-03",
+      "title": "Pine Valley is still awaiting transport",
+      "source": "Pine Valley community liaison",
+      "channel": "RESPONSE UPDATE",
+      "confidence": "Confirmed",
+      "minute": 52,
+      "stage": 2,
+      "locationId": "pine",
+      "roleIds": [],
+      "excludesActionId": "evacuate",
+      "body": "No evacuation order was dispatched before the lower road flooded. The routine road-evacuation window has closed. Residents have been advised to stay on high ground while responders assess specialist rescue access."
+    }
+  ],
+  "actions": [
+    {
+      "id": "evacuate",
+      "title": "Move Pine Valley to higher ground",
+      "description": "Send transport crews along the east ridge road and move residents out before the lower route floods.",
+      "locationId": "pine",
+      "crews": 3,
+      "duration": 25,
+      "tradeoff": "Commits three crews. Ridge shelter holds 900 people; the remaining 340 need onward transport.",
+      "outcome": "Transport crews are moving toward Pine Valley via the ridge road. Evacuation and onward transport are being coordinated.",
+      "mapLabel": "Evacuation underway",
+      "minStage": 0,
+      "expiresAtStage": 2,
+      "riskReduction": 20,
+      "protects": 900
+    },
+    {
+      "id": "bridge-close",
+      "title": "Close and inspect North bridge",
+      "description": "Set up a diversion and send an inspection team to the flooded approach.",
+      "locationId": "bridge",
+      "crews": 1,
+      "duration": 10,
+      "tradeoff": "Protects traffic at the crossing, but increases travel time to the hospital and harbor.",
+      "outcome": "North bridge is closed to civilian traffic. Responders have established a diversion via the east ridge road.",
+      "mapLabel": "Road closed · diversion active",
+      "minStage": 0,
+      "riskReduction": 8,
+      "protects": 0
+    },
+    {
+      "id": "shelter-open",
+      "title": "Activate Ridge shelter",
+      "description": "Prepare shelter spaces, supplies, and an intake team on high ground.",
+      "locationId": "shelter",
+      "crews": 2,
+      "duration": 15,
+      "tradeoff": "Two crews remain at the shelter. Opening the shelter alone does not move residents there.",
+      "outcome": "Shelter crews are preparing intake and supplies for up to 900 people at Ridge shelter.",
+      "mapLabel": "Shelter team deployed",
+      "minStage": 0,
+      "riskReduction": 7,
+      "protects": 0
+    },
+    {
+      "id": "hospital-fuel",
+      "title": "Secure hospital backup power",
+      "description": "Move reserve generator fuel to Bay hospital using the ridge route.",
+      "locationId": "hospital",
+      "crews": 1,
+      "duration": 20,
+      "tradeoff": "Reserves one logistics crew that could otherwise support evacuation or shelter setup.",
+      "outcome": "A logistics crew is moving reserve fuel along the ridge route to support Bay hospital's essential systems.",
+      "mapLabel": "Fuel convoy dispatched",
+      "minStage": 1,
+      "riskReduction": 6,
+      "protects": 180
+    },
+    {
+      "id": "harbor-rescue",
+      "title": "Deploy rescue boats to the harbor",
+      "description": "Send two specialist crews to help residents isolated by floodwater.",
+      "locationId": "harbor",
+      "crews": 2,
+      "duration": 20,
+      "tradeoff": "Commits both boat crews. They cannot simultaneously support Pine Valley.",
+      "outcome": "Boat crews are transferring isolated harbor residents to higher ground.",
+      "mapLabel": "Boat rescue active",
+      "minStage": 2,
+      "riskReduction": 12,
+      "protects": 240
+    }
+  ],
+  "bulletins": [
+    {
+      "minute": 32,
+      "title": "River rising. Communities on watch.",
+      "summary": "Floodwater has reached the lower river road. Pine Valley remains accessible by the east ridge route.",
+      "alert": "Watch",
+      "risk": 68,
+      "affected": 1920,
+      "forecast": "Pine Valley could flood within 60–90 minutes if the river keeps rising. The ridge road is the strongest evacuation route in the current terrain model.",
+      "uncertainty": "Moderate confidence. Fresh upstream rainfall and a bridge assessment would narrow the estimate.",
+      "metricValue": 4.2
+    },
+    {
+      "minute": 42,
+      "title": "Storm stalls over the upper watershed.",
+      "summary": "Another 25–40 mm of rain is forecast. North bridge is standing, but its western approach is unsafe.",
+      "alert": "Emergency",
+      "risk": 79,
+      "affected": 2100,
+      "forecast": "The stalled rain band increases the likelihood of river overflow. The evacuation window is narrowing; deploy before the next update to use the road route.",
+      "uncertainty": "Moderate confidence. Rainfall totals are a range. The bridge inspection has resolved the collapse rumor.",
+      "metricValue": 4.6
+    },
+    {
+      "minute": 52,
+      "title": "Flood threshold crossed. Harbor cut off.",
+      "summary": "The gauge reads 5.1 m. Water is entering Old harbor; boat crews are needed on the waterfront.",
+      "alert": "Critical",
+      "risk": 91,
+      "affected": 2440,
+      "forecast": "Low roads are now outside the safe operating envelope. Earlier evacuation orders reduce exposure; new waterfront rescues require boats.",
+      "uncertainty": "High confidence in observed flooding. The time of the peak remains uncertain.",
+      "metricValue": 5.1
+    },
+    {
+      "minute": 62,
+      "title": "Rain easing. Response operations continue.",
+      "summary": "The rain band is moving east. High water and debris still make low roads unsafe.",
+      "alert": "Stabilizing",
+      "risk": 62,
+      "affected": 2440,
+      "forecast": "Rainfall is easing, but the floodplain will drain slowly. Maintain shelter, hospital support, and restricted routes while field teams reassess.",
+      "uncertainty": "Moderate confidence. An upstream debris release could cause another pulse of water.",
+      "metricValue": 5
+    }
+  ],
+  "map": {
+    "coast": "M 0 0 H 1000 V 600 H 265 L 286 556 250 514 301 474 313 434 351 407 328 367 357 333 337 300 375 264 351 226 367 195 340 152 367 101 347 58 370 0 Z",
+    "river": "M 728 -20 C 702 64 674 94 686 135 S 596 178 590 222 S 505 274 525 322 S 487 377 459 387 S 422 427 396 438 S 365 479 299 498",
+    "roads": [
+      "M 383 436 L 438 388 516 337 578 246 638 207 775 210",
+      "M 775 210 L 807 272 777 350 690 400 587 444 486 486",
+      "M 516 337 L 599 346 690 400",
+      "M 578 246 L 620 149 705 100"
+    ],
+    "contours": [
+      "M 417 20 Q 564 138 648 41 T 940 48",
+      "M 396 57 Q 535 173 658 80 T 967 95",
+      "M 413 108 Q 501 202 644 127 T 984 156",
+      "M 443 147 Q 479 238 655 166 T 1032 204",
+      "M 435 195 Q 450 279 650 204 T 987 255",
+      "M 737 265 Q 850 241 906 296 T 1020 303",
+      "M 738 291 Q 850 268 899 322 T 1012 342",
+      "M 734 328 Q 829 298 897 362 T 1020 376",
+      "M 776 397 Q 886 355 947 420 T 1020 444",
+      "M 544 488 Q 680 437 772 482 T 978 492",
+      "M 517 518 Q 661 471 787 518 T 1001 531",
+      "M 489 554 Q 660 517 805 557 T 1032 583"
+    ],
+    "hazard": "M 605 180 Q 659 219 601 284 L 579 321 Q 590 367 524 406 L 489 463 418 506 302 520 312 459 379 397 448 370 475 316 481 282 541 243 559 203 Z",
+    "labels": [
+      {
+        "text": "CASCADE",
+        "x": 98,
+        "y": 315,
+        "rotation": 0,
+        "kind": "water"
+      },
+      {
+        "text": "BAY",
+        "x": 136,
+        "y": 345,
+        "rotation": 0,
+        "kind": "water"
+      },
+      {
+        "text": "NORTH RIDGE",
+        "x": 782,
+        "y": 61,
+        "rotation": 0,
+        "kind": "land"
+      },
+      {
+        "text": "EAST RIDGE",
+        "x": 855,
+        "y": 322,
+        "rotation": 70,
+        "kind": "land"
+      }
+    ]
+  },
+  "roomTagline": ["Eyes on the river.", "Decisions in your hands."],
+  "analysisHeadline": ["A changing river.", "A narrowing response window."],
+  "systemChain": ["RAINFALL", "RIVER RISE", "ROAD ACCESS", "PEOPLE"],
+  "primaryMetric": {
+    "label": "RIVER LEVEL / U-04",
+    "unit": "m",
+    "caption": "FLOOD THRESHOLD 4.8 M",
+    "initialTrend": [3.5, 3.55, 3.7, 3.8, 3.9, 4.05, 4.2]
+  },
+  "newsCamera": {
+    "label": "FIELD CAMERA 02",
+    "network": "CASCADE REGIONAL NETWORK",
+    "locationId": "bridge",
+    "minute": 30,
+    "description": "Exercise camera still: swollen river at North bridge, with water across the low road and emergency vehicles at the approach"
+  },
+  "companion": {
+    "name": "ARGUS",
+    "roamPoints": [
+      {
+        "y": 76,
+        "scale": 0.88,
+        "x": 78
+      },
+      {
+        "y": 81,
+        "scale": 1,
+        "x": 80
+      },
+      {
+        "y": 83,
+        "scale": 1.04,
+        "x": 71
+      },
+      {
+        "y": 85,
+        "scale": 1.1,
+        "x": 59
+      },
+      {
+        "y": 85,
+        "scale": 1.1,
+        "x": 44
+      },
+      {
+        "y": 82,
+        "scale": 1.05,
+        "x": 29
+      },
+      {
+        "y": 77,
+        "scale": 0.94,
+        "x": 23
+      }
+    ],
+    "sprite": "/crisis-center/argus-rover.png"
+  }
+}

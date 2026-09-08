@@ -1,0 +1,34 @@
+<main class="league launch">
+  <nav class="masthead" aria-label="Main navigation"><a routerLink="/projects" class="back">← Projects</a><span class="wordmark">LSL <span>/ LIVE STRATEGY LEAGUE</span></span><span class="practice">LOCAL PRACTICE · FICTIONAL RIVALS</span></nav>
+  <header class="project-header" aria-label="Project title and launch controls">
+    <div class="project-title"><h1>Live Strategy League</h1><span>League lobby</span></div>
+    <div class="actions">
+      @if (demo) { <button class="preview-toggle" (click)="togglePreview()">{{ playing() ? 'Pause preview' : 'Resume preview' }}</button><a class="demo-link" [routerLink]="['/projects', config.projectId, 'final-demo']">Watch the final ↗</a> }
+      <a class="enter-league" [routerLink]="['/projects', config.projectId, 'activity']">Enter the league <span aria-hidden="true">→</span></a>
+    </div>
+  </header>
+
+  <div class="launch-arena">
+    <section class="invitation" aria-labelledby="challenge-title">
+      <p class="challenge-tag"><span></span>THE LEAGUE IS WAITING</p>
+      <h2 id="challenge-title">{{ copy?.headline ?? config.title }}<em>{{ copy?.highlight ?? 'Make your move.' }}</em></h2>
+      <p class="challenge-copy">{{ copy?.invitation ?? config.description }}</p>
+      <div class="stakes" aria-label="Challenge format"><div><strong>{{ config.teams.length.toString().padStart(2, '0') }}</strong><span>TEAMS</span></div><div><strong>{{ config.rounds.length.toString().padStart(2, '0') }}</strong><span>ROUNDS</span></div><div><strong>01</strong><span>TOP SPOT</span></div></div>
+      <article class="player-card" [style.--team-color]="team.color">
+        @if (team.imageUrl) { <img [src]="team.imageUrl" [alt]="'Fictional ' + team.name + ' team'" width="96" height="96"> }
+        <div><p class="eyebrow">YOUR TEAM</p><h3>{{ team.name }} <span>YOU</span></h3><p>Your next decision could change the table.</p></div>
+      </article>
+      <div class="win-condition"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="m4 9 7 5 5-9 5 9 7-5-3 16H7Z"/><path d="M8 29h16"/></svg><div><h3>The win condition</h3><p>{{ copy?.winCondition ?? 'Finish at the top of the final leaderboard.' }}</p></div></div>
+    </section>
+
+    <section class="preview-board panel" aria-labelledby="standings-title">
+      <div class="preview-intro"><span class="signal-dot"></span><span>{{ demo ? 'A TASTE OF THE FINAL ROUND' : 'MEET YOUR COMPETITION' }}</span><small>{{ demo ? 'SIMULATED PREVIEW' : 'STARTING GRID' }}</small></div>
+      <app-league-leaderboard [config]="config" [snapshot]="snapshot()" [yourTeamId]="team.id"
+        [completedRounds]="demo ? config.rounds.length : 0" [animationStep]="animationStep()"
+        [statusLabel]="demo ? (playing() ? 'PREVIEW IN MOTION' : 'PREVIEW PAUSED') : 'READY TO START'"
+        trendNote="Rank movement in this sample" note="Fictional teams · Sample scores · Your practice starts separately" />
+    </section>
+  </div>
+
+  <section class="mission-brief" aria-labelledby="mission-title"><div><p class="eyebrow">YOUR MISSION</p><h2 id="mission-title">Every decision is a chance to climb.</h2><p>{{ copy?.mission ?? config.description }}</p></div><ol class="round-briefs">@for (round of config.rounds; track $index) { <li><span>{{ ($index + 1).toString().padStart(2, '0') }}</span><strong>{{ round.title }}</strong></li> }</ol></section>
+</main>

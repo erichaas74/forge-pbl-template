@@ -1,5 +1,5 @@
 # Authoring utility. Regenerates local synthesized narration from the same captions the UI uses.
-param([string[]]$Manifests = @('unlabeled-shelf', 'senate'))
+param([string[]]$Manifests = @('unlabeled-shelf', 'senate'), [string[]]$Speakers = @())
 $ErrorActionPreference = 'Stop'
 $introRepoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $introPublicRoot = [IO.Path]::GetFullPath((Join-Path $introRepoRoot 'public'))
@@ -12,6 +12,7 @@ try {
   $introDialogue = Get-Content -LiteralPath $introManifest -Encoding UTF8 -Raw | ConvertFrom-Json
   foreach ($introBeat in $introDialogue.PSObject.Properties) {
     foreach ($introLine in $introBeat.Value) {
+      if ($Speakers.Count -gt 0 -and $introLine.speaker -notin $Speakers) { continue }
       $introTarget = [IO.Path]::GetFullPath((Join-Path $introPublicRoot $introLine.audioUrl.TrimStart('/')))
       if (-not $introTarget.StartsWith($introPublicRoot + [IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) {
         throw 'Narration asset path must stay within this workspace public directory.'
@@ -20,6 +21,7 @@ try {
       if ($introLine.speaker -in @('scientist', 'Senator Lucius', 'Senator Cassius') -or $introName -eq 'frontier') {
         $introSynth.SelectVoice('Microsoft David Desktop')
         $introSynth.Rate = 0
+        if ($introLine.speaker -eq 'scientist') { $introSynth.Rate = 3 }
         if ($introLine.speaker -eq 'Senator Cassius') { $introSynth.Rate = -1 }
       } else {
         $introSynth.SelectVoice('Microsoft Zira Desktop')

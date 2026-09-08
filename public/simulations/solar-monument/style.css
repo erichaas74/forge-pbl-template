@@ -667,7 +667,7 @@ h1 {
 
 /* Warm limestone and aged bronze frame the measured stone court. */
 .workspace-bar { background: #f7f2e7; border-bottom: 1px solid #b8a583; }
-.stage { background: #393b34; }
+.stage { background: #d9c59d; }
 .scene-tools { background: #f1ede3; border: 1px solid #c5b798; }
 .scene-tools .shadow-info { background: #3c4038; color: #fcf7e9; }
 .optics-readout { color: #56513f; }
@@ -706,6 +706,10 @@ html, body { min-height: 0; }
 .horizon-layout.show-chart { grid-template-rows: 220px 450px auto !important; }
 .canvas-panel { min-height: 0; position: relative; }
 #shadowCanvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+#shadowCanvas.placing-marker { cursor: crosshair; }
+#markerHint { position: absolute; top: 48px; left: 14px; right: 14px; z-index: 20; display: flex; align-items: center; gap: 12px; justify-content: space-between; padding: 8px 12px; border: 1px solid #b69b68; border-radius: 8px; background: #fff6dbeF; color: #423623; font: 13px/1.4 system-ui, sans-serif; }
+#markerHint[hidden] { display: none; }
+#markerHint button { padding: 6px 10px; border: 1px solid #a68b5c; background: #fffdf5; border-radius: 5px; color: inherit; cursor: pointer; }
 #shadowCanvas:active { cursor: grabbing; }
 #shadowCanvas:focus-visible { outline: 3px solid #c78627; outline-offset: -4px; }
 .sun-badge { position: absolute; top: 47px; left: 12px; border: 1px solid #b59b62; border-radius: 18px; padding: 7px 12px; background: #fff4d5ed; color: #654e22; font-size: 12px; font-weight: 650; pointer-events: none; }

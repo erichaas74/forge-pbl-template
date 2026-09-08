@@ -1,0 +1,125 @@
+<section class="table-controls" aria-label="Situation table controls">
+  <header class="table-heading">
+    <div>
+      <h2 tabindex="-1" data-panel-heading>Situation table</h2>
+      <p class="return-hint">Click the surrounding room to step back <span>· Esc</span></p>
+    </div>
+    <button class="return-room" aria-label="Return to room" (click)="navigate.emit('room')">
+      Return to room <app-crisis-icon name="close" />
+    </button>
+  </header>
+  <div class="map-toolbar">
+    <div class="layer-controls" aria-label="Map layer">
+      <app-crisis-icon name="layers" /><button
+        [class.active]="layer() === 'hazard'"
+        [attr.aria-pressed]="layer() === 'hazard'"
+        (click)="layerChanged.emit('hazard')"
+      >
+        Hazard</button
+      ><button
+        [class.active]="layer() === 'people'"
+        [attr.aria-pressed]="layer() === 'people'"
+        (click)="layerChanged.emit('people')"
+      >
+        People</button
+      ><button
+        [class.active]="layer() === 'resources'"
+        [attr.aria-pressed]="layer() === 'resources'"
+        (click)="layerChanged.emit('resources')"
+      >
+        Resources
+      </button>
+    </div>
+    <div class="map-zoom-controls">
+      <button aria-label="Zoom out map" (click)="zoomChanged.emit(-0.1)" [disabled]="zoom() <= 1">
+        −</button
+      ><span>{{ zoom() * 100 | number: '1.0-0' }}%</span
+      ><button aria-label="Zoom in map" (click)="zoomChanged.emit(0.1)" [disabled]="zoom() >= 1.4">
+        +
+      </button>
+    </div>
+    <div class="map-legend">
+      <span><i class="confirmed-key"></i>Observed</span
+      ><span><i class="forecast-key"></i>Projected extent</span>
+    </div>
+  </div>
+  <div class="map-workspace">
+    <aside class="location-inspector">
+      <h2 tabindex="-1">{{ location().name }}</h2>
+      <p>{{ location().detail }}</p>
+      <dl>
+        <div>
+          <dt>Elevation</dt>
+          <dd>{{ location().elevation }} <small>m</small></dd>
+        </div>
+        <div>
+          <dt>{{ location().kind === 'shelter' ? 'Capacity' : 'Population' }}</dt>
+          <dd>{{ location().population | number }}</dd>
+        </div>
+      </dl>
+      <div class="location-reports">
+        <span class="eyebrow">LATEST EVIDENCE</span>
+        @for (report of locationReports(); track report.id) {
+          <article>
+            <small>{{ runtime.time(report.minute) }} · {{ report.confidence }}</small>
+            <p>{{ report.title }}</p>
+            <button
+              (click)="runtime.read(report.id); runtime.share(report.id)"
+              [disabled]="runtime.state().sharedEvidenceIds.includes(report.id)"
+            >
+              <app-crisis-icon name="pin" />{{
+                runtime.state().sharedEvidenceIds.includes(report.id)
+                  ? 'On the table'
+                  : 'Pin report'
+              }}
+            </button>
+            <details>
+              <summary>Read source report</summary>
+              <p>{{ report.body }}</p>
+              <small>{{ report.source }}</small>
+            </details>
+          </article>
+        } @empty {
+          <p class="no-reports">
+            No reports at this station. Check another specialist’s incoming information.
+          </p>
+        }
+      </div>
+      @for (order of locationOrders(); track order.actionId) {
+        <div class="location-order">
+          <app-crisis-icon name="check" /><span>{{ order.action.mapLabel }}</span>
+        </div>
+      }
+      <button class="map-command" (click)="navigate.emit('command')">
+        Coordinate response <app-crisis-icon name="arrow" />
+      </button>
+    </aside>
+  </div>
+  <div class="shared-briefing">
+    <div class="briefing-ident">
+      <app-crisis-icon name="pin" /><span
+        >PINNED EVIDENCE<small
+          >{{ runtime.shared().length }} / {{ runtime.config.evidenceLimit }} REPORTS</small
+        ></span
+      >
+    </div>
+    @for (report of runtime.shared(); track report.id) {
+      <div class="briefing-item">
+        <button class="briefing-locate" (click)="locationSelected.emit(report.locationId)">
+          <span>{{ report.confidence }} · {{ runtime.time(report.minute) }}</span
+          ><strong>{{ report.title }}</strong></button
+        ><button
+          class="unpin"
+          (click)="runtime.unshare(report.id)"
+          [attr.aria-label]="'Unpin ' + report.title"
+        >
+          <app-crisis-icon name="close" />
+        </button>
+      </div>
+    } @empty {
+      <p>
+        Pin useful evidence from the news or your station. Keep the three reports that matter most.
+      </p>
+    }
+  </div>
+</section>

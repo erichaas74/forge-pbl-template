@@ -2,6 +2,10 @@ export interface ProjectCatalogEntry {
   readonly id: string;
   readonly route: string;
   readonly builderRoute?: string;
+  /** Immersive projects own their entry surface (lobby or activity) in the template. */
+  readonly entryMode?: 'opening' | 'activity';
+  /** The registered template supplies its own final example without an intro page. */
+  readonly finalExampleMode?: 'template';
   readonly legacyRoutes: readonly string[];
   readonly projectVersion: string;
   readonly template: {
@@ -26,6 +30,45 @@ export interface ProjectCatalogEntry {
 }
 
 export const projectCatalog: readonly ProjectCatalogEntry[] = [
+  {
+    id: 'championship-show', route: '/projects/championship-show', legacyRoutes: [],
+    finalExampleMode: 'template', coverImage: '/projects/championship-show/art/final-opening-v1.png',
+    entryMode: 'activity', projectVersion: '1.0.0',
+    template: { id: 'competition-show', version: '1.0' },
+    packageReference: 'projects/championship-show',
+    capabilityIds: ['competition.bracket', 'competition.rounds', 'competition.evidence'],
+    title: 'The Championship Show', subtitle: 'One final. Every team has a story.',
+    grade: 'Grades 5–8', subject: 'Mathematics + Reasoning', projectType: 'Tournament + Game Show',
+    description: 'Set the seeds, run head-to-head matches, and bring the finalists into a championship game show. Rehearse the complete final with questions, buzzers, score reveals, and a final wager.',
+    learningGoals: ['Mathematical reasoning', 'Defending answers with evidence', 'Team strategy'],
+    symbol: '★', theme: 'championship', status: 'Preview', studentInvitation: 'Set up the championship',
+  },
+  {
+    id: 'live-strategy-league', route: '/projects/live-strategy-league', legacyRoutes: [],
+    finalExampleMode: 'template',
+    entryMode: 'activity', projectVersion: '1.0.0',
+    template: { id: 'live-strategy-league', version: '1.0' },
+    packageReference: 'projects/live-strategy-league',
+    capabilityIds: ['league.rounds', 'league.decisions', 'league.standings'],
+    title: 'Live Strategy League', subtitle: 'Small moves. Big stakes.',
+    grade: 'Grades 6–8', subject: 'Mathematics + Strategy', projectType: 'Live Strategy League',
+    description: 'Lead a team through four changing markets. Set a strategy, lock your decisions, and watch the league standings change in a local practice competition.',
+    learningGoals: ['Costs and profit', 'Interpreting changing conditions', 'Evidence-based decisions'],
+    symbol: '↗', theme: 'league', status: 'Preview', studentInvitation: 'Enter the league',
+  },
+  {
+    id: 'cascade-bay-crisis', route: '/projects/cascade-bay-crisis', legacyRoutes: [],
+    entryMode: 'opening',
+    projectVersion: '1.0.0', template: { id: 'crisis-operations', version: '1.0' },
+    packageReference: 'projects/cascade-bay-crisis',
+    capabilityIds: ['crisis.situation-map', 'crisis.evidence', 'crisis.decisions', 'crisis.analysis'],
+    title: 'Cascade Bay Crisis Center', subtitle: 'Emergency Operations Center',
+    grade: 'Grades 5–8', subject: 'Earth Science + Geography', projectType: 'Crisis Operations',
+    description: 'Enter the operations room, verify incoming reports, read a changing situation map, and coordinate a response with limited resources.',
+    learningGoals: ['Interconnected Earth systems', 'Source reliability', 'Decisions from data'],
+    symbol: '◎', theme: 'crisis', status: 'Preview',
+    coverImage: '/crisis-center/operations-room.png', studentInvitation: 'Take command',
+  },
   {
     id: 'robot-delivery-code-lab', route: '/projects/robot-delivery-code-lab', legacyRoutes: [],
     projectVersion: '1.0.0', template: { id: 'programming-automation', version: '1.0' },
@@ -204,7 +247,7 @@ export const projectCatalog: readonly ProjectCatalogEntry[] = [
   },
   {
     id: 'calendar-monument',
-    coverImage: '/simulations/solar-monument/monument.svg',
+    coverImage: '/simulations/solar-monument/jewel-circle-cover.png',
     studentInvitation: 'Start with a sundial',
     route: '/projects/calendar-monument',
     legacyRoutes: [],

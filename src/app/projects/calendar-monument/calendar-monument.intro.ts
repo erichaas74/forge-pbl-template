@@ -1,6 +1,9 @@
 import type { ProjectIntroConfig } from '../../shared/project-intro/project-intro.models';
-const image = '/simulations/solar-monument/monument.svg';
-const alt = 'A block tower with three seasonal shadow markers and Sun paths above it.';
+const image = '/simulations/solar-monument/jewel-circle-cover.png';
+const alt =
+  'Illustration of a jeweled stone circle, pierced standing stones and a bronze crystal on a carved turquoise-and-gold calendar court.';
+const practiceImage = '/simulations/solar-monument/monument.svg';
+const practiceAlt = 'A block tower with three seasonal shadow markers and Sun paths above it.';
 export const calendarMonumentIntro: ProjectIntroConfig = {
   capabilityId: 'project.intro',
   schemaVersion: '1.0',
@@ -12,7 +15,7 @@ export const calendarMonumentIntro: ProjectIntroConfig = {
   kicker: 'A calendar made of sunlight',
   headline: 'Can a shadow tell time—and the season?',
   story:
-    'Start with a post and a moving shadow. Build a sundial, play a whole day, and mark the shadow tip. Then change the season: why does the same dial make different shadows? Your discoveries will help you build a monument to the Sun.',
+    'Start with a post and a moving shadow. Build a sundial, play a whole day, and mark the shadow tip. Then change the season: why does the same dial make different shadows? Your final project is a solar calendar, with standing stones, holes and colored jewels that mark the year.',
   hook: 'The same tower makes a different shadow in winter. How could you turn that pattern into a calendar?',
   role: 'Sky researcher and monument designer',
   teaser: {
@@ -27,7 +30,7 @@ export const calendarMonumentIntro: ProjectIntroConfig = {
       'Imagine a tower standing on level ground. The Sun starts high in the sky, then moves lower.',
     sceneLabel: 'SHADOW OBSERVATION',
     sceneCaption: 'Keep the tower height fixed. Only the Sun’s altitude changes.',
-    media: { image, alt },
+    media: { image: practiceImage, alt: practiceAlt },
     dialogue: [],
     prompt: 'What happens to the shadow as the Sun gets lower?',
     revealButton: 'Explore the prediction',
@@ -36,30 +39,30 @@ export const calendarMonumentIntro: ProjectIntroConfig = {
         id: 'longer',
         label: 'It grows longer',
         detail: 'Light reaches the ground at a shallower angle.',
-        image,
-        imageAlt: alt,
+        image: practiceImage,
+        imageAlt: practiceAlt,
         badge: 'PREDICTION',
         result: {
           title: 'A longer reach',
           text: 'For a vertical tower on level ground, lowering the Sun lengthens the shadow while the Sun stays above the horizon.',
           evidence: 'Keep the tower height fixed and change the Sun altitude in the lab.',
           surprise: 'ONE CHANGE, A NEW SHADOW',
-          media: { image, alt },
+          media: { image: practiceImage, alt: practiceAlt },
         },
       },
       {
         id: 'same',
         label: 'It stays the same',
         detail: 'The tower itself has not changed.',
-        image,
-        imageAlt: alt,
+        image: practiceImage,
+        imageAlt: practiceAlt,
         badge: 'PREDICTION',
         result: {
           title: 'Height is only one part',
           text: 'The tower stays the same, but the light’s angle changes. A fair test can reveal what this does to the shadow.',
           evidence: 'Change only the Sun altitude, then compare the shadow lengths.',
           surprise: 'TEST THE LIGHT ANGLE',
-          media: { image, alt },
+          media: { image: practiceImage, alt: practiceAlt },
         },
       },
     ],
@@ -69,11 +72,11 @@ export const calendarMonumentIntro: ProjectIntroConfig = {
       image,
       imageAlt: alt,
       deliverable:
-        'A physical block monument and a matching 3D demonstration of all four seasonal dates.',
+        'A solar-calendar monument with stone openings and colored jewels, plus a matching 3D test of both equinoxes and both solstices.',
       steps: [
         'Build a sundial and mark one day.',
         'Change seasons, explain the tilt, and mark the equinoxes and solstices.',
-        'Create a Sun monument and demonstrate your evidence.',
+        'Build a solar-calendar monument and test its seasonal light alignments.',
       ],
       finishButton: 'Build my first sundial',
     },
@@ -99,17 +102,17 @@ export const calendarMonumentIntro: ProjectIntroConfig = {
     takeaway: 'Change one variable at a time, then use measurements to support your explanation.',
   },
   decision: {
-    prompt: 'What will your first monument try to do?',
+    prompt: 'How will your solar calendar mark the year?',
     options: [
       {
         id: 'shadow',
         label: 'Land a shadow on a marker',
-        detail: 'Use a tower and measured ground targets.',
+        detail: 'Arrange standing stones and measured seasonal targets.',
       },
       {
         id: 'window',
-        label: 'Frame a patch of sunlight',
-        detail: 'Use pillars and a lintel to make an opening.',
+        label: 'Land colored light on a marker',
+        detail: 'Use holes and colored jewels in a stone gate.',
       },
     ],
     reasonPrompt: 'Why might that design work?',
@@ -120,15 +123,15 @@ export const calendarMonumentIntro: ProjectIntroConfig = {
   mission: [
     'Build a sundial, play a day, then investigate its changing seasonal shadows.',
     'Explain Earth’s tilt and make your sundial mark the four special dates.',
-    'Finally, build a Sun monument and test its shadow and colored-light displays.',
+    'Finally, build a solar calendar like a stone circle with jeweled openings, and test its light and shadow at all four special dates.',
   ],
   action: 'Start with a sundial',
   finalExample: {
-    button: 'Explore a monument example',
+    button: 'Explore a solar calendar',
     format: 'Interactive 3D seasonal demonstration',
-    title: 'The Three-Marker Tower',
+    title: 'The Jewel Circle Solar Calendar',
     introduction:
-      'An illustrative student design for Colorado Springs uses a tower and three seasonal markers.',
+      'Explore a carved stone circle with a bronze crystal, pierced standing stones and five colored jewels. Amber, blue and ruby roof openings light three seasonal sunstones. Test all four special dates on the same monument.',
     chapters: [
       {
         label: '01 · Research',
@@ -141,7 +144,8 @@ export const calendarMonumentIntro: ProjectIntroConfig = {
       {
         label: '02 · Design',
         title: 'Build matching models',
-        studentWork: 'Ten 10 cm blocks form a 1 m tower. A measured base points to true north.',
+        studentWork:
+          'Eight gates surround a bronze crystal on a stepped base. Four outer standing stones have round windows; emerald and violet jewels fill two. Three roof jewels align with seasonal sunstones. Our measured base points to true north.',
         evidence: 'Block list, coordinates, orientation, and target positions.',
         teacherNote: 'Check whether another team could reproduce the model.',
       },

@@ -1,0 +1,108 @@
+@if (view() === 'station') {
+  <div class="station-panel">
+    @if (selectedEvidence(); as report) {
+      <section class="evidence-reader" tabindex="-1" aria-label="Selected report">
+        <button class="back-to-reports" (click)="closeReport()">
+          <app-crisis-icon name="back" />All reports
+        </button>
+        <div class="report-meta">
+          <span [class]="'confidence ' + report.confidence.toLowerCase()">{{
+            report.confidence
+          }}</span
+          ><span>{{ runtime.time(report.minute) }} · {{ report.source }}</span>
+        </div>
+        <h2>{{ report.title }}</h2>
+        @if (report.reading; as reading) {
+          <div class="reading">
+            <div>
+              <span>{{ reading.label }}</span
+              ><strong
+                >{{ reading.value }} <small>{{ reading.unit }}</small></strong
+              >
+            </div>
+            <svg
+              viewBox="0 0 360 100"
+              role="img"
+              [attr.aria-label]="
+                reading.label + ' history: ' + reading.trend.join(', ') + ' ' + reading.unit
+              "
+            >
+              <path d="M0 25H360M0 55H360M0 85H360" stroke="#294247" stroke-width="1" />
+              <path
+                [attr.d]="trendPath(reading.trend)"
+                fill="none"
+                stroke="#82decb"
+                stroke-width="2"
+              />
+            </svg>
+          </div>
+        }
+        <p class="report-body">{{ report.body }}</p>
+        <div class="report-tools">
+          <button
+            class="primary"
+            (click)="pin(report)"
+            [disabled]="runtime.state().sharedEvidenceIds.includes(report.id)"
+          >
+            <app-crisis-icon name="pin" />{{
+              runtime.state().sharedEvidenceIds.includes(report.id)
+                ? 'Pinned to table'
+                : 'Pin to table'
+            }}
+          </button>
+          <button (click)="inspectLocation.emit(report.locationId)">
+            Locate on table <app-crisis-icon name="arrow" />
+          </button>
+        </div>
+      </section>
+    } @else {
+      <header class="station-heading">
+        <label
+          >{{ workstation() ? 'Specialty' : 'Station'
+          }}<select
+            [value]="runtime.state().roleId"
+            (change)="runtime.selectRole($any($event.target).value); selectedEvidenceId.set('')"
+          >
+            @for (role of stationRoles(); track role.id) {
+              <option [value]="role.id" [selected]="role.id === runtime.state().roleId">
+                {{ role.shortName }}
+              </option>
+            }
+          </select></label
+        >
+        <span>{{ runtime.unread() }} unread</span>
+      </header>
+      <section class="wire" tabindex="-1" aria-label="Your incoming reports">
+        <p class="station-focus">{{ runtime.role().focus }}</p>
+        @for (report of runtime.reports(); track report.id) {
+          <button
+            class="wire-report"
+            [attr.data-station-report-id]="report.id"
+            (click)="openReport(report)"
+          >
+            <span class="wire-copy"
+              ><span class="meta">{{ runtime.time(report.minute) }} · {{ report.source }}</span
+              ><strong>{{ report.title }}</strong></span
+            >
+            <span [class]="'confidence ' + report.confidence.toLowerCase()">{{
+              report.confidence
+            }}</span
+            ><app-crisis-icon name="arrow" />
+          </button>
+        } @empty {
+          <p class="station-focus">No reports at this station yet.</p>
+        }
+      </section>
+    }
+    @if (confirmation()) {
+      <p class="console-confirmation" role="status">
+        <app-crisis-icon name="check" />{{ confirmation() }}
+      </p>
+    }
+  </div>
+}
+<app-crisis-command-panel
+  [active]="view() === 'command'"
+  [suggestedActionId]="suggestedActionId()"
+  (navigate)="navigate.emit($event)"
+/>

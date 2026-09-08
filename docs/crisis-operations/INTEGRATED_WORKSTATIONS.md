@@ -1,0 +1,25 @@
+# Integrated room workstations
+
+The side workstations now sit around the vertical center of the room, with larger click targets and labels attached to their desks. A newly generated background includes both built-in consoles; live radar and conference previews fill their dark monitor faces. Hover and keyboard focus illuminate the monitor perimeter and access label. Clicking still opens the existing weather or conference experience.
+
+## Files and architecture
+
+Added `public/crisis-center/operations-room-integrated-stations.png` (1672 × 941), `ui/crisis-integrated-workstations.scss`, and this note. Modified workstation TS/HTML/SCSS, crisis models and station validation, Cascade Bay configuration, and `scripts/crisis-workstations.spec.ts`. The prior room image remains available.
+
+Optional `workstations[].roomSurface` supplies `bounds: [x, y, width, height]` and four clockwise `screen` corner pairs, starting at the top left. All coordinates are percentages of the room artwork. Bounds must fit inside the image; the screen must be a convex clockwise quadrilateral entirely within its bounds. Validated configuration is immutable. Packages without this optional field retain the rendered console fallback, now larger and vertically centered. No project-name branches, shared LMS contract changes, or persistence migrations are required.
+
+Wide layouts share the room's existing cover coordinate system. At aspect ratios narrower than 3:2, matching crops of the same artwork keep each console visible at the viewport edge instead of allowing the room crop to hide it. Screen content is clipped to the authored monitor corners; labels remain flat and legible. This is a visual presentation change: existing station selection and evidence events are reused, and the change does not advance scenario time or dispatch resources.
+
+## Validation
+
+The new workstation contract test covers valid immutable geometry, omitted legacy configuration, malformed/out-of-range bounds, escaped screen corners, duplicate points, self-crossing corners, and incomplete polygons. **37 domain/integration tests and 18 Angular surface tests pass (55 total).** The production build succeeds with existing stylesheet budget warnings. Browser review passed at 1280 × 720 and 390 × 844, plus the normal 1229 × 910 preview: aligned screens, visible keyboard-focus glow, both station entries and returns, phone conference entry, table/wall access, Escape return, and no horizontal phone overflow. No browser console errors were reported. The hover rule shares the verified focus highlight styling.
+
+No capability gap or scope deviation. Future projects can calibrate their own artwork through `roomSurface`; no further phase is required for this request.
+
+## Generated artwork
+
+Created with the built-in image generation tool by editing `public/crisis-center/operations-room-roaming.png`. Saved project asset: `C:/Users/erich/Desktop/pbl-lms/forge-pbl-template/public/crisis-center/operations-room-integrated-stations.png`. Original tool output remains at `C:/Users/erich/.codex/generated_images/01a07ea8-7274-7763-81b8-31bae32abee4/exec-fd0a91e4-da66-4737-abe1-4778f29ac84a.png`.
+
+Exact final prompt:
+
+> Use case: precise-object-edit. Asset type: photorealistic room background plate for a spatial crisis simulation. EDIT TARGET is the attached existing operations room. Preserve the exact camera position, 16:9 framing, central holographic table, the three back-wall screen positions and shapes, ceiling architecture, floor, and dramatic graphite/cyan/amber lighting. Rebuild ONLY the left and right peripheral workstations into two larger premium built-in consoles at the vertical middle of the image. LEFT console: a wide single monitor with a near-front-facing flat black glass display occupies approximately x2% to x23%, y38% to y60%, centered near y49%. RIGHT console: matching wide single monitor, mirrored, approximately x77% to x98%, y38% to y60%. Both have substantial integrated graphite desks below, subtle keyboard trays, sculpted pedestal bases, illuminated cyan edge on left and muted amber edge on right. Screen inner areas must be clean uniformly very dark blue-black, with no content or text; live content will be overlaid in code. Only very slight inward perspective, keep the rectangles close to front-facing and unobstructed for precise live-screen alignment. Each workstation is part of the room architecture, with realistic physically based material reflections, contact shadows, desk legs grounded on the floor, excellent crisp industrial detailing. Remove the old smaller foreground desk monitors and chairs where the new consoles replace them. Peripheral operators may remain behind consoles, but no people in front of the two new screens. Keep central table entirely visible and untouched from x24% to x77%, and preserve the center monitor wall unobstructed. No robot anywhere, no logos, no readable text, no UI mockup graphics, no floating panels, no extra displays on the new consoles. Match the original room's aspect ratio and photographic rendering. This is an upgraded room environment, not a website.

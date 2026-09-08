@@ -754,3 +754,89 @@ button:disabled {
     height: 235px;
   }
 }
+
+/* The same illustration can play as a compact, ungraded launch story. */
+.story-mode {
+  min-height: 0;
+}
+.story-mode .comparison-task {
+  padding: 18px;
+}
+.story-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  text-align: left;
+}
+.story-heading h2 {
+  margin: 0;
+  color: #f8edce;
+  font-size: 17px;
+}
+.story-heading button,
+.story-replay {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #6d9196;
+  border-radius: 8px;
+  color: #e4f0e9;
+  background: #173d4c;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.story-mode .illustration {
+  height: 250px;
+  margin-top: 12px;
+}
+.story-mode .evidence-readout {
+  gap: 8px;
+}
+.story-mode .observation {
+  font-size: 11px;
+  padding: 8px;
+}
+.story-dialogue {
+  text-align: left;
+}
+.story-dialogue p {
+  margin: 8px 0;
+  padding: 8px 10px;
+  border-left: 2px solid #54737b;
+  color: #dcece7;
+  background: #0d2e3b;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.story-dialogue strong {
+  color: #f4d68e;
+}
+.story-dialogue .speaking {
+  border-left-color: #ffd47c;
+  background: #234753;
+}
+.story-mode .voice-status,
+.story-note {
+  font-size: 11px;
+  line-height: 1.5;
+  color: #bbd4d1;
+  margin: 8px 0;
+}
+.story-mode .test-button {
+  min-height: 44px;
+  font-size: 13px;
+  margin-top: 8px;
+}
+.story-mode .evidence-note {
+  font-size: 12px;
+  line-height: 1.5;
+}
+@media (max-width: 650px) {
+  .story-mode .illustration {
+    height: 210px;
+  }
+  .story-mode .comparison-task {
+    padding: 14px;
+  }
+}

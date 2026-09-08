@@ -10,6 +10,8 @@ import {
   type DesignChrome,
 } from '../../../shared/engineering/design-simulation.registry';
 import { calendarMonumentConfig } from '../../../projects/calendar-monument/calendar-monument.config';
+import type { BlockDesign } from '../../../shared/engineering/block-design';
+import { markerClock, solarMarkerRecord } from './solar-marker-record';
 import { calendarMonumentSample } from '../../../projects/calendar-monument/calendar-monument.sample';
 
 describe('solar monument demonstration bridge', () => {
@@ -269,27 +271,147 @@ describe('solar monument demonstration bridge', () => {
   });
   it('keeps the selected final date accurate when dynamic event options appear', async () => {
     const test = setup(true);
-    test.receive(test.response(test.latest())); test.fixture.detectChanges(); await test.fixture.whenStable();
+    test.receive(test.response(test.latest()));
+    test.fixture.detectChanges();
+    await test.fixture.whenStable();
     const picker = test.fixture.nativeElement.querySelector('.event-select') as HTMLSelectElement;
-    expect(picker.value).toBe('march'); expect(picker.selectedOptions[0].textContent).toContain('March equinox');
-    test.component.event('june'); test.fixture.detectChanges(); await test.fixture.whenStable();
+    expect(picker.value).toBe('march');
+    expect(picker.selectedOptions[0].textContent).toContain('March equinox');
+    test.component.event('june');
+    test.fixture.detectChanges();
+    await test.fixture.whenStable();
     expect(picker.value).toBe('june');
-    test.component.event('nearby-before'); test.fixture.detectChanges(); await test.fixture.whenStable();
-    expect(picker.value).toBe('nearby-before'); expect(test.sent.at(-1)?.['type']).toBe('nearby');
+    test.component.event('nearby-before');
+    test.fixture.detectChanges();
+    await test.fixture.whenStable();
+    expect(picker.value).toBe('nearby-before');
+    expect(test.sent.at(-1)?.['type']).toBe('nearby');
+    test.fixture.destroy();
+  });
+  it('previews a measured sunstone, saves its observation, configures a seasonal test and supports undo', () => {
+    const test = setup();
+    test.fixture.componentRef.setInput('presentation', false);
+    test.fixture.componentRef.setInput('activity', 'monument');
+    test.fixture.detectChanges();
+    test.component.toggleMarkers();
+    test.component.startMarker({ x: -1.3, z: 0.315 });
+    const request = [...test.sent].reverse().find((m) => m['type'] === 'marker-start')!;
+    const target = {
+      ...structuredClone(calendarMonumentSample.design.targets[0]),
+      id: 'sunstone-' + request['requestId'],
+    };
+    const picked = { type: 'marker-picked', requestId: request['requestId'], target };
+    test.receive(picked, 'https://foreign.example');
+    test.receive({ ...picked, requestId: 'old-request' });
+    test.receive({
+      ...picked,
+      target: { ...target, settings: { ...target.settings, sunAltitude: NaN } },
+    });
+    expect(test.component.markerDraft()).toBeUndefined();
+    test.receive(picked);
+    expect(test.component.markerDraft()).toEqual(target);
+    expect(designs).toHaveLength(0);
+    test.component.markerName = 'My amber June stone';
+    test.component.saveMarker();
+    expect(designs).toHaveLength(1);
+    const saved = designs[0] as BlockDesign;
+    expect(saved.blocks).toEqual(calendarMonumentConfig.starterDesign.blocks);
+    expect(saved.targets[0].settings).toEqual(target.settings);
+    expect(saved.targets[0].label).toBe('My amber June stone');
+    test.fixture.componentRef.setInput('design', saved);
+    test.fixture.detectChanges();
+    test.component.useMarkerForTest();
+    expect(changes.at(-1)).toEqual([
+      expect.objectContaining({
+        scenarioId: 'june',
+        targetId: target.id,
+        expectedValue: 'amber light',
+        settings: { observationRule: 'clock', minutes: markerClock(solarMarkerRecord(target)!) },
+      }),
+    ]);
+    test.fixture.componentRef.setInput('checks', changes.at(-1));
+    test.fixture.detectChanges();
+    const clock = test.component.clockFor('june');
+    expect(clock).toBe('13:02:20.107');
+    test.component.changeTime('june', 'clock', clock);
+    expect(changes.at(-1)).toEqual([
+      {
+        scenarioId: 'june',
+        targetId: target.id,
+        expectedValue: 'amber light',
+        settings: {
+          observationRule: 'clock',
+          minutes: expect.closeTo(782.3351166666667, 10),
+        },
+      },
+    ]);
+    const count = changes.length;
+    test.component.changeTime('june', 'clock', '12:99');
+    expect(changes).toHaveLength(count);
+    test.receive({ type: 'marker-reading', targetId: 'other', light: 'shadow' });
+    expect(test.component.markerNow()).toBe('');
+    test.receive({ type: 'marker-reading', targetId: target.id, light: 'shadow' });
+    expect(test.component.markerNow()).toBe('shadow');
+    test.component.revisitMarker();
+    expect(test.sent.at(-1)).toEqual(
+      expect.objectContaining({ type: 'marker-revisit', targetId: target.id }),
+    );
+    test.component.removeMarker();
+    test.fixture.componentRef.setInput('design', designs.at(-1));
+    test.fixture.detectChanges();
+    expect(test.component.design().targets).toHaveLength(0);
+    test.component.undoMarker();
+    expect((designs.at(-1) as BlockDesign).targets).toEqual(saved.targets);
+    test.fixture.destroy();
+  });
+  it('cancels pending marker placement on lesson changes and protects read-only and final views', () => {
+    const test = setup();
+    test.component.startMarker();
+    expect(test.sent.some((m) => m['type'] === 'marker-start')).toBe(false);
+    test.fixture.componentRef.setInput('presentation', false);
+    test.fixture.detectChanges();
+    test.component.startMarker();
+    const request = [...test.sent].reverse().find((m) => m['type'] === 'marker-start')!;
+    test.fixture.componentRef.setInput('activity', 'sundial-calendar');
+    test.fixture.detectChanges();
+    test.receive({
+      type: 'marker-picked',
+      requestId: request['requestId'],
+      target: {
+        ...calendarMonumentSample.design.targets[0],
+        id: 'sunstone-' + request['requestId'],
+      },
+    });
+    expect(test.component.markerDraft()).toBeUndefined();
+    test.fixture.componentRef.setInput('activity', 'monument');
+    test.fixture.componentRef.setInput('design', calendarMonumentSample.design);
+    test.fixture.componentRef.setInput('readOnly', true);
+    test.fixture.detectChanges();
+    test.component.selectMarker(calendarMonumentSample.design.targets[0]);
+    test.component.removeMarker();
+    test.component.renameMarker();
+    test.component.useMarkerForTest();
+    test.component.saveMarker();
+    expect(designs).toHaveLength(0);
+    expect(changes).toHaveLength(0);
     test.fixture.destroy();
   });
   it('reconnects the hosted header and complete lesson policy after an iframe reload', () => {
     const test = setup(true);
     test.fixture.componentRef.setInput('activity', 'sundial-calendar');
-    test.fixture.detectChanges(); test.sent.length = 0;
-    test.receive({ type: 'ready' }); test.fixture.detectChanges();
-    expect(test.sent).toEqual(expect.arrayContaining([
-      expect.objectContaining({ type: 'hosted-chrome', active: true }),
-      expect.objectContaining({ type: 'lesson', activity: 'sundial-calendar' }),
-      expect.objectContaining({ type: 'view-policy', readOnly: true }),
-      expect.objectContaining({ type: 'presentation', active: true }),
-      expect.objectContaining({ type: 'visibility', active: true }),
-    ]));
+    test.fixture.detectChanges();
+    test.sent.length = 0;
+    test.receive({ type: 'ready' });
+    test.fixture.detectChanges();
+    expect(test.sent).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'hosted-chrome', active: true }),
+        expect.objectContaining({ type: 'lesson', activity: 'sundial-calendar' }),
+        expect.objectContaining({ type: 'view-policy', readOnly: true }),
+        expect.objectContaining({ type: 'presentation', active: true }),
+        expect.objectContaining({ type: 'visibility', active: true }),
+      ]),
+    );
     test.fixture.destroy();
   });
 });

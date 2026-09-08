@@ -65,3 +65,15 @@
   align-items: center;
   box-sizing: border-box;
 }
+@media (max-width: 600px) {
+  .project-return-bar {
+    padding: 0 14px;
+    gap: 12px;
+  }
+  .project-return-bar > span {
+    display: none;
+  }
+  .lms-links {
+    gap: 14px;
+  }
+}

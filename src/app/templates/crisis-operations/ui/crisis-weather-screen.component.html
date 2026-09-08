@@ -1,0 +1,310 @@
+<section
+  class="weather-window"
+  [class.miniature]="miniature()"
+  [class.playing]="playing() && active()"
+  [class.satellite]="mode() === 'satellite'"
+  [attr.aria-label]="miniature() ? null : weather().title"
+>
+  @if (!miniature()) {
+    <header class="weather-topbar">
+      <div class="network-mark">
+        <app-crisis-icon name="radar" /><span
+          >{{ weather().network }}<small>REGIONAL WEATHER DESK</small></span
+        >
+      </div>
+      <div class="weather-tabs" aria-label="Weather layers">
+        <button (click)="mode.set('radar')" [attr.aria-pressed]="mode() === 'radar'">
+          Doppler radar</button
+        ><button (click)="mode.set('satellite')" [attr.aria-pressed]="mode() === 'satellite'">
+          Satellite
+        </button>
+      </div>
+      <button class="weather-close" (click)="leave.emit()" aria-label="Return to room">
+        <app-crisis-icon name="close" />
+      </button>
+    </header>
+  }
+  <div class="weather-content">
+    <div class="weather-broadcast">
+      <div class="map-canvas">
+        <svg
+          viewBox="0 0 1000 600"
+          preserveAspectRatio="xMidYMid slice"
+          [attr.role]="miniature() ? null : 'img'"
+          [attr.aria-label]="
+            miniature()
+              ? null
+              : mode() +
+                ' weather loop for ' +
+                runtime.config.title +
+                ', exercise frame ' +
+                runtime.time(frame().minute)
+          "
+        >
+          <defs>
+            <filter [id]="uid + '-texture'" x="-30%" y="-30%" width="160%" height="160%">
+              <feTurbulence
+                type="fractalNoise"
+                baseFrequency=".025"
+                numOctaves="3"
+                seed="8"
+                result="noise"
+              />
+              <feDisplacementMap
+                in="SourceGraphic"
+                in2="noise"
+                scale="45"
+                xChannelSelector="R"
+                yChannelSelector="G"
+              />
+              <feGaussianBlur stdDeviation="2" />
+            </filter>
+            <filter [id]="uid + '-cloud'" x="-30%" y="-30%" width="160%" height="160%">
+              <feTurbulence
+                type="fractalNoise"
+                baseFrequency=".015"
+                numOctaves="4"
+                seed="4"
+                result="noise"
+              />
+              <feDisplacementMap in="SourceGraphic" in2="noise" scale="65" />
+              <feGaussianBlur stdDeviation="7" />
+            </filter>
+            <pattern [id]="uid + '-grid'" width="100" height="100" patternUnits="userSpaceOnUse">
+              <path
+                d="M100 0H0V100"
+                fill="none"
+                stroke="#c7def4"
+                stroke-opacity=".07"
+                stroke-width="1"
+              />
+            </pattern>
+          </defs>
+          <rect width="1000" height="600" fill="#0b2a43" />
+          <g [attr.transform]="mapTransform()">
+            <path [attr.d]="runtime.config.map.coast" fill="#263b31" />
+            <image
+              [attr.href]="weather().satelliteImage"
+              width="1000"
+              height="600"
+              preserveAspectRatio="none"
+              [attr.opacity]="mode() === 'radar' ? 0.54 : 0.95"
+            />
+            <path
+              [attr.d]="runtime.config.map.coast"
+              fill="none"
+              stroke="#8dad99"
+              stroke-opacity=".35"
+              stroke-width="1"
+            />
+            @for (road of runtime.config.map.roads; track $index) {
+              <path
+                [attr.d]="road"
+                fill="none"
+                stroke="#d2cbaf"
+                stroke-width="2"
+                stroke-opacity=".35"
+              />
+            }
+            <path
+              [attr.d]="runtime.config.map.river"
+              fill="none"
+              stroke="#8cc4e3"
+              stroke-width="3"
+              stroke-opacity=".6"
+            />
+            <g
+              class="weather-system"
+              [style.transform]="stormTransform()"
+              [attr.opacity]="0.45 + frame().intensity * 0.45"
+            >
+              @if (mode() === 'radar') {
+                <g [attr.filter]="'url(#' + uid + '-texture)'">
+                  <path
+                    d="M225 26Q370 9 466 118T655 245Q747 303 869 445L906 540Q744 552 628 433T424 319Q318 284 214 145Z"
+                    fill="#249448"
+                  />
+                  <path
+                    d="M272 69Q382 53 456 151T633 271Q708 318 813 453L807 485Q697 450 603 370T416 274Q330 219 272 69Z"
+                    fill="#4bcc52"
+                  />
+                  <path
+                    d="M371 149Q443 143 487 225T629 296L730 419Q629 396 583 356T429 267Z"
+                    fill="#b6db43"
+                  />
+                  <path
+                    d="M399 177Q470 179 501 237T615 302L664 352Q571 350 529 301T453 260Z"
+                    fill="#f3d644"
+                  />
+                  <path
+                    d="M449 206Q503 227 516 261T579 300Q561 335 512 292T449 206Z"
+                    fill="#f29438"
+                  />
+                  @if (frame().intensity > 0.65) {
+                    <path d="M481 243Q502 232 524 272L553 295Q525 312 503 277Z" fill="#e84b44" />
+                  }
+                </g>
+              } @else {
+                <g [attr.filter]="'url(#' + uid + '-cloud)'" fill="#f1f2ef">
+                  <ellipse
+                    cx="435"
+                    cy="167"
+                    rx="210"
+                    ry="70"
+                    transform="rotate(34 435 167)"
+                    opacity=".75"
+                  />
+                  <ellipse
+                    cx="570"
+                    cy="292"
+                    rx="190"
+                    ry="62"
+                    transform="rotate(37 570 292)"
+                    opacity=".85"
+                  />
+                  <ellipse
+                    cx="756"
+                    cy="404"
+                    rx="160"
+                    ry="48"
+                    transform="rotate(35 756 404)"
+                    opacity=".65"
+                  />
+                  <ellipse cx="435" cy="167" rx="145" ry="30" transform="rotate(34 435 167)" />
+                </g>
+              }
+            </g>
+            <g
+              class="radar-rings"
+              fill="none"
+              stroke="#d0e4ed"
+              stroke-opacity=".13"
+              stroke-width="1"
+            >
+              <circle cx="578" cy="246" r="110" />
+              <circle cx="578" cy="246" r="220" />
+              <circle cx="578" cy="246" r="330" />
+            </g>
+            @for (location of runtime.config.locations; track location.id) {
+              <g class="weather-location" [class.selected]="selectedLocation() === location.id">
+                <circle [attr.cx]="location.x" [attr.cy]="location.y" r="4" fill="white" />
+                <text [attr.x]="location.x + 10" [attr.y]="location.y + 4">
+                  {{ location.name }}
+                </text>
+              </g>
+            }
+          </g>
+          <rect width="1000" height="600" [attr.fill]="'url(#' + uid + '-grid)'" />
+        </svg>
+        <div class="map-brand">
+          <span class="weather-bug">WX</span>
+          <div>
+            <h2
+              [attr.tabindex]="miniature() ? null : -1"
+              [attr.data-panel-heading]="miniature() ? null : ''"
+            >
+              {{ weather().title }}
+            </h2>
+            <span>{{
+              mode() === 'radar' ? 'DOPPLER · PRECIPITATION' : 'SATELLITE · CLOUD COVER'
+            }}</span>
+          </div>
+        </div>
+        <div class="frame-stamp">
+          <i></i>{{ miniature() ? 'RADAR LOOP' : 'EXERCISE LOOP'
+          }}<strong>{{ runtime.time(frame().minute) }}</strong>
+        </div>
+        @if (!miniature()) {
+          <div class="map-tools">
+            <button
+              (click)="zoom.set(!zoom())"
+              [attr.aria-label]="zoom() ? 'Show whole weather region' : 'Zoom to selected location'"
+              [attr.aria-pressed]="zoom()"
+            >
+              <app-crisis-icon name="expand" />
+            </button>
+          </div>
+          <div class="weather-legend">
+            <span>{{ mode() === 'radar' ? 'LIGHT' : 'THIN' }}</span
+            ><i></i><span>{{ mode() === 'radar' ? 'HEAVY' : 'THICK' }}</span>
+          </div>
+        }
+      </div>
+      @if (!miniature()) {
+        <div class="weather-playback">
+          <button
+            (click)="playing.set(!playing())"
+            [attr.aria-label]="playing() ? 'Pause weather loop' : 'Play weather loop'"
+          >
+            <app-crisis-icon [name]="playing() ? 'pause' : 'play'" /></button
+          ><span>{{ runtime.time(frames()[0].minute) }}</span
+          ><input
+            type="range"
+            min="0"
+            [max]="frames().length - 1"
+            [value]="frameIndex()"
+            (input)="scrub($any($event.target).value)"
+            aria-label="Weather loop frame"
+            [attr.aria-valuetext]="runtime.time(frame().minute)"
+          /><span>{{ runtime.time(frames()[frames().length - 1].minute) }}</span
+          ><b>{{ playing() ? 'LOOP' : 'PAUSED' }}</b>
+        </div>
+        <div class="weather-lower-third">
+          <span [attr.data-alert]="runtime.bulletin().alert">{{
+            runtime.bulletin().alert.toUpperCase()
+          }}</span>
+          <div>
+            <h3>{{ runtime.bulletin().title }}</h3>
+            <p>{{ runtime.bulletin().summary }}</p>
+          </div>
+        </div>
+      }
+    </div>
+    @if (!miniature()) {
+      <aside class="forecast-panel">
+        <span class="forecast-label">WATERSHED OUTLOOK</span>
+        <h3>{{ runtime.time() }} forecast</h3>
+        <p>{{ runtime.bulletin().forecast }}</p>
+        <div class="river-reading">
+          <app-crisis-icon name="station" />
+          <div>
+            <span>{{ runtime.config.primaryMetric.label }}</span
+            ><strong
+              >{{ runtime.bulletin().metricValue }}
+              <small>{{ runtime.config.primaryMetric.unit }}</small></strong
+            ><span>{{ runtime.config.primaryMetric.caption }}</span>
+          </div>
+        </div>
+        <div class="forecast-confidence">
+          <span>FORECAST CONFIDENCE</span>
+          <p>{{ runtime.bulletin().uncertainty }}</p>
+        </div>
+        <label class="weather-location-select"
+          >Watch location<select
+            [value]="selectedLocation()"
+            (change)="selectedLocation.set($any($event.target).value)"
+          >
+            @for (place of runtime.config.locations; track place.id) {
+              <option [value]="place.id" [selected]="selectedLocation() === place.id">
+                {{ place.name }}
+              </option>
+            }
+          </select></label
+        >
+        <div class="location-context">
+          <span>{{ location().elevation }} m elevation</span>
+          <p>{{ location().detail }}</p>
+          <button (click)="locate.emit(selectedLocation())">
+            Inspect on situation table <app-crisis-icon name="arrow" />
+          </button>
+        </div>
+        <button class="weather-reports" (click)="reports.emit()">
+          <app-crisis-icon name="news" />Open weather reports
+        </button>
+        <p class="exercise-note">
+          Simulated radar and satellite loop. Playback does not advance the exercise.
+        </p>
+      </aside>
+    }
+  </div>
+</section>

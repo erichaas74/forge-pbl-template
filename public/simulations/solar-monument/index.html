@@ -22,6 +22,7 @@
   <script defer src="earth-explanation.js"></script>
   <script defer src="season-review.js"></script>
   <script defer src="sundial-lab.js"></script>
+  <script defer src="calendar-markers.js"></script>
   <script defer src="game.js"></script>
 </head>
 <body>
@@ -227,7 +228,7 @@
               <label id="zoomControl">Zoom<input id="cameraZoom" type="range" min="0.3" max="4" step="0.05" value="1" /></label>
             </div>
             <div class="orbit-controls" id="orbitControls">
-              <label>View from bearing <output id="cameraBearingLabel">145°</output><input id="cameraBearing" aria-label="Camera bearing, degrees clockwise from north" type="range" min="0" max="360" step="1" value="315" /></label>
+              <label>View from bearing <output id="cameraBearingLabel">145°</output><input id="cameraBearing" aria-label="Camera bearing, degrees clockwise from north" type="range" min="0" max="360" step="1" value="145" /></label>
               <label>Look from above <output id="cameraElevationLabel">35°</output><input id="cameraElevation" aria-label="Camera elevation, degrees above the ground" type="range" min="5" max="80" step="1" value="50" /></label>
             </div>
             <p id="skyDescription">Calculated sky angles; sky distance and Sun/Moon sizes are illustrative. The line shows the Sun’s direction toward the ground origin. Only the camera moves; your monument stays aligned to true north.</p>

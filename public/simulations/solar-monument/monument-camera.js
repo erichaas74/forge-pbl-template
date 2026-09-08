@@ -38,7 +38,7 @@
     let distance = .25;
     for (const p of frame.points) {
       const v = new THREE.Vector3(p.x, p.y, p.z).sub(centre);
-      distance = Math.max(distance, v.dot(back) + 1.24 * Math.max(Math.abs(v.dot(right)) / horizontal, Math.abs(v.dot(up)) / vertical));
+      distance = Math.max(distance, v.dot(back) + 1.10 * Math.max(Math.abs(v.dot(right)) / horizontal, Math.abs(v.dot(up)) / vertical));
     }
     return { centre, position: centre.clone().addScaledVector(back, distance / zoom), distance };
   }

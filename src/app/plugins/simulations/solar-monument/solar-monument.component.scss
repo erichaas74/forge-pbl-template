@@ -198,6 +198,136 @@ summary {
 .toolbar-controls {
   display: contents;
 }
+.marker-panel {
+  position: fixed;
+  top: 135px;
+  right: 16px;
+  width: 315px;
+  max-width: calc(100vw - 48px);
+  max-height: calc(100dvh - 165px);
+  overflow: auto;
+  z-index: 55;
+  padding: 15px;
+  color: #423a2c;
+  background: #fbf5e7;
+  border: 1px solid #ae9670;
+  border-radius: 12px;
+  box-shadow: 0 15px 50px #2b241940;
+  font-size: 13px;
+}
+.marker-panel header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.marker-panel h2 {
+  font:
+    700 21px Georgia,
+    serif;
+  margin: 0;
+}
+.marker-panel h3 {
+  font:
+    700 17px Georgia,
+    serif;
+}
+.marker-panel p {
+  line-height: 1.55;
+}
+.marker-panel small {
+  display: block;
+  line-height: 1.5;
+  color: #6e6351;
+}
+.marker-panel button {
+  min-height: 38px;
+  font-size: 13px;
+}
+.marker-panel input {
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+.marker-panel summary {
+  padding: 12px 0;
+}
+.marker-panel .place-marker {
+  background: #5b6646;
+  color: #fffdf2;
+  border-color: #5b6646;
+}
+.marker-coordinates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.marker-observation {
+  border: 1px solid #d6c7a7;
+  border-radius: 9px;
+  padding: 12px;
+  margin-top: 14px;
+  background: #fffaf0;
+}
+.marker-observation dl {
+  display: grid;
+  grid-template-columns: 95px 1fr;
+  gap: 7px;
+  line-height: 1.4;
+}
+.marker-observation dt {
+  color: #76664d;
+}
+.marker-observation dd {
+  margin: 0;
+}
+.marker-live {
+  padding: 8px;
+  background: #e8ead7;
+  border-radius: 5px;
+}
+.marker-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+.marker-list {
+  display: grid;
+  gap: 6px;
+  margin-top: 14px;
+}
+.marker-list button {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  text-align: left;
+}
+.marker-list small {
+  font-size: 11px;
+}
+.stone-number {
+  display: grid;
+  place-items: center;
+  min-width: 27px;
+  height: 27px;
+  border: 2px solid #bc9f60;
+  border-radius: 50%;
+  font:
+    700 15px Georgia,
+    serif;
+}
+.marker-feedback {
+  padding: 8px;
+  border-left: 3px solid #b39353;
+}
+@media (max-width: 600px) {
+  .marker-panel {
+    top: 150px;
+    right: 8px;
+    max-height: calc(100dvh - 170px);
+  }
+}
 .toolbar-controls button,
 .toolbar-controls select,
 .toolbar-menu > summary,
@@ -313,4 +443,13 @@ iframe {
   }
 }
 
-@media(max-width:600px) { .popover { position:fixed; top:120px; right:8px; max-width:calc(100vw - 32px); max-height:calc(100dvh - 140px); overflow:auto; } }
+@media (max-width: 600px) {
+  .popover {
+    position: fixed;
+    top: 120px;
+    right: 8px;
+    max-width: calc(100vw - 32px);
+    max-height: calc(100dvh - 140px);
+    overflow: auto;
+  }
+}

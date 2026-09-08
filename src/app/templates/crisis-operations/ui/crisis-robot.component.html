@@ -1,0 +1,52 @@
+@if (companion) {
+  <div
+    class="robot-space"
+    [class.conversing]="view() === 'argus'"
+    [class.away]="view() !== 'room' && view() !== 'argus'"
+    [attr.inert]="view() === 'room' || view() === 'argus' ? null : ''"
+    [attr.aria-hidden]="view() === 'room' || view() === 'argus' ? null : true"
+  >
+    <div
+      class="robot-travel"
+      [class.moving]="moving()"
+      [class.engaged]="view() === 'argus'"
+      [class.attentive]="hovered() || focused()"
+      [style.left.%]="pose().x"
+      [style.top.%]="pose().y"
+      [style.--robot-scale]="pose().scale"
+      [style.--travel-time]="duration() + 'ms'"
+      [style.--facing]="facing()"
+      [attr.data-roaming]="moving()"
+    >
+      <div class="robot-shadow" aria-hidden="true"></div>
+      <div class="ground-ring" aria-hidden="true"></div>
+      <button
+        class="robot-character"
+        [attr.aria-label]="'Call ' + companion.name + ' for a briefing'"
+        [attr.aria-expanded]="view() === 'argus'"
+        (pointerenter)="engage('hover', true)"
+        (pointerleave)="engage('hover', false)"
+        (focus)="engage('focus', true)"
+        (blur)="engage('focus', false)"
+        (click)="open.emit()"
+      >
+        <span class="robot-body"
+          ><img [src]="companion.sprite" alt="" draggable="false" /><span
+            class="robot-eyelid"
+            aria-hidden="true"
+          ></span
+          ><span class="robot-eyelid right-eye" aria-hidden="true"></span
+          ><span class="attention-spark" aria-hidden="true"></span
+        ></span>
+        <span class="robot-callout"
+          ><b>{{ companion.name }}</b
+          ><span>{{ activity() }}</span
+          ><i>↗</i></span
+        >
+      </button>
+      @if (view() === 'argus') {
+        <span class="companion-presence"><i></i> {{ companion.name }} IS WITH YOU</span>
+      }
+    </div>
+  </div>
+}

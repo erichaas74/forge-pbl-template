@@ -13,7 +13,13 @@ import { DecimalPipe } from '@angular/common';
 import { AutomationRuntimeService } from '../runtime/automation-runtime.service';
 import { RobotReplayService } from '../runtime/robot-replay.service';
 import { RobotCourseComponent } from './robot-course.component';
-import { CommandEditorComponent } from './command-editor.component';
+import {
+  CommandEditorComponent,
+  commandLabels,
+  commandDescriptions,
+} from './command-editor.component';
+import { CommandGraphicComponent } from './command-graphic.component';
+import { TaskGuideComponent } from '../../../shared/learning/task-guide.component';
 import { MathWorkbenchComponent } from './math-workbench.component';
 import { AutomationEvidenceComponent } from './automation-evidence.component';
 import { ChampionshipPanelComponent } from './championship-panel.component';
@@ -27,6 +33,8 @@ import type { RobotTrial } from '../domain/automation.models';
     MathWorkbenchComponent,
     AutomationEvidenceComponent,
     ChampionshipPanelComponent,
+    CommandGraphicComponent,
+    TaskGuideComponent,
   ],
   providers: [RobotReplayService],
   templateUrl: './automation-lab.component.html',
@@ -34,6 +42,8 @@ import type { RobotTrial } from '../domain/automation.models';
 })
 export class AutomationLabComponent {
   readonly runtime = inject(AutomationRuntimeService);
+  readonly commandLabels = commandLabels;
+  readonly commandDescriptions = commandDescriptions;
   readonly replay = inject(RobotReplayService);
   readonly panel = signal<'workspace' | 'evidence' | 'championship'>('workspace');
   readonly mobilePane = signal('course');

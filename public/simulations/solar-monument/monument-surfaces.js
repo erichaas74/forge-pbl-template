@@ -65,6 +65,13 @@
         line(0, -3.0, 0, -3.135, .018);
         c.restore();
       }
+      // Fine interlaced petals add readable relief to the outer mosaic band.
+      for (let i = 0; i < 48; i++) {
+        c.save(); c.rotate(i * Math.PI / 24); c.translate(0, -2.48);
+        c.beginPath(); c.moveTo(0, -.20); c.quadraticCurveTo(.14, 0, 0, .20);
+        c.quadraticCurveTo(-.14, 0, 0, -.20); c.lineWidth = .008; c.stroke();
+        c.restore();
+      }
       // Four engraved compass medallions and small Sun rosettes.
       ['N', 'E', 'S', 'W'].forEach((letter, i) => {
         c.save(); c.rotate(i * Math.PI / 2); c.translate(0, -2.47);
@@ -101,7 +108,7 @@
       varying vec3 vMonumentLocal;
       vec4 monumentStone(vec3 p) {
         vec3 w=pow(abs(vMonumentNormal),vec3(8.0)); w/=max(dot(w,vec3(1.0)),.001);
-        return texture2D(monumentGrain,p.yz*2.0)*w.x + texture2D(monumentGrain,p.xz*2.0)*w.y + texture2D(monumentGrain,p.xy*2.0)*w.z;
+        return texture2D(monumentGrain,p.yz*.65)*w.x + texture2D(monumentGrain,p.xz*.65)*w.y + texture2D(monumentGrain,p.xy*.65)*w.z;
       }
       float monumentEtching(vec3 p) {
         vec2 uv=vec2(p.x,-p.z)/8.0+.5;
@@ -113,6 +120,40 @@
         float edge=max(tile.x,tile.y);
         float aa=max(fwidth(edge),.001);
         return smoothstep(.495-aa,.498+aa,edge)*smoothstep(3.13,3.19,length(p.xz));
+      }
+      vec3 monumentCourt(vec3 p) {
+        float r=length(p.xz), angle=atan(p.z,p.x);
+        float aa=max(fwidth(r),.002);
+        float band=smoothstep(2.22-aa,2.22+aa,r)*(1.0-smoothstep(2.71-aa,2.71+aa,r));
+        vec2 tile=vec2((angle+3.141593)*38.1972,(r-2.22)*18.0);
+        vec2 edge=abs(fract(tile)-.5);
+        vec2 tileAA=max(fwidth(tile),vec2(.02));
+        float grout=max(smoothstep(.43-tileAA.x,.49+tileAA.x,edge.x),smoothstep(.43-tileAA.y,.49+tileAA.y,edge.y));
+        float alternate=mod(floor(tile.x)+floor(tile.y),3.0);
+        vec3 mosaic=mix(vec3(.018,.32,.65),vec3(.05,.60,.85),step(1.0,alternate));
+        mosaic=mix(mosaic,vec3(.77,.47,.13),step(1.5,alternate)*step(.5,mod(floor(tile.x),5.0)));
+        mosaic=mix(mosaic,vec3(.71,.53,.28),grout*.8);
+        float gold=(1.0-smoothstep(.012,.018,abs(r-2.20)))+(1.0-smoothstep(.012,.018,abs(r-2.74)));
+        float tileTone=fract(sin(dot(floor(p.xz),vec2(12.9898,78.233)))*43758.5453);
+        vec3 flagstone=mix(vec3(.75,.65,.49),vec3(.88,.77,.61),tileTone);
+        vec3 court=mix(vec3(1.0),flagstone,smoothstep(3.14,3.18,r));
+        court=mix(court,mosaic,band);
+        return mix(court,vec3(.76,.46,.12),clamp(gold,0.0,1.0));
+      }
+      float monumentGlyph(vec3 p, vec3 halfSize) {
+        vec3 distanceToFace=abs(halfSize-abs(p));
+        vec2 face=distanceToFace.x<distanceToFace.z ? p.zy:p.xy;
+        vec2 faceHalf=distanceToFace.x<distanceToFace.z ? halfSize.zy:halfSize.xy;
+        if(distanceToFace.y<min(distanceToFace.x,distanceToFace.z)) { face=p.xz; faceHalf=halfSize.xz; }
+        if(min(faceHalf.x,faceHalf.y)<.055) return 0.0;
+        // Repeated chisel rosettes are material relief, never new geometry.
+        if(faceHalf.y>faceHalf.x*2.5) face.y=mod(face.y+faceHalf.y*.3,faceHalf.y*.6)-faceHalf.y*.3;
+        float radius=min(faceHalf.x,faceHalf.y)*.65, r=length(face);
+        float aa=max(fwidth(r),.001);
+        float ring=1.0-smoothstep(.002,.003+aa,abs(r-radius*.64));
+        float angle=atan(face.y,face.x);
+        float rays=(1.0-smoothstep(.06,.11+fwidth(angle),abs(sin(angle*6.0))))*smoothstep(radius*.76,radius*.80,r)*(1.0-smoothstep(radius,radius+aa,r));
+        return max(ring,rays);
       }
       vec3 monumentBump(vec3 p, vec3 n, float h) {
         vec3 dx=dFdx(p),dy=dFdy(p);
@@ -135,32 +176,38 @@
           vec4 stone=monumentStone(vSolarWorld);
           float etching=monumentFloor?monumentEtching(vSolarWorld):1.0;
           float joint=monumentFloor?monumentJoint(vSolarWorld):0.0;
-          float variation=.84+stone.r*.28;
+          float variation=.60+stone.r*.65;
           vec3 edgeDistance=abs(monumentHalf-abs(vMonumentLocal));
           float secondEdge=min(max(edgeDistance.x,edgeDistance.y),min(max(edgeDistance.y,edgeDistance.z),max(edgeDistance.x,edgeDistance.z)));
           float wear=monumentHalf.x>0.0?(1.0-smoothstep(.0,.009,secondEdge)):0.0;
-          diffuseColor.rgb*=variation*(.25+.75*etching)*(1.0-joint*.22);
-          diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*1.13,wear*.6);
+          float frame=monumentHalf.x>0.0 ? (1.0-smoothstep(.001,.004,abs(secondEdge-.021))):0.0;
+          float glyph=monumentHalf.x>0.0 ? monumentGlyph(vMonumentLocal,monumentHalf):0.0;
+          float strata=sin(vMonumentLocal.y*105.0+stone.b*6.0)*.025;
+          diffuseColor.rgb*=variation*(.08+.92*etching*etching)*(1.0-joint*.36);
+          if(monumentFloor) diffuseColor.rgb*=monumentCourt(vSolarWorld);
+          else diffuseColor.rgb*=vec3(1.0+strata, .96+strata, .89+strata)*(1.0-frame*.38)*(1.0-glyph*.48);
+          diffuseColor.rgb=mix(diffuseColor.rgb,diffuseColor.rgb*1.28,wear*.7);
         `).replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
           float stoneHeight=(stone.g-.5)*monumentRelief+(stone.b-.5)*monumentRelief*.5;
-          stoneHeight+=monumentFloor?(etching-1.0)*.006-joint*.001:-wear*.0007;
+          stoneHeight+=monumentFloor?(etching-1.0)*.006-joint*.001:-wear*.0007-glyph*.001;
           normal=monumentBump(-vViewPosition,normal,stoneHeight);
         `);
       };
-      material.customProgramCacheKey = () => 'solar-optics-2.0-stone-1';
+      material.customProgramCacheKey = () => 'solar-optics-2.0-stone-2';
       return material;
     }
     function reflections() {
       if (reflectionMap) return reflectionMap;
       // A diffuse sky/ground reflection only; the actual Sun remains the sole direct light.
       const width = 256, height = 128, data = new Uint8Array(width * height * 4);
-      const stops = [[0, [121, 114, 99]], [.47, [185, 179, 159]], [.53, [220, 228, 223]], [1, [142, 169, 186]]];
+      const stops = [[0, [128, 104, 65]], [.47, [225, 196, 136]], [.53, [237, 251, 255]], [1, [66, 165, 222]]];
       for (let y = 0; y < height; y++) {
         const t = y / (height - 1), hi = stops.findIndex(s => s[0] >= t), lo = Math.max(0, hi - 1);
         const blend = hi === lo ? 0 : (t - stops[lo][0]) / (stops[hi][0] - stops[lo][0]);
         for (let x = 0; x < width; x++) {
           const offset = (y * width + x) * 4;
-          for (let c = 0; c < 3; c++) data[offset + c] = Math.round(stops[lo][1][c] * (1 - blend) + stops[hi][1][c] * blend);
+          const cloud = 1 + .11 * Math.pow(Math.max(0, Math.sin(x / width * Math.PI * 6 + t * 8)), 8) * Math.sin(t * Math.PI);
+          for (let c = 0; c < 3; c++) data[offset + c] = Math.min(255, Math.round((stops[lo][1][c] * (1 - blend) + stops[hi][1][c] * blend) * cloud));
           data[offset + 3] = 255;
         }
       }
@@ -173,12 +220,12 @@
     return {
       dress,
       glass(material) {
-        material.envMap = reflections(); material.envMapIntensity = .7;
+        material.envMap = reflections(); material.envMapIntensity = 1.15;
         glassMaterials.add(material);
         material.addEventListener('dispose', () => glassMaterials.delete(material));
         return material;
       },
-      setSun(direction) { for (const material of glassMaterials) material.envMapIntensity = direction.y > 0 ? .7 : .025; },
+      setSun(direction) { for (const material of glassMaterials) material.envMapIntensity = direction.y > 0 ? 1.15 : .025; },
       dispose() { grainMap.dispose(); carvingMap?.dispose(); reflectionMap?.dispose(); glassMaterials.clear(); },
     };
   };

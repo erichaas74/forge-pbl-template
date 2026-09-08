@@ -1,0 +1,51 @@
+<main class="league">
+  <nav class="masthead" aria-label="Main navigation"><a routerLink="/projects" class="back">← Projects</a><span class="wordmark">LSL <span>/ LIVE STRATEGY LEAGUE</span></span><span class="practice">SIMULATED FINAL EXAMPLE</span></nav>
+  <header class="project-header" aria-label="Project title and playback controls">
+    <div class="project-title"><h1>The final round</h1><span>Round {{ config.rounds.length }} / {{ config.rounds.length }}</span></div>
+    <div class="actions"><a class="example-link" [routerLink]="['/projects', config.projectId]">League lobby</a><a class="example-link" [routerLink]="['/projects', config.projectId, 'activity']">Back to practice</a>
+      <button (click)="showFinal()" [disabled]="finished()">Show final standings</button>
+      @if (finished()) { <button class="primary" (click)="replay()">Replay demo ↻</button> }
+      @else { <button class="primary" (click)="togglePlayback()">{{ playing() ? 'Pause demo' : 'Resume demo' }}</button> }
+    </div>
+  </header>
+  <div class="arena">
+    <section class="stage panel" aria-labelledby="standings-title">
+      <app-league-leaderboard [config]="config" [snapshot]="snapshot()" [yourTeamId]="config.teams[0].id"
+        [completedRounds]="config.rounds.length" [animationStep]="step()"
+        [statusLabel]="finished() ? 'FINAL STANDINGS' : 'SIMULATED LIVE SCORES'"
+        trendNote="Compared with the previous score update" note="Scripted example · Fictional teams · Scores are illustrative" />
+    </section>
+    <section class="command panel demo-stage" aria-labelledby="demo-title">
+      <div class="section-heading"><div><p class="eyebrow">{{ finished() ? 'THE WINNING DECISION' : 'HAPPENING NOW' }}</p><h2 id="demo-title">Decisions & trades</h2></div>
+        <div class="countdown" [class.urgent]="seconds() <= 10 && !finished()"><span>{{ finished() ? 'FINISHED' : playing() ? 'TIME LEFT' : 'PAUSED' }}</span><strong aria-label="Time remaining">{{ timer() }}</strong><div class="time-track"><i [style.width.%]="seconds() / demo.seconds * 100"></i></div></div>
+      </div>
+      @if (decision(); as choice) {
+        <article class="decision-card" [style.--team-color]="choice.team.color" aria-labelledby="decision-question">
+          <div class="decision-team"><span class="team-dot"></span><strong>{{ choice.team.name }}</strong><span>SIMULATED TEAM CHOICE</span></div>
+          <h3 id="decision-question">{{ choice.question }}</h3>
+          <ol class="decision-options" aria-label="Example choices">
+            @for (option of choice.options; track $index) {
+              <li [class.selected]="$index === choice.selected"><span class="option-marker" aria-hidden="true">{{ $index === choice.selected ? '✓' : $index + 1 }}</span><span>{{ option }}</span>@if ($index === choice.selected) { <small>CHOSEN</small> }</li>
+            }
+          </ol>
+          <p class="decision-reason"><strong>Why this choice</strong>{{ choice.reasoning }}</p>
+          <div class="trade-ticket">
+            <div class="trade-heading"><h4>{{ choice.settled ? 'Trade completed' : 'Trade queued' }}</h4><span>{{ choice.units | number }} units × ${{ choice.unitPrice | number }}</span></div>
+            <div class="trade-metrics"><div><span>Revenue</span><strong>${{ choice.revenue | number }}</strong></div><div><span>Production cost</span><strong>−${{ choice.cost | number }}</strong></div><div class="trade-profit"><span>Profit → points</span><strong>{{ choice.profit >= 0 ? '+' : '−' }}{{ (choice.profit < 0 ? -choice.profit : choice.profit) | number }}</strong></div></div>
+            <p class="trade-impact" aria-live="polite">{{ choice.settled ? choice.team.name + ' is now #' + choice.rank + ' on the leaderboard.' : 'The next score update reveals where this trade puts the team.' }}</p>
+          </div>
+        </article>
+      }
+      <div class="live-call" aria-live="polite"><p class="eyebrow">{{ finished() ? 'FINAL WHISTLE' : 'LEAGUE UPDATE' }}</p><p>{{ caption() }}</p></div>
+      @if (finished()) {
+        <div class="winner" aria-live="polite"><span aria-hidden="true">★</span><div><p class="eyebrow">LEAGUE CHAMPION</p><h3>{{ leader().name }}</h3></div><strong>{{ ranking()[0].score | number }} <small>points</small></strong></div>
+      }
+    </section>
+    <div class="round-information">
+      <section class="info panel" aria-labelledby="demo-info"><p class="eyebrow">THE SETUP</p><h2 id="demo-info">One round. {{ config.teams.length }} teams.</h2><p>{{ config.rounds[config.rounds.length - 1].description }}</p><p>This {{ demo.seconds }}-second scripted example starts after {{ config.rounds.length - 1 }} rounds. Sample scores arrive in stages, moving teams up and down until the final whistle.</p><p>Practice standings still update on reveal. This demo illustrates the finish and does not use or save your practice results.</p></section>
+      <section class="recap panel" aria-labelledby="demo-recap"><p class="eyebrow">{{ finished() ? 'FINAL ROUND RECAP' : 'ROUND UPDATES' }}</p><h2 id="demo-recap">{{ finished() ? 'How the finish unfolded' : 'The story so far' }}</h2>
+        <ol class="update-list">@for (frame of updates(); track frame.at) { <li><time>{{ demo.seconds - frame.at }}s left</time><div>@if (frame.decision; as trade) { <strong>{{ trade.options[trade.selected] }}</strong><p class="trade-recap">${{ trade.units * trade.unitPrice | number }} revenue − ${{ trade.units * trade.unitCost | number }} cost = {{ trade.units * (trade.unitPrice - trade.unitCost) | number }} points</p> }<p>{{ frame.caption }}</p></div></li> } @empty { <li><time>At the start</time><p>{{ demo.openingCaption }}</p></li> }</ol>
+      </section>
+    </div>
+  </div>
+</main>

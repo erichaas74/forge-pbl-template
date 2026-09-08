@@ -1,9 +1,10 @@
 # Sample monument gallery
 
-The lab now shows **Try a sample monument** immediately above its 3D canvas. The gallery is visible on ordinary lab entry, including existing saved drafts, so students no longer have to discover the models through the block editor. Six geometric thumbnails identify the models before loading:
+Open **••• → Sample models** in the final project workspace. Seven geometric thumbnails identify the models before loading. The solar-calendar circle is the first option, including for students with existing saved drafts:
 
 | Model | Geometry and investigation |
 | --- | --- |
+| Solar calendar circle | Eight stone gates; three lintels have amber, blue and ruby jeweled roof openings. Students locate and test their own seasonal markers. |
 | Sun gate | Two pillars and a lintel; compare the bright gap with the gate-shaped shadow. |
 | Round portal | A thin wall with a real 80 cm cylindrical hole; inspect its projected sunlight patch. |
 | Three color windows | Supported red, blue and amber windows; a porcelain crystal catches the central beam. |
@@ -11,7 +12,7 @@ The lab now shows **Try a sample monument** immediately above its 3D canvas. The
 | Shadow crown | Eight alternating pillars, four bored through, surrounding a round sculpture. |
 | Twin tunnels | Equal 32 cm openings through 10 cm and 65 cm walls; investigate angular clearance. |
 
-Click a card to preview its actual geometry in the same simulation. Site and time stay fixed when changing samples, making comparisons useful. The preview permits date, time and camera controls. It does not write to the notebook, replace the learner's saved design, or record trial evidence. **Back to my design** exits the preview. **Use this model & edit** adopts the model, opens the builder, clears expectations tied to the old target IDs and saves one previous-design checkpoint. Notes and recorded trials stay intact. **Restore previous design** restores that design and its checks, including after a reload. This is one checkpoint, not unlimited design history.
+Click a card to preview its actual geometry in the same simulation. Site and time stay fixed when changing samples, making comparisons useful. The preview permits date, time and camera controls. It does not write to the notebook, replace the learner's saved design, or record trial evidence. **My design** exits the preview. **Use model** adopts the model, opens the builder, clears expectations tied to the old target IDs and saves one previous-design checkpoint. Notes and recorded trials stay intact. **Restore previous design** restores that design and its checks, including after a reload. This is one checkpoint, not unlimited design history.
 
 ## Architecture and compatibility
 

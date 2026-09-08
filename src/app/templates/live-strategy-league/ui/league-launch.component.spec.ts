@@ -1,0 +1,32 @@
+import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { afterEach, expect, it, vi } from 'vitest';
+import data from '../../../../../public/projects/live-strategy-league/project.json';
+import { requireLeagueConfig, standings } from '../domain/league-engine';
+import { LEAGUE_CONFIG } from '../runtime/league-runtime.service';
+import { LeagueLaunchComponent } from './league-launch.component';
+
+afterEach(() => { TestBed.resetTestingModule(); vi.useRealTimers(); });
+it('previews changing ranks, pauses, loops and stops playback when leaving the lobby', () => {
+  vi.useFakeTimers();
+  TestBed.configureTestingModule({ imports: [LeagueLaunchComponent], providers: [provideRouter([]), { provide: LEAGUE_CONFIG, useValue: requireLeagueConfig(data) }] });
+  const fixture = TestBed.createComponent(LeagueLaunchComponent);
+  fixture.detectChanges();
+  const lobby = fixture.componentInstance;
+  expect(standings(lobby.snapshot().teams)[0].id).toBe('02-apex');
+  vi.advanceTimersByTime(6000); fixture.detectChanges();
+  expect(standings(lobby.snapshot().teams)[0].id).toBe('03-orbit');
+  lobby.togglePreview();
+  vi.advanceTimersByTime(9000);
+  expect(lobby.elapsed()).toBe(6);
+  lobby.togglePreview();
+  vi.advanceTimersByTime(24000);
+  expect(lobby.snapshot().phase).toBe('complete');
+  vi.advanceTimersByTime(6000);
+  expect(lobby.cycle()).toBe(1);
+  expect(standings(lobby.snapshot().teams)[0].id).toBe('02-apex');
+  const elapsed = lobby.elapsed();
+  fixture.destroy();
+  vi.advanceTimersByTime(60000);
+  expect(lobby.elapsed()).toBe(elapsed);
+});

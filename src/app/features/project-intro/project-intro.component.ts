@@ -1,139 +1,79 @@
-import {
-  afterNextRender,
-  Component,
-  computed,
-  ElementRef,
-  HostListener,
-  inject,
-  Injector,
-  PendingTasks,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { PROJECT_SESSION_CONTEXT } from '../../runtime/project-launch/project-launch.tokens';
-import {
-  PROJECT_INTRO_CONFIG,
-  ProjectIntroRuntime,
-} from '../../shared/project-intro/project-intro.runtime';
-import type { ProjectTeaserResult } from '../../shared/project-intro/project-teaser.models';
+import { PROJECT_CATALOG_ENTRY } from '../../runtime/project-launch/project-launch.tokens';
+import { PROJECT_INTRO_CONFIG } from '../../shared/project-intro/project-intro.runtime';
+import type { OpeningMedia, OpeningSpeech } from '../../shared/project-intro/decision-scene.models';
+import { OpeningMediaComponent } from '../../plugins/intro-scenes/opening-media.component';
 import { ProjectTeaserHostComponent } from './project-teaser-host.component';
-import { ProjectProductPreviewComponent } from './project-product-preview.component';
 
+/** A read-only invitation. Starting opens the workspace without creating learner records. */
 @Component({
   selector: 'app-project-intro',
-  imports: [RouterLink, ProjectTeaserHostComponent, ProjectProductPreviewComponent],
-  providers: [ProjectIntroRuntime],
+  imports: [RouterLink, OpeningMediaComponent, ProjectTeaserHostComponent],
   templateUrl: './project-intro.component.html',
   styleUrl: './project-intro.component.scss',
 })
 export class ProjectIntroComponent {
-  readonly config = inject(PROJECT_INTRO_CONFIG);
-  readonly runtime = inject(ProjectIntroRuntime);
-  private readonly session = inject(PROJECT_SESSION_CONTEXT);
+  readonly project = inject(PROJECT_CATALOG_ENTRY);
+  readonly config = inject(PROJECT_INTRO_CONFIG, { optional: true });
   private readonly router = inject(Router);
-  private readonly injector = inject(Injector);
-  private readonly pendingTasks = inject(PendingTasks);
-  private readonly heading = viewChild<ElementRef<HTMLElement>>('productHeading');
-  private readonly saveError = viewChild<ElementRef<HTMLElement>>('saveError');
-  private teaserHandoffPending = false;
-  readonly pendingReceipt = signal<ProjectTeaserResult | undefined>(undefined);
-  readonly loading = signal(true);
   readonly entering = signal(false);
-  readonly teaserVisible = signal(true);
-  readonly teaserReplayLabel = computed(() => {
-    const teaser = this.config.teaser;
-    return teaser?.type === 'decision-scene'
-      ? teaser.replayLabel
-      : teaser
-        ? `Replay ${teaser.scientistName}’s introduction`
-        : 'Replay opening';
-  });
+  readonly error = signal<string | undefined>(undefined);
+  readonly media = this.openingMedia();
+  readonly illustratedOpening =
+    this.config?.teaser?.type === 'illustrated-comparison' ? this.config.teaser : undefined;
+  readonly speeches =
+    this.config?.teaser?.type === 'decision-scene' ? (this.config.teaser.speeches ?? []) : [];
+  readonly activeSpeech = signal(this.speeches[0]);
+  readonly speechFailed = signal(false);
+  readonly practiceOpen = signal(false);
+  readonly practice =
+    this.config?.teaser?.type === 'decision-scene' && this.config.teaser.cargo
+      ? { ...this.config.teaser, prologue: undefined }
+      : undefined;
+  private readonly practiceDialog = viewChild<ElementRef<HTMLDialogElement>>('practiceDialog');
+  private readonly practiceButton = viewChild<ElementRef<HTMLButtonElement>>('practiceButton');
+  private readonly openingClip = viewChild<ElementRef<HTMLVideoElement>>('openingClip');
 
-  constructor() {
-    this.pendingTasks.run(async () => {
-      try {
-        await this.runtime.initialize(
-          { session: this.session, introVersion: this.config.version },
-          this.config,
-        );
-      } finally {
-        // A saved receipt preserves learning history; it must not hide the story opening.
-        this.teaserVisible.set(!!this.config.teaser);
-        this.loading.set(false);
-        if (!this.config.teaser) this.focus(false);
-      }
-    });
+  openPractice(): void {
+    this.openingClip()?.nativeElement.pause();
+    this.practiceOpen.set(true);
+    this.practiceDialog()?.nativeElement.showModal();
   }
 
-  async finishTeaser(result: ProjectTeaserResult): Promise<void> {
-    this.pendingReceipt.set(result);
-    const revisiting =
-      !this.teaserHandoffPending &&
-      (!!this.runtime.snapshot()?.draft.teaser || !!this.runtime.snapshot()?.history.length);
-    if (revisiting && result.thinking?.length) {
-      const replays = this.runtime.draft().practiceReplays ?? [];
-      if (
-        !replays.some(
-          (item) => item.timestamp === result.timestamp && item.teaserId === result.teaserId,
-        )
-      )
-        this.runtime.update({ practiceReplays: [...replays.slice(-9), result] });
-      if (!(await this.runtime.saveDraft())) {
-        this.focus(true);
-        return;
-      }
-    }
-    if (!revisiting) {
-      this.teaserHandoffPending = true;
-      this.runtime.update({ teaser: result });
-      if (!(await this.runtime.saveDraft())) {
-        this.focus(true);
-        return;
-      }
-    }
-    this.teaserHandoffPending = false;
-    this.teaserVisible.set(false);
-    if (result.eventType === 'projectIntro.teaserCompleted' && result.thinking?.length)
-      await this.enter();
-    else this.focus(false);
+  closePractice(): void {
+    this.practiceOpen.set(false);
+    this.practiceDialog()?.nativeElement.close();
+    this.practiceButton()?.nativeElement.focus();
   }
 
-  replayTeaser(): void {
-    this.teaserVisible.set(true);
+  selectSpeech(speech: OpeningSpeech): void {
+    this.activeSpeech.set(speech);
+    this.speechFailed.set(false);
   }
 
   async enter(): Promise<void> {
     if (this.entering()) return;
     this.entering.set(true);
+    this.error.set(undefined);
     try {
-      // The goal chat is a visual placeholder. Do not fabricate an accepted response.
-      if (await this.canLeave())
-        await this.router.navigate(['/projects', this.config.projectId, 'experience']);
+      const opened = await this.router.navigate(['/projects', this.project.id, 'experience']);
+      if (!opened) this.error.set('Your project did not open. Please try Start Project again.');
+    } catch {
+      this.error.set('Your project could not open. Please try Start Project again.');
     } finally {
       this.entering.set(false);
     }
   }
 
-  async canLeave(): Promise<boolean> {
-    const saved = !this.runtime.dirty() || (await this.runtime.saveDraft());
-    if (!saved) this.focus(true);
-    return saved;
-  }
-
-  @HostListener('window:beforeunload', ['$event'])
-  beforeUnload(event: BeforeUnloadEvent): void {
-    if (this.runtime.dirty()) event.preventDefault();
-  }
-
-  private focus(error: boolean): void {
-    afterNextRender(
-      () => {
-        const element = (error ? this.saveError() : this.heading())?.nativeElement;
-        element?.scrollIntoView({ block: 'nearest' });
-        element?.focus({ preventScroll: true });
-      },
-      { injector: this.injector },
-    );
+  private openingMedia(): OpeningMedia | undefined {
+    const teaser = this.config?.teaser;
+    const scene =
+      teaser?.type === 'decision-scene' ? (teaser.prologue?.media ?? teaser.media) : undefined;
+    // Reuse the opening film without mounting its multi-step practice activity.
+    if (scene?.video) return scene;
+    if (this.config?.model) return { model: this.config.model, alt: this.config.imageAlt };
+    const image = this.config?.image ?? this.project.coverImage;
+    return image ? { image, alt: this.config?.imageAlt ?? this.project.title } : undefined;
   }
 }

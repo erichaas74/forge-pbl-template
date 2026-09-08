@@ -2,8 +2,8 @@
   "welcome": [
     {
       "speaker": "scientist",
-      "text": "Welcome, junior scientist! Professor Pip here. Two samples. Same color. Same appearance. Obviously the same substance. Case closed! I would test them, of course, but my genius is usually faster. See that big button? You may confirm my brilliance.",
-      "audioUrl": "/project-intros/lab-surprise/welcome-scientist.wav"
+      "text": "Aha! Welcome, junior scientist! Professor Pip here! Two samples. Same color, same appearance. Obviously the same substance! Case closed! I would test them, of course, but my genius is usually faster! See that big button? Go on! Confirm my brilliance!",
+      "audioUrl": "/project-intros/lab-surprise/welcome-scientist-v2.wav"
     },
     {
       "speaker": "robot",
@@ -14,15 +14,15 @@
   "testing": [
     {
       "speaker": "scientist",
-      "text": "And sample A turns blue. Beautiful. Completely predicta...",
-      "audioUrl": "/project-intros/lab-surprise/testing-scientist.wav"
+      "text": "Aha! Sample A turns blue! Beautiful! Completely predicta...",
+      "audioUrl": "/project-intros/lab-surprise/testing-scientist-v2.wav"
     }
   ],
   "reveal": [
     {
       "speaker": "scientist",
-      "text": "Excellent! We have discovered two things. Appearances can fool us... and I need a hat. You saw that, right? Same-looking liquids. Different color results. My theory could use a little work. So could my hair.",
-      "audioUrl": "/project-intros/lab-surprise/reveal-scientist.wav"
+      "text": "Extraordinary! We have discovered two things! Appearances can fool us... and I need a hat! You saw that, right? Same-looking liquids. Different color results! My theory could use a little work. So could my hair!",
+      "audioUrl": "/project-intros/lab-surprise/reveal-scientist-v2.wav"
     },
     {
       "speaker": "robot",
@@ -38,8 +38,8 @@
     },
     {
       "speaker": "scientist",
-      "text": "I shall supervise! From a slightly greater distance. Go on, detective. Give those mystery vials an explanation worth believing. And if anyone asks, this hairstyle was intentional.",
-      "audioUrl": "/project-intros/lab-surprise/handoff-scientist.wav"
+      "text": "I shall supervise! From a slightly greater distance! Go on, detective! Give those mystery vials an explanation worth believing! And if anyone asks... this hairstyle was intentional!",
+      "audioUrl": "/project-intros/lab-surprise/handoff-scientist-v2.wav"
     }
   ]
 }

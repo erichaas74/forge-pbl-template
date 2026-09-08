@@ -1,6 +1,7 @@
 import type { EngineeringDesignConfig } from '../../templates/engineering-design/domain/engineering-design.models';
 import { calendarMonumentDesignSamples } from './calendar-monument.design-samples';
 import { calendarMonumentLearning } from './calendar-monument.learning';
+import { solarCalendarStarter } from './calendar-monument.solar-calendar';
 export const calendarMonumentConfig: EngineeringDesignConfig = {
   schemaVersion: '1.0',
   projectId: 'calendar-monument',
@@ -8,7 +9,7 @@ export const calendarMonumentConfig: EngineeringDesignConfig = {
   template: { id: 'engineering-design', version: '1.0' },
   title: 'From Sundial to Sun Monument',
   mission:
-    'Build a sundial, investigate its changing seasonal shadows, and use Earth’s tilt to explain them. Then design a monument that marks special dates with shadow and light.',
+    'Build a sundial, investigate its seasonal shadows, and explain Earth’s tilt. Your final project is a solar calendar: a stone monument with openings and colored jewels that marks the equinoxes and solstices.',
   simulationId: 'simulation.solar-monument',
   designSamples: calendarMonumentDesignSamples,
   learningSequence: calendarMonumentLearning,
@@ -79,7 +80,7 @@ export const calendarMonumentConfig: EngineeringDesignConfig = {
         'Research a solar monument such as Stonehenge. What alignment is documented? Sketch your own design and explain what it could tell an observer.',
       source: {
         label: 'Stonehenge and the solstice · English Heritage',
-        url: 'https://www.english-heritage.org.uk/visit/places/stonehenge/history-and-stories/stonehenge-and-solstice/',
+        url: 'https://www.english-heritage.org.uk/visit/places/stonehenge/things-to-do/solstice',
       },
     },
     {
@@ -96,38 +97,27 @@ export const calendarMonumentConfig: EngineeringDesignConfig = {
     },
   ],
   designBrief:
-    'Start with the ten-block tower, or change it to match your classroom blocks. Add ground markers for the two solstices and the shared equinox alignment. Build the same design on a level physical base, with matching dimensions and true-north orientation. An advanced design can use two pillars and a lintel to frame a patch of sunlight.',
+    'Build a solar calendar inspired by Stonehenge. Arrange standing stones and lintels into your own monument, then use cylindrical openings and colored jewels or glass to send light onto seasonal markers. Include a plan for June, December, and the shared equinox alignment. The stone-circle starter has openings but no markers: locating and testing them is your challenge. Match your classroom model’s dimensions, level base and true-north orientation.',
   testInstructions: [
     'Choose your actual location on the globe or enter its latitude and longitude. Keep this location fixed for your first comparison.',
     'Build your monument, make a prediction, then choose Show Sun. Use See shadows to look behind the stones. Play day follows this date from sunrise to sunset; pause when a pattern appears.',
     'Choose March equinox, then Solar Noon. Solar noon is not always 12:00 on a clock. Predict the result, then save a trial.',
     'Repeat for June solstice, September equinox, and December solstice. Select Solar Noon again after changing the date.',
-    'Place target rings using measured coordinates. The trial records whether the centre of each ring receives sunlight or is shaded by your blocks.',
+    'Open Markers → Place on the floor. Click a patch of light or shadow, name the sunstone, then Carve marker. The saved record includes the ground point, date, time, place, Sun height and compass direction, and light at its centre. Place by measurements provides an alternative using centimetres.',
     'Try Shape the light in Build: add a supported light window, choose a colored glass or jewel insert, and place a sculpture behind it. Use Inspect sculpture and turn the camera to see the face catching the light.',
     'Measure the opening diameter, its axis, and the block depth. Rotate the block to aim the tunnel. Change the date and time to find when colored light reaches a ground target or sculpture face. Colored filters in this model do not focus light like a curved lens.',
-    'Choose Solar noon, then compare June and December. Open Why seasons? to connect the changing shadow to Earth’s fixed tilt and orbit. In Final demonstration, choose a target, expectation and time for each date. Test a week before and after: does the marker identify one day or a range? Shadows change slowly near a solstice.',
+    'Choose Solar noon, then compare June and December. Open Guide → Earth’s tilt to connect the changing shadow to Earth’s fixed tilt and orbit. In Final demonstration → Compare, choose a target, expectation and time for each date. Test a week before and after: does the marker identify one day or a range? Shadows change slowly near a solstice.',
     'Revise the design and record another trial. Earlier designs remain in the evidence notebook.',
     'Open Final demonstration. Choose a target and expected sunlight, shadow, or colored light for each equinox and solstice. Walk through all four dates on the same 3D model, compare the target outcomes and sculpture surface samples, then record the final comparison.',
     'Check the physical model outdoors today at the matching time. Measure its shadow, compare with the simulation, and record differences. Observe shadows; never look directly at the Sun.',
   ],
   exhibitPrompts: [
+    'Introduce your solar calendar. Show how its stone openings and colored jewels or glass create repeatable seasonal alignments.',
     'Explain Earth’s tilt, the changing Sun angle, and why your monument’s shadows change.',
     'Describe the block dimensions, location, true-north orientation, target positions, and observation times needed to reproduce your design.',
     'Use evidence from all four seasonal dates. Explain why the two equinoxes share an approximate alignment.',
     'Describe a revision and what your nearby-date and outdoor tests taught you. Explain the limits of your model.',
     'Compare the Moon’s monthly pattern with the Sun’s yearly pattern and credit your research sources.',
   ],
-  starterDesign: {
-    blocks: Array.from({ length: 10 }, (_, i) => ({
-      id: `starter-${i + 1}`,
-      width: 0.1,
-      height: 0.1,
-      depth: 0.1,
-      x: 0,
-      y: i / 10,
-      z: 0,
-      rotation: 0,
-    })),
-    targets: [],
-  },
+  starterDesign: solarCalendarStarter,
 };

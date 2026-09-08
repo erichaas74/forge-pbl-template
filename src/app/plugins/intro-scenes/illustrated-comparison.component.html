@@ -1,47 +1,59 @@
 <section
   class="cartoon-opening"
+  [class.story-mode]="storyMode()"
   [class.singed]="singed()"
   [class.testing]="stage() === 'testing'"
   [class.poofing]="stage() === 'poof'"
   [class.handoff]="stage() === 'handoff'"
 >
-  <header class="episode-header">
-    <strong>The Mystery of the Unlabeled Shelf</strong>
-    <div class="header-tools">
-      <button type="button" (click)="reset()">↺ Restart</button
-      ><button type="button" (click)="finish(true)">Project preview</button>
-      <app-task-guide title="Look, predict, compare"
-        ><p>{{ config().invitation }}</p>
-        <p>A prediction is your idea before a test. Compare both samples after the same test.</p>
-        @for (line of lines(); track $index) {
-          <p>{{ line.text }}</p>
-        }
-        <button type="button" (click)="toggleVoice()">
+  @if (!storyMode()) {
+    <header class="episode-header">
+      <strong>The Mystery of the Unlabeled Shelf</strong>
+      <div class="header-tools">
+        <button type="button" (click)="reset()">↺ Restart</button
+        ><button type="button" (click)="finish(true)">Project preview</button>
+        <app-task-guide title="Look, predict, compare"
+          ><p>{{ config().invitation }}</p>
+          <p>A prediction is your idea before a test. Compare both samples after the same test.</p>
+          @for (line of lines(); track $index) {
+            <p>{{ line.text }}</p>
+          }
+          <button type="button" (click)="toggleVoice()">
+            {{ voices() ? 'Mute voices' : 'Play voices' }}
+          </button>
+          <p role="status">{{ audioNotice() }}</p>
+        </app-task-guide>
+      </div>
+    </header>
+  }
+  <div class="comparison-task" #dialoguePanel tabindex="-1">
+    @if (storyMode()) {
+      <div class="story-heading">
+        <h2>{{ config().scientistName }}’s story</h2>
+        <button type="button" (click)="toggleVoice()" [attr.aria-pressed]="voices()">
           {{ voices() ? 'Mute voices' : 'Play voices' }}
         </button>
-        <p role="status">{{ audioNotice() }}</p>
-      </app-task-guide>
-    </div>
-  </header>
-  <main class="comparison-task" #dialoguePanel tabindex="-1">
-    <p class="eyebrow">
-      {{
-        stage() === 'welcome'
-          ? '1 · Predict'
-          : stage() === 'handoff'
-            ? '3 · Explain'
-            : '2 · Test and compare'
-      }}
-    </p>
-    <h1 #sceneHeading tabindex="-1">
-      {{
-        stage() === 'welcome'
-          ? 'Will both samples react the same way?'
-          : stage() === 'handoff'
-            ? 'Looking alike was not enough.'
-            : 'What changed?'
-      }}
-    </h1>
+      </div>
+    } @else {
+      <p class="eyebrow">
+        {{
+          stage() === 'welcome'
+            ? '1 · Predict'
+            : stage() === 'handoff'
+              ? '3 · Explain'
+              : '2 · Test and compare'
+        }}
+      </p>
+      <h1 #sceneHeading tabindex="-1">
+        {{
+          stage() === 'welcome'
+            ? 'Will both samples react the same way?'
+            : stage() === 'handoff'
+              ? 'Looking alike was not enough.'
+              : 'What changed?'
+        }}
+      </h1>
+    }
     <div
       class="illustration"
       role="img"
@@ -416,7 +428,34 @@
         >
       }
     </div>
-    @if (stage() === 'welcome') {
+    @if (storyMode()) {
+      <div class="story-dialogue" aria-label="Story captions">
+        @for (line of lines(); track $index) {
+          <p [class.speaking]="activeLine() === $index">
+            <strong>{{
+              line.speaker === 'scientist' ? config().scientistName : config().robotName
+            }}</strong>
+            {{ line.text }}
+          </p>
+        }
+      </div>
+      <p class="voice-status" role="status">{{ audioNotice() }}</p>
+      @if (stage() === 'welcome') {
+        <button class="test-button" type="button" (click)="runTest()">
+          {{ config().testButton }} →
+        </button>
+      } @else if (stage() === 'testing' || stage() === 'poof') {
+        <p role="status">Comparing the samples…</p>
+      } @else if (stage() === 'reveal') {
+        <p class="story-note">{{ config().comedyNote }}</p>
+        <button class="test-button" type="button" (click)="showCase()">
+          Meet the mystery vials →
+        </button>
+      } @else {
+        <p class="evidence-note">{{ config().evidenceNote }}</p>
+        <button class="story-replay" type="button" (click)="reset()">↺ Replay story</button>
+      }
+    } @else if (stage() === 'welcome') {
       <div class="prediction-choices" aria-label="My prediction">
         @for (idea of ['Same reaction', 'Different reactions', 'Not sure yet']; track idea) {
           <button
@@ -458,5 +497,5 @@
       <p class="evidence-note">{{ config().evidenceNote }}</p>
       <button class="test-button" type="button" (click)="finish()">Open my investigation →</button>
     }
-  </main>
+  </div>
 </section>

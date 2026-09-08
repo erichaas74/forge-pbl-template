@@ -33,6 +33,21 @@ import { DesignOpticsBuilderComponent } from './ui/design-optics-builder.compone
 import { EngineeringDesignPageComponent } from './ui/engineering-design-page.component';
 @Component({ template: '' })
 class ExampleSimulation {}
+
+// A fixed legacy tower keeps generic stacking/collision tests independent of curriculum defaults.
+const towerFixture: BlockDesign = {
+  blocks: Array.from({ length: 10 }, (_, i) => ({
+    id: `starter-${i + 1}`,
+    width: 0.1,
+    height: 0.1,
+    depth: 0.1,
+    x: 0,
+    y: i / 10,
+    z: 0,
+    rotation: 0,
+  })),
+  targets: [],
+};
 describe('engineering design template', () => {
   let saved: EngineeringSnapshot | undefined;
   const persistence: EngineeringPersistence = {
@@ -84,14 +99,14 @@ describe('engineering design template', () => {
     expect(isEngineeringSnapshot(calendarMonumentSample)).toBe(true);
   });
   it('rejects overlapping solids while permitting adjacent blocks and supported stacks', () => {
-    const block = calendarMonumentConfig.starterDesign.blocks[0];
+    const block = towerFixture.blocks[0];
     expect(blocksOverlap(block, { ...block, id: 'duplicate' })).toBe(true);
     expect(blocksOverlap(block, { ...block, x: 0.1 })).toBe(false);
     expect(blocksOverlap(block, { ...block, y: 0.1 })).toBe(false);
     expect(blocksOverlap({ ...block, width: 0.4, rotation: 90 }, { ...block, z: 0.15 })).toBe(true);
   });
   it('validates every gallery model and rejects duplicate or malformed sample definitions', () => {
-    expect(calendarMonumentConfig.designSamples).toHaveLength(6);
+    expect(calendarMonumentConfig.designSamples).toHaveLength(7);
     for (const sample of calendarMonumentConfig.designSamples ?? [])
       expect(isBlockDesign(sample.design)).toBe(true);
     const sample = calendarMonumentConfig.designSamples![0];
@@ -130,6 +145,17 @@ describe('engineering design template', () => {
     page.stopPreview();
     expect(page.simulationInputs().design).toEqual(before.design);
     expect(page.simulationInputs().readOnly).toBe(false);
+  });
+  it('preserves an existing tower draft when entering the new solar-calendar challenge', () => {
+    saved = { ...structuredClone(calendarMonumentSample), design: structuredClone(towerFixture) };
+    const runtime = TestBed.inject(EngineeringDesignRuntime);
+    runtime.selectLearningStep('sun-monument');
+    expect(runtime.snapshot().design).toEqual(towerFixture);
+    runtime.useDesignSample('solar-calendar-circle');
+    expect(runtime.snapshot().design.blocks).toHaveLength(24);
+    expect(runtime.snapshot().design.targets).toEqual([]);
+    runtime.restoreDesignBackup();
+    expect(runtime.snapshot().design).toEqual(towerFixture);
   });
   it('loads a sample atomically, preserves notes/evidence, and restores the prior design after reload', () => {
     const runtime = TestBed.inject(EngineeringDesignRuntime);
@@ -338,9 +364,9 @@ describe('engineering design template', () => {
   });
   it('adds a supported window without discarding the existing design and edits its bore', () => {
     const fixture = TestBed.createComponent(DesignOpticsBuilderComponent);
-    fixture.componentRef.setInput('design', calendarMonumentConfig.starterDesign);
+    fixture.componentRef.setInput('design', towerFixture);
     fixture.detectChanges();
-    let emitted: BlockDesign = calendarMonumentConfig.starterDesign;
+    let emitted: BlockDesign = towerFixture;
     fixture.componentInstance.changed.subscribe((value) => {
       emitted = value;
       fixture.componentRef.setInput('design', value);
@@ -369,14 +395,14 @@ describe('engineering design template', () => {
     runtime.saveDesign({ blocks: [], targets: [] });
     runtime.saveText('prediction', 'My next idea');
     expect(runtime.snapshot().trials).toHaveLength(1);
-    expect(runtime.snapshot().trials[0].design.blocks).toHaveLength(10);
+    expect(runtime.snapshot().trials[0].design).toEqual(calendarMonumentSample.design);
     expect(runtime.snapshot().trials[0].prediction).toBe('A lower Sun makes a longer shadow.');
     expect(runtime.snapshot().events.map((event) => event.eventType)).toContain(
       'activity.completed',
     );
     const loaded = TestBed.runInInjectionContext(() => new EngineeringDesignRuntime());
     expect(loaded.snapshot()).toEqual(runtime.snapshot());
-    expect(calendarMonumentConfig.starterDesign.blocks).toHaveLength(10);
+    expect(calendarMonumentConfig.starterDesign.blocks).toHaveLength(24);
   });
   it('rejects invalid or mismatched simulation results instead of reporting completion', () => {
     const runtime = TestBed.inject(EngineeringDesignRuntime);
@@ -417,7 +443,7 @@ describe('engineering design template', () => {
     runtime.captureBatch(captures);
     expect(runtime.snapshot().trials).toHaveLength(4);
     runtime.saveDesign({ blocks: [], targets: [] });
-    expect(runtime.snapshot().trials[0].design.blocks).toHaveLength(10);
+    expect(runtime.snapshot().trials[0].design).toEqual(calendarMonumentSample.design);
     const loaded = TestBed.runInInjectionContext(() => new EngineeringDesignRuntime());
     expect(loaded.snapshot().checks).toEqual(runtime.snapshot().checks);
     expect(loaded.snapshot().checks?.[0].settings).toEqual({
@@ -449,7 +475,7 @@ describe('engineering design template', () => {
     const session = createLocalPreviewSession('calendar-monument', '1.0.0');
     const adapter = new BrowserEngineeringDesignAdapter(session, localStorage);
     adapter.save(calendarMonumentSample);
-    expect(adapter.load()?.design.blocks).toHaveLength(10);
+    expect(adapter.load()?.design).toEqual(calendarMonumentSample.design);
     expect(
       new BrowserEngineeringDesignAdapter({ ...session, actorId: 'other' }, localStorage).load(),
     ).toBeUndefined();
@@ -472,9 +498,9 @@ describe('engineering design template', () => {
   });
   it('provides keyboard-operable block stacking with measured dimensions and undo', async () => {
     const fixture = TestBed.createComponent(BlockBuilderComponent);
-    fixture.componentRef.setInput('design', calendarMonumentConfig.starterDesign);
+    fixture.componentRef.setInput('design', towerFixture);
     fixture.detectChanges();
-    let emitted = calendarMonumentConfig.starterDesign;
+    let emitted = towerFixture;
     fixture.componentInstance.changed.subscribe((value) => {
       emitted = value;
       fixture.componentRef.setInput('design', value);

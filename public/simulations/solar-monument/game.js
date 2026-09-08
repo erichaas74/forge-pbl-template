@@ -99,6 +99,7 @@
   let solarOptics;
   let sceneDirty = true;
   let targetMarkers = null;
+  let markerRequest = '', markerPicking = false, markerPoint = { x: 0, z: 0 }, markerGhost = null, selectedMarker = '', markerReadingKey = '';
   let cameraMode = 'angle';
   let lastPublishedContext = '';
   let solarSky;
@@ -325,17 +326,19 @@
     const canvas = els.shadowCanvas;
     shadow.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     shadow.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    shadow.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    shadow.renderer.toneMappingExposure = 1.15;
     shadow.renderer.shadowMap.enabled = false;
     shadow.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
     shadow.scene = new THREE.Scene();
-    shadow.scene.background = new THREE.Color(0x07131a);
+    shadow.scene.background = new THREE.Color(0xbce4ed);
 
     shadow.camera = new THREE.PerspectiveCamera(42, 1, 0.01, 2500);
     shadow.camera.position.set(6, 5, 8);
     shadow.camera.lookAt(0, 0.9, 0);
 
-    shadow.ambient = new THREE.HemisphereLight(0xdbe7ed, 0x827462, 0.55);
+    shadow.ambient = new THREE.HemisphereLight(0xcdeaff, 0xbba47b, 0.8);
     shadow.scene.add(shadow.ambient);
 
     shadow.sunLight = new THREE.DirectionalLight(0xfff5e4, 2.4);
@@ -437,6 +440,7 @@
     updateReadout();
     publishContext();
     updateSundial();
+    updateMarkerReading();
     publishToolbar();
   }
 
@@ -462,6 +466,7 @@
     const presenting = document.body.classList.contains('presenting');
     const dateActions = ['dayStart', 'dayEnd', 'noonBtn', 'dialMorning', 'dialAfternoon', 'dialWeekBefore', 'dialWeekAfter', 'minutes', 'playBtn', 'march', 'june', 'sept', 'dec'];
     if (presenting && dateActions.includes(action)) return;
+    if (dateActions.includes(action) || action === 'buildMode') cancelMarkerPlacement(true);
     if (['post','markDial','undoDial','buildMode'].includes(action) && dialReadOnly) return;
     if (action === 'post') {
       if (lessonActivity !== 'sundial-build' || !Number.isFinite(value)) return;
@@ -502,7 +507,7 @@
   }
   function applyLesson(activity) {
     if (!['', 'monument', ...window.SundialLab.activities].includes(activity) || activity === lessonActivity) return;
-    stopDay(); lessonActivity = activity; calendarDate = ''; toolbarFeedback = '';
+    cancelMarkerPlacement(true); stopDay(); lessonActivity = activity; calendarDate = ''; toolbarFeedback = '';
     const practice = isSundial(), first = activity === 'sundial-build', surprise = activity === 'sundial-seasons', calendar = activity === 'sundial-calendar';
     document.body.classList.toggle('sundial-lesson', practice);
     document.getElementById('sundialTools').hidden = !practice;
@@ -972,8 +977,9 @@
     shadow.sunLight.target.updateMatrixWorld();
 
     const visible = sun.altitudeDeg > 0;
-    shadow.sunLight.intensity = visible && sunMode ? 2.6 : 0;
-    shadow.ambient.intensity = !sunMode ? 1.15 : visible ? .8 : .18;
+    shadow.sunLight.intensity = visible && sunMode ? 3.15 : 0;
+    shadow.ambient.intensity = !sunMode ? 1.6 : visible ? 1.05 : .18;
+    shadow.scene.background.set(!sunMode || visible ? 0xbce4ed : 0x101d32);
     renderMonumentShadows(sun);
     updateSolarSky(sun);
     // Every design/time change needs a new frame, including when the sky guide is closed.
@@ -1131,6 +1137,81 @@
     document.getElementById('graphCaption').textContent = `Solar-noon reference shadows for a ${height.toFixed(2)} m upright height at this location. Shorter shadow means a higher Sun. These bars are not the full monument footprint.`;
   }
 
+  function markerMessage(payload) {
+    window.parent.postMessage({ channel: 'forge.design-simulation.v1', ...payload }, window.location.origin);
+  }
+  function canPlaceMarker() { return hostedChrome && hostActive && !dialReadOnly && !isSundial() && !document.body.classList.contains('presenting'); }
+  function cancelMarkerPlacement(notify = false) {
+    const requestId = markerRequest; markerRequest = ''; markerPicking = false;
+    if (markerGhost) markerGhost.visible = false;
+    els.shadowCanvas.classList.remove('placing-marker');
+    const hint = document.getElementById('markerHint'); if (hint) hint.hidden = true;
+    if (notify && requestId) markerMessage({ type: 'marker-cancelled', requestId });
+    sceneDirty = true;
+  }
+  function previewMarkerPoint(point) {
+    markerPoint = { x: clamp(point.x, -12, 12), z: clamp(point.z, -12, 12) };
+    if (!markerGhost) {
+      markerGhost = new THREE.Mesh(new THREE.RingGeometry(.075, .095, 48), new THREE.MeshBasicMaterial({ color: 0xfff0ac, side: THREE.DoubleSide, transparent: true, opacity: .9, depthTest: false }));
+      markerGhost.name = 'calendar-marker-cursor'; markerGhost.rotation.x = -Math.PI / 2; markerGhost.renderOrder = 20; shadow.scene.add(markerGhost);
+    }
+    markerGhost.visible = true; markerGhost.position.set(markerPoint.x, .016, markerPoint.z); sceneDirty = true;
+  }
+  function pickMarker(point) {
+    if (!markerRequest || !canPlaceMarker()) return;
+    try {
+      const target = window.CalendarMarkers.make(monumentDesign, point, { ...observationSettings(), utcInstant: getSelectedJSDate().toISOString() }, getSunPosition(getSelectedJSDate(), state.lat, state.lon), 'sunstone-' + markerRequest);
+      previewMarkerPoint(point); markerPicking = false; document.getElementById('markerHint').hidden = true; els.shadowCanvas.classList.remove('placing-marker');
+      markerMessage({ type: 'marker-picked', requestId: markerRequest, target });
+    } catch (error) { markerMessage({ type: 'marker-error', requestId: markerRequest, message: error.message }); }
+  }
+  function startMarkerPlacement(data) {
+    if (!canPlaceMarker() || typeof data.requestId !== 'string' || data.requestId.length > 80 || !data.requestId.length) return;
+    cancelMarkerPlacement(); stopDay(); markerRequest = data.requestId; markerPicking = true;
+    setSunMode(true, true); switchView('horizon');
+    if (cameraMode === 'sky' || cameraMode === 'sculpture') setCameraMode('angle');
+    previewMarkerPoint(markerPoint);
+    els.shadowCanvas.classList.add('placing-marker');
+    document.getElementById('markerHint').hidden = false;
+    updateAll();
+    if (data.point) pickMarker(data.point);
+    else els.shadowCanvas.focus({ preventScroll: true });
+  }
+  function markerRay(event) {
+    const rect = els.shadowCanvas.getBoundingClientRect(), ray = new THREE.Raycaster();
+    shadow.camera.updateMatrixWorld(true); shadow.objectGroup.updateMatrixWorld(true);
+    ray.setFromCamera(new THREE.Vector2((event.clientX - rect.left) / rect.width * 2 - 1, -(event.clientY - rect.top) / rect.height * 2 + 1), shadow.camera);
+    const point = ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), new THREE.Vector3());
+    if (!point) return null;
+    const solid = ray.intersectObjects(shadow.objectGroup.children, true)[0];
+    if (solid && solid.distance < ray.ray.origin.distanceTo(point) - .01) return null;
+    return point;
+  }
+  function updateMarkerReading() {
+    const target = monumentDesign.targets.find(t => t.id === selectedMarker);
+    if (!target) return;
+    const light = window.SolarOptics.trace(monumentDesign, target, dialSun()).value;
+    const key = selectedMarker + ':' + light;
+    if (key !== markerReadingKey) { markerReadingKey = key; markerMessage({ type: 'marker-reading', targetId: selectedMarker, light }); }
+  }
+  function focusMarker(id) {
+    if (!monumentDesign.targets.some(t => t.id === id)) return;
+    selectedMarker = id; markerReadingKey = ''; rayChoice = 'target:' + id;
+    document.getElementById('rayTarget').value = rayChoice;
+    targetMarkers?.children.forEach(child => { if (child.name.startsWith('calendar-stone:')) child.scale.setScalar(child.name === 'calendar-stone:' + id ? 1.2 : 1); });
+    updateAll();
+  }
+  function revisitMarker(id) {
+    if (isSundial() || document.body.classList.contains('presenting')) return;
+    const record = window.CalendarMarkers.record(monumentDesign.targets.find(t => t.id === id));
+    if (!record) return;
+    cancelMarkerPlacement(true); stopDay();
+    state.lat = record.latitude; state.lon = record.longitude; state.selectedZone = record.zone;
+    state.localDateISO = record.localDate; state.minutes = record.minutes; observationRule = 'clock';
+    syncLocationInputs(); els.dateInput.value = state.localDateISO; els.timeSlider.value = state.minutes;
+    setSunMode(true, true); focusMarker(id);
+  }
+
   function bindDemonstration() {
     setSunMode(false);
     document.getElementById('buildMode').addEventListener('click', () => { setSunMode(false, true); updateAll(); });
@@ -1153,9 +1234,20 @@
     const zoom = factor => { const input = document.getElementById('cameraZoom'); input.value = String(clamp(Number(input.value) * factor, .3, 4)); updateMonumentCamera(); };
     document.getElementById('zoomIn').addEventListener('click', () => zoom(1.2));
     document.getElementById('zoomOut').addEventListener('click', () => zoom(1 / 1.2));
+    const hint = document.createElement('div'); hint.id = 'markerHint'; hint.hidden = true;
+    hint.innerHTML = '<span>Choose a light patch or shadow · arrow keys aim · Enter picks</span><button type="button">Cancel</button>';
+    hint.querySelector('button').addEventListener('click', () => cancelMarkerPlacement(true));
+    els.shadowCanvas.parentElement.append(hint);
     els.shadowCanvas.tabIndex = 0;
     els.shadowCanvas.addEventListener('wheel', event => { event.preventDefault(); zoom(event.deltaY < 0 ? 1.12 : 1 / 1.12); }, { passive: false });
     els.shadowCanvas.addEventListener('keydown', event => {
+      if (markerRequest && markerPicking && ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Enter','Escape'].includes(event.key)) {
+        event.preventDefault();
+        if (event.key === 'Escape') cancelMarkerPlacement(true);
+        else if (event.key === 'Enter') pickMarker(markerPoint);
+        else { const step = event.shiftKey ? .01 : .05; previewMarkerPoint({ x: markerPoint.x + (event.key === 'ArrowRight' ? step : event.key === 'ArrowLeft' ? -step : 0), z: markerPoint.z + (event.key === 'ArrowDown' ? step : event.key === 'ArrowUp' ? -step : 0) }); }
+        return;
+      }
       if (['+', '=', '-'].includes(event.key)) { event.preventDefault(); zoom(event.key === '-' ? 1 / 1.2 : 1.2); }
       if (event.key.startsWith('Arrow')) {
         event.preventDefault(); const bearing = document.getElementById('cameraBearing'), elevation = document.getElementById('cameraElevation');
@@ -1169,6 +1261,7 @@
       drag = { x: event.clientX, y: event.clientY, moved: false }; els.shadowCanvas.setPointerCapture(event.pointerId);
     });
     els.shadowCanvas.addEventListener('pointermove', event => {
+      if (markerRequest && markerPicking && !drag) { const point = markerRay(event); if (point && Math.abs(point.x) <= 12 && Math.abs(point.z) <= 12) previewMarkerPoint(point); }
       if (!drag) return; const dx = event.clientX - drag.x, dy = event.clientY - drag.y;
       if (Math.abs(dx) + Math.abs(dy) > 2) drag.moved = true;
       const bearing = document.getElementById('cameraBearing'), elevation = document.getElementById('cameraElevation');
@@ -1176,7 +1269,16 @@
       elevation.value = String(clamp(Number(elevation.value) + dy * .35, 5, 80)); drag.x = event.clientX; drag.y = event.clientY; updateMonumentCamera();
     });
     els.shadowCanvas.addEventListener('pointerup', event => {
+      if (markerRequest && markerPicking && drag && !drag.moved) {
+        const point = markerRay(event);
+        if (point) pickMarker(point);
+        else markerMessage({ type: 'marker-error', requestId: markerRequest, message: 'Choose visible floor, beside the stone. View from above can help.' });
+        drag = null; return;
+      }
       if (drag && !drag.moved && sunMode) {
+        const ground = !isSundial() && markerRay(event);
+        const target = ground && monumentDesign.targets.find(t => Math.hypot(t.x - ground.x, t.z - ground.z) < .16);
+        if (target) { focusMarker(target.id); markerMessage({ type: 'marker-selected', targetId: target.id }); drag = null; return; }
         const rect = els.shadowCanvas.getBoundingClientRect(), ray = new THREE.Raycaster();
         ray.setFromCamera(new THREE.Vector2((event.clientX - rect.left) / rect.width * 2 - 1, -(event.clientY - rect.top) / rect.height * 2 + 1), shadow.camera);
         const hit = ray.intersectObjects(shadow.objectGroup.children, false)[0];
@@ -1509,6 +1611,11 @@
     disposeGroup(targetMarkers);
     targetMarkers = new THREE.Group();
     for (const [index, target] of monumentDesign.targets.entries()) {
+      if (!isSundial()) {
+        targetMarkers.add(window.CalendarMarkers.stone(THREE, target, index));
+        const label = makeTextSprite(String(index + 1), true); label.position.set(target.x, .17, target.z); label.scale.set(.26, .13, 1); targetMarkers.add(label);
+        continue;
+      }
       const color = { march: 0x75c79a, june: 0xf7cc61, sept: 0xf79664, dec: 0x83bced }[target.settings?.markerKind] ?? 0xffd469;
       const ring = new THREE.Mesh(new THREE.RingGeometry(.025, .04, 32), new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide }));
       ring.rotation.x = -Math.PI / 2;
@@ -1573,13 +1680,13 @@
       const key = [cameraMode, state.localDateISO, state.minutes, sunMode, cameraIncludesShadow].join('|');
       if (key !== frameKey) {
         frameKey = key;
-        cameraFrame = (reviewingCamera && reviewFrame && cameraMode !== 'sculpture' ? reviewFrame : pausedDay === dayKey && playbackFrame ? playbackFrame : null) || window.MonumentCamera.bounds(design, direction, cameraMode !== 'sculpture' && cameraIncludesShadow && sunMode);
+        cameraFrame = (reviewingCamera && cameraIncludesShadow && reviewFrame && cameraMode !== 'sculpture' ? reviewFrame : pausedDay === dayKey && playbackFrame ? playbackFrame : null) || window.MonumentCamera.bounds(design, direction, cameraMode !== 'sculpture' && cameraIncludesShadow && sunMode);
       }
       const fitted = window.MonumentCamera.fit(THREE, cameraFrame, cameraMode === 'top' ? 0 : bearing, cameraMode === 'top' ? 89.999 : elevation, shadow.camera.aspect, zoom);
       shadow.camera.position.copy(fitted.position);
       if (cameraMode === 'top') shadow.camera.up.set(0, 0, -1);
       shadow.camera.lookAt(fitted.centre);
-      document.getElementById('frameNotice').textContent = (cameraFrame.clipped || (state.playing && sun.altitudeDeg > 0 && sun.altitudeDeg < 12)) && sunMode ? 'Low Sun: shadows may continue beyond this view. Use Fit or zoom out.' : '';
+      document.getElementById('frameNotice').textContent = (cameraFrame.clipped || (state.playing && sun.altitudeDeg > 0 && sun.altitudeDeg < 12)) && sunMode ? 'Low Sun: shadows may continue beyond this view. Use Fit or zoom out.' : reviewingCamera && !cameraIncludesShadow && cameraMode !== 'sculpture' ? 'Fit all includes the longer shadows.' : '';
     }
     document.getElementById('cameraBearingLabel').textContent = `${bearing.toFixed(0)}°`;
     document.getElementById('cameraElevationLabel').textContent = `${elevation.toFixed(0)}°`;
@@ -1698,12 +1805,19 @@
         document.getElementById('earthGuide').hidden = true; document.getElementById('earthToggle').setAttribute('aria-expanded', 'false');
         resizeCanvases(); resizeShadowRenderer(); updateAll(); return;
       }
+      if (data.type === 'marker-start') { startMarkerPlacement(data); return; }
+      if (data.type === 'marker-cancel') { cancelMarkerPlacement(); return; }
+      if (data.type === 'marker-focus') { focusMarker(data.targetId); return; }
+      if (data.type === 'marker-revisit') { revisitMarker(data.targetId); return; }
       if (data.type === 'toolbar-action') { toolbarAction(data.action, data.value); return; }
       if (data.type === 'connect') { send({ type: 'ready' }); publishContext(true); return; }
       if (data.type === 'lesson') { applyLesson(data.activity); return; }
-      if (data.type === 'view-policy') { dialReadOnly = data.readOnly === true; document.getElementById('buildSundial').disabled = dialReadOnly; document.getElementById('buildMode').disabled = dialReadOnly; if (data.readOnly) { setSunMode(true); } updateAll(); return; }
+      if (data.type === 'view-policy') { dialReadOnly = data.readOnly === true; if (dialReadOnly) cancelMarkerPlacement(true); document.getElementById('buildSundial').disabled = dialReadOnly; document.getElementById('buildMode').disabled = dialReadOnly; if (data.readOnly) { setSunMode(true); } updateAll(); return; }
       if (data.type === 'build-view') { setSunMode(data.building !== true); frameKey = ''; updateAll(); return; }
       if (data.type === 'presentation') {
+        if (data.active) cancelMarkerPlacement(true);
+        if (data.active === true && !reviewingCamera) { cameraIncludesShadow = false; frameKey = ''; }
+        if (data.active !== true && reviewingCamera) { cameraIncludesShadow = true; frameKey = ''; }
         reviewingCamera = data.active === true;
         if (!reviewingCamera) reviewFrame = null;
         document.body.classList.toggle('presenting', data.active === true);
@@ -1729,6 +1843,7 @@
       }
       if (data.type === 'visibility') {
         hostActive = data.active === true;
+        if (!hostActive) cancelMarkerPlacement(true);
         if (!hostActive && state.playing) togglePlay();
         if (hostActive) { globe.resumeAnimation?.(); resizeCanvases(); resizeShadowRenderer(); resizeGlobe(); updateAll(); }
         else globe.pauseAnimation?.();

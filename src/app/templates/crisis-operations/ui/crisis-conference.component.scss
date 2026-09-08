@@ -1,0 +1,697 @@
+:host {
+  color-scheme: dark;
+  position: absolute;
+  inset: 84px 24px 24px;
+  z-index: 5;
+  display: block;
+  font:
+    13px/1.4 'Segoe UI',
+    sans-serif;
+  color: #f2f2f5;
+  animation: call-open 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+* {
+  box-sizing: border-box;
+}
+button,
+a {
+  font: inherit;
+  color: inherit;
+}
+button {
+  border: 0;
+  cursor: pointer;
+  background: transparent;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #76b9ff;
+  outline-offset: 3px;
+}
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+h2:focus {
+  outline: none;
+}
+.conference-window {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #42444a;
+  border-radius: 12px;
+  background: #191a1e;
+  box-shadow: 0 25px 90px #000b;
+}
+.call-topbar {
+  padding: 13px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #232428;
+  flex: none;
+}
+.meeting-title {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.meeting-title > app-crisis-icon {
+  color: #63b4ff;
+  width: 26px;
+  height: 26px;
+}
+.meeting-title h2 {
+  font-size: 15px;
+  font-weight: 600;
+}
+.meeting-title span {
+  color: #a1a4ac;
+  font-size: 11px;
+  display: block;
+  margin-top: 2px;
+}
+.call-top-actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.layout-button,
+.live-meeting {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  text-decoration: none;
+  padding: 7px 9px;
+  border: 1px solid #54565c;
+  border-radius: 5px;
+}
+.layout-button:hover {
+  background: #3d3f45;
+}
+.live-meeting {
+  color: #9bcaff;
+}
+.call-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  position: relative;
+}
+.call-stage {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+}
+.video-tile {
+  background: #303238;
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+.video-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+}
+.speaker-tile {
+  flex: 1;
+  border: 1px solid #687078;
+}
+.speaker-tile img {
+  object-position: 50% 42%;
+  object-fit: contain;
+}
+.speaker-tile .speaker-backdrop {
+  object-fit: cover;
+  filter: blur(24px) brightness(0.35);
+  transform: scale(1.1);
+}
+.speaker-tile:after {
+  content: '';
+  position: absolute;
+  inset: 55% 0 0;
+  background: linear-gradient(transparent, #000b);
+  pointer-events: none;
+}
+.portrait-status {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  background: #0008;
+  padding: 4px 7px;
+  border-radius: 4px;
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: #eee;
+}
+.tile-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  padding: 4px 7px;
+  background: #141519cc;
+  border-radius: 4px;
+  font-size: 11px;
+  color: white;
+  z-index: 1;
+}
+.tile-name app-crisis-icon {
+  width: 13px;
+  height: 13px;
+}
+.speaker-identity {
+  position: absolute;
+  left: 16px;
+  bottom: 15px;
+  z-index: 1;
+}
+.speaker-identity .tile-name {
+  position: static;
+  width: fit-content;
+  font-size: 15px;
+  padding: 4px 8px;
+}
+.speaker-identity > span:last-child {
+  display: block;
+  padding: 4px 8px;
+  color: #e0e2e6;
+  font-size: 11px;
+}
+.field-caption {
+  position: absolute;
+  z-index: 1;
+  bottom: 23px;
+  right: 20px;
+  max-width: 52%;
+  padding: 9px 13px;
+  background: #101113d9;
+  border-radius: 5px;
+}
+.field-caption > span {
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: #a4c8e1;
+}
+.field-caption p {
+  margin-top: 4px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.participant-strip {
+  height: 110px;
+  flex: none;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  max-width: 760px;
+  width: 100%;
+  margin: 0 auto;
+}
+.participant-tile {
+  border: 2px solid transparent;
+}
+.participant-tile.selected {
+  border-color: #6cadfb;
+}
+.participant-tile:hover {
+  border-color: #b0cbe9;
+}
+.local-tile {
+  flex-direction: column;
+  background: radial-gradient(ellipse at 50% 25%, #3a3d45, #27282c);
+}
+.local-avatar,
+.avatar-fallback {
+  border-radius: 50%;
+  background: #526479;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+}
+.camera-note {
+  margin-top: 12px;
+  color: #a7aab2;
+  font-size: 11px;
+}
+.avatar-fallback {
+  width: 90px;
+  height: 90px;
+  font-size: 30px;
+}
+.gallery-grid {
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: minmax(0, 1fr);
+  gap: 12px;
+}
+.gallery-tile .tile-name {
+  font-size: 13px;
+}
+.gallery-tile:hover {
+  box-shadow: inset 0 0 0 2px #70aeef;
+}
+.call-sidebar {
+  width: 330px;
+  flex: none;
+  background: #25262b;
+  border-left: 1px solid #414248;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.call-sidebar > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 17px 18px;
+  border-bottom: 1px solid #424349;
+}
+.call-sidebar h2 {
+  font-size: 14px;
+}
+.call-sidebar header button {
+  display: grid;
+  place-items: center;
+  padding: 5px;
+}
+.people-list,
+.call-reports {
+  overflow: auto;
+  padding: 12px 18px;
+  flex: 1;
+}
+.people-list button,
+.you-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  padding: 13px 0;
+}
+.people-list button > span:nth-child(2) {
+  flex: 1;
+}
+.people-list button > app-crisis-icon {
+  width: 14px;
+  color: #aeb0b8;
+}
+.person-avatar {
+  display: grid;
+  place-items: center;
+  background: #454e60;
+  color: #dbe4ed;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  font-size: 11px;
+  flex: none;
+}
+.people-list strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+}
+.people-list small {
+  display: block;
+  color: #999fae;
+  font-size: 10px;
+  margin-top: 4px;
+}
+.people-list p {
+  font-size: 11px;
+  line-height: 1.6;
+  color: #999fae;
+  margin-top: 20px;
+}
+.call-reports {
+  font-size: 12px;
+}
+.call-toolbar {
+  background: #232428;
+  border-top: 1px solid #3c3d43;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 18px;
+  flex: none;
+}
+.media-controls,
+.meeting-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.call-toolbar button {
+  min-width: 58px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 10px;
+}
+.call-toolbar button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.call-toolbar button:hover:not(:disabled) {
+  background: #41434a;
+}
+.call-toolbar button[aria-pressed='true'] {
+  background: #353d49;
+  color: #aaceff;
+}
+.call-toolbar .share-control {
+  color: #7bdd8f;
+}
+.call-toolbar .leave-call {
+  background: #d83640;
+  min-width: 68px;
+  font-size: 12px;
+  color: white;
+  flex-direction: row;
+  gap: 8px;
+  padding: 10px 13px;
+}
+.call-toolbar .leave-call:hover {
+  background: #ec424d;
+}
+.call-toolbar .leave-call app-crisis-icon {
+  width: 18px;
+}
+.shared-table {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  border: 2px solid #6cd886;
+  border-radius: 7px;
+  background: #13202a;
+}
+.sharing-banner {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 14px;
+  background: #387448;
+  font-size: 11px;
+  z-index: 1;
+}
+.sharing-banner button {
+  margin-left: auto;
+  background: #df4448;
+  border-radius: 4px;
+  padding: 5px 9px;
+  font-size: 10px;
+}
+.briefing-sheet {
+  padding: 28px;
+  max-width: 850px;
+  margin: auto;
+}
+.briefing-sheet > span {
+  font-size: 9px;
+  color: #86b6be;
+  letter-spacing: 1.6px;
+}
+.briefing-sheet h3 {
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: 500;
+  margin: 12px 0;
+}
+.briefing-sheet p {
+  font-size: 13px;
+  color: #b9c6ce;
+  line-height: 1.6;
+}
+.briefing-metrics {
+  display: flex;
+  gap: 40px;
+  margin: 20px 0;
+}
+.briefing-metrics strong {
+  font-size: 26px;
+  font-weight: 400;
+}
+.briefing-metrics small {
+  display: block;
+  font-size: 10px;
+  color: #91a9b6;
+}
+.briefing-sheet article {
+  border-top: 1px solid #40535c;
+  padding: 16px 0;
+}
+.briefing-sheet article small {
+  font-size: 10px;
+  color: #8fbfc0;
+}
+.briefing-sheet h4 {
+  font-size: 16px;
+  margin: 6px 0;
+}
+.briefing-sheet > button {
+  color: #9ec8ef;
+  padding: 8px 0;
+}
+@keyframes call-open {
+  from {
+    opacity: 0;
+    transform: translate(10vw, 12vh) scale(0.83);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (max-width: 1050px) {
+  :host {
+    inset: 84px 16px 18px;
+  }
+  .call-topbar {
+    padding: 12px 15px;
+  }
+  .participant-strip {
+    height: 88px;
+  }
+  .call-stage {
+    padding: 10px;
+    gap: 8px;
+  }
+  .call-toolbar {
+    padding: 9px 10px;
+    gap: 6px;
+  }
+  .call-toolbar button {
+    padding: 6px;
+    min-width: 45px;
+    font-size: 9px;
+  }
+  .media-controls,
+  .meeting-controls {
+    gap: 3px;
+  }
+  .call-sidebar {
+    width: 290px;
+  }
+  .field-caption {
+    max-width: 54%;
+    right: 12px;
+    bottom: 18px;
+  }
+  .field-caption p {
+    font-size: 12px;
+  }
+  .speaker-identity {
+    left: 8px;
+    bottom: 12px;
+  }
+  .speaker-identity .tile-name {
+    font-size: 12px;
+  }
+}
+@media (max-width: 700px) {
+  :host {
+    inset: 100px 8px 12px;
+  }
+  .call-topbar {
+    padding: 12px;
+    gap: 6px;
+  }
+  .meeting-title {
+    gap: 8px;
+  }
+  .meeting-title h2 {
+    font-size: 13px;
+  }
+  .meeting-title span {
+    font-size: 9px;
+  }
+  .meeting-title > app-crisis-icon {
+    width: 20px;
+  }
+  .layout-button span {
+    display: none;
+  }
+  .call-top-actions {
+    gap: 5px;
+  }
+  .live-meeting {
+    font-size: 9px;
+    max-width: 95px;
+  }
+  .live-meeting app-crisis-icon {
+    display: none;
+  }
+  .call-body.has-panel .call-sidebar {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    z-index: 3;
+  }
+  .call-stage {
+    padding: 7px;
+  }
+  .participant-strip {
+    height: 72px;
+    gap: 5px;
+  }
+  .participant-strip .tile-name {
+    font-size: 8px;
+    left: 2px;
+    bottom: 2px;
+    padding: 2px 3px;
+    max-width: calc(100% - 4px);
+    white-space: nowrap;
+  }
+  .local-avatar {
+    width: 34px;
+    height: 34px;
+    font-size: 13px;
+  }
+  .speaker-tile img {
+    object-position: 50% 35%;
+    object-fit: cover;
+  }
+  .field-caption {
+    left: 12px;
+    right: 12px;
+    bottom: 72px;
+    max-width: none;
+  }
+  .speaker-identity {
+    bottom: 12px;
+    left: 6px;
+  }
+  .speaker-identity > span:last-child {
+    font-size: 10px;
+  }
+  .portrait-status {
+    font-size: 7px;
+    right: 7px;
+    top: 7px;
+  }
+  .call-toolbar {
+    flex-wrap: wrap;
+    gap: 7px;
+    padding: 10px 8px;
+  }
+  .meeting-controls {
+    order: 1;
+    flex: 1;
+    justify-content: center;
+  }
+  .media-controls {
+    gap: 0;
+  }
+  .media-controls button {
+    min-width: 39px;
+    font-size: 8px;
+  }
+  .call-toolbar app-crisis-icon {
+    width: 18px;
+    height: 18px;
+  }
+  .call-toolbar button {
+    min-width: 44px;
+    font-size: 8px;
+  }
+  .call-toolbar .leave-call {
+    min-width: 49px;
+    padding: 9px;
+    font-size: 10px;
+  }
+  .call-toolbar .leave-call app-crisis-icon {
+    display: none;
+  }
+  .call-toolbar .leave-call {
+    order: 2;
+  }
+  .media-controls {
+    width: 100%;
+    justify-content: center;
+    border-bottom: 1px solid #ffffff12;
+    padding-bottom: 5px;
+  }
+  .media-controls button {
+    flex-direction: row;
+    gap: 6px;
+  }
+  .gallery-grid {
+    gap: 6px;
+  }
+  .gallery-tile .tile-name {
+    font-size: 9px;
+  }
+  .briefing-sheet {
+    padding: 17px;
+  }
+  .briefing-sheet h3 {
+    font-size: 21px;
+  }
+  .sharing-banner {
+    font-size: 9px;
+    padding: 7px;
+    gap: 5px;
+  }
+  .sharing-banner button {
+    font-size: 8px;
+  }
+  .sharing-banner app-crisis-icon {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    animation: none;
+  }
+}

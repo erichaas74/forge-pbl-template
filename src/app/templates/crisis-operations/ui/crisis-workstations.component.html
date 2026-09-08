@@ -1,0 +1,135 @@
+<div
+  class="workstation-space"
+  [class.away]="view() !== 'room'"
+  [attr.inert]="view() === 'room' ? null : ''"
+  [attr.aria-hidden]="view() === 'room' ? null : true"
+>
+  @for (station of stations(); track station.id) {
+    <button
+      class="workstation"
+      [class.integrated]="station.surface"
+      [style.--room-x]="station.surface?.x"
+      [style.--room-y]="station.surface?.y"
+      [style.--room-width]="station.surface?.width"
+      [style.--room-height]="station.surface?.height"
+      [style.--room-aspect]="station.surface?.aspect"
+      [style.--screen-x]="station.surface?.screenX + '%'"
+      [style.--screen-y]="station.surface?.screenY + '%'"
+      [style.--screen-width]="station.surface?.screenWidth + '%'"
+      [style.--screen-height]="station.surface?.screenHeight + '%'"
+      [style.--screen-clip]="station.surface?.clip"
+      [attr.data-side]="station.side"
+      [attr.data-workstation-id]="station.id"
+      [attr.aria-label]="'Open ' + station.name + ' workstation'"
+      [attr.aria-describedby]="'workstation-info-' + station.id"
+      (click)="open.emit(station.id)"
+    >
+      @if (station.surface; as surface) {
+        <svg
+          class="room-fragment"
+          [attr.viewBox]="surface.viewBox"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <image
+            [attr.href]="runtime.config.roomImage"
+            x="0"
+            y="0"
+            width="100"
+            height="100"
+            preserveAspectRatio="none"
+          />
+        </svg>
+      }
+      <span class="desk-shadow" aria-hidden="true"></span>
+      <span class="desk-hardware" aria-hidden="true">
+        <span class="desk-pedestal"></span
+        ><span class="desk-top"
+          ><span class="keyboard"></span><span class="control-pad"></span
+        ></span>
+        <span class="monitor-stand"></span>
+        <span class="monitor-bezel">
+          <span
+            class="station-display"
+            [class.special-display]="station.conference || station.weather"
+          >
+            @if (station.weather; as weather) {
+              <app-crisis-weather-screen
+                [weather]="weather"
+                [miniature]="true"
+                [active]="view() === 'room'"
+              />
+            } @else if (station.conference; as call) {
+              <span class="mini-call"
+                ><span class="mini-call-people">
+                  @for (person of call.participants; track person.id) {
+                    <img [src]="person.portrait" alt="" />
+                  }
+                  <span>YOU</span></span
+                ><span class="mini-call-title">{{ call.title }}<i></i></span
+              ></span>
+            } @else {
+              <span class="display-header"
+                ><i></i>{{ station.side === 'left' ? '01' : '02' }} / {{ station.instrument
+                }}<b>LINKED</b></span
+              >
+              @switch (station.instrument) {
+                @case ('telemetry') {
+                  <span class="display-reading"
+                    ><strong>{{ runtime.bulletin().metricValue | number: '1.1-1' }}</strong
+                    ><small>{{ runtime.config.primaryMetric.unit }}</small
+                    ><svg viewBox="0 0 160 50">
+                      <path d="M0 15H160M0 32H160M0 49H160" />
+                      <polyline [attr.points]="trend()" /></svg
+                  ></span>
+                  <span class="display-caption">{{ runtime.config.primaryMetric.label }}</span>
+                }
+                @case ('resources') {
+                  <span class="display-reading"
+                    ><strong>{{ runtime.crews().toString().padStart(2, '0') }}</strong
+                    ><small>CREWS FREE</small
+                    ><span class="crew-lights">
+                      @for (crew of crewSlots; track crew) {
+                        <i [class.assigned]="crew > runtime.crews()"></i>
+                      }</span
+                  ></span>
+                  <span class="display-caption"
+                    >{{ runtime.orders().length }} RESPONSES DISPATCHED</span
+                  >
+                }
+                @case ('reports') {
+                  <span class="display-reading"
+                    ><strong>{{ station.reports.toString().padStart(2, '0') }}</strong
+                    ><small>REPORTS</small
+                    ><span class="signal-bars"><i></i><i></i><i></i><i></i><i></i></span
+                  ></span>
+                  <span class="display-caption">{{ station.unread }} UNREAD SIGNALS</span>
+                }
+              }
+              <span class="display-footer"
+                >{{ runtime.time() }}<span>{{ station.unread }} NEW</span></span
+              >
+            }
+          </span>
+          <span class="bezel-status"></span>
+        </span>
+      </span>
+      <span class="station-name"
+        ><span
+          >{{ station.name
+          }}<small>{{
+            station.weather
+              ? 'Weather channel'
+              : station.conference
+                ? 'Field conference'
+                : 'Open workstation'
+          }}</small></span
+        ><b>↗</b></span
+      >
+      <span class="station-info" [id]="'workstation-info-' + station.id"
+        >{{ station.description }} {{ station.reports }} reports available,
+        {{ station.unread }} unread.</span
+      >
+    </button>
+  }
+</div>

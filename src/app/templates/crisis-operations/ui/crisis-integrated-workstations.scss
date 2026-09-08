@@ -1,0 +1,135 @@
+// Match the room's cover canvas so the live pixels stay inside the photographed monitors.
+.workstation.integrated {
+  --scene-width: max(100vw, 177.69vh);
+  --scene-height: max(56.28vw, 100vh);
+  left: calc(50% + var(--scene-width) * (var(--room-x) - 50) / 100);
+  right: auto;
+  top: calc(50% + var(--scene-height) * (var(--room-y) - 50) / 100);
+  width: calc(var(--scene-width) * var(--room-width) / 100);
+  height: calc(var(--scene-height) * var(--room-height) / 100);
+  aspect-ratio: var(--room-aspect);
+  transform: none;
+}
+.room-fragment {
+  display: none;
+  pointer-events: none;
+}
+.integrated .desk-shadow,
+.integrated .desk-top,
+.integrated .desk-pedestal,
+.integrated .monitor-stand,
+.integrated .bezel-status {
+  display: none;
+}
+.integrated .desk-hardware {
+  inset: 0;
+  transform: none;
+  pointer-events: none;
+}
+.integrated .monitor-bezel {
+  left: var(--screen-x);
+  top: var(--screen-y);
+  width: var(--screen-width);
+  height: var(--screen-height);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  transition: filter 0.25s;
+}
+.integrated .monitor-bezel:before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  clip-path: var(--screen-clip);
+  background: var(--desk-light);
+  opacity: 0.3;
+  transition: opacity 0.25s;
+}
+.integrated .station-display {
+  clip-path: var(--screen-clip);
+  border: 0;
+  filter: brightness(0.88);
+}
+.integrated .station-name {
+  top: 58%;
+  left: 5%;
+  right: 5%;
+  min-height: 54px;
+  padding: 8px 12px;
+  border-left: 2px solid color-mix(in srgb, var(--desk-light) 65%, transparent);
+  border-bottom: 1px solid #6b8a9844;
+  background: linear-gradient(100deg, #06111def, #07121dd9 70%, #07121d55);
+  color: #e1edf0;
+  font-size: clamp(13px, 1.22vw, 19px);
+  font-weight: 500;
+  box-shadow: 0 8px 18px #0005;
+  transition:
+    border-color 0.25s,
+    background 0.25s;
+}
+.integrated .station-name b {
+  display: grid;
+  place-items: center;
+  width: 29px;
+  height: 29px;
+  flex-shrink: 0;
+  font-size: 19px;
+  border: 1px solid #8da6b344;
+  border-radius: 50%;
+}
+.integrated:is(:hover, :focus-visible) .monitor-bezel {
+  box-shadow: none;
+  filter: drop-shadow(0 0 8px var(--desk-light));
+}
+.integrated:is(:hover, :focus-visible) .monitor-bezel:before {
+  opacity: 1;
+}
+.integrated:is(:hover, :focus-visible) .station-name {
+  border-color: var(--desk-light);
+  background: linear-gradient(100deg, #14323ded, #081924e8);
+}
+.integrated:is(:hover, :focus-visible) .station-name b {
+  background: var(--desk-light);
+  color: #06121b;
+}
+// Bring matching crops of the same consoles into view when cover framing crops the room sides.
+@media (max-aspect-ratio: 3 / 2) {
+  .workstation.integrated {
+    top: 50%;
+    width: min(42vw, 270px);
+    height: auto;
+    transform: translateY(-50%);
+  }
+  .workstation.integrated[data-side='left'] {
+    left: 0;
+  }
+  .workstation.integrated[data-side='right'] {
+    left: auto;
+    right: 0;
+  }
+  .integrated .room-fragment {
+    display: block;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    mask-image: linear-gradient(transparent, #000 8%, #000 82%, transparent);
+  }
+  .integrated .station-name {
+    left: 4%;
+    right: 4%;
+    padding: 8px;
+    gap: 5px;
+    font-size: 14px;
+  }
+  .integrated .station-name b {
+    width: 25px;
+    height: 25px;
+  }
+  .integrated .station-name small {
+    font-size: 8px;
+    letter-spacing: 0.3px;
+  }
+}

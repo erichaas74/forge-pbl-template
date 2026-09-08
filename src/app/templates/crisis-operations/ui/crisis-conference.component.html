@@ -1,0 +1,227 @@
+<section class="conference-window" aria-label="Field video conference">
+  <header class="call-topbar">
+    <div class="meeting-title">
+      <app-crisis-icon name="video" />
+      <div>
+        <h2 tabindex="-1" data-panel-heading>{{ call().title }}</h2>
+        <span>Exercise call · Simulated participants</span>
+      </div>
+    </div>
+    <div class="call-top-actions">
+      @if (call().meetingUrl; as url) {
+        <a class="live-meeting" [href]="url" target="_blank" rel="noopener noreferrer"
+          >Join live meeting <app-crisis-icon name="arrow"
+        /></a>
+      }
+      <button
+        class="layout-button"
+        [attr.aria-label]="gallery() ? 'Speaker view' : 'Gallery view'"
+        (click)="gallery.set(!gallery()); sharing.set(false)"
+        [attr.aria-pressed]="gallery()"
+      >
+        <app-crisis-icon [name]="gallery() ? 'speaker' : 'grid'" /><span>{{
+          gallery() ? 'Speaker view' : 'Gallery view'
+        }}</span>
+      </button>
+    </div>
+  </header>
+  <div class="call-body" [class.has-panel]="panel()">
+    <div class="call-stage" [attr.inert]="panel() ? '' : null">
+      @if (sharing()) {
+        <section class="shared-table" aria-label="Situation table shared in exercise call">
+          <div class="sharing-banner">
+            <app-crisis-icon name="share-screen" />You are presenting the situation briefing
+            <button (click)="sharing.set(false)">Stop sharing</button>
+          </div>
+          <div class="briefing-sheet">
+            <span>SITUATION BRIEFING · {{ runtime.time() }}</span>
+            <h3>{{ runtime.bulletin().title }}</h3>
+            <p>{{ runtime.bulletin().summary }}</p>
+            <div class="briefing-metrics">
+              <strong>{{ runtime.crews() }}<small>crews available</small></strong
+              ><strong
+                >{{ runtime.bulletin().metricValue }} {{ runtime.config.primaryMetric.unit
+                }}<small>{{ runtime.config.primaryMetric.label }}</small></strong
+              >
+            </div>
+            @for (report of runtime.shared(); track report.id) {
+              <article>
+                <small>{{ report.confidence }} · {{ report.source }}</small>
+                <h4>{{ report.title }}</h4>
+                <p>{{ report.body }}</p>
+              </article>
+            } @empty {
+              <p class="briefing-empty">
+                Pin a field report to the situation table to include it here.
+              </p>
+              <button (click)="togglePanel('reports')">Open field reports</button>
+            }
+          </div>
+        </section>
+      } @else if (gallery()) {
+        <div class="gallery-grid">
+          @for (person of call().participants; track person.id) {
+            <button
+              class="video-tile gallery-tile"
+              (click)="selectParticipant(person.id)"
+              [attr.aria-label]="'Focus on ' + person.name"
+            >
+              @if (!failedPortraits().includes(person.id)) {
+                <img
+                  [src]="person.portrait"
+                  [alt]="person.name + ', simulated participant portrait'"
+                  (error)="portraitFailed(person.id)"
+                />
+              } @else {
+                <span class="avatar-fallback">{{ initials(person.name) }}</span>
+              }
+              <span class="tile-name"><app-crisis-icon name="mic-off" />{{ person.name }}</span>
+            </button>
+          }
+          <div class="video-tile local-tile">
+            <div class="local-avatar">You</div>
+            <span class="camera-note">Camera off</span
+            ><span class="tile-name"><app-crisis-icon name="mic-off" />You · Command center</span>
+          </div>
+        </div>
+      } @else {
+        <div class="video-tile speaker-tile" [attr.data-speaker]="selected().id">
+          @if (!failedPortraits().includes(selected().id)) {
+            <img class="speaker-backdrop" [src]="selected().portrait" alt="" aria-hidden="true" />
+            <img
+              [src]="selected().portrait"
+              [alt]="selected().name + ', simulated participant portrait'"
+              (error)="portraitFailed(selected().id)"
+            />
+          } @else {
+            <span class="avatar-fallback">{{ initials(selected().name) }}</span>
+          }
+          <span class="portrait-status">PARTICIPANT STILL</span>
+          <div class="speaker-identity">
+            <span class="tile-name"><app-crisis-icon name="pin" />{{ selected().name }}</span
+            ><span>{{ selected().role }}</span>
+          </div>
+          @if (captions()) {
+            <div class="field-caption">
+              <span
+                >FIELD UPDATE ·
+                {{ update() ? runtime.time(update()!.minute) : runtime.time() }}</span
+              >
+              <p>{{ update()?.title ?? 'Standing by for the next available field report.' }}</p>
+            </div>
+          }
+        </div>
+      }
+      @if (!gallery()) {
+        <div class="participant-strip" aria-label="Call participants">
+          @for (person of call().participants; track person.id) {
+            <button
+              class="video-tile participant-tile"
+              [class.selected]="selected().id === person.id && !sharing()"
+              (click)="selectParticipant(person.id)"
+              [attr.aria-label]="'Focus on ' + person.name"
+              [attr.aria-pressed]="selected().id === person.id && !sharing()"
+            >
+              @if (!failedPortraits().includes(person.id)) {
+                <img [src]="person.portrait" alt="" (error)="portraitFailed(person.id)" />
+              } @else {
+                <span class="avatar-fallback">{{ initials(person.name) }}</span>
+              }
+              <span class="tile-name">{{ person.name }}</span>
+            </button>
+          }
+          <div class="video-tile local-tile">
+            <div class="local-avatar">You</div>
+            <span class="tile-name"><app-crisis-icon name="mic-off" />You</span>
+          </div>
+        </div>
+      }
+    </div>
+    @if (panel()) {
+      <aside class="call-sidebar">
+        <header>
+          <h2 tabindex="-1">
+            {{
+              panel() === 'people'
+                ? 'Participants (' + (call().participants.length + 1) + ')'
+                : 'Field reports'
+            }}
+          </h2>
+          <button
+            (click)="togglePanel(panel() === 'people' ? 'people' : 'reports')"
+            aria-label="Close call sidebar"
+          >
+            <app-crisis-icon name="close" />
+          </button>
+        </header>
+        @if (panel() === 'people') {
+          <div class="people-list">
+            @for (person of call().participants; track person.id) {
+              <button (click)="selectParticipant(person.id)">
+                <span class="person-avatar">{{ initials(person.name) }}</span
+                ><span
+                  ><strong>{{ person.name }}</strong
+                  ><small>{{ person.role }}</small></span
+                ><app-crisis-icon name="mic-off" />
+              </button>
+            }
+            <div class="you-row">
+              <span class="person-avatar">You</span
+              ><span><strong>You</strong><small>Command center · camera off</small></span>
+            </div>
+            <p>Fictional participants for this exercise. Your microphone and camera are off.</p>
+          </div>
+        } @else {
+          <div class="call-reports">
+            <app-crisis-console
+              [view]="'station'"
+              [workstation]="workstation()"
+              (inspectLocation)="locate.emit($event)"
+            />
+          </div>
+        }
+      </aside>
+    }
+  </div>
+  <footer class="call-toolbar" aria-label="Call controls">
+    <div class="media-controls">
+      <button disabled title="Microphone available in a live meeting">
+        <app-crisis-icon name="mic-off" /><span>Mic off</span></button
+      ><button disabled title="Camera available in a live meeting">
+        <app-crisis-icon name="video-off" /><span>Camera off</span>
+      </button>
+    </div>
+    <div class="meeting-controls">
+      <button
+        data-call-panel="people"
+        (click)="togglePanel('people')"
+        [attr.aria-pressed]="panel() === 'people'"
+      >
+        <app-crisis-icon name="people" /><span>Participants</span></button
+      ><button
+        class="share-control"
+        (click)="sharing.set(!sharing()); gallery.set(false)"
+        [attr.aria-pressed]="sharing()"
+      >
+        <app-crisis-icon name="share-screen" /><span>{{
+          sharing() ? 'Stop sharing' : 'Share table'
+        }}</span></button
+      ><button
+        (click)="captions.set(!captions())"
+        [attr.aria-pressed]="captions()"
+        aria-label="Toggle field update captions"
+      >
+        <app-crisis-icon name="captions" /><span>Captions</span></button
+      ><button
+        data-call-panel="reports"
+        (click)="togglePanel('reports')"
+        [attr.aria-pressed]="panel() === 'reports'"
+      >
+        <app-crisis-icon name="news" /><span>Reports</span>
+      </button>
+    </div>
+    <button class="leave-call" (click)="leave.emit()">
+      <app-crisis-icon name="phone-down" /><span>Leave</span>
+    </button>
+  </footer>
+</section>

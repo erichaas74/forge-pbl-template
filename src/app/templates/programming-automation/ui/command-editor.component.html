@@ -1,0 +1,304 @@
+﻿<div class="section-top">
+  <div>
+    <small>BUILD</small>
+    <h2>Your program</h2>
+  </div>
+  <span class="tag">v{{ program().version }}</span>
+</div>
+@if (readOnly()) {
+  <p class="notice">
+    {{ snapshot() ? 'Recorded program · replay only' : 'This program is locked.' }}
+  </p>
+}
+@if (runtime.challenge().requiresVariable || program().variables.length) {
+  <details class="variables" open>
+    <summary>Variables · named values</summary>
+    @for (variable of program().variables; track variable.id; let i = $index) {
+      <div class="variable">
+        <input
+          aria-label="Variable name"
+          placeholder="DISTANCE"
+          [value]="variable.name"
+          [disabled]="readOnly()"
+          (change)="updateVariable(i, 'name', $any($event.target).value)"
+        />
+        <span>=</span>
+        <input
+          aria-label="Variable value"
+          placeholder="100"
+          [value]="variable.value"
+          [disabled]="readOnly()"
+          (change)="updateVariable(i, 'value', $any($event.target).value)"
+        />
+        <input
+          aria-label="Variable unit"
+          placeholder="cm"
+          [value]="variable.unit"
+          [disabled]="readOnly()"
+          (change)="updateVariable(i, 'unit', $any($event.target).value)"
+        />
+        <button aria-label="Remove variable" [disabled]="readOnly()" (click)="removeVariable(i)">
+          ×
+        </button>
+      </div>
+    }
+    @if (!readOnly()) {
+      <button (click)="addVariable()">+ Variable</button>
+    }
+    <p>Use a name in a command, such as DISTANCE / 2.</p>
+  </details>
+}
+@if (!snapshot()) {
+  @for (issue of runtime.compiled().issues; track $index) {
+    @if (
+      !issue.commandId &&
+      issue.code !== 'PROGRAM_EMPTY' &&
+      (runtime.reasoningOpened() || issue.code !== 'MATH_EVIDENCE')
+    ) {
+      <p class="issue" [class.error]="issue.severity === 'error'">{{ issue.message }}</p>
+    }
+  }
+}
+<div class="script-canvas">
+  <div class="start-block">
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 4v16l12-8z" /></svg>
+    <span>When <strong class="start-slot">Run program</strong> clicked</span>
+  </div>
+  <ng-container *ngTemplateOutlet="list; context: { $implicit: program().commands }" />
+  @if (!readOnly()) {
+    <label class="add"
+      >+ Add block
+      <select aria-label="Add command" value="" (change)="add($any($event.target))">
+        <option value="">Choose a command…</option>
+        @for (type of runtime.challenge().allowedCommands; track type) {
+          <option [value]="type">{{ labels[type] }}</option>
+        }
+      </select>
+    </label>
+  }
+</div>
+@if (!readOnly() && !runtime.challenge().requiresVariable) {
+  <button class="secondary" (click)="addVariable()">+ Named variable</button>
+}
+<ng-template #list let-commands>
+  <ol class="commands">
+    @for (command of commands; track command.id; let i = $index) {
+      <li
+        class="command"
+        [attr.data-command-type]="command.type"
+        [class.selected]="runtime.selectedCommandId() === command.id"
+        [class.active]="activeId() === command.id"
+        [class.disabled]="command.disabled"
+        [class.guess-command]="
+          !runtime.reasoningOpened() && command.id === runtime.challenge().discovery?.focusCommandId
+        "
+        (dragover)="$event.preventDefault()"
+        (drop)="drop(command.id, $event)"
+      >
+        <span class="step-number" [attr.aria-label]="'Step ' + (i + 1)">{{ i + 1 }}</span>
+        <div class="block-line">
+          <button
+            class="choose"
+            [draggable]="!readOnly()"
+            (dragstart)="startDrag(command.id, $event)"
+            (click)="runtime.selectCommand(command.id)"
+            [attr.aria-label]="'Select ' + label(command.type) + ' block'"
+            [attr.aria-pressed]="runtime.selectedCommandId() === command.id"
+            [title]="readOnly() ? label(command.type) : 'Select or drag to reorder this block'"
+          >
+            <app-command-graphic [type]="command.type" [direction]="command.direction ?? 'right'" />
+            <strong>{{ verb(command.type) }}</strong>
+          </button>
+          @if (command.type.startsWith('turn')) {
+            <select
+              class="block-select direction"
+              aria-label="Direction"
+              [value]="command.direction ?? 'right'"
+              [disabled]="readOnly()"
+              (change)="edit(command.id, { direction: $any($event.target).value })"
+            >
+              <option value="right" [selected]="command.direction !== 'left'">right ↻</option>
+              <option value="left" [selected]="command.direction === 'left'">left ↺</option>
+            </select>
+          }
+          @if (command.type === 'pick-up' || command.type === 'drop-off') {
+            <select
+              class="block-select package"
+              aria-label="Package"
+              [value]="command.packageId ?? ''"
+              [disabled]="readOnly()"
+              (change)="edit(command.id, { packageId: $any($event.target).value })"
+            >
+              @for (pkg of runtime.course().packages; track pkg.id) {
+                <option [value]="pkg.id" [selected]="pkg.id === command.packageId">
+                  {{ pkg.label }}
+                </option>
+              }
+            </select>
+          } @else {
+            <span class="value-slot">
+              <input
+                class="block-input"
+                [attr.aria-label]="label(command.type) + ' value'"
+                placeholder="?"
+                [style.width.ch]="valueWidth(command.value)"
+                [value]="command.value"
+                [disabled]="readOnly()"
+                (focus)="runtime.selectCommand(command.id)"
+                (input)="edit(command.id, { value: $any($event.target).value })"
+              />
+              @if (command.type.startsWith('move') || command.type.startsWith('turn')) {
+                <select
+                  class="block-select units"
+                  [attr.aria-label]="command.type.startsWith('move') ? 'Move units' : 'Turn units'"
+                  [value]="command.type"
+                  [disabled]="readOnly()"
+                  (change)="changeUnit(command, $any($event.target).value)"
+                >
+                  @for (choice of unitOptions(command.type); track choice.type) {
+                    <option [value]="choice.type" [selected]="choice.type === command.type">
+                      {{ choice.label }}
+                    </option>
+                  }
+                </select>
+              } @else {
+                <span>{{ command.type === 'repeat' ? 'times' : 'seconds' }}</span>
+              }
+            </span>
+          }
+        </div>
+        @if (
+          (!runtime.reasoningOpened() &&
+            command.id === runtime.challenge().discovery?.focusCommandId) ||
+          activeId() === command.id ||
+          command.disabled
+        ) {
+          <div class="block-status">
+            @if (
+              !runtime.reasoningOpened() &&
+              command.id === runtime.challenge().discovery?.focusCommandId
+            ) {
+              <span class="guess-label">Your guess · edit the white slot</span>
+            }
+            @if (activeId() === command.id) {
+              <span>▶ Replay step</span>
+            }
+            @if (command.disabled) {
+              <span>Skipped</span>
+            }
+          </div>
+        }
+        @if (
+          runtime.reasoningOpened() &&
+          command.type !== 'repeat' &&
+          command.type !== 'pick-up' &&
+          command.type !== 'drop-off'
+        ) {
+          <button class="math-link" (click)="runtime.selectCommand(command.id)">
+            {{ mathLabel(command) }}
+          </button>
+        }
+        <details class="block-options">
+          <summary
+            [attr.aria-label]="'Options for step ' + (i + 1) + ': ' + label(command.type)"
+            title="Block options"
+          >
+            <span aria-hidden="true">•••</span>
+          </summary>
+          <div class="options-content">
+            <p>{{ description(command.type) }}</p>
+            @if (command.type.startsWith('move') || command.type.startsWith('turn')) {
+              <label class="speed-field"
+                >Speed
+                <input
+                  [attr.aria-label]="label(command.type) + ' speed'"
+                  [placeholder]="command.type.startsWith('turn') ? '45' : '20'"
+                  [value]="command.rate ?? ''"
+                  [disabled]="readOnly()"
+                  (input)="edit(command.id, { rate: $any($event.target).value })"
+                />
+                <span>{{ command.type.startsWith('turn') ? '°/second' : 'cm/second' }}</span>
+              </label>
+            }
+            <label class="check"
+              ><input
+                type="checkbox"
+                [checked]="!command.disabled"
+                [disabled]="readOnly()"
+                (change)="edit(command.id, { disabled: !$any($event.target).checked })"
+              />{{ command.disabled ? 'Skipped' : 'Enabled' }}</label
+            >
+            @if (!readOnly()) {
+              <div class="tools" role="group" [attr.aria-label]="'Step ' + (i + 1) + ' actions'">
+                <button
+                  [disabled]="i === 0"
+                  aria-label="Move command up"
+                  (click)="move(command.id, -1)"
+                >
+                  ↑ Up
+                </button>
+                <button
+                  [disabled]="i === commands.length - 1"
+                  aria-label="Move command down"
+                  (click)="move(command.id, 1)"
+                >
+                  ↓ Down
+                </button>
+                <button aria-label="Duplicate command" (click)="duplicate(command.id)">
+                  ⧉ Copy
+                </button>
+                <button aria-label="Remove command" (click)="remove(command.id)">× Remove</button>
+              </div>
+            }
+          </div>
+        </details>
+        @for (issue of runtime.compiled().issues; track $index) {
+          @if (
+            !snapshot() &&
+            issue.commandId === command.id &&
+            (runtime.reasoningOpened() || issue.code !== 'MATH_EVIDENCE')
+          ) {
+            <p class="issue" [class.error]="issue.severity === 'error'">{{ issue.message }}</p>
+          }
+        }
+        @if (command.type === 'repeat') {
+          <button
+            class="collapse"
+            [attr.aria-expanded]="!collapsed().has(command.id)"
+            (click)="toggle(command.id)"
+          >
+            {{ collapsed().has(command.id) ? '▸ Show blocks inside' : '▾ Blocks inside' }}
+          </button>
+          @if (!collapsed().has(command.id)) {
+            <div class="loop-body">
+              <ng-container
+                *ngTemplateOutlet="
+                  list;
+                  context: { $implicit: command.commands ?? [], nested: true }
+                "
+              />
+              @if (!readOnly()) {
+                <label class="add loop-add"
+                  >+ Add inside loop
+                  <select
+                    aria-label="Add command inside loop"
+                    value=""
+                    (change)="add($any($event.target), command.id)"
+                  >
+                    <option value="">Choose a command…</option>
+                    @for (type of runtime.challenge().allowedCommands; track type) {
+                      <option [value]="type">{{ labels[type] }}</option>
+                    }
+                  </select>
+                </label>
+              }
+            </div>
+          }
+          <div class="loop-end" aria-hidden="true">↻</div>
+        }
+      </li>
+    } @empty {
+      <li class="empty">Add a block below to build your route.</li>
+    }
+  </ol>
+</ng-template>

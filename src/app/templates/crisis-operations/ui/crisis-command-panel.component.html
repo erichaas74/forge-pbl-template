@@ -1,0 +1,154 @@
+@if (active()) {
+  <div class="command-panel">
+    <header class="command-summary">
+      @if (selectedAction()) {
+        <button class="back-to-responses" (click)="showResponses()">
+          <app-crisis-icon name="back" />All responses
+        </button>
+      } @else {
+        <nav class="command-tabs" aria-label="Response views">
+          <button
+            [class.active]="!showingLog()"
+            [attr.aria-pressed]="!showingLog()"
+            (click)="showResponses()"
+          >
+            Responses
+          </button>
+          <button
+            [class.active]="showingLog()"
+            [attr.aria-pressed]="showingLog()"
+            (click)="showLog()"
+          >
+            Dispatched <span>{{ runtime.orders().length }}</span>
+          </button>
+        </nav>
+      }
+      <span class="crew-inventory"
+        ><i></i><strong>{{ runtime.crews() }}</strong> crews free</span
+      >
+    </header>
+
+    @if (selectedAction(); as action) {
+      <section class="order-review" tabindex="-1" aria-label="Review response">
+        <h2>{{ action.title }}</h2>
+        <div class="response-facts">
+          <span>{{ action.crews }} {{ action.crews === 1 ? 'crew' : 'crews' }}</span
+          ><span>{{ action.duration }} min response</span>
+        </div>
+        <p class="response-description">{{ action.description }}</p>
+        <p class="tradeoff"><strong>Tradeoff</strong>{{ action.tradeoff }}</p>
+        <fieldset class="supporting-evidence">
+          <legend>
+            Use evidence <span>{{ attachedEvidence().length }} selected</span>
+          </legend>
+          @for (report of runtime.shared(); track report.id) {
+            <label class="attach-evidence"
+              ><input
+                type="checkbox"
+                [checked]="attached().includes(report.id)"
+                (change)="attach(report.id)"
+              /><span
+                ><strong>{{ report.title }}</strong
+                ><small>{{ report.confidence }} · {{ report.source }}</small></span
+              ></label
+            >
+          } @empty {
+            <div class="empty-evidence">
+              <p>Pin a report to support this response.</p>
+              <button (click)="navigate.emit('station')">
+                Find a report <app-crisis-icon name="arrow" />
+              </button>
+            </div>
+          }
+        </fieldset>
+        <div class="dispatch-controls">
+          @if (runtime.blocked(action); as reason) {
+            <p class="dispatch-hint">{{ reason }}</p>
+          } @else if (!attachedEvidence().length && runtime.shared().length) {
+            <p class="dispatch-hint">Choose at least one report above.</p>
+          }
+          <button
+            class="dispatch-button"
+            [disabled]="!attachedEvidence().length || !!runtime.blocked(action)"
+            (click)="commit()"
+          >
+            Dispatch {{ action.crews }} {{ action.crews === 1 ? 'crew' : 'crews'
+            }}<app-crisis-icon name="arrow" />
+          </button>
+          <small>Crews stay assigned for this exercise.</small>
+        </div>
+      </section>
+    } @else if (showingLog()) {
+      <section class="orders-log" tabindex="-1" aria-label="Dispatched responses">
+        @if (confirmation()) {
+          <p class="dispatch-confirmation" role="status">
+            <app-crisis-icon name="check" />{{ confirmation() }}
+          </p>
+        }
+        @for (order of runtime.orders(); track order.actionId) {
+          <article class="log-entry">
+            <span
+              >{{ runtime.time(order.minute) }} · {{ order.action.crews }}
+              {{ order.action.crews === 1 ? 'crew' : 'crews' }}</span
+            >
+            <h2>{{ order.action.title }}</h2>
+            <p>{{ order.action.outcome }}</p>
+            <small
+              >{{ order.evidenceIds.length }} supporting
+              {{ order.evidenceIds.length === 1 ? 'report' : 'reports' }}</small
+            >
+          </article>
+        } @empty {
+          <div class="empty-log">
+            <app-crisis-icon name="command" />
+            <h2>No crews dispatched yet</h2>
+            <p>Choose a response to review its cost and evidence.</p>
+            <button (click)="showResponses()">
+              View responses <app-crisis-icon name="arrow" />
+            </button>
+          </div>
+        }
+      </section>
+    } @else {
+      <section class="response-options" tabindex="-1" aria-label="Available responses">
+        <p class="list-hint">Choose where your crews can help.</p>
+        @for (action of responseOptions(); track action.id) {
+          <button
+            class="order-option"
+            [attr.data-action-id]="action.id"
+            [disabled]="!!runtime.blocked(action)"
+            (click)="selectAction(action.id)"
+          >
+            <span
+              ><strong>{{ action.title }}</strong
+              ><small>{{
+                runtime.blocked(action) || action.duration + ' min response'
+              }}</small></span
+            ><span class="crew-cost"
+              >{{ action.crews }} <small>{{ action.crews === 1 ? 'crew' : 'crews' }}</small></span
+            ><app-crisis-icon name="arrow" />
+          </button>
+        } @empty {
+          <p class="list-hint">All available responses have been dispatched.</p>
+        }
+        @if (pendingOptions().length) {
+          <details class="pending-orders">
+            <summary>
+              {{ pendingOptions().length }}
+              {{
+                pendingOptions().length === 1 ? 'response awaiting' : 'responses awaiting'
+              }}
+              updates
+            </summary>
+            @for (action of pendingOptions(); track action.id) {
+              <p>
+                <span>{{ action.title }}</span
+                ><small>{{ runtime.blocked(action) }}</small>
+              </p>
+            }
+          </details>
+        }
+      </section>
+    }
+  </div>
+}

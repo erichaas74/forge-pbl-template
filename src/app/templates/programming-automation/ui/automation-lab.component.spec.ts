@@ -35,6 +35,36 @@ describe('Robot lab student workspace', () => {
     expect(fixture.nativeElement.querySelector('[aria-label="Move rotations value"]').value).toBe(
       '3',
     );
+    const root: HTMLElement = fixture.nativeElement;
+    const guide = root.querySelector<HTMLDialogElement>('app-task-guide dialog')!;
+    // jsdom does not implement native dialogs; browser checks cover focus and Escape.
+    guide.showModal = () => {
+      guide.open = true;
+    };
+    guide.close = () => {
+      guide.open = false;
+    };
+    root.querySelector<HTMLButtonElement>('app-task-guide .guide-trigger')!.click();
+    expect(guide.open).toBe(true);
+    expect(guide.textContent).toContain(
+      config.challenges.find((challenge) => challenge.id === 'precision-parking')!.mission,
+    );
+    expect(guide.querySelector('app-command-graphic')).not.toBeNull();
+    expect(runtime.reasoningOpened()).toBe(false);
+    guide.querySelector<HTMLButtonElement>('[aria-label="Close guide"]')!.click();
+    expect(guide.open).toBe(false);
+    const view = root.querySelector<HTMLSelectElement>('[aria-label="Lab section"]')!;
+    view.value = 'evidence';
+    view.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+    expect(root.querySelector('app-automation-evidence')).not.toBeNull();
+    view.value = 'workspace';
+    view.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+    expect(root.querySelectorAll('h1')).toHaveLength(1);
+    expect(root.querySelector<HTMLInputElement>('[aria-label="Move rotations value"]')!.value).toBe(
+      '3',
+    );
     fixture.componentInstance.run();
     fixture.componentInstance.replay.pause();
     fixture.detectChanges();
@@ -99,5 +129,70 @@ describe('Robot lab student workspace', () => {
     fixture.detectChanges();
     expect(fixture.componentInstance.replay.trial()?.deliveriesCompleted).toBe(1);
     expect(fixture.nativeElement.querySelector('[aria-label="Your math answer"]')).toBeNull();
+  });
+  it('edits inline block units and directions while preserving expressions and nested commands', async () => {
+    await TestBed.configureTestingModule({
+      imports: [AutomationLabComponent],
+      providers: [
+        AutomationRuntimeService,
+        { provide: AUTOMATION_CONFIG, useValue: config },
+        {
+          provide: AUTOMATION_SESSION,
+          useValue: createLocalPreviewSession(config.projectId, config.projectVersion),
+        },
+        { provide: AUTOMATION_PERSISTENCE, useValue: { load: () => undefined, save: () => {} } },
+      ],
+    }).compileComponents();
+    const fixture = TestBed.createComponent(AutomationLabComponent);
+    const runtime = TestBed.inject(AutomationRuntimeService);
+    fixture.componentInstance.choose('warehouse-pattern');
+    runtime.setCommands([
+      {
+        id: 'loop',
+        type: 'repeat',
+        value: '2',
+        commands: [
+          {
+            id: 'move',
+            type: 'move-distance',
+            value: 'SIDE / 2',
+            mathEvidenceId: 'previous-calculation',
+          },
+          { id: 'turn', type: 'turn-degrees', value: '90', direction: 'right' },
+        ],
+      },
+    ]);
+    fixture.detectChanges();
+    const root: HTMLElement = fixture.nativeElement;
+    const units = root.querySelector<HTMLSelectElement>('[aria-label="Move units"]')!;
+    units.value = 'move-rotations';
+    units.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+    expect(runtime.draft().program.commands[0].commands?.[0]).toMatchObject({
+      id: 'move',
+      type: 'move-rotations',
+      value: 'SIDE / 2',
+      mathEvidenceId: undefined,
+    });
+    const value = root.querySelector<HTMLInputElement>('[aria-label="Move rotations value"]')!;
+    value.value = '1/2';
+    value.dispatchEvent(new Event('input'));
+    const direction = root.querySelector<HTMLSelectElement>('[aria-label="Direction"]')!;
+    direction.value = 'left';
+    direction.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+    expect(runtime.draft().program.commands[0].commands?.[0].value).toBe('1/2');
+    expect(runtime.draft().program.commands[0].commands?.[1].direction).toBe('left');
+    expect(
+      root
+        .querySelector('.command[data-command-type="turn-degrees"] svg g')
+        ?.getAttribute('transform'),
+    ).toBe('translate(64 0) scale(-1 1)');
+    const collapse = root.querySelector<HTMLButtonElement>('.collapse')!;
+    collapse.click();
+    fixture.detectChanges();
+    expect(collapse.getAttribute('aria-expanded')).toBe('false');
+    expect(root.querySelector('.loop-body')).toBeNull();
+    expect(runtime.draft().program.commands[0].commands).toHaveLength(2);
   });
 });

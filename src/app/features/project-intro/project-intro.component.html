@@ -1,78 +1,188 @@
-<main [class]="'launch-page ' + config.theme">
+<main [class]="'launch-page ' + project.theme">
   <nav class="launch-nav" aria-label="Project navigation">
     <a routerLink="/projects" class="library-link"
       ><span aria-hidden="true">←</span> Project library</a
     >
-    <span class="brand">FORGE <b>PBL</b></span>
-    <a [routerLink]="['/projects', config.projectId, 'final-demo']" class="demo-link"
-      >Explore a finished project <span aria-hidden="true">↗</span></a
-    >
+    <span class="brand">FORGE <b>PBL</b><span class="brand-mark" aria-hidden="true">✦</span></span>
   </nav>
 
-  @if (loading()) {
-    <section class="loading-panel" role="status">Preparing your project…</section>
-  } @else if (config.teaser && teaserVisible()) {
-    <section class="opening-stage" aria-label="Your project opening">
-      <app-project-teaser-host [config]="config.teaser" (completed)="finishTeaser($event)" />
-    </section>
-  } @else {
-    <section class="project-reveal" aria-labelledby="product-heading">
-      <div class="hero-copy">
-        <p class="eyebrow">
-          <span class="signal-dot" aria-hidden="true"></span> YOUR IDEAS. SOMETHING WORTH SHARING.
-        </p>
-        <h1 #productHeading id="product-heading" tabindex="-1">{{ config.headline }}</h1>
-        <p class="story">{{ config.challenge.takeaway }}</p>
-        <div class="role-line">
-          <span>YOU ARE THE</span><strong>{{ config.role }}</strong>
-        </div>
-        <p class="driving-question">{{ config.hook }}</p>
-        <section class="first-task" aria-label="Your first task">
-          <strong>Your first task</strong>
-          <p>{{ config.mission[0] }}</p>
-          <button
-            type="button"
-            class="primary-button"
-            [disabled]="entering() || runtime.saving()"
-            (click)="enter()"
-          >
-            {{ entering() ? 'Opening your project…' : config.action }} →
-          </button>
-          <small>You will create: {{ config.finalExample.format }}</small>
-        </section>
+  <section class="launch-hero" aria-labelledby="project-title">
+    <div class="hero-copy">
+      <p class="eyebrow">
+        <span class="signal-dot" aria-hidden="true"></span> {{ project.projectType }}
+      </p>
+      <h1 id="project-title">{{ project.title }}</h1>
+      <p class="tagline">{{ config?.headline ?? project.subtitle }}</p>
+      <p class="story">{{ config?.story ?? project.description }}</p>
+      <ul class="project-tags" aria-label="Project at a glance">
+        <li>{{ project.grade }}</li>
+        <li>{{ project.subject }}</li>
+      </ul>
+      <div class="start-action">
+        <button type="button" class="primary-button" [disabled]="entering()" (click)="enter()">
+          <span class="play-icon" aria-hidden="true">▶</span>
+          {{ entering() ? 'Opening your project…' : 'Start Project' }}
+          <span class="button-arrow" aria-hidden="true">↗</span>
+        </button>
+        <span class="start-note">Your next adventure starts here.</span>
       </div>
-      <app-project-product-preview [config]="config" />
-    </section>
+      @if (practice) {
+        <button #practiceButton class="practice-button" type="button" (click)="openPractice()">
+          Try your first trade →
+        </button>
+        <p class="practice-note">A quick practice round · 30 coins · Two cargo spaces</p>
+      }
+      @if (error(); as message) {
+        <p class="launch-error" role="alert">{{ message }}</p>
+      }
+    </div>
 
-    <details class="project-details">
-      <summary>How the project develops</summary>
-      <p>{{ config.story }}</p>
-      <section class="creation-path" aria-labelledby="creation-title">
-        <div>
-          <p class="eyebrow">FROM A FIRST IDEA TO A FINISHED PROJECT</p>
-          <h2 id="creation-title">Make it yours.</h2>
+    <figure class="hero-visual">
+      <div
+        class="artwork"
+        [class.story-artwork]="illustratedOpening"
+        [class.interactive-artwork]="media?.video || media?.model || speeches.length"
+      >
+        @if (illustratedOpening; as opening) {
+          <app-project-teaser-host [config]="opening" [storyMode]="true" />
+        } @else if (activeSpeech(); as speech) {
+          @if (!speechFailed()) {
+            @for (clip of [speech]; track clip.id) {
+              <video
+                #openingClip
+                class="opening-speech"
+                controls
+                playsinline
+                preload="none"
+                [src]="clip.video"
+                [poster]="media?.image"
+                [attr.aria-label]="clip.title"
+                aria-describedby="speech-summary"
+                (error)="speechFailed.set(true)"
+              >
+                @if (clip.captions) {
+                  <track
+                    kind="captions"
+                    [src]="clip.captions"
+                    srclang="en"
+                    label="English"
+                    default
+                  />
+                }
+              </video>
+            }
+          } @else {
+            <img [src]="media?.image" [alt]="media?.alt" />
+            <p class="speech-error" role="status">
+              This opening clip is unavailable. You can still explore the story and start your
+              project.
+            </p>
+          }
+        } @else if (media; as opening) {
+          @if (opening.video || opening.model) {
+            <app-opening-media [media]="opening" />
+          } @else {
+            <img [src]="opening.image" [alt]="opening.alt" fetchpriority="high" />
+            <div class="artwork-shade" aria-hidden="true"></div>
+          }
+        } @else {
+          <div class="artwork-symbol" aria-hidden="true">{{ project.symbol }}</div>
+        }
+        @if (!illustratedOpening && !media?.video && !media?.model && !speeches.length) {
+          <span class="world-label"><span aria-hidden="true">✦</span> STEP INTO THE STORY</span>
+        }
+      </div>
+      @if (activeSpeech(); as speech) {
+        <div class="speech-preview">
+          <div class="speech-choices" role="group" aria-label="Choose an opening clip">
+            @for (clip of speeches; track clip.id) {
+              <button
+                type="button"
+                [attr.aria-pressed]="clip.id === speech.id"
+                (click)="selectSpeech(clip)"
+              >
+                {{ clip.speaker }}
+              </button>
+            }
+          </div>
+          <p id="speech-summary">{{ speech.summary }}</p>
         </div>
-        <ol>
-          @for (task of config.mission; track task; let index = $index) {
+      }
+      <figcaption>
+        <span class="role-icon" aria-hidden="true">{{ project.symbol }}</span>
+        <div>
+          <span class="caption-label">{{
+            config?.role ? 'YOU ARE THE' : 'YOUR NEXT CHALLENGE'
+          }}</span>
+          <strong>{{ config?.role ?? project.studentInvitation ?? project.subtitle }}</strong>
+        </div>
+        <span class="caption-star" aria-hidden="true">✧</span>
+      </figcaption>
+    </figure>
+  </section>
+
+  @if (practice; as opening) {
+    <dialog
+      #practiceDialog
+      class="practice-dialog"
+      aria-label="Your first trade"
+      (cancel)="closePractice()"
+      (close)="practiceOpen.set(false)"
+    >
+      <button class="practice-close" type="button" (click)="closePractice()" autofocus>
+        Close practice ×
+      </button>
+      @if (practiceOpen()) {
+        <app-project-teaser-host [config]="opening" (completed)="closePractice()" />
+      }
+    </dialog>
+  }
+
+  <div class="adventure-details">
+    <section class="experience-section" aria-labelledby="experience-title">
+      <p class="eyebrow">GET INTO IT</p>
+      <h2 id="experience-title">What you’ll experience</h2>
+      @if (config; as intro) {
+        <ol class="experience-list">
+          @for (experience of intro.mission; track experience; let index = $index) {
             <li>
-              <span class="path-number">{{ index + 1 }}</span>
-              <p>{{ task }}</p>
+              <span class="experience-number" aria-hidden="true">0{{ index + 1 }}</span>
+              <p>{{ experience }}</p>
             </li>
           }
         </ol>
-      </section>
-    </details>
-  }
-
-  @if (runtime.error(); as error) {
-    <div #saveError class="save-error" role="alert" tabindex="-1">
-      <strong>Your opening scene could not be saved.</strong>
-      <p>{{ error }}</p>
-      @if (teaserVisible() && pendingReceipt(); as receipt) {
-        <button type="button" (click)="finishTeaser(receipt)">Try saving and continue</button>
       } @else {
-        <button type="button" (click)="runtime.saveDraft()">Try saving again</button>
+        <p class="experience-description">{{ project.description }}</p>
       }
-    </div>
+    </section>
+
+    <section class="learning-section" aria-labelledby="learning-title">
+      <p class="eyebrow">LEVEL UP AS YOU GO</p>
+      <h2 id="learning-title">What you’ll learn</h2>
+      <ul class="learning-list">
+        @for (goal of project.learningGoals; track goal) {
+          <li><span aria-hidden="true">✦</span>{{ goal }}</li>
+        }
+      </ul>
+      @if (config?.hook; as hook) {
+        <p class="challenge-hook">{{ hook }}</p>
+      }
+    </section>
+  </div>
+
+  @if (config; as intro) {
+    <aside class="creation-reward" aria-label="What you will create">
+      <span class="reward-icon" aria-hidden="true">◇</span>
+      <div>
+        <span class="caption-label">FINISH WITH SOMETHING THAT’S YOURS</span>
+        <p>{{ intro.finalExample.format }}</p>
+      </div>
+      <a [routerLink]="['/projects', project.id, 'final-demo']" class="demo-link"
+        >See a finished project <span aria-hidden="true">↗</span></a
+      >
+    </aside>
   }
+  <footer class="launch-footer">
+    <span>BIG IDEAS. REAL DISCOVERIES. MADE BY YOU.</span><span aria-hidden="true">✦</span>
+  </footer>
 </main>

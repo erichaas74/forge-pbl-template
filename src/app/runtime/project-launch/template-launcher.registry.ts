@@ -43,6 +43,15 @@ export class TemplateLauncherRegistry {
 
 export function createLocalTemplateLauncherRegistry(): TemplateLauncherRegistry {
   const registry = new TemplateLauncherRegistry();
+  registry.registerLazy('competition-show', () =>
+    import('./template-launchers/competition-show.launcher').then(module => module.competitionShowLauncher),
+  );
+  registry.registerLazy('live-strategy-league', () =>
+    import('./template-launchers/live-strategy-league.launcher').then(module => module.liveStrategyLeagueLauncher),
+  );
+  registry.registerLazy('crisis-operations', () =>
+    import('./template-launchers/crisis-operations.launcher').then(module => module.crisisOperationsLauncher),
+  );
   registry.registerLazy('engineering-design', () =>
     import('./template-launchers/engineering-design.launcher').then((module) => module.engineeringDesignLauncher),
   );

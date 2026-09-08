@@ -1,67 +1,132 @@
 <main class="lab">
   <header class="masthead">
-    <div class="brand-icon" aria-hidden="true">⌘</div>
-    <div>
-      <p>PROGRAMMING & AUTOMATION · GRADE 5</p>
+    <div class="project-identity">
       <h1>{{ runtime.config.title }}</h1>
+      <span class="save" role="status">{{
+        runtime.sample ? 'Finished student example' : runtime.saveStatus()
+      }}</span>
     </div>
-    <span class="save" role="status">{{
-      runtime.sample ? 'Finished student example' : runtime.saveStatus()
-    }}</span>
-  </header>
-  <nav class="main-nav" aria-label="Lab sections">
-    <button [class.active]="panel() === 'workspace'" (click)="panel.set('workspace')">
-      Mission control</button
-    ><button [class.active]="panel() === 'evidence'" (click)="panel.set('evidence')">
-      Trials & portfolio <span>{{ runtime.state().trials.length }}</span></button
-    ><button [class.active]="panel() === 'championship'" (click)="panel.set('championship')">
-      Championship
-    </button>
-  </nav>
-  @if (panel() === 'workspace') {
-    <section class="mission">
-      <div class="mission-choice">
-        <label for="robot-mission">YOUR MISSION</label
-        ><select
-          id="robot-mission"
-          [value]="runtime.challenge().id"
-          (change)="choose($any($event.target).value)"
+    <div class="header-controls">
+      <label class="view-choice"
+        >View
+        <select
+          aria-label="Lab section"
+          [value]="panel()"
+          (change)="panel.set($any($event.target).value)"
         >
-          @for (challenge of runtime.config.challenges; track challenge.id) {
-            <option
-              [value]="challenge.id"
-              [selected]="challenge.id === runtime.challenge().id"
-              [disabled]="
-                challenge.id === runtime.config.championshipChallengeId &&
-                !runtime.state().championship.revealed
-              "
-            >
-              Week {{ challenge.week }} · {{ challenge.title
-              }}{{ runtime.state().drafts[challenge.id].completedAt ? ' ✓' : '' }}
-            </option>
-          }
+          <option value="workspace">Workspace</option>
+          <option value="evidence">Trials & portfolio ({{ runtime.state().trials.length }})</option>
+          <option value="championship">Championship</option>
         </select>
-      </div>
-      <div>
-        <p>{{ runtime.challenge().mission }}</p>
-        @if (runtime.reasoningOpened()) {
-          <details>
-            <summary>Need a starting point?</summary>
-            <p>{{ runtime.challenge().hint }}</p>
-          </details>
-        }
-      </div>
-    </section>
-    <nav class="mobile-nav" aria-label="Workspace panes">
-      @for (
-        pane of runtime.reasoningOpened() ? ['course', 'code', 'math'] : ['course', 'code'];
-        track pane
-      ) {
-        <button [class.active]="mobilePane() === pane" (click)="mobilePane.set(pane)">
-          {{ pane === 'course' ? 'Course' : pane === 'code' ? 'Code' : 'Math' }}
-        </button>
+      </label>
+      @if (panel() === 'workspace') {
+        <label class="mission-choice" for="robot-mission"
+          >Mission
+          <select
+            id="robot-mission"
+            [value]="runtime.challenge().id"
+            (change)="choose($any($event.target).value)"
+          >
+            @for (challenge of runtime.config.challenges; track challenge.id) {
+              <option
+                [value]="challenge.id"
+                [selected]="challenge.id === runtime.challenge().id"
+                [disabled]="
+                  challenge.id === runtime.config.championshipChallengeId &&
+                  !runtime.state().championship.revealed
+                "
+              >
+                {{ challenge.title
+                }}{{ runtime.state().drafts[challenge.id].completedAt ? ' ✓' : '' }}
+              </option>
+            }
+          </select>
+        </label>
+        <label class="pane-choice"
+          >Show
+          <select
+            aria-label="Workspace pane"
+            [value]="mobilePane()"
+            (change)="mobilePane.set($any($event.target).value)"
+          >
+            <option value="course">Course</option>
+            <option value="code">Code</option>
+            @if (runtime.reasoningOpened()) {
+              <option value="math">Math</option>
+            }
+          </select>
+        </label>
       }
-    </nav>
+      <app-task-guide title="Robot workspace guide">
+        <section class="guide-section">
+          <h3>{{ runtime.challenge().title }}</h3>
+          <p>{{ runtime.challenge().mission }}</p>
+          @if (panel() === 'workspace') {
+            @if (runtime.sample) {
+              <p>
+                This is a recorded student example. Use Play replay, Step, and the timeline to
+                follow each block. Switch missions to explore another recorded program; its code and
+                saved calculations are read-only.
+              </p>
+            } @else {
+              <ol class="guide-steps">
+                <li>
+                  <strong>Make a guess.</strong>
+                  {{
+                    runtime.challenge().discovery?.instructions ??
+                      'Add blocks to build your route. Enter a number you think could work.'
+                  }}
+                </li>
+                <li>
+                  <strong>Run and watch.</strong> Press Run program beside the course. Notice where
+                  the robot stops and which way it faces. Pause, step, or use the timeline to review
+                  the whole run.
+                </li>
+                <li>
+                  <strong>Reason and revise.</strong> After watching a run to its end, open
+                  reasoning & math. Use your observations to calculate and explain your next change.
+                </li>
+              </ol>
+            }
+            <details class="guide-reference">
+              <summary>How the coding blocks work</summary>
+              <p>
+                Blocks run from top to bottom. Fill the white slots with numbers, fractions, or
+                named values. Drag a block by its icon/name, or use its ••• options to move, copy,
+                remove, or disable it. Speed is also in the options.
+              </p>
+              @for (type of runtime.challenge().allowedCommands; track type) {
+                <div class="reference-command">
+                  <app-command-graphic [type]="type" />
+                  <div>
+                    <strong>{{ commandLabels[type] }}</strong>
+                    <p>{{ commandDescriptions[type] }}</p>
+                  </div>
+                </div>
+              }
+            </details>
+            @if (runtime.reasoningOpened()) {
+              <details class="guide-reference">
+                <summary>Mission hint</summary>
+                <p>{{ runtime.challenge().hint }}</p>
+              </details>
+            }
+          } @else if (panel() === 'evidence') {
+            <p>
+              Compare your recorded trials, replay a run, and explain what you changed. Your
+              portfolio brings together the code, math, and evidence you have already saved.
+            </p>
+          } @else {
+            <p>
+              Use the championship controls to practice, review your evidence, and lock your tested
+              program when it is ready.
+            </p>
+          }
+        </section>
+      </app-task-guide>
+    </div>
+  </header>
+  @if (panel() === 'workspace') {
     <div class="workspace" [class.guess-stage]="!runtime.reasoningOpened()">
       <section class="course-panel" [class.mobile-hidden]="mobilePane() !== 'course'">
         <div class="section-top">
@@ -73,6 +138,7 @@
             replay.playing() ? '● Replaying' : replayMode() ? 'Recorded trial' : '● Ready'
           }}</span>
         </div>
+        <p class="mission-goal">{{ runtime.challenge().mission }}</p>
         <div class="course-toolbar">
           <label
             >Parking target<select
@@ -208,19 +274,11 @@
               </p>
             </div>
           }
-        } @else {
-          <div class="first-steps">
-            <strong>01 Guess → 02 Run & watch → 03 Reason & revise</strong>
-            <p>
-              {{
-                runtime.challenge().discovery
-                  ? 'The starter is ready to run. Try its number or enter your own guess.'
-                  : 'Build your code using the command instructions. Start with a number you think could work, then test it.'
-              }}
-            </p>
-          </div>
         }
-        @if (!runtime.reasoningOpened()) {
+        @if (
+          !runtime.reasoningOpened() &&
+          (runtime.observedTrial() || (runtime.currentTrials().length && !replayMode()))
+        ) {
           <div class="discovery-next">
             @if (runtime.observedTrial(); as observed) {
               <strong>{{
@@ -236,8 +294,6 @@
             } @else if (runtime.currentTrials().length && !replayMode()) {
               <p>Watch your recorded attempt to unlock reasoning.</p>
               <button (click)="watchLatest()">Watch latest attempt</button>
-            } @else {
-              <p>Reasoning & math unlocks after you run your code and watch the result.</p>
             }
           </div>
         }
@@ -270,8 +326,9 @@
       />
     </section>
   }
-  <footer>
-    <p role="status">{{ runtime.message() }}</p>
-    <span>Think in centimeters. Build with evidence.</span>
-  </footer>
+  @if (runtime.message()) {
+    <footer>
+      <p role="status">{{ runtime.message() }}</p>
+    </footer>
+  }
 </main>

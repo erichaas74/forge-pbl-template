@@ -1,0 +1,270 @@
+@if (active()) {
+  <section class="robot-workbench" aria-label="ARGUS companion briefing">
+    <div class="projection-link" aria-hidden="true"></div>
+    <header class="companion-header">
+      <div>
+        <span class="eyebrow"
+          >{{ runtime.config.companion?.name || 'ARGUS' }} / YOUR OPERATIONS PARTNER</span
+        >
+        <h2 tabindex="-1" data-panel-heading>Let’s take a look.</h2>
+      </div>
+      <button class="close-workbench" aria-label="Return to room" (click)="navigate.emit('room')">
+        <app-crisis-icon name="close" />
+      </button>
+    </header>
+    <nav class="intent-choices" aria-label="Ask ARGUS">
+      <button
+        [class.active]="mode() === 'brief'"
+        [attr.aria-pressed]="mode() === 'brief'"
+        (click)="choose('brief')"
+      >
+        <app-crisis-icon name="argus" /><span>Brief me<small>THE SITUATION</small></span></button
+      ><button
+        [class.active]="mode() === 'report'"
+        [attr.aria-pressed]="mode() === 'report'"
+        (click)="choose('report')"
+      >
+        <app-crisis-icon name="news" /><span>Show a report<small>THE SOURCES</small></span></button
+      ><button
+        [class.active]="mode() === 'analysis'"
+        [attr.aria-pressed]="mode() === 'analysis'"
+        (click)="choose('analysis')"
+      >
+        <app-crisis-icon name="station" /><span>Work the data<small>THE TRADEOFFS</small></span>
+      </button>
+    </nav>
+    <div class="briefing-surface">
+      @if (mode() === 'brief') {
+        <div class="brief-intro">
+          <span class="surface-label"><i></i> AS OF {{ runtime.time() }}</span>
+          <h3 data-intent-heading tabindex="-1">{{ runtime.bulletin().title }}</h3>
+          <p>{{ runtime.bulletin().summary }}</p>
+        </div>
+        <div class="signal-strip">
+          <div>
+            <span>{{ runtime.config.primaryMetric.label }}</span
+            ><strong
+              >{{ runtime.bulletin().metricValue | number: '1.1-1' }}
+              <small>{{ runtime.config.primaryMetric.unit }}</small></strong
+            >
+          </div>
+          <div>
+            <span>AVAILABLE CREWS</span
+            ><strong
+              >{{ runtime.crews() }}<small> / {{ runtime.config.crews }}</small></strong
+            >
+          </div>
+          <div>
+            <span>UNREAD SIGNALS</span
+            ><strong>{{ signals().unread }}<small> TO REVIEW</small></strong>
+          </div>
+        </div>
+        <div class="attention-note">
+          <app-crisis-icon [name]="signals().unverified ? 'alert' : 'pin'" />
+          <div>
+            <h4>{{ suggestion() }}</h4>
+            @if (signals().unverified; as unverified) {
+              <p>{{ unverified.title }}. Let’s check who reported it and when.</p>
+              <button class="text-action" (click)="showReport(unverified.id)">
+                Show me the source <app-crisis-icon name="arrow" />
+              </button>
+            } @else if (runtime.shared().length) {
+              <p>
+                {{ runtime.shared().length }} reports are pinned. We can compare a response against
+                the crews you have left.
+              </p>
+              <button class="text-action" (click)="choose('analysis')">
+                Compare the options <app-crisis-icon name="arrow" />
+              </button>
+            } @else {
+              <p>
+                A field report is a good starting point. We can inspect it together and keep it
+                where the team can use it.
+              </p>
+              <button class="text-action" (click)="choose('report')">
+                Bring up a report <app-crisis-icon name="arrow" />
+              </button>
+            }
+          </div>
+        </div>
+        @if (location(); as place) {
+          <button class="context-link" (click)="locate.emit(place.id)">
+            <app-crisis-icon name="map" /><span
+              >You were looking at <strong>{{ place.name }}</strong></span
+            ><span>Go there ↗</span>
+          </button>
+        }
+      }
+      @if (mode() === 'report') {
+        @if (report(); as source) {
+          <div class="report-pagination">
+            <button
+              aria-label="Previous source report"
+              (click)="cycleReport(-1)"
+              [disabled]="signals().reports.length < 2"
+            >
+              ←</button
+            ><span>SOURCE {{ reportIndex() + 1 }} / {{ signals().reports.length }}</span
+            ><button
+              aria-label="Next source report"
+              (click)="cycleReport(1)"
+              [disabled]="signals().reports.length < 2"
+            >
+              →
+            </button>
+          </div>
+          <article class="source-on-desk">
+            <div class="source-stamp" [attr.data-confidence]="source.confidence">
+              <app-crisis-icon [name]="source.confidence === 'Confirmed' ? 'check' : 'alert'" />{{
+                source.confidence
+              }}<span>{{ runtime.time(source.minute) }}</span>
+            </div>
+            <h3 data-intent-heading tabindex="-1">{{ source.title }}</h3>
+            <div class="source-byline">
+              {{ source.source }} <span>· {{ source.channel }}</span>
+            </div>
+            <p>{{ source.body }}</p>
+          </article>
+          <div class="source-observation">
+            <app-crisis-icon name="argus" />
+            <p>
+              @if (source.confidence === 'Unverified') {
+                Treat this as a lead. A claim becoming popular does not make it confirmed.
+              } @else if (source.confidence === 'Forecast') {
+                This describes what may happen. Keep the forecast separate from what responders have
+                observed.
+              } @else {
+                This is a confirmed observation at {{ runtime.time(source.minute) }}. Check whether
+                a newer report changes the picture.
+              }
+            </p>
+          </div>
+          <div class="surface-actions">
+            <button
+              class="primary-action"
+              (click)="pin()"
+              [disabled]="runtime.state().sharedEvidenceIds.includes(source.id)"
+            >
+              <app-crisis-icon name="pin" />{{
+                runtime.state().sharedEvidenceIds.includes(source.id)
+                  ? 'On the situation table'
+                  : 'Keep this on the table'
+              }}</button
+            ><button (click)="locate.emit(source.locationId)">
+              Show me where <app-crisis-icon name="map" />
+            </button>
+          </div>
+        } @else {
+          <h3 data-intent-heading tabindex="-1">I’m waiting for a source.</h3>
+          <p>No reports are available at this station yet.</p>
+        }
+      }
+      @if (mode() === 'analysis') {
+        <div class="analysis-title">
+          <div>
+            <span class="surface-label">OBSERVED SENSOR DATA</span>
+            <h3 data-intent-heading tabindex="-1">Follow the change.</h3>
+          </div>
+          <div class="trend-change">
+            {{ change() >= 0 ? '+' : '' }}{{ change() | number: '1.2-2' }}
+            <small>{{ runtime.config.primaryMetric.unit }} SINCE FIRST READING</small>
+          </div>
+        </div>
+        <div class="data-lens">
+          <div class="trend-plot">
+            <svg
+              viewBox="0 0 400 124"
+              role="img"
+              [attr.aria-label]="
+                runtime.config.primaryMetric.label +
+                ': ' +
+                values().join(', ') +
+                ' ' +
+                runtime.config.primaryMetric.unit
+              "
+            >
+              <path d="M0 25H400M0 65H400M0 105H400" stroke="#4b727960" stroke-dasharray="2 5" />
+              <path [attr.d]="trend() + ' L400 124L0 124Z'" fill="#85e8d614" />
+              <path [attr.d]="trend()" fill="none" stroke="#a2eadb" stroke-width="2" />
+            </svg>
+            <div>
+              <span>FIRST READING</span
+              ><strong
+                >{{ runtime.bulletin().metricValue | number: '1.1-1' }}
+                {{ runtime.config.primaryMetric.unit
+                }}<small> · {{ runtime.time() }}</small></strong
+              >
+            </div>
+          </div>
+          <div class="source-mix">
+            <span>WHAT WE KNOW</span>
+            <div>
+              <strong>{{ signals().confirmed }}</strong> Confirmed
+            </div>
+            <div>
+              <strong>{{ signals().forecast }}</strong> Forecast
+            </div>
+            <div>
+              <strong>{{ signals().unverifiedCount }}</strong> Unverified
+            </div>
+          </div>
+        </div>
+        <div class="response-lens">
+          <div class="lens-heading">
+            <span class="surface-label">TRY A RESPONSE / SCENARIO ESTIMATE</span
+            ><span>PREVIEW ONLY</span>
+          </div>
+          <div class="response-picks" aria-label="Compare a response">
+            @for (action of runtime.config.actions; track action.id) {
+              <button
+                [class.selected]="preview().action?.id === action.id"
+                [attr.aria-pressed]="preview().action?.id === action.id"
+                (click)="actionId.set(action.id)"
+              >
+                {{ action.title }}<small>{{ action.crews }} CREWS</small>
+              </button>
+            }
+          </div>
+          @if (preview(); as estimate) {
+            <div class="response-comparison">
+              <div class="risk-comparison">
+                <span>MODELED DISRUPTION RISK</span
+                ><strong
+                  >{{ estimate.risk }}<small>%</small><b>→</b
+                  ><em>{{ estimate.projectedRisk }}<small>%</small></em></strong
+                >
+                <div class="risk-track">
+                  <i [style.width.%]="estimate.risk"></i
+                  ><b [style.width.%]="estimate.projectedRisk"></b>
+                </div>
+              </div>
+              <div class="crew-comparison">
+                <strong
+                  >{{ estimate.remainingCrews }}<small> / {{ runtime.config.crews }}</small></strong
+                ><span>CREWS LEFT AVAILABLE</span>
+              </div>
+            </div>
+            @if (estimate.blocked) {
+              <p class="comparison-note">{{ estimate.blocked }}</p>
+            } @else if (estimate.action; as action) {
+              <p class="comparison-note">{{ action.tradeoff }}</p>
+              <button class="text-action" (click)="reviewAction.emit(action.id)">
+                Take this to command <app-crisis-icon name="arrow" />
+              </button>
+            }
+          }
+        </div>
+        <p class="uncertainty-note">
+          <app-crisis-icon name="argus" />{{ runtime.bulletin().uncertainty }}
+        </p>
+      }
+    </div>
+    <footer class="companion-footer">
+      <span><i></i> SCENARIO BRIEFING · {{ runtime.time() }}</span
+      ><button (click)="roamingChanged.emit(!roaming())" [attr.aria-pressed]="!roaming()">
+        {{ roaming() ? 'Hold position' : 'Resume roaming' }}
+        <app-crisis-icon [name]="roaming() ? 'pin' : 'room'" />
+      </button>
+    </footer>
+  </section>
+}

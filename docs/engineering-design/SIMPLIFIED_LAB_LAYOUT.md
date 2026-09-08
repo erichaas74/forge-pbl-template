@@ -1,6 +1,6 @@
-# One header, canvas first
+# Compact lab controls, canvas first
 
-All five learning steps, the student's final demonstration, and the completed monument example now use one compact header. The project title banner, large lesson card, separate workspace navigation, simulation introduction and embedded day-control header no longer stack above the scene.
+All five learning steps, the student's final demonstration, and the completed monument example use one compact lab toolbar. The standard project navigation header is restored above the lab, with Back to projects, Opening and Final example links. The project title banner, large lesson card, separate workspace navigation, simulation introduction and embedded day-control header no longer stack above the scene.
 
 - The step picker, Guide, workspace menu, build controls, Sun, Play day, mark action, events/date/time, saved-test action and tool menu share the header. A thin daylight scrubber is part of the same header. Controls adapt to the current lesson and read-only state.
 - Guide opens a floating panel with the current investigation, explanation, saved response and optional model guidance. It leaves the canvas geometry and camera unchanged. Earth’s tilt and advanced measurements open when requested. Learning navigation stays in the header.
@@ -12,13 +12,15 @@ All five learning steps, the student's final demonstration, and the completed mo
 
 `DESIGN_CHROME` is an optional local callback through which an installed renderer contributes toolbar and guide templates. The generic engineering page and final demo place those templates in their own header/panel. The solar plugin continues to own all astronomy, event semantics, marking and graphics; no project-name condition was added to the template or core.
 
-`ProjectLaunchTarget.integratedHeader` is an optional presentation hint. The host suppresses its outer return bar for launchers that provide navigation themselves. Other launchers keep their prior behavior. `CompletedSample.integratedHeader` similarly allows a native sample to supply its header while retaining access to the host's teacher guide through a local callback.
+`ProjectLaunchTarget.integratedHeader` is an optional presentation hint. The host suppresses its outer return bar for launchers that provide navigation themselves. The engineering launcher leaves this hint unset to display the standard project navigation header. `CompletedSample.integratedHeader` allows a native sample to supply its compact header while retaining access to the host's teacher guide through a local callback.
 
 The parent/iframe connection adds `hosted-chrome`, validated `toolbar-state`, and allowlisted `toolbar-action` messages. Exact origin/source/channel checks remain in force. The header forwards to the existing controls and shared calculations; it does not contain a second Sun model. Out-of-range times, edits in read-only mode, and manual time changes during final presentation are rejected. The date picker uses Angular's forms binding so its displayed selection stays correct when dynamic seasonal options appear. Each iframe reconnection resends the header mode, current design, lesson and presentation state, keeping an asset reload from restoring duplicate controls or the wrong scene.
 
 Changed areas: shared simulation composition contract; generic engineering page/guide/final view; launcher and sample presentation hints; the installed solar component and iframe controller/styles; lesson instructions; focused bridge/controller tests. No new package, storage schema, geometry rule, curriculum version or deployment was introduced. No unresolved template capability gap is needed for this layout.
 
 ## Verification
+
+The project-navigation restoration reuses the existing host bar and routes, removes the engineering launcher's header-suppression hint, and adjusts narrow-screen spacing for the longer link labels. Browser checks confirm Back to projects opens the catalog, Final example opens the completed sample, and returning restores the lab. The production build and whitespace check pass. No new behavior tests, storage changes or simulation changes were needed for this presentation adjustment.
 
 Browser checks cover the compact main header, Guide opening, morning event selection, final June/nearby-date replay, access to the teacher guide, returning from final presentation to Play day, and restoring the lesson and compact controls after an actual iframe asset reload. The solar scene/controller check passes and covers hosted commands, playback state, exact solar-noon selection, mark requests, deferred Earth reveal, bounded inputs and read-only/final safeguards. All 31 focused Angular tests pass, including toolbar/guide composition, incoming-state validation, dynamic final-date selection and iframe reconnection. `git diff --check` passes with only Windows line-ending notices.
 

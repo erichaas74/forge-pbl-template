@@ -1,0 +1,322 @@
+:host {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+}
+* {
+  box-sizing: border-box;
+}
+.room-environment {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #07111c;
+  perspective: 1600px;
+}
+.room-scene {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100vw, 177.69vh);
+  height: max(56.28vw, 100vh);
+  transform: translate(-50%, -50%);
+  transition:
+    transform 1.15s cubic-bezier(0.22, 0.68, 0.14, 1),
+    filter 1.15s;
+  transform-origin: 50% 55%;
+}
+.room-return-surface {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  pointer-events: auto;
+  cursor: zoom-out;
+}
+.room-art {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+}
+.room-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #05101b44, transparent 25%, transparent 65%, #06132233);
+  transition: background 1s;
+}
+[data-camera='news'] .room-scene {
+  transform: translate(-50%, -50%) translateY(15vh) scale(1.75);
+}
+[data-camera='map'] .room-scene {
+  transform: translate(-50%, -50%) perspective(1400px) rotateX(8deg) rotateZ(-1.2deg)
+    translateY(-15vh) scale(1.55);
+}
+[data-camera='map'] .room-shade {
+  background: #04131a55;
+}
+[data-camera='map'] app-crisis-monitor-wall {
+  opacity: 0.4;
+}
+app-crisis-monitor-wall {
+  z-index: 2;
+  transition:
+    opacity 1s,
+    top 1.15s cubic-bezier(0.22, 0.68, 0.14, 1),
+    height 1.15s cubic-bezier(0.22, 0.68, 0.14, 1);
+}
+[data-camera='station'] .room-scene,
+[data-camera='command'] .room-scene {
+  transform: translate(-50%, -50%) scale(1.16);
+  filter: blur(3px) brightness(0.4);
+}
+[data-camera='argus'] .room-scene {
+  transform: translate(-50%, -50%) scale(1.05);
+}
+[data-camera='argus'] .room-shade {
+  background: #04121b88;
+  z-index: 3;
+}
+[data-camera='argus'] app-crisis-monitor-wall {
+  opacity: 0.45;
+}
+@media (max-width: 700px) {
+  [data-camera='argus'] .room-scene {
+    transform: translate(-50%, -50%);
+  }
+}
+.table-projection {
+  position: absolute;
+  z-index: 1;
+  left: 24.4%;
+  top: 54.55%;
+  width: 51.5%;
+  height: 15.7%;
+  clip-path: polygon(24.3% 0, 75.7% 0, 100% 100%, 0 100%);
+  opacity: 0.83;
+  background: #092632;
+  filter: saturate(0.8) brightness(1.3);
+  transform: perspective(800px) rotateX(0);
+  transform-origin: center;
+  transition:
+    left 1.15s cubic-bezier(0.22, 0.68, 0.14, 1),
+    top 1.15s cubic-bezier(0.22, 0.68, 0.14, 1),
+    width 1.15s cubic-bezier(0.22, 0.68, 0.14, 1),
+    height 1.15s cubic-bezier(0.22, 0.68, 0.14, 1),
+    clip-path 1.15s,
+    transform 1.15s,
+    opacity 0.8s,
+    box-shadow 1.15s,
+    filter 1s;
+}
+.table-map {
+  width: 100%;
+  height: 100%;
+  transition:
+    transform 0.55s,
+    transform-origin 0.55s;
+}
+.table-surface-hit {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: #76f4df06;
+  color: #d9fff4;
+  pointer-events: auto;
+  cursor: zoom-in;
+  outline: none;
+  transition: background 0.22s;
+}
+.table-surface-hit svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  stroke: #a1f7de66;
+  stroke-width: 1;
+  filter: drop-shadow(0 0 4px #80ffe2);
+  transition:
+    stroke 0.22s,
+    filter 0.22s;
+}
+.table-surface-hit polygon {
+  vector-effect: non-scaling-stroke;
+}
+.surface-label {
+  position: absolute;
+  left: 50%;
+  top: 60%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  font:
+    11px 'Segoe UI',
+    sans-serif;
+  letter-spacing: 1px;
+  text-shadow:
+    0 2px 8px #00171d,
+    0 0 14px #00171d;
+  opacity: 0.75;
+  transition: opacity 0.22s;
+}
+.surface-label b {
+  margin-left: 6px;
+  font-weight: 400;
+}
+.surface-label small {
+  display: block;
+  font:
+    7px Consolas,
+    monospace;
+  letter-spacing: 1.8px;
+  margin-top: 6px;
+}
+.table-surface-hit:is(:hover, :focus-visible) {
+  background: #76f4df24;
+}
+.table-surface-hit:is(:hover, :focus-visible) svg {
+  stroke: #c8ffe9;
+  stroke-width: 3;
+  filter: drop-shadow(0 0 5px #91ffe7) drop-shadow(0 0 12px #76f4df);
+}
+.table-surface-hit:is(:hover, :focus-visible) .surface-label {
+  opacity: 1;
+}
+.table-projection.table-active {
+  z-index: 3;
+  left: 22%;
+  top: 45.5%;
+  width: 42%;
+  height: 30%;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  opacity: 1;
+  transform: perspective(800px) rotateX(18deg);
+  pointer-events: auto;
+  overflow: hidden;
+  border: 2px solid #70a9b5;
+  outline: 5px solid #081e28;
+  filter: saturate(1.1) brightness(1.05);
+  box-shadow:
+    0 8px 0 #09202a,
+    0 12px 0 #4a788344,
+    0 28px 50px #000a,
+    0 0 45px #73dacc35;
+}
+.table-sweep {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    165deg,
+    transparent 40%,
+    #9cffe70b 48%,
+    #b9fff530 50%,
+    transparent 51%
+  );
+  background-size: 100% 300%;
+}
+.table-active .table-sweep {
+  opacity: 1;
+  animation: table-scan 9s linear infinite;
+}
+.table-rim {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 5px 12px;
+  background: #08202deb;
+  border-top: 1px solid #6fb0b052;
+  color: #a7cccf;
+  font:
+    6px Consolas,
+    monospace;
+  letter-spacing: 1.5px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  opacity: 0;
+  transition: opacity 0.6s;
+  pointer-events: none;
+}
+.table-rim i {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #a5efd4;
+  box-shadow: 0 0 8px #a5efd4;
+}
+.table-rim span {
+  margin-left: auto;
+  color: #6f949e;
+}
+.table-active .table-rim {
+  opacity: 1;
+}
+.table-glow {
+  position: absolute;
+  left: 32%;
+  top: 50%;
+  width: 36%;
+  height: 23%;
+  background: radial-gradient(ellipse, #56cfc708, transparent 68%);
+  pointer-events: none;
+  transition: opacity 1s;
+}
+[data-camera='map'] .table-glow {
+  opacity: 0;
+}
+@keyframes table-scan {
+  from {
+    background-position: 0 100%;
+  }
+  to {
+    background-position: 0 -100%;
+  }
+}
+@media (min-width: 701px) and (max-width: 1050px) {
+  [data-camera='news'] .room-scene {
+    transform: translate(-50%, -50%) translateY(8vh) scale(1.05);
+  }
+  [data-camera='map'] .room-scene {
+    transform: translate(-50%, -50%) perspective(1400px) rotateX(5deg) rotateZ(-1deg)
+      translateY(-6vh) scale(1.05);
+  }
+}
+@media (max-width: 700px) {
+  [data-camera='news'] .room-scene {
+    transform: translate(-50%, -50%) translateY(0) scale(1.05);
+  }
+  [data-camera='map'] .room-scene {
+    transform: translate(-50%, -50%) perspective(1400px) rotateX(5deg) rotateZ(-1deg)
+      translateY(-8vh) scale(1.1);
+  }
+  .table-projection.table-active {
+    left: 38.5%;
+    top: 33%;
+    width: 23%;
+    height: 22.5%;
+    transform: perspective(800px) rotateX(14deg);
+  }
+  .table-rim {
+    font-size: 5px;
+    letter-spacing: 0.5px;
+    padding: 5px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *:before,
+  *:after {
+    transition: none !important;
+    animation: none !important;
+  }
+}

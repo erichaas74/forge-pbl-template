@@ -1,0 +1,208 @@
+<svg
+  viewBox="0 0 1000 600"
+  [attr.preserveAspectRatio]="miniature() ? 'none' : 'xMidYMid meet'"
+  [attr.role]="miniature() ? 'img' : 'group'"
+  [attr.aria-label]="
+    config().title + ' situation map: select a marked location to inspect conditions'
+  "
+  [class.miniature]="miniature()"
+>
+  <defs>
+    <linearGradient id="crisis-ocean" x2="1" y2="1">
+      <stop stop-color="#061a26" />
+      <stop offset="1" stop-color="#0d3342" />
+    </linearGradient>
+    <linearGradient id="crisis-land" x2="0.8" y2="1">
+      <stop stop-color="#1b3942" />
+      <stop offset="0.5" stop-color="#163b3b" />
+      <stop offset="1" stop-color="#112d32" />
+    </linearGradient>
+    <radialGradient id="crisis-hill">
+      <stop stop-color="#426061" stop-opacity=".5" />
+      <stop offset="1" stop-color="#213e42" stop-opacity="0" />
+    </radialGradient>
+    <pattern id="crisis-grid" width="50" height="50" patternUnits="userSpaceOnUse">
+      <path d="M50 0H0V50" fill="none" stroke="#6699a5" stroke-opacity=".12" stroke-width=".6" />
+    </pattern>
+    <pattern
+      id="crisis-hatch"
+      width="9"
+      height="9"
+      patternUnits="userSpaceOnUse"
+      patternTransform="rotate(35)"
+    >
+      <path d="M0 0V9" stroke="#f4b566" stroke-width="2" stroke-opacity=".32" />
+    </pattern>
+    <filter id="crisis-glow"><feGaussianBlur stdDeviation="3" /></filter>
+  </defs>
+  <rect width="1000" height="600" fill="url(#crisis-ocean)" />
+  <path
+    [attr.d]="config().map.coast"
+    fill="url(#crisis-land)"
+    stroke="#487b7c"
+    stroke-width="1.5"
+  />
+  <ellipse cx="860" cy="112" rx="210" ry="110" fill="url(#crisis-hill)" />
+  <ellipse cx="829" cy="313" rx="195" ry="130" fill="url(#crisis-hill)" />
+  @for (path of config().map.contours; track $index) {
+    <path [attr.d]="path" fill="none" stroke="#77948b" stroke-opacity=".22" stroke-width="1" />
+  }
+  <rect width="1000" height="600" fill="url(#crisis-grid)" />
+  @for (label of config().map.labels; track $index) {
+    <text
+      [attr.x]="label.x"
+      [attr.y]="label.y"
+      [attr.class]="label.kind === 'water' ? 'geographic-label' : 'terrain-label'"
+      [attr.transform]="'rotate(' + label.rotation + ' ' + label.x + ' ' + label.y + ')'"
+    >
+      {{ label.text }}
+    </text>
+  }
+  @if (layer() === 'hazard') {
+    <g
+      class="hazard"
+      [attr.transform]="
+        'translate(480 350) scale(' + (0.75 + state().stage * 0.12) + ') translate(-480 -350)'
+      "
+    >
+      <path
+        class="hazard-boundary"
+        [attr.d]="config().map.hazard"
+        fill="url(#crisis-hatch)"
+        stroke="#f3b160"
+        stroke-width="2"
+        stroke-dasharray="6 5"
+      />
+      <path
+        [attr.d]="config().map.river"
+        fill="none"
+        stroke="#ed9960"
+        [attr.stroke-width]="22 + state().stage * 12"
+        stroke-opacity=".18"
+      />
+    </g>
+  }
+  <path
+    [attr.d]="config().map.river"
+    fill="none"
+    stroke="#72c5da"
+    stroke-width="13"
+    stroke-opacity=".12"
+    filter="url(#crisis-glow)"
+  />
+  <path
+    [attr.d]="config().map.river"
+    fill="none"
+    stroke="#5eaeb9"
+    [attr.stroke-width]="6 + state().stage * 2"
+  />
+  <path
+    class="river-flow"
+    [attr.d]="config().map.river"
+    fill="none"
+    stroke="#ade5e9"
+    stroke-width="2"
+    stroke-opacity=".8"
+    stroke-dasharray="3 12 18 12"
+  />
+  @for (road of config().map.roads; track $index) {
+    <path [attr.d]="road" class="road-shadow" />
+    <path [attr.d]="road" class="road" />
+  }
+  @for (b of buildings(); track $index) {
+    <rect
+      [attr.x]="b.x"
+      [attr.y]="b.y"
+      [attr.width]="b.w"
+      [attr.height]="b.h"
+      rx="1"
+      fill="#86a5a0"
+      opacity=".35"
+    />
+  }
+  @if (layer() === 'resources') {
+    @for (road of config().map.roads; track $index) {
+      <path [attr.d]="road" class="resource-route" />
+    }
+  }
+  @for (location of config().locations; track location.id) {
+    <g
+      class="location"
+      [class.selected]="selected() === location.id"
+      [attr.transform]="'translate(' + location.x + ' ' + location.y + ')'"
+      [attr.role]="miniature() ? null : 'button'"
+      [attr.tabindex]="miniature() ? null : 0"
+      [attr.aria-label]="
+        location.name + ', ' + location.elevation + ' metres elevation. Inspect location.'
+      "
+      (click)="locationSelected.emit(location.id)"
+      (keydown.enter)="locationSelected.emit(location.id)"
+      (keydown.space)="$event.preventDefault(); locationSelected.emit(location.id)"
+    >
+      <rect class="hit-area" x="-27" y="-27" width="220" height="55" rx="12" fill="transparent" />
+      @if (layer() === 'people' && location.population > 0) {
+        <circle
+          [attr.r]="18 + location.population / 70"
+          fill="#78c2cf"
+          fill-opacity=".13"
+          stroke="#9ad4d9"
+          stroke-opacity=".4"
+        />
+      }
+      <circle class="location-halo" r="16" />
+      <circle class="location-pulse" r="16" [style.animation-delay]="$index * -0.65 + 's'" />
+      <circle r="6" class="location-dot" />
+      <path d="M-11 0H-7M7 0H11M0-11V-7M0 7V11" stroke="currentColor" />
+      <text x="19" y="-6" class="location-name">{{ location.name }}</text>
+      @if (layer() === 'people') {
+        <text x="19" y="12" class="location-detail">
+          {{
+            location.population
+              ? location.population + (location.kind === 'shelter' ? ' spaces' : ' people')
+              : location.elevation + ' m elevation'
+          }}
+        </text>
+      } @else {
+        <text x="19" y="12" class="location-detail">
+          {{ location.kind === 'sensor' ? 'TELEMETRY' : location.elevation + ' M ELEVATION' }}
+        </text>
+      }
+    </g>
+  }
+  @for (order of deployed(); track order.action.id) {
+    <g
+      class="dispatch-beacon"
+      [attr.transform]="'translate(' + order.location.x + ' ' + order.location.y + ')'"
+    >
+      <circle class="dispatch-ring" r="23" />
+      <circle class="dispatch-orbit" r="3" cx="0" cy="-23" />
+    </g>
+    <g
+      [attr.transform]="
+        'translate(' + (order.location.x - 19) + ' ' + (order.location.y + 32) + ')'
+      "
+    >
+      <rect
+        x="-4"
+        y="-11"
+        width="158"
+        height="20"
+        rx="3"
+        fill="#123d37"
+        stroke="#6cdec0"
+        stroke-opacity=".5"
+      />
+      <text class="order-label" x="2" y="3">✓ {{ order.action.mapLabel }}</text>
+    </g>
+  }
+  <g class="compass" transform="translate(932 525)">
+    <path d="M0-28-7 0 0-6 7 0Z" fill="#b7d3d3" />
+    <path d="M0-6V13" stroke="#b7d3d3" />
+    <text x="0" y="-35" text-anchor="middle">N</text>
+  </g>
+  <g class="scale" transform="translate(52 552)">
+    <path d="M0-4V4M0 0H100M50-4V4M100-4V4" stroke="#aac3c7" />
+    <text y="20">0</text>
+    <text x="87" y="20">2 km</text>
+  </g>
+</svg>

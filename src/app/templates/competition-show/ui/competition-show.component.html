@@ -1,0 +1,159 @@
+<div class="competition" [class.presentation]="stageOnly()" [style.--broadcast-accent]="theme().palette.accent" [style.--broadcast-secondary]="theme().palette.secondary">
+  <header>
+    <a routerLink="/projects">← Projects</a>
+    <a class="demo-link" [routerLink]="['/projects', show.config.projectId, 'final-demo']">Watch the fictional final ↗</a>
+    <div><small>THE FINAL · CHAMPIONSHIP REHEARSAL</small><h1>{{ show.config.title }}</h1></div>
+    @if (show.state().phase !== 'setup') { <button (click)="present()">{{ stageOnly() ? 'Return to host controls' : 'Presentation view' }}</button> }
+  </header>
+  @if (tab() === 'show') { <app-television-stage [view]="studioView()" [theme]="theme()" [presentation]="stageOnly()" /> }
+  @if (!stageOnly()) {
+    <p class="notice">Local rehearsal · Play all teams from this device. Progress saves in this browser. Game points are separate from academic evidence.</p>
+    <nav aria-label="Championship workspace">
+      <button [attr.aria-pressed]="tab() === 'show'" (click)="selectTab('show')">{{ show.state().phase === 'setup' ? 'Set up the final' : 'Run the show' }}</button>
+      <button [attr.aria-pressed]="tab() === 'bracket'" (click)="selectTab('bracket')">Final bracket</button>
+      <button [attr.aria-pressed]="tab() === 'evidence'" (click)="selectTab('evidence')">Evidence ({{ show.state().evidence.length }})</button>
+      <label class="skin-select">Studio skin <select aria-label="Studio skin" [value]="skin()" (change)="changeSkin($event)"><option value="project">{{ show.config.broadcast?.label ?? 'Midnight / Gold' }}</option><option value="polar">Polar / Silver preview</option></select></label>
+    </nav>
+  }
+  @if (show.error()) { <p role="alert" class="error">{{ show.error() }}</p> }
+  <main #workspace tabindex="-1" [class.on-air]="stageOnly()" [class.cue-running]="director.cue() !== null">
+    @if (tab() === 'evidence') {
+      <h2>Responses worth keeping</h2>
+      <p>Original prompts, team responses, and standards stay together. These are team evidence records; individual mastery still needs teacher review.</p>
+      <button (click)="exportRecord()">Export rehearsal + evidence</button>
+      @for (e of show.state().evidence; track e.id) {
+        <article><small>{{ e.contestId }} · {{ e.roundId }} · {{ e.standards.join(' · ') }}</small>
+          <h3>{{ show.name(e.teamId) }}</h3><p>{{ e.prompt }}</p><blockquote>{{ e.response }}</blockquote></article>
+      } @empty { <p>Responses will appear here as teams lock their answers.</p> }
+    } @else if (tab() === 'bracket') {
+      <div class="bracket-banner" [style.background-image]="theme().assets.bracketBackdrop ? 'url(' + theme().assets.bracketBackdrop + ')' : null"><span>THE CHAMPIONSHIP PICTURE</span><strong>Every match. One destination.</strong></div>
+      <h2>The road to the championship</h2>
+      <app-competition-bracket [matches]="show.state().matches" [teams]="show.state().teams" [hybrid]="show.state().mode === 'hybrid'" />
+      @if (!show.state().matches.length) { <p>{{ show.state().phase === 'setup' ? 'Lock the lineup to create your bracket.' : 'All teams go directly to the championship game show.' }}</p> }
+      @if (show.state().mode !== 'tournament' && show.finalists().length) {
+        <h3>Championship game show</h3><p>@for (id of show.finalists(); track id) { <span class="team-label">{{ show.name(id) }}</span> }</p>
+      }
+    } @else if (show.state().phase === 'setup') {
+      <h2>Build the final everyone is working toward.</h2><p>{{ show.config.description }}</p>
+      <fieldset [disabled]="show.blocked()"><legend>1. Choose the championship format</legend>
+        @for (option of modes; track option.id) {
+          <label class="mode"><input type="radio" name="mode" [value]="option.id" [(ngModel)]="mode" />
+            <span><strong>{{ option.label }}</strong><small>{{ option.description }}</small></span></label>
+        }
+      </fieldset>
+      <fieldset [disabled]="show.blocked()"><legend>2. Set the team lineup</legend>
+        <p>Qualification points determine seeds. Ties use team ID order. Every contest starts at zero; game scores never become grades.</p>
+        @for (team of teams; track team.id; let i = $index) {
+          <div class="team-row"><span>{{ i + 1 }}</span><label>Team name <input [(ngModel)]="team.name" maxlength="60" /></label>
+            <label>Qualification points <input type="number" min="0" [(ngModel)]="team.qualificationPoints" /></label>
+            <button [disabled]="teams.length <= 2" (click)="removeTeam(team.id)" [attr.aria-label]="'Remove ' + team.name">Remove</button></div>
+        }
+        <button [disabled]="teams.length >= 16" (click)="addTeam()">Add team</button>
+      </fieldset>
+      <section><h3>3. Check the show sequence</h3>
+        <p>Each match uses this round queue. In hybrid mode, it also runs once for all finalists.</p>
+        <ol>@for (round of show.config.rounds; track round.id) { <li><strong>{{ round.title }}</strong> · {{ round.kind }} · {{ round.seconds }} seconds · {{ round.kind === 'wager' ? 'risk up to your score' : round.maxPoints + ' points' }}</li> }</ol>
+        <p>Bracket byes advance automatically. Tied contests require a host tiebreak and a recorded reason.</p>
+        <button class="primary" [disabled]="show.blocked()" (click)="seed()">Lock lineup & reveal the bracket</button>
+      </section>
+    } @else if (show.state().phase === 'bracket') {
+      <div class="bracket-banner" [style.background-image]="theme().assets.bracketBackdrop ? 'url(' + theme().assets.bracketBackdrop + ')' : null"><span>THE SEEDS ARE LOCKED</span><strong>The road to the final.</strong></div>
+      <h2>{{ show.state().mode === 'game-show' ? 'Everyone is in. Let’s play.' : 'The road to the final starts here.' }}</h2>
+      <app-competition-bracket [matches]="show.state().matches" [teams]="show.state().teams" [hybrid]="show.state().mode === 'hybrid'"
+        [canStart]="!stageOnly() && !show.blocked()" (start)="command({ type: 'start', matchId: $event })" />
+      @if (show.state().mode !== 'tournament' && show.finalists().length >= 2) {
+        <article><h3>Your championship lineup</h3><p>@for (id of show.finalists(); track id) { <span class="team-label">{{ show.name(id) }}</span> }</p>
+          @if (!stageOnly()) { <button class="primary" [disabled]="show.blocked()" (click)="command({ type: 'start' })">Bring on the championship game show</button> }
+        </article>
+      }
+    } @else if (show.state().phase === 'champion') {
+      <section class="champion"><small>THE CHAMPIONSHIP IS DECIDED</small><h2>{{ show.name(show.state().championId!) }}</h2><p>Champions of {{ show.config.title }}</p></section>
+      <div class="scoreboard" aria-label="Championship final scores">
+        @for (id of show.ranking(); track id) { <article><h3>{{ show.name(id) }}</h3><strong>{{ show.state().scores[id] }}</strong><small>final points</small></article> }
+      </div>
+      <app-competition-bracket [matches]="show.state().matches" [teams]="show.state().teams" [hybrid]="show.state().mode === 'hybrid'" />
+      @if (!stageOnly()) { <p>{{ show.state().evidence.length }} responses preserved for review.</p><button (click)="exportRecord()">Export championship record</button> }
+    } @else {
+      <div class="show-heading"><div><small>{{ show.state().contestId === 'championship-show' ? 'CHAMPIONSHIP GAME SHOW' : 'HEAD-TO-HEAD · ' + show.state().contestId }}</small>
+        <h2>{{ show.state().phase === 'results' ? 'The scores are in.' : show.round().title }}</h2>
+        <p>Round {{ show.state().roundIndex + 1 }} / {{ show.config.rounds.length }} · {{ show.state().phase }}</p></div>
+        @if (['ready', 'open', 'paused'].includes(show.state().phase)) { <div class="timer" role="timer" aria-label="Seconds remaining">{{ show.seconds() }}<small>seconds</small></div> }
+      </div>
+      <div class="scoreboard" aria-label="Contest scoreboard">
+        @for (id of show.ranking(); track id) {
+          <article><h3>{{ show.name(id) }}</h3><strong>{{ show.state().scores[id] }}</strong><small>points</small></article>
+        }
+      </div>
+      @if (show.state().phase === 'results') {
+        <h3>{{ show.leaders().length > 1 ? 'A tie. One more decision.' : show.name(show.leaders()[0]) + ' leads the field.' }}</h3>
+        @if (!stageOnly()) {
+          @if (show.leaders().length > 1) { <label>Tiebreak result <textarea [(ngModel)]="tiebreak" placeholder="Run a host-led tiebreak, then record the deciding evidence."></textarea></label> }
+          @for (id of show.leaders(); track id) { <button class="primary" [disabled]="show.blocked() || (show.leaders().length > 1 && tiebreak.trim().length < 5)" (click)="finish(id)">Confirm {{ show.name(id) }} {{ show.state().contestId === 'championship-show' ? 'as champion' : 'to advance' }}</button> }
+        }
+      } @else {
+        <section class="prompt" aria-live="polite">
+          @if (show.state().phase === 'ready') {
+            <h3>{{ show.round().kind === 'wager' ? 'How much will you risk?' : 'Teams, get ready.' }}</h3>
+            <p>{{ director.cue() === 'question' ? 'Question reveal in progress. Answer time starts when the reveal finishes.' : show.round().kind === 'wager' ? 'Lock every wager before the prompt appears. A missed or unanswered response loses the wager.' : 'Cue the question. The camera moves in, the screen reveals, then answer time starts.' }}</p>
+          } @else { <h3>{{ show.round().prompt }}</h3> }
+          @if (show.state().phase === 'paused') { <p>Clock paused. Answers are paused too.</p> }
+          @if (show.state().phase === 'locked') { <p>Answers locked. Scores awaiting host review.</p> }
+          @if (show.state().phase === 'revealed') {
+            @for (response of show.state().responses; track response.teamId) { <article><strong>{{ show.name(response.teamId) }} · {{ response.points }} points</strong><p>{{ response.text }}</p></article> }
+            @for (id of show.state().participants; track id) { @if (!answerLocked(id)) { <p>{{ show.name(id) }} · No answer · {{ show.round().kind === 'wager' ? -show.state().wagers[id] : 0 }} points</p> } }
+          }
+        </section>
+        @if (show.round().kind === 'buzzer' && show.state().buzzes.length) { <p role="status">First buzz: {{ show.name(show.state().buzzes[0]) }}</p> }
+        @if (!stageOnly()) {
+          <fieldset class="host" [disabled]="show.blocked() || director.cue() !== null"><legend>Host controls</legend>
+            @if (show.state().phase === 'ready') {
+              @if (show.round().kind === 'wager') {
+                @for (id of show.state().participants; track id) {
+                  <div class="team-row"><strong>{{ show.name(id) }}</strong>
+                    @if (show.state().wagers[id] !== undefined) { <span>Wager locked</span> } @else {
+                      <label>Wager (0–{{ show.state().scores[id] }}) <input type="number" min="0" [max]="show.state().scores[id]" [(ngModel)]="wagers[id]" /></label>
+                      <button (click)="command({ type: 'wager', teamId: id, points: wagers[id] ?? 0 })">Lock wager</button>
+                    }
+                  </div>
+                }
+              }
+              <button class="primary" [disabled]="show.round().kind === 'wager' && !allWagersLocked()" (click)="command({ type: 'open' })">Reveal prompt & start clock</button>
+            }
+            @if (show.state().phase === 'open') { <button (click)="command({ type: 'pause' })">Pause clock</button><button (click)="command({ type: 'lock' })">Lock all answers</button> }
+            @if (show.state().phase === 'paused') { <button (click)="command({ type: 'resume' })">Resume clock</button><button (click)="command({ type: 'lock' })">Lock all answers</button> }
+            @if (show.state().phase === 'locked') {
+              <p>Review each answer. Points may be corrected until the reveal.</p>
+              @for (response of show.state().responses; track response.teamId) {
+                <article><h3>{{ show.name(response.teamId) }}</h3><p>{{ response.text }}</p>
+                  @if (show.round().kind === 'wager') {
+                    <button (click)="command({ type: 'score', teamId: response.teamId, points: show.state().wagers[response.teamId] })">Correct: +{{ show.state().wagers[response.teamId] }}</button>
+                    <button (click)="command({ type: 'score', teamId: response.teamId, points: -show.state().wagers[response.teamId] })">Miss: −{{ show.state().wagers[response.teamId] }}</button>
+                  } @else {
+                    <label>Points (0–{{ show.round().maxPoints }}) <input type="number" min="0" [max]="show.round().maxPoints" [(ngModel)]="awards[response.teamId]" /></label>
+                    <button (click)="command({ type: 'score', teamId: response.teamId, points: awards[response.teamId] ?? 0 })">Save points</button>
+                  }
+                  <p>{{ response.points === null ? 'Needs scoring' : 'Ready to reveal: ' + response.points }}</p>
+                </article>
+              } @empty { <p>No responses. {{ show.round().kind === 'wager' ? 'Every team loses its wager.' : 'No points awarded.' }}</p> }
+              <button class="primary" [disabled]="!allScored()" (click)="command({ type: 'reveal' })">Reveal answers & scores</button>
+            }
+            @if (show.state().phase === 'revealed') { <button class="primary" (click)="command({ type: 'next' })">{{ show.state().roundIndex + 1 === show.config.rounds.length ? 'Show contest results' : 'Cue next round' }}</button> }
+          </fieldset>
+          @if (show.state().phase === 'open') {
+            <section><h3>Team response desk</h3><p>For this rehearsal, the host enters each team’s response. The first buzzer team answers; simultaneous rounds accept every team.</p>
+              @for (id of show.state().participants; track id) {
+                <fieldset [disabled]="show.blocked()"><legend>{{ show.name(id) }}</legend>
+                  @if (show.round().kind === 'buzzer') { <button [disabled]="show.state().buzzes.includes(id)" (click)="command({ type: 'buzz', teamId: id })">Buzz for {{ show.name(id) }}</button> }
+                  @if (answerLocked(id)) { <p>Answer locked · evidence saved</p> } @else if (canAnswer(id)) {
+                    <label>Team answer <textarea maxlength="6000" [(ngModel)]="drafts[id]"></textarea></label>
+                    <button [disabled]="!drafts[id]?.trim()" (click)="command({ type: 'answer', teamId: id, text: drafts[id] })">Lock answer</button>
+                  }
+                </fieldset>
+              }
+            </section>
+          }
+        }
+      }
+    }
+  </main>
+</div>

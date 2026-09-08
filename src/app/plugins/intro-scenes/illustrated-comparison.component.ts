@@ -28,6 +28,8 @@ export type ComparisonStage = 'welcome' | 'testing' | 'poof' | 'reveal' | 'hando
 })
 export class IllustratedComparisonComponent implements OnDestroy {
   readonly config = input.required<IllustratedComparisonConfig>();
+  /** Story playback for an invitation; does not collect or emit practice responses. */
+  readonly storyMode = input(false);
   readonly completed = output<ProjectTeaserResult>();
   readonly stage = signal<ComparisonStage>('welcome');
   readonly prediction = signal('');
@@ -60,6 +62,7 @@ export class IllustratedComparisonComponent implements OnDestroy {
   constructor() {
     afterNextRender(
       () => {
+        if (this.storyMode()) return;
         const heading = this.sceneHeading()?.nativeElement;
         heading?.scrollIntoView({ block: 'nearest' });
         heading?.focus({ preventScroll: true });
@@ -69,8 +72,8 @@ export class IllustratedComparisonComponent implements OnDestroy {
   }
 
   async runTest(): Promise<void> {
-    if (this.stage() !== 'welcome' || !this.prediction()) return;
-    this.thinking.set([{ step: 'prediction', answer: this.prediction() }]);
+    if (this.stage() !== 'welcome' || (!this.storyMode() && !this.prediction())) return;
+    if (!this.storyMode()) this.thinking.set([{ step: 'prediction', answer: this.prediction() }]);
     const sequence = ++this.sequence;
     this.stopVoice();
     this.stage.set('testing');
@@ -89,6 +92,12 @@ export class IllustratedComparisonComponent implements OnDestroy {
   }
 
   showCase(): void {
+    if (this.storyMode() && this.stage() === 'reveal') {
+      this.stage.set('handoff');
+      this.focusDialogue();
+      void this.playLines();
+      return;
+    }
     if (this.stage() !== 'reveal' || !this.conclusion()) return;
     const samples = this.config().samples;
     const expected =
@@ -111,6 +120,7 @@ export class IllustratedComparisonComponent implements OnDestroy {
   }
 
   finish(skipped = false): void {
+    if (this.storyMode()) return;
     if (this.emitted || (!skipped && this.stage() !== 'handoff')) return;
     this.emitted = true;
     this.cancel();

@@ -1,0 +1,216 @@
+<div
+  class="monitor-bank"
+  [class.engaged]="active()"
+  [attr.data-selected]="selectedScreen()"
+  [attr.inert]="available() ? null : ''"
+  [attr.aria-hidden]="available() ? null : true"
+>
+  <section
+    class="wall-screen telemetry-screen"
+    [class.selected]="selectedScreen() === 'telemetry'"
+    aria-label="Screen 1: sensor telemetry"
+    (click)="selectedScreen.set('telemetry')"
+  >
+    <header>
+      <span><i></i>01 / TELEMETRY</span><span class="screen-indicator">DATA</span>
+    </header>
+    <div class="screen-body telemetry-body">
+      <span class="metric-label">{{ runtime.config.primaryMetric.label }}</span>
+      <div class="metric-reading">
+        <strong>{{ runtime.bulletin().metricValue | number: '1.1-1' }}</strong
+        ><span>{{ runtime.config.primaryMetric.unit }}</span>
+      </div>
+      <svg
+        class="telemetry-chart"
+        viewBox="0 0 200 96"
+        role="img"
+        [attr.aria-label]="
+          'Recorded readings: ' + values().join(', ') + ' ' + runtime.config.primaryMetric.unit
+        "
+      >
+        <path
+          d="M0 20H200M0 50H200M0 80H200"
+          stroke="#477786"
+          stroke-width=".5"
+          stroke-dasharray="2 4"
+        />
+        <path [attr.d]="points() + ' L200 96 L0 96 Z'" fill="#76d6c917" />
+        <path [attr.d]="points()" stroke="#9cf1de" stroke-width="1.8" fill="none" />
+      </svg>
+      <span class="metric-caption">{{ runtime.config.primaryMetric.caption }}</span>
+      @if (active()) {
+        <div class="screen-extra">
+          <button
+            class="screen-action"
+            (click)="history.set(!history())"
+            [attr.aria-expanded]="history()"
+          >
+            {{ history() ? 'Hide readings' : 'Compare readings' }}<app-crisis-icon name="station" />
+          </button>
+          @if (history()) {
+            <div class="reading-history" aria-label="Sensor reading history">
+              @for (value of values(); track $index) {
+                <span
+                  ><small>{{ $index + 1 }}</small
+                  >{{ value | number: '1.2-2' }}</span
+                >
+              }
+            </div>
+          }
+          <p>Observed data · {{ runtime.time() }}<br />Use the trend alongside field reports.</p>
+        </div>
+      }
+    </div>
+    <span class="bezel-light"></span>
+  </section>
+
+  <section
+    class="wall-screen camera-screen"
+    [class.selected]="selectedScreen() === 'camera'"
+    aria-label="Screen 2: field camera"
+    (click)="selectedScreen.set('camera')"
+  >
+    <header>
+      <span><i></i>02 / FIELD CAMERA</span><span class="screen-indicator">EXERCISE STILL</span>
+    </header>
+    <div class="camera-picture" [class.magnified]="cameraZoom()">
+      <img [src]="runtime.config.newsImage" [alt]="runtime.config.newsCamera.description" />
+      <div class="camera-graticule" aria-hidden="true"><span>+</span></div>
+      <span class="camera-timestamp"
+        >{{ runtime.config.newsCamera.label }} · CAPTURED
+        {{ runtime.time(runtime.config.newsCamera.minute) }}</span
+      >
+      <div class="camera-lower">
+        <span>{{ runtime.config.newsCamera.network }}</span>
+        <h2>{{ runtime.bulletin().title }}</h2>
+        <p>{{ runtime.bulletin().summary }}</p>
+      </div>
+    </div>
+    @if (active()) {
+      <div class="camera-controls screen-extra">
+        <button
+          class="screen-action"
+          data-monitor-first-control
+          (click)="cameraZoom.set(!cameraZoom())"
+          [attr.aria-pressed]="cameraZoom()"
+        >
+          <app-crisis-icon name="expand" />{{
+            cameraZoom() ? 'Wide view' : 'Inspect image'
+          }}</button
+        ><button class="screen-action" (click)="locate.emit(runtime.config.newsCamera.locationId)">
+          Locate on table<app-crisis-icon name="map" />
+        </button>
+      </div>
+    }
+    <span class="bezel-light"></span>
+  </section>
+
+  <section
+    class="wall-screen wire-screen"
+    [class.selected]="selectedScreen() === 'wire'"
+    aria-label="Screen 3: incoming reports"
+    (click)="selectedScreen.set('wire')"
+  >
+    <header>
+      <span><i></i>03 / INCOMING WIRE</span
+      ><span class="screen-indicator">{{ reports().length }} REPORTS</span>
+    </header>
+    <div class="screen-body wire-body">
+      @if (active() && report(); as selected) {
+        <article class="wire-detail" tabindex="-1">
+          <button class="back-to-wire" (click)="closeReport()">← All reports</button
+          ><span [class]="'confidence ' + selected.confidence.toLowerCase()"
+            >{{ selected.confidence }} · {{ runtime.time(selected.minute) }}</span
+          >
+          <h3>{{ selected.title }}</h3>
+          <small>{{ selected.source }}</small>
+          <p>{{ selected.body }}</p>
+          <div class="report-buttons">
+            <button
+              class="screen-action"
+              (click)="pin(selected)"
+              [disabled]="runtime.state().sharedEvidenceIds.includes(selected.id)"
+            >
+              <app-crisis-icon name="pin" />{{
+                runtime.state().sharedEvidenceIds.includes(selected.id)
+                  ? 'Pinned to table'
+                  : 'Pin evidence'
+              }}</button
+            ><button
+              class="screen-action"
+              (click)="locate.emit(selected.locationId)"
+              aria-label="Locate selected report on situation table"
+            >
+              <app-crisis-icon name="map" />
+            </button>
+          </div>
+        </article>
+      } @else {
+        @for (item of reports(); track item.id) {
+          <button
+            class="wire-item"
+            [attr.data-report-id]="item.id"
+            [attr.tabindex]="active() ? 0 : -1"
+            (click)="read(item)"
+          >
+            <span class="wire-meta"
+              >{{ runtime.time(item.minute)
+              }}<span [class]="'confidence ' + item.confidence.toLowerCase()">{{
+                item.confidence
+              }}</span></span
+            ><strong>{{ item.title }}</strong
+            ><small>{{ item.source }}</small>
+          </button>
+        }
+      }
+    </div>
+    <span class="bezel-light"></span>
+  </section>
+
+  <section
+    class="wall-screen resources-screen"
+    [class.selected]="selectedScreen() === 'resources'"
+    aria-label="Screen 4: response resources"
+    (click)="selectedScreen.set('resources')"
+  >
+    <header>
+      <span><i></i>04 / RESPONSE</span><span class="screen-indicator">DISPATCH</span>
+    </header>
+    <div class="screen-body resource-body">
+      <div class="resource-reading">
+        <strong>{{ runtime.crews().toString().padStart(2, '0') }}</strong
+        ><span>OF {{ runtime.config.crews }} CREWS<br />AVAILABLE</span>
+      </div>
+      <div class="crew-bars">
+        @for (crew of crewSlots; track crew) {
+          <i [class.assigned]="crew > runtime.crews()"></i>
+        }
+      </div>
+      @if (active()) {
+        <div class="screen-extra">
+          <span class="order-count">{{ runtime.orders().length }} RESPONSE ORDERS DISPATCHED</span>
+          @for (order of runtime.orders(); track order.actionId) {
+            <div class="dispatch-line">
+              <i></i><span>{{ order.action.title }}</span
+              ><b>{{ order.action.crews }}</b>
+            </div>
+          }
+          <button class="screen-action" (click)="navigate.emit('command')">
+            Coordinate response<app-crisis-icon name="command" />
+          </button>
+        </div>
+      }
+    </div>
+    <span class="bezel-light"></span>
+  </section>
+  @if (!active() && available()) {
+    <button
+      class="screen-hit"
+      data-room-entry="news"
+      aria-label="Open monitor wall"
+      (click)="activate(selectedScreen())"
+    >
+      <span class="wall-surface-label">Monitor wall <b>↗</b><small>CLICK TO INSPECT</small></span>
+    </button>
+  }
+</div>

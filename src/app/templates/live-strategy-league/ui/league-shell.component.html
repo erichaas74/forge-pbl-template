@@ -1,0 +1,107 @@
+<main class="league">
+  <nav class="masthead" aria-label="Main navigation">
+    <a routerLink="/projects" class="back">← Projects</a>
+    <span class="wordmark">LSL <span>/ LIVE STRATEGY LEAGUE</span></span>
+    <span class="practice">LOCAL PRACTICE · {{ league.config.teams.length }} DEMO TEAMS</span>
+  </nav>
+
+  <header class="project-header" tabindex="-1" aria-label="Project title and controls">
+    <div class="project-title"><h1>{{ league.config.title }}</h1><span>Round {{ league.state().round + 1 }} / {{ league.config.rounds.length }}</span></div>
+    <div class="actions">
+      <a class="example-link" [routerLink]="['/projects', league.config.projectId]">League lobby</a>
+      <a class="example-link" [routerLink]="['/projects', league.config.projectId, 'final-demo']">Final example ↗</a>
+      <button [attr.aria-expanded]="history()" aria-controls="round-history" (click)="toggleHistory()">{{ history() ? 'Hide history' : 'Round history' }}</button>
+      <button [attr.aria-expanded]="controls()" aria-controls="teacher-controls" (click)="toggleControls()">Teacher controls {{ controls() ? '−' : '+' }}</button>
+      @switch (league.state().phase) {
+        @case ('preview') { <button class="primary" [disabled]="league.blocked()" (click)="league.command({type: 'start'})">Open round →</button> }
+        @case ('decision-open') { <button class="primary" type="submit" form="team-decision" [disabled]="!league.editable() || !!league.validation()">Lock team decision →</button> }
+        @case ('decision-locked') { <button class="primary" (click)="league.command({type: 'calculate'})">Calculate results →</button> }
+        @case ('revealing') { <button class="primary" (click)="league.command({type: 'reveal'})">Reveal standings →</button> }
+        @case ('results') { <button class="primary" (click)="league.command({type: 'next'})">Next round →</button> }
+      }
+    </div>
+    @if (controls()) {
+      <section id="teacher-controls" tabindex="-1" class="teacher-panel" aria-label="Teacher practice controls">
+        <p>Practice the teacher’s role. Other teams submit simulated decisions when you lock or close the round.</p>
+        <div class="actions">
+          <button [disabled]="league.state().phase !== 'decision-open'" (click)="league.command({type: league.state().pausedSeconds === null ? 'pause' : 'resume'})">{{ league.state().pausedSeconds === null ? 'Pause timer' : 'Resume timer' }}</button>
+          <button [disabled]="league.state().phase !== 'decision-open'" (click)="league.command({type: 'extend'})">+60 seconds</button>
+          <button [disabled]="league.state().phase !== 'decision-open'" (click)="league.command({type: 'close'})">Close & lock round</button>
+          @if (league.state().phase === 'complete') { <button (click)="league.command({type: 'restart'}); history.set(false); controls.set(false)">Start fresh practice →</button> }
+        </div>
+        <small>{{ league.state().phase === 'complete' ? 'Starting fresh replaces the saved results and history for this practice.' : 'At the deadline, your last valid saved decision is used. If unaffordable, a feasible practice decision is substituted.' }}</small>
+      </section>
+    }
+  </header>
+  @if (league.error()) { <p class="error" role="alert">{{ league.error() }}</p> }
+
+  <div class="arena">
+    <section class="stage panel" tabindex="-1" aria-labelledby="standings-title">
+      <app-league-leaderboard [config]="league.config" [snapshot]="league.state()" [yourTeamId]="league.team().id" />
+    </section>
+
+    <section class="command panel" aria-labelledby="command-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">HAPPENING NOW · ROUND {{ league.state().round + 1 }}</p><h2 id="command-title">{{ league.round().title }}</h2></div>
+        <div class="round-status"><strong class="clock" [class.urgent]="league.seconds() < 30 && league.state().phase === 'decision-open'" aria-label="Time remaining">{{ league.timer() }}</strong><span class="phase" aria-live="polite">{{ league.state().pausedSeconds !== null ? 'Timer paused' : labels[league.state().phase] }}</span></div>
+      </div>
+      <p class="current-event">{{ league.round().headline }}</p>
+      <div class="next-round"><span>UP NEXT</span><strong>{{ nextRound()?.title ?? 'Final league standings' }}</strong><small>{{ nextRound() ? 'Round ' + (league.state().round + 2) : 'All ' + league.config.rounds.length + ' rounds complete the league' }}</small></div>
+      <div class="team-heading"><h3>{{ teamName(league.team().id) }} <span>YOUR TEAM</span></h3><span class="saved">Saved on this browser</span></div>
+      <div class="metrics">@for (metric of league.config.metrics; track metric.id) {
+        <div><span>{{ metric.label }}</span><strong>{{ metric.unit }}{{ league.team().state[metric.id] | number:'1.0-2' }}</strong></div>
+      }</div>
+      @if (league.state().phase !== 'complete') {
+        <form id="team-decision" (ngSubmit)="league.lock()">
+          <fieldset [disabled]="!league.editable()"><legend>Your strategy</legend>
+            <div class="decision-fields">@for (decision of league.config.decisions; track decision.id) {
+              <div><label [for]="decision.id">{{ decision.label }} <span>{{ decision.unit }}</span></label>
+                <input [id]="decision.id" [name]="decision.id" type="number" [min]="decision.min" [max]="decision.max" [step]="decision.step" [ngModel]="league.draft().values[decision.id]" (ngModelChange)="league.updateValue(decision.id, $event)" (blur)="league.saveDraft()" required></div>
+            }</div>
+            <div class="cost"><span>Projected cost</span><strong>{{ league.cost() | number:'1.0-2' }}</strong></div>
+            <div class="reflection-fields">
+              <div><label for="prediction">Predicted points <span>optional</span></label><input id="prediction" name="prediction" type="number" [ngModel]="league.draft().prediction" (ngModelChange)="league.updatePrediction($event)" (blur)="league.saveDraft()"></div>
+              <div><label for="reasoning">Why this strategy? <span>optional</span></label><textarea id="reasoning" name="reasoning" rows="2" maxlength="1000" placeholder="Explain your choices…" [ngModel]="league.draft().reasoning" (ngModelChange)="league.updateNote($event)" (blur)="league.saveDraft()"></textarea></div>
+            </div>
+          </fieldset>
+          @if (league.validation() && league.editable()) { <p class="error" role="alert">{{ league.validation() }}</p> }
+          <p class="form-note">{{ league.team().decision.lockedAt !== undefined ? '✓ Decision locked. Continue using the project header.' : league.state().phase === 'preview' ? 'Open the round above to enter your decisions.' : 'Use Lock team decision in the project header when ready. Locking is final for this round.' }}</p>
+        </form>
+      } @else {
+        <div class="champion"><p class="eyebrow">LEAGUE COMPLETE</p><h3>{{ teamName(league.ranking()[0].id) }} wins the league.</h3><p>{{ league.ranking()[0].score | number:'1.0-2' }} points across {{ league.config.rounds.length }} rounds.</p></div>
+      }
+    </section>
+
+    <div class="round-information">
+      <section class="info panel" aria-labelledby="event-title">
+        <p class="eyebrow">ROUND {{ league.state().round + 1 }} · ROUND INFORMATION</p>
+        <h2 id="event-title">{{ league.round().headline }}</h2><p>{{ league.round().description }}</p>
+        <h3>How scoring works</h3><p>{{ league.config.explanation }}</p>
+      </section>
+      <section class="recap panel" aria-labelledby="recap-title" aria-live="polite">
+        <p class="eyebrow">LOOKING BACK</p><h2 id="recap-title">Last round recap</h2>
+        @if (lastRound(); as record) {
+          <p class="recap-round">Round {{ record.round + 1 }} · {{ league.config.rounds[record.round].title }}</p>
+          <div class="recap-metrics"><div><span>Your rank</span><strong>#{{ record.team.rank }}</strong></div><div><span>Round points</span><strong>{{ record.team.result.scoreDelta > 0 ? '+' : '' }}{{ record.team.result.scoreDelta | number:'1.0-2' }}</strong></div></div>
+          <p>{{ record.team.result.explanation }}</p>
+          <p class="recap-reasoning">{{ record.team.decision.reasoning || 'No strategy note entered for this round.' }}</p>
+        } @else { <div class="empty-recap"><span aria-hidden="true">↶</span><h3>Your first result goes here.</h3><p>After the standings are revealed, see your rank, points and what shaped the result.</p></div> }
+      </section>
+    </div>
+    @if (history()) {
+      <section id="round-history" tabindex="-1" class="history panel" aria-label="Your round history">
+        <p class="eyebrow">YOUR DECISIONS & RESULTS</p><h2>Round history</h2>
+        @for (record of league.state().history; track record.round) {
+          @for (row of record.teams; track row.id) {
+            @if (row.id === league.team().id) {
+              <article><h3>Round {{ record.round + 1 }} · {{ league.config.rounds[record.round].title }}</h3>
+                <p>{{ league.config.rounds[record.round].headline }}</p><strong>Rank {{ row.rank }} · {{ row.result.scoreDelta | number:'1.0-2' }} points</strong>
+                <p>{{ row.result.explanation }}</p><p>Prediction: {{ row.decision.prediction === null ? 'Not entered' : row.decision.prediction }} · Reasoning: {{ row.decision.reasoning || 'Not entered' }}</p>
+              </article>
+            }
+          }
+        } @empty { <p>Finish a round to see your decisions and results here.</p> }
+      </section>
+    }
+  </div>
+</main>

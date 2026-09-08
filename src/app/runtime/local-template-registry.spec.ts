@@ -109,12 +109,15 @@ describe('local template composition', () => {
     );
 
     expect(registry.list().map((registration) => registration.id)).toEqual([
+      'competition-show',
+      'crisis-operations',
       'debate-studio',
       'engineering-design',
       'exhibit-hall',
       'history-live-broadcast',
       'investigation',
       'journey-replay',
+      'live-strategy-league',
       'narrative-studio',
       'programming-automation',
       'simulation-decision',

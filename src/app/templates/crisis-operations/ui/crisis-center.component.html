@@ -1,0 +1,246 @@
+<main
+  class="crisis-room"
+  [class.focused]="view() !== 'room'"
+  [class.specialized-station]="specializedStation()"
+  [attr.data-view]="view()"
+  [attr.data-alert]="runtime.bulletin().alert"
+>
+  <app-crisis-room-scene
+    [config]="runtime.config"
+    [state]="runtime.state()"
+    [selectedLocation]="selectedLocation()"
+    [view]="view()"
+    [layer]="layer()"
+    [zoom]="zoom()"
+    (navigate)="showView($event)"
+    (locate)="locate($event)"
+    (locationSelected)="selectLocation($event)"
+    (imageFailed)="imageFailed.set(true)"
+  />
+  <div class="edge-vignette" aria-hidden="true"></div>
+  <app-crisis-workstations [view]="view()" (open)="openWorkstation($event)" />
+  <app-crisis-robot [view]="view()" [roaming]="robotRoaming()" (open)="showView('argus')" />
+  <header class="room-hud">
+    <div class="operation-identity">
+      <a
+        routerLink="/projects"
+        class="icon-control exit-room"
+        aria-label="Return to project library"
+        title="Return to projects"
+        ><app-crisis-icon name="back"
+      /></a>
+      <div>
+        <span class="eyebrow">CRISIS CENTER</span>
+        <h1>
+          {{ runtime.config.title }}
+        </h1>
+      </div>
+    </div>
+    <div class="hud-status">
+      <span class="alert-state"><i></i>{{ runtime.bulletin().alert.toUpperCase() }}</span>
+      <div class="sim-clock">
+        <strong>{{ runtime.time() }}</strong
+        ><span>EXERCISE</span>
+      </div>
+      <div class="hud-tools">
+        <button
+          class="icon-control"
+          (click)="toggleAudio()"
+          [attr.aria-label]="audioEnabled() ? 'Mute alert tones' : 'Enable alert tones'"
+          [attr.aria-pressed]="audioEnabled()"
+          [title]="audioEnabled() ? 'Mute alert tones' : 'Enable alert tones'"
+        >
+          <app-crisis-icon [name]="audioEnabled() ? 'sound' : 'mute'" /></button
+        ><button
+          class="icon-control fullscreen-control"
+          (click)="toggleFullscreen()"
+          [attr.aria-label]="fullscreen() ? 'Exit full screen' : 'Enter full screen'"
+          title="Full screen"
+        >
+          <app-crisis-icon name="expand" /></button
+        ><button
+          class="icon-control"
+          (click)="resetOpen.set(true); resetDialog.showModal()"
+          aria-label="Reset local exercise"
+          title="Reset exercise"
+        >
+          <app-crisis-icon name="reset" />
+        </button>
+      </div>
+    </div>
+  </header>
+
+  @if (view() === 'room') {
+    @if (!runtime.config.workstations?.length) {
+      <div class="spatial-controls">
+        <button class="spatial-target station-target" (click)="navigate('station')">
+          <span class="target-dot"></span
+          ><span
+            >My station <b>{{ runtime.unread() }}</b
+            ><app-crisis-icon name="arrow"
+          /></span>
+        </button>
+      </div>
+    }
+    @if (imageFailed()) {
+      <p class="art-error" role="status">
+        Room artwork could not load. All six operations consoles are available below.
+      </p>
+    }
+  }
+
+  @if (conference()) {
+    <app-crisis-conference
+      [workstation]="selectedWorkstation()!"
+      (leave)="showView('room')"
+      (locate)="locate($event)"
+    />
+  }
+  @if (weather(); as weatherConfig) {
+    <app-crisis-weather-screen
+      [weather]="weatherConfig"
+      (leave)="showView('room')"
+      (reports)="openStationReports()"
+      (locate)="locate($event)"
+    />
+  }
+  @if (
+    view() !== 'room' &&
+    view() !== 'news' &&
+    view() !== 'map' &&
+    view() !== 'argus' &&
+    !specializedStation()
+  ) {
+    <section class="focus-console" [attr.aria-label]="viewTitle()">
+      <header class="console-chrome">
+        <div>
+          <h2 tabindex="-1" data-panel-heading>{{ viewTitle() }}</h2>
+        </div>
+        <button class="return-room" aria-label="Return to room" (click)="showView('room')">
+          <span>Return to room</span><app-crisis-icon name="close" />
+        </button>
+      </header>
+
+      <div class="console-content">
+        <app-crisis-console
+          [view]="view()"
+          [suggestedActionId]="suggestedActionId()"
+          [workstation]="selectedWorkstation()"
+          (navigate)="navigate($event)"
+          (inspectLocation)="locate($event)"
+        />
+      </div>
+    </section>
+  }
+
+  @if (view() === 'news') {
+    <header class="wall-heading">
+      <div>
+        <h2 tabindex="-1" data-panel-heading>Monitor wall</h2>
+      </div>
+      <button class="return-room" aria-label="Return to room" (click)="showView('room')">
+        Return to room <app-crisis-icon name="close" />
+      </button>
+    </header>
+    <div class="wall-guidance">
+      <i></i> Select a screen to inspect. Click the surrounding room to step back · Esc
+    </div>
+  }
+  @if (view() === 'map') {
+    <app-crisis-table-controls
+      [selectedLocation]="selectedLocation()"
+      [layer]="layer()"
+      [zoom]="zoom()"
+      (layerChanged)="layer.set($event)"
+      (zoomChanged)="changeZoom($event)"
+      (locationSelected)="selectLocation($event)"
+      (navigate)="showView($event)"
+    />
+  }
+
+  <app-crisis-companion-briefing
+    [active]="view() === 'argus'"
+    [roaming]="robotRoaming()"
+    [selectedLocation]="selectedLocation()"
+    (roamingChanged)="robotRoaming.set($event)"
+    (navigate)="showView($event)"
+    (locate)="locate($event)"
+    (reviewAction)="reviewSuggestedAction($event)"
+  />
+  <footer
+    class="operations-footer"
+    [attr.inert]="specializedStation() ? '' : null"
+    [attr.aria-hidden]="specializedStation() ? true : null"
+  >
+    @if (runtime.storageNotice()) {
+      <p class="storage-note" role="status">{{ runtime.storageNotice() }}</p>
+    }
+    <nav class="view-dock" aria-label="Operations room views">
+      @for (item of views; track item.id) {
+        <button
+          class="view-button"
+          [attr.data-view]="item.id"
+          [attr.aria-label]="item.title"
+          [class.active]="view() === item.id"
+          [attr.aria-pressed]="view() === item.id"
+          (click)="navigate(item.id)"
+          [title]="item.title + ' · ' + item.code"
+        >
+          <app-crisis-icon [name]="item.id" /><span class="view-name">{{ item.name }}</span>
+          @if (item.id === 'station' && runtime.unread() > 0) {
+            <i class="unread-dot"></i>
+          }
+        </button>
+      }
+    </nav>
+    <div class="scenario-controls">
+      <span>{{ runtime.state().stage + 1 }} / {{ runtime.config.bulletins.length }} UPDATES</span>
+      <div>
+        <button
+          class="play-button"
+          (click)="toggleRunning()"
+          [disabled]="runtime.finished()"
+          [attr.aria-label]="running() ? 'Pause scenario updates' : 'Auto-play scenario updates'"
+          [title]="
+            running()
+              ? 'Pause updates'
+              : 'Auto-play updates every ' + runtime.config.bulletinIntervalSeconds + ' seconds'
+          "
+        >
+          {{ running() ? 'Ⅱ' : '▷' }}</button
+        ><button class="next-update" (click)="advance()" [disabled]="runtime.finished()">
+          {{ runtime.finished() ? 'All updates received' : 'Next update'
+          }}<app-crisis-icon name="arrow" />
+        </button>
+      </div>
+    </div>
+  </footer>
+  @if (runtime.message()) {
+    <div class="room-notice" role="status">
+      <span>{{ runtime.message() }}</span
+      ><button class="icon-control" aria-label="Dismiss message" (click)="runtime.message.set('')">
+        <app-crisis-icon name="close" />
+      </button>
+    </div>
+  }
+  <span class="sr-only" aria-live="polite"
+    >Update {{ runtime.state().stage + 1 }}. {{ runtime.bulletin().title }}
+    {{ runtime.crews() }} crews available.</span
+  >
+</main>
+<dialog
+  #resetDialog
+  class="reset-dialog"
+  (close)="resetOpen.set(false)"
+  (cancel)="resetOpen.set(false)"
+>
+  <span class="eyebrow">LOCAL EXERCISE</span>
+  <h2>Start a fresh response?</h2>
+  <p>This clears the current orders, pinned reports, and timeline on this device.</p>
+  <div>
+    <button autofocus (click)="resetDialog.close()">Keep current response</button
+    ><button class="confirm-reset" (click)="resetExercise(); resetDialog.close()">
+      Reset exercise
+    </button>
+  </div>
+</dialog>

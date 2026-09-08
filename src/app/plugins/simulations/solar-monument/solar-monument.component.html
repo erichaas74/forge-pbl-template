@@ -26,6 +26,11 @@
     <button (click)="command('showSun')" [class.current]="ui().sun" [disabled]="!ready()">
       ☀ Sun
     </button>
+    @if (!activity().startsWith('sundial-')) {
+      <button (click)="toggleMarkers()" [attr.aria-expanded]="markersOpen()" [disabled]="!ready()">
+        ⌖ Markers · {{ design().targets.length }}
+      </button>
+    }
     @if (!presentation()) {
       <button class="play" (click)="command('playBtn')" [disabled]="!ready() || !ui().canPlay">
         {{ ui().play }}
@@ -173,6 +178,147 @@
   [style.height.px]="frameHeight()"
   (load)="connect()"
 ></iframe>
+@if (markersOpen()) {
+  <aside
+    #markerPanel
+    class="marker-panel"
+    aria-label="Solar calendar markers"
+    tabindex="-1"
+    (keydown.escape)="closeMarkers()"
+  >
+    <header>
+      <h2>Calendar sunstones</h2>
+      <button (click)="closeMarkers()" aria-label="Close markers">×</button>
+    </header>
+    @if (canMark()) {
+      <p>Carve a ring around a light patch or shadow. Its arrow remembers where the Sun was.</p>
+      <button
+        class="place-marker"
+        (click)="startMarker()"
+        [disabled]="design().targets.length >= 12"
+      >
+        ⌖ Place on the floor
+      </button>
+      @if (design().targets.length >= 12) {
+        <p>Your court has 12 markers. Remove one to make space.</p>
+      }
+      @if (markerPlacing()) {
+        <p role="status">
+          Click the floor, or use the canvas arrow keys and Enter. Shift makes smaller steps.
+        </p>
+        <button (click)="cancelMarkerDraft()">Cancel placing</button>
+      }
+      <details>
+        <summary>Place by measurements</summary>
+        <div class="marker-coordinates">
+          <label
+            >East / west (cm)<input
+              type="number"
+              min="-1200"
+              max="1200"
+              step="1"
+              [(ngModel)]="markerX"
+          /></label>
+          <label
+            >South / north (cm)<input
+              type="number"
+              min="-1200"
+              max="1200"
+              step="1"
+              [(ngModel)]="markerZ"
+          /></label>
+        </div>
+        <small>Negative numbers mean west and north.</small>
+        <button (click)="measuredMarker()">Preview this position</button>
+      </details>
+    }
+    @if (markerTarget(); as target) {
+      <section class="marker-observation" aria-label="Marker observation">
+        @if (canMark()) {
+          <label
+            >Stone name<input
+              #markerNameInput
+              maxlength="80"
+              [(ngModel)]="markerName"
+              (change)="renameMarker()"
+          /></label>
+        } @else {
+          <h3>{{ target.label }}</h3>
+        }
+        @if (markerRecord(); as record) {
+          <p class="marker-date">
+            {{ markerWhen(record) }}<br /><small>{{ record.zone }}</small>
+          </p>
+          <dl>
+            <dt>Recorded light</dt>
+            <dd>{{ record.light }}</dd>
+            <dt>Sun height</dt>
+            <dd>{{ record.sunAltitude.toFixed(1) }}° above the horizon</dd>
+            <dt>Sun direction</dt>
+            <dd>{{ record.sunAzimuth.toFixed(1) }}° clockwise from north</dd>
+            <dt>Place</dt>
+            <dd>{{ record.latitude.toFixed(2) }}°, {{ record.longitude.toFixed(2) }}°</dd>
+          </dl>
+          @if (!markerDraft() && markerNow()) {
+            <p class="marker-live" role="status">
+              <strong>Light here now: {{ markerNow() }}</strong
+              ><br />{{
+                markerNow() === record.light
+                  ? 'Same light as your record.'
+                  : 'Different from your record. What changed?'
+              }}
+            </p>
+          }
+        } @else {
+          <p>This is a ground target without a saved Sun observation.</p>
+        }
+        <small
+          >Ground point: {{ (target.x * 100).toFixed(1) }} cm east,
+          {{ (target.z * 100).toFixed(1) }} cm south.</small
+        >
+        @if (markerDraft()) {
+          <div class="marker-actions">
+            <button class="place-marker" (click)="saveMarker()">Carve marker</button
+            ><button (click)="cancelMarkerDraft()">Discard</button>
+          </div>
+        } @else {
+          <div class="marker-actions">
+            @if (markerRecord() && !presentation()) {
+              <button (click)="revisitMarker()">↶ Show recorded Sun</button>
+            }
+            @if (canMark() && markerSeason(); as season) {
+              <button (click)="useMarkerForTest()">Use for {{ season.label }}</button>
+            }
+            @if (canMark()) {
+              <button (click)="removeMarker()">Remove stone</button>
+            }
+          </div>
+        }
+      </section>
+    }
+    @if (markerFeedback()) {
+      <p class="marker-feedback" role="status">{{ markerFeedback() }}</p>
+    }
+    @if (removedMarker() && canMark()) {
+      <button (click)="undoMarker()">Undo remove</button>
+    }
+    <div class="marker-list" aria-label="Saved calendar stones">
+      @for (target of design().targets; track target.id; let i = $index) {
+        <button
+          [class.current]="markerSelected() === target.id && !markerDraft()"
+          (click)="selectMarker(target)"
+        >
+          <span class="stone-number">{{ i + 1 }}</span
+          ><span
+            >{{ target.label }}<small>{{ markerWhen(recordFor(target)) }}</small></span
+          >
+        </button>
+      } @empty {
+        <p>Your first sunstone will appear here.</p>
+      }
+    </div>
+  </aside>
+}
 @if (presentation()) {
   <section class="demonstration" [hidden]="!reviewOpen()" aria-label="Comparison and expectations">
     <div class="expectation">
@@ -214,7 +360,7 @@
       </p>
     </div>
     @if (!design().targets.length) {
-      <p>Add ground targets with the block tools to define what your monument should do.</p>
+      <p>Return to building and open Markers to carve a seasonal target into the floor.</p>
     }
     @if (checkFor(cases[selected()].id); as check) {
       <div class="expectation">
@@ -234,6 +380,7 @@
           <label
             >Local clock time<input
               type="time"
+              step="any"
               [disabled]="readOnly()"
               [value]="clockFor(check.scenarioId)"
               (change)="changeTime(check.scenarioId, 'clock', $any($event.target).value)"
@@ -318,7 +465,12 @@
 <ng-template #guide>
   <h3>Canvas guide</h3>
   <p>
-    {{ presentation() ? 'Choose a special date in the header, then try a week before or after it.' : 'Play a day, pause, and follow the shadow.' }} Drag to turn the scene; scroll or use + / − to zoom.
+    {{
+      presentation()
+        ? 'Choose a special date in the header, then try a week before or after it.'
+        : 'Play a day, pause, and follow the shadow.'
+    }}
+    Drag to turn the scene; scroll or use + / − to zoom.
   </p>
   <div class="guide-actions">
     @if (!['sundial-build', 'sundial-seasons'].includes(activity())) {

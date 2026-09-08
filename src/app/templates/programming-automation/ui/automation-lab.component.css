@@ -11,106 +11,110 @@
   max-width: 1680px;
   margin: 0 auto;
 }
+
 .masthead {
   display: flex;
   align-items: center;
-  gap: 15px;
+  flex-wrap: wrap;
+  gap: 14px 24px;
+  padding: 16px 22px;
   background: #122c3c;
-  color: white;
-  padding: 23px 28px;
+  color: #f3f8fa;
 }
-.brand-icon {
-  display: grid;
-  place-items: center;
-  width: 47px;
-  height: 47px;
-  border-radius: 12px;
-  background: #1c4b59;
-  color: #85e0d1;
-  font-size: 33px;
-}
-.masthead p {
-  font-size: 9px;
-  letter-spacing: 2px;
-  font-weight: 750;
-  color: #97beca;
-  margin: 0 0 6px;
+.project-identity {
+  flex: 1 1 280px;
+  min-width: 0;
 }
 .masthead h1 {
-  font-size: 24px;
-  letter-spacing: -0.5px;
   margin: 0;
+  font-size: 23px;
+  line-height: 1.25;
+  letter-spacing: -0.4px;
 }
 .save {
-  margin-left: auto;
-  color: #a7c6c9;
-  font-size: 11px;
-}
-.main-nav {
-  display: flex;
-  background: #fff;
-  border-bottom: 1px solid #d7e3e8;
-  padding: 0 25px;
-  gap: 25px;
-}
-.main-nav button {
-  border: 0;
-  border-bottom: 3px solid transparent;
-  border-radius: 0;
-  background: none;
-  padding: 16px 0;
-  color: #597482;
-  font-weight: 650;
-  font-size: 12px;
-}
-.main-nav button.active {
-  border-color: #138b82;
-  color: #0a7773;
-}
-.main-nav span {
-  background: #edf4f5;
-  border-radius: 15px;
-  padding: 3px 7px;
-  font-size: 10px;
-  margin-left: 4px;
-}
-.mission {
-  display: grid;
-  grid-template-columns: 270px 1fr;
-  gap: 30px;
-  align-items: start;
-  padding: 22px 28px;
-  background: #f8fbfc;
-  border-bottom: 1px solid #d7e3e8;
-}
-.mission-choice label {
   display: block;
-  font-size: 9px;
-  letter-spacing: 1.7px;
-  font-weight: 800;
-  color: #587782;
-}
-.mission select {
-  width: 100%;
-  font-weight: 750;
-  background: #fff;
-  margin-top: 7px;
-}
-.mission p {
-  font-size: 13px;
-  line-height: 1.65;
-  margin: 0 0 5px;
-  max-width: 850px;
-}
-.mission summary {
-  cursor: pointer;
-  font-size: 11px;
-  color: #187878;
-}
-.mission details p {
-  margin-top: 10px;
+  margin-top: 5px;
+  color: #b6cdd7;
   font-size: 12px;
-  color: #526e7b;
+}
+.header-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  min-width: 0;
+}
+.header-controls label {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  color: #bed4dd;
+  font-size: 12px;
+}
+.header-controls select {
+  margin: 0;
+  min-height: 42px;
+  width: 100%;
+  font-size: 13px;
+  color: #f2f7fa;
+  background: #213e52;
+  border-color: #526d7c;
+}
+.view-choice {
+  width: 175px;
+}
+.mission-choice {
+  width: 230px;
+}
+.header-controls .pane-choice {
+  display: none;
+}
+.header-controls app-task-guide {
+  color: #e9f6f7;
+}
+.guide-section h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+.guide-section p {
+  margin: 8px 0;
+}
+.guide-steps {
+  padding-left: 24px;
+}
+.guide-steps li {
+  margin: 12px 0;
+}
+.guide-reference {
+  border-top: 1px solid #d6dfdc;
+  padding: 10px 0;
+}
+.guide-reference summary {
+  cursor: pointer;
+  font-weight: 700;
+  min-height: 36px;
+}
+.reference-command {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid #d6dfdc;
+}
+.reference-command app-command-graphic {
+  width: 36px;
+  height: 36px;
+  color: #386bad;
+}
+.reference-command p {
+  font-size: 14px;
+  margin: 3px 0 0;
+}
+.mission-goal {
+  margin: 10px 0 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #c0d6df;
 }
 .workspace.guess-stage {
   grid-template-columns: minmax(0, 1.25fr) minmax(320px, 1fr);
@@ -414,9 +418,7 @@ select {
   background: white;
   padding: 28px;
 }
-.mobile-nav {
-  display: none;
-}
+
 footer {
   display: flex;
   justify-content: space-between;
@@ -431,10 +433,7 @@ footer {
 footer p {
   margin: 0;
 }
-footer span {
-  font-size: 10px;
-  text-align: right;
-}
+
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
@@ -464,52 +463,32 @@ summary:focus-visible {
     border-radius: 9px;
   }
   .masthead {
-    padding: 18px 15px;
-    gap: 10px;
+    padding: 14px 16px;
+    gap: 12px;
   }
-  .brand-icon {
-    width: 35px;
-    height: 35px;
-    font-size: 25px;
+  .project-identity {
+    flex-basis: 100%;
   }
   .masthead h1 {
-    font-size: 19px;
+    font-size: 20px;
   }
-  .masthead p {
-    font-size: 7px;
-    letter-spacing: 1px;
+  .header-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    width: 100%;
+    gap: 10px;
   }
-  .save {
-    display: none;
+  .header-controls label {
+    width: auto;
   }
-  .main-nav {
-    padding: 0 12px;
-    gap: 15px;
-    justify-content: space-between;
+  .header-controls .pane-choice {
+    display: grid;
   }
-  .main-nav button {
-    font-size: 10px;
-  }
-  .mission {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    padding: 18px;
+  .header-controls app-task-guide {
+    justify-self: end;
   }
   .workspace {
     display: block;
-  }
-  .mobile-nav {
-    display: flex;
-    padding: 12px 16px;
-    gap: 8px;
-  }
-  .mobile-nav button {
-    flex: 1;
-  }
-  .mobile-nav .active {
-    background: #127d79;
-    color: white;
-    border-color: #127d79;
   }
   .mobile-hidden {
     display: none;
@@ -529,8 +508,5 @@ summary:focus-visible {
   }
   .wide-panel {
     padding: 18px;
-  }
-  footer span {
-    display: none;
   }
 }

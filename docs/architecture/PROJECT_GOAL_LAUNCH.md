@@ -1,5 +1,7 @@
 # Final-product launch page and goal-chat preview
 
+**Superseded September 8, 2026:** Projects now use a [single-page game-style invitation](SINGLE_PAGE_PROJECT_LAUNCH.md) with story/media, experiences, learning goals, and **Start Project**. The multi-step scene/product handoff and inactive chatbot are no longer the launch flow. The text below records the earlier implementation.
+
 This September 5, 2026 update supersedes the practice-choice and written-response screens described in PROJECT_LAUNCHES.md. It applies to all seven configured project launches.
 
 ## Student flow

@@ -8,10 +8,11 @@ describe('illustrated comparison opening', () => {
   beforeEach(() => vi.useFakeTimers());
   afterEach(() => vi.useRealTimers());
 
-  function setup() {
+  function setup(storyMode = false) {
     TestBed.configureTestingModule({ imports: [IllustratedComparisonComponent] });
     const fixture = TestBed.createComponent(IllustratedComparisonComponent);
     fixture.componentRef.setInput('config', unlabeledShelfTeaser);
+    fixture.componentRef.setInput('storyMode', storyMode);
     fixture.detectChanges();
     return fixture;
   }
@@ -26,6 +27,37 @@ describe('illustrated comparison opening', () => {
     expect(fixture.nativeElement.textContent).toContain('Will both samples react the same way?');
     component.finish();
     expect(records).toEqual([]);
+    fixture.destroy();
+  });
+
+  it('plays the launch story without practice questions, navigation, or fabricated responses', async () => {
+    const fixture = setup(true);
+    const component = fixture.componentInstance;
+    const completed = vi.fn();
+    component.completed.subscribe(completed);
+    expect(fixture.nativeElement.querySelector('h1')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.story-dialogue').textContent).toContain(
+      'Professor Pip',
+    );
+    expect(fixture.nativeElement.querySelector('.prediction-choices')).toBeNull();
+    expect(component.voices()).toBe(false);
+    const run = component.runTest();
+    await vi.advanceTimersByTimeAsync(3350);
+    await run;
+    expect(component.stage()).toBe('reveal');
+    expect(component.firstColor()).toBe(true);
+    expect(component.secondColor()).toBe(true);
+    component.showCase();
+    fixture.detectChanges();
+    expect(component.stage()).toBe('handoff');
+    expect(fixture.nativeElement.querySelectorAll('.case-vials > g')).toHaveLength(4);
+    expect(component.thinking()).toEqual([]);
+    component.finish();
+    component.finish(true);
+    expect(completed).not.toHaveBeenCalled();
+    component.reset();
+    expect(component.stage()).toBe('welcome');
+    expect(component.firstColor()).toBe(false);
     fixture.destroy();
   });
 

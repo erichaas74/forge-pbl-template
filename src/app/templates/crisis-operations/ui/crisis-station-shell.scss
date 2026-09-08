@@ -1,0 +1,7 @@
+.specialized-station .operations-footer {
+  opacity: 0;
+  pointer-events: none;
+}
+.specialized-station .operations-footer > * {
+  pointer-events: none;
+}

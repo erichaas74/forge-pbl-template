@@ -11,8 +11,8 @@ export function loadSample(): CompletedSample {
   registry.register('simulation.solar-monument', SolarMonumentComponent);
   return {
     integratedHeader: true,
-    title: 'The Three-Marker Tower',
-    subtitle: 'An interactive seasonal demonstration of a fictional, measured block monument.',
+    title: 'The Jewel Circle Solar Calendar',
+    subtitle: 'A carved stone circle, bronze crystal and jeweled windows with four tested seasonal alignments.',
     audience: 'Classmates and families',
     duration: '3–5 minute exhibit',
     trail: [
@@ -24,18 +24,20 @@ export function loadSample(): CompletedSample {
       {
         label: 'Design',
         title: 'Make it reproducible',
-        text: 'Use measured blocks, coordinates, and a true-north base.',
+        text: 'Arrange eight gates, four pierced standing stones and a bronze crystal on a stepped base. Three roof jewels align with measured seasonal sunstones; the outer windows add new light patterns.',
       },
       {
         label: 'Revision',
         title: 'Question the precision',
-        text: 'The two equinoxes share a marker. Nearby dates can produce nearly the same shadow.',
+        text: 'Narrow the blue opening to distinguish nearby equinox dates. The solstice markers still match nearby days, showing the calendar’s limits.',
       },
     ],
     review: {
-      strength: 'The design connects seasonal angles with measured targets.',
+      strength:
+        'All four tests connect the same stonework and jeweled openings to measured seasonal light targets.',
       question: 'How many nearby dates reach each target?',
-      revision: 'Use simulated and outdoor observations to refine the marker positions.',
+      revision:
+        'Compare a wide and narrow equinox opening, then explain why the solstice markers still match a week before and after.',
       assessment:
         'Assess science, reproducibility, evidence, and revision. This is a fictional sample, not a verified physical test.',
     },
@@ -43,7 +45,7 @@ export function loadSample(): CompletedSample {
     providers: [{ provide: DESIGN_SIMULATIONS, useValue: registry }],
     inputs: {
       projectId: 'calendar-monument',
-      title: 'The Three-Marker Tower',
+      title: 'The Jewel Circle Solar Calendar',
       snapshot: structuredClone(calendarMonumentSample),
       simulationId: 'simulation.solar-monument',
     },

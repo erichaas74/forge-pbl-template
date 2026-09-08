@@ -1,12 +1,12 @@
 # Build a Calendar Monument
 
-The lab now includes a visible [six-model sample gallery](SAMPLE_MODELS.md): gates, round openings, colored windows, a pierced pyramid, a shadow crown and twin tunnels. Preview without changing saved work, or adopt a sample and retain a restorable previous design.
+The lab includes a [seven-model sample gallery](SAMPLE_MODELS.md), available from the workspace menu: a solar-calendar circle, gates, round openings, colored windows, a pierced pyramid, a shadow crown and twin tunnels. Preview without changing saved work, or adopt a sample and retain a restorable previous design.
 
 Open `/projects/calendar-monument` for the student launch, `/projects/calendar-monument/experience` for the workspace, or `/projects/calendar-monument/final-demo` for the fictional example.
 
 The Grade 5 project asks students to research Sun and Moon patterns, compare seasonal Sun angles, construct matching physical/digital block monuments, test equinoxes and solstices, revise, and explain the evidence. Plan approximately 10–12 lessons: observe; research; compare; design; construct; test; revise; exhibit. Extend Moon observations across about a month.
 
-The first challenge is a tower with three seasonal ground markers. In Colorado Springs, solar-noon shadows are short near June solstice, intermediate near either equinox, and long near December solstice. Students investigate why both equinoxes share an approximate alignment. A lintel opening is an extension. Test nearby dates to discover how precisely a monument identifies an event.
+Students first build a practice sundial, investigate seasonal changes, explain Earth’s tilt, and mark the sundial’s year. Their final project is a solar-calendar monument inspired by stone circles, using standing stones, lintels, cylindrical holes and colored jewels. New project designs begin with eight stone gates and no seasonal markers; students place and test their own. The final example, The Jewel Circle Solar Calendar, demonstrates amber, blue and ruby light at fixed targets in Colorado Springs. Test nearby dates to discover how precisely an alignment marks the year. See [the final challenge and verification](SOLAR_CALENDAR_FINAL.md).
 
 The [Sun-model integration plan](SUN_MODEL_PLAN.md) records the source inspection and outdoor calibration procedure. The lab now opens directly on the **3D monument and shadow canvas**. Block tools, research, and evidence open in supporting panels. Place/time and sky paths are optional guides. The camera moves around a fixed monument.
 
@@ -32,7 +32,7 @@ Integrated through existing catalog, intro list, definition source, lazy templat
 - [NASA: What causes the seasons?](https://spaceplace.nasa.gov/seasons/en/)
 - [NASA: Moon phases](https://science.nasa.gov/moon/moon-phases/)
 - [NOAA: solar terminology](https://www.gml.noaa.gov/grad/solcalc/glossary.html)
-- [English Heritage: Stonehenge and the solstice](https://www.english-heritage.org.uk/visit/places/stonehenge/history-and-stories/stonehenge-and-solstice/)
+- [English Heritage: Solstice at Stonehenge](https://www.english-heritage.org.uk/visit/places/stonehenge/things-to-do/solstice)
 - [US Naval Observatory: seasons API](https://aa.usno.navy.mil/data/api) — bundled event instants retrieved 2026-09-07, years 2025–2030.
 - [SunCalc 1.9.0](https://github.com/mourner/suncalc/tree/v1.9.0) — Sun/Moon positions and phases.
 
@@ -84,3 +84,7 @@ The canvas now includes traced sunlight, improved shadow-side framing and zoom, 
 The learning sequence now begins with a student-built vertical-post dial and Play day. Fixed time marks reveal a seasonal surprise before the Earth-tilt explanation; students then mark both equinoxes and solstices on their dial. The creative Sun monument is the final challenge. Practice and final designs save separately. See [the five lessons, scientific basis, compatible contracts and passing checks](SUNDIAL_LEARNING_SEQUENCE.md).
 
 The follow-up [compact layout](SIMPLIFIED_LAB_LAYOUT.md) puts navigation and Sun events in one header, with clickable Guide, samples, notebook and comparison panels. It replaces the earlier stacked headings throughout the lab and final example.
+
+The monument's **Markers** tool now places [calendar sunstones](CALENDAR_SUNSTONES.md) directly on the floor. Each carved marker saves its Sun observation, compares recorded and current light, and can configure a seasonal test. The linked report covers the controls, compatible contracts and verification.
+
+The latest [Jewel Circle showcase upgrade](JEWEL_CIRCLE_SHOWCASE.md) brightens the carved court and stone/jewel finishes, adds matching project artwork, and expands the final example with a bronze crystal and pierced outer stones. All four seasonal alignments are recalculated from that complete model.

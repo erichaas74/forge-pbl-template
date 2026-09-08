@@ -1,19 +1,21 @@
 import { LOAD_OBJECT_MODEL_VIEWER } from '../../shared/media/object-model-viewer.component';
+import { By } from '@angular/platform-browser';
+import { DecisionSceneComponent } from '../../plugins/intro-scenes/decision-scene.component';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { vi } from 'vitest';
 import { createLocalPreviewSession } from '../../core/context/project-session-context';
 import { BrowserProjectIntroAdapter } from '../../infrastructure/persistence/browser-project-intro.adapter';
 import { projectIntros } from '../../projects/project-intros';
-import { PROJECT_SESSION_CONTEXT } from '../../runtime/project-launch/project-launch.tokens';
+import { projectCatalog, type ProjectCatalogEntry } from '../../projects/project-catalog';
+import { PROJECT_CATALOG_ENTRY } from '../../runtime/project-launch/project-launch.tokens';
 import {
   PROJECT_INTRO_CONFIG,
   PROJECT_INTRO_PERSISTENCE,
+  ProjectIntroRuntime,
 } from '../../shared/project-intro/project-intro.runtime';
-import { EMPTY_INTRO_RESPONSE } from '../../shared/project-intro/project-intro.models';
 import { ProjectIntroComponent } from './project-intro.component';
 import { ProjectFinalExampleComponent } from './project-final-example.component';
-import type { ProjectTeaserResult } from '../../shared/project-intro/project-teaser.models';
 
 describe('ProjectIntroComponent', () => {
   beforeEach(() => {
@@ -24,17 +26,18 @@ describe('ProjectIntroComponent', () => {
     });
   });
 
-  async function setup(config = projectIntros[0]) {
+  async function setup(
+    project = projectCatalog.find((item) => item.id === projectIntros[0].projectId)!,
+  ) {
+    const config = projectIntros.find((item) => item.projectId === project.id);
     await TestBed.configureTestingModule({
       imports: [ProjectIntroComponent, ProjectFinalExampleComponent],
       providers: [
         { provide: LOAD_OBJECT_MODEL_VIEWER, useValue: () => Promise.resolve() },
         provideRouter([]),
-        {
-          provide: PROJECT_SESSION_CONTEXT,
-          useValue: createLocalPreviewSession(config.projectId, '1.0.0'),
-        },
-        { provide: PROJECT_INTRO_CONFIG, useValue: config },
+        { provide: PROJECT_CATALOG_ENTRY, useValue: project },
+        ...(config ? [{ provide: PROJECT_INTRO_CONFIG, useValue: config }] : []),
+        ProjectIntroRuntime,
         {
           provide: PROJECT_INTRO_PERSISTENCE,
           useValue: new BrowserProjectIntroAdapter(localStorage),
@@ -48,192 +51,272 @@ describe('ProjectIntroComponent', () => {
     return fixture;
   }
 
-  function receipt(config = projectIntros[0]): ProjectTeaserResult {
-    return {
-      eventType: 'projectIntro.teaserCompleted',
-      teaserId: config.teaser!.id,
-      teaserVersion: config.teaser!.version,
-      timestamp: new Date().toISOString(),
-      observations: [],
-    };
+  for (const project of projectCatalog) {
+    it('shows the complete invitation and starts ' + project.title + ' in one click', async () => {
+      const fixture = await setup(project);
+      const element = fixture.nativeElement as HTMLElement;
+      const config = projectIntros.find((item) => item.projectId === project.id);
+      const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+      expect(element.querySelectorAll('h1')).toHaveLength(1);
+      expect(element.querySelector('h1')?.textContent).toBe(project.title);
+      expect(element.querySelector('.story')?.textContent).toBe(
+        config?.story ?? project.description,
+      );
+      expect(element.querySelector('#experience-title')?.textContent).toBe(
+        'What you’ll experience',
+      );
+      expect(element.querySelector('#learning-title')?.textContent).toBe('What you’ll learn');
+      for (const goal of project.learningGoals)
+        expect(element.querySelector('.learning-list')?.textContent).toContain(goal);
+      if (config) {
+        const experiences = Array.from(
+          element.querySelectorAll('.experience-list p'),
+          (item) => item.textContent,
+        );
+        expect(experiences).toEqual(config.mission);
+        expect(element.querySelector('.creation-reward')?.textContent).toContain(
+          config.finalExample.format,
+        );
+        expect(element.querySelector('.demo-link')?.getAttribute('href')).toBe(
+          '/projects/' + project.id + '/final-demo',
+        );
+      } else {
+        expect(element.querySelector('.experience-description')?.textContent).toBe(
+          project.description,
+        );
+        expect(element.querySelector('.demo-link')).toBeNull();
+      }
+      expect(
+        element.querySelectorAll(
+          'app-project-product-preview, .step-track, input, textarea, details',
+        ),
+      ).toHaveLength(0);
+      expect(element.querySelectorAll('app-project-teaser-host')).toHaveLength(
+        config?.teaser?.type === 'illustrated-comparison' ? 1 : 0,
+      );
+      if (config?.teaser?.type === 'illustrated-comparison') {
+        expect(element.querySelector('.story-mode')).not.toBeNull();
+        expect(element.querySelector('.story-dialogue')?.textContent).toContain(
+          config.teaser.scientistName,
+        );
+        expect(element.querySelector('.prediction-choices')).toBeNull();
+      }
+      const start = element.querySelector<HTMLButtonElement>('.primary-button')!;
+      expect(start.textContent).toContain('Start Project');
+      expect(start.disabled).toBe(false);
+      start.click();
+      await fixture.whenStable();
+      expect(navigate).toHaveBeenCalledExactlyOnceWith(['/projects', project.id, 'experience']);
+      expect(localStorage.length).toBe(0);
+      fixture.destroy();
+    });
   }
 
-  it('preserves the exciting opening, then shows every project’s final-product page without choice cards', async () => {
-    for (const config of projectIntros) {
-      TestBed.resetTestingModule();
-      const fixture = await setup(config);
-      const element = fixture.nativeElement as HTMLElement;
-      expect(element.querySelector('h1')?.textContent?.trim()).toBe(
-        config.teaser?.type === 'decision-scene'
-          ? (config.teaser.prologue?.title ??
-              (config.teaser.interaction === 'dispatch'
-                ? config.teaser.headline
-                : config.teaser.prompt))
-          : config.teaser
-            ? 'Will both samples react the same way?'
-            : config.headline,
-      );
-      if (config.teaser) await fixture.componentInstance.finishTeaser(receipt(config));
-      fixture.detectChanges();
-      await fixture.whenStable();
-      expect(element.querySelector('#product-heading')?.textContent).toBe(config.headline);
-      expect(element.querySelector('app-project-product-preview')?.textContent).toContain(
-        config.finalExample.title,
-      );
-      expect(element.querySelectorAll('.creation-path li')).toHaveLength(3);
-      expect(
-        element.querySelectorAll('.choice-card, input[type="radio"], .step-track'),
-      ).toHaveLength(0);
-      expect(element.querySelector('.demo-link')?.getAttribute('href')).toBe(
-        `/projects/${config.projectId}/final-demo`,
-      );
-      expect(document.activeElement?.id).toBe('product-heading');
-      fixture.destroy();
-    }
-  });
-
-  it('saves student practice before entering and preserves the first receipt on replay', async () => {
-    const fixture = await setup();
-    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
-    const first = receipt();
-    await fixture.componentInstance.finishTeaser(first);
-    const replay = {
-      ...first,
-      timestamp: new Date(Date.now() + 1000).toISOString(),
-      thinking: [{ step: 'prediction', answer: 'Same reaction' }],
-    };
-    await fixture.componentInstance.finishTeaser(replay);
-    expect(fixture.componentInstance.runtime.snapshot()?.draft.teaser).toEqual(first);
-    expect(fixture.componentInstance.runtime.snapshot()?.draft.practiceReplays).toEqual([replay]);
-    expect(navigate).toHaveBeenCalledWith(['/projects', projectIntros[0].projectId, 'experience']);
-    await fixture.componentInstance.finishTeaser(replay);
-    expect(fixture.componentInstance.runtime.snapshot()?.draft.practiceReplays).toHaveLength(1);
-    fixture.destroy();
-  });
-
-  it('puts the first task and real start action before optional project detail without collecting a goal', async () => {
-    const fixture = await setup();
-    await fixture.componentInstance.finishTeaser(receipt());
-    fixture.detectChanges();
+  it('plays Rowan with sound and opens a disposable first trade without repeating the story', async () => {
+    const fixture = await setup(
+      projectCatalog.find((item) => item.id === 'frontier-trading-company')!,
+    );
     const element = fixture.nativeElement as HTMLElement;
-    expect(element.querySelector('.chat-preview')).toBeNull();
-    expect(element.querySelector('#future-project-goal')).toBeNull();
-    expect(element.querySelector('.first-task')?.textContent).toContain(
-      projectIntros[0].mission[0],
-    );
-    const start = element.querySelector<HTMLButtonElement>('.first-task button')!;
-    expect(start.disabled).toBe(false);
-    expect(
-      start.compareDocumentPosition(element.querySelector('.project-details')!) &
-        Node.DOCUMENT_POSITION_FOLLOWING,
-    ).toBeTruthy();
-    expect(fixture.componentInstance.runtime.snapshot()?.history).toEqual([]);
-    fixture.destroy();
-  });
-
-  it('enters the workspace without a choice, goal, or fabricated accepted response', async () => {
-    const fixture = await setup();
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
-    const accept = vi.spyOn(fixture.componentInstance.runtime, 'accept');
-    await fixture.componentInstance.finishTeaser(receipt());
+    const video = element.querySelector('video')!;
+    expect(video.getAttribute('src')).toBe('/project-intros/frontier/trading-town-launch.mp4');
+    expect(video.controls).toBe(true);
+    expect(video.muted).toBe(false);
+    expect(video.autoplay).toBe(false);
+    const pause = vi.spyOn(video, 'pause').mockImplementation(() => {});
+    const dialog = element.querySelector('dialog')!;
+    dialog.close = vi.fn(() => {
+      dialog.open = false;
+    });
+    const trigger = element.querySelector<HTMLButtonElement>('.practice-button')!;
+    trigger.click();
     fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(pause).toHaveBeenCalledOnce();
+    expect(dialog.open).toBe(true);
+    expect(element.querySelector('.story-stage')).toBeNull();
+    expect(element.querySelector('.purse')?.textContent).toContain('30 coins');
+    expect(element.querySelectorAll('.scene-choice')).toHaveLength(3);
+    const practice = fixture.debugElement.query(By.directive(DecisionSceneComponent))
+      .componentInstance as DecisionSceneComponent;
+    practice.choose('rope');
+    fixture.detectChanges();
+    expect(practice.cargoItems()).toHaveLength(1);
+    practice.finish(true);
+    fixture.detectChanges();
+    expect(dialog.open).toBe(false);
+    expect(element.querySelector('app-project-teaser-host')).toBeNull();
+    expect(document.activeElement).toBe(trigger);
+    trigger.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(
+      fixture.debugElement
+        .query(By.directive(DecisionSceneComponent))
+        .componentInstance.cargoItems(),
+    ).toHaveLength(0);
+    element.querySelector<HTMLButtonElement>('.practice-close')!.click();
+    fixture.detectChanges();
+    expect(navigate).not.toHaveBeenCalled();
+    expect(localStorage.length).toBe(0);
+    expect(element.querySelector<HTMLButtonElement>('.primary-button')!.disabled).toBe(false);
+    fixture.destroy();
+  });
+
+  it('provides a catalog-only launch even without artwork or an intro capability', async () => {
+    const project: ProjectCatalogEntry = {
+      ...projectCatalog[0],
+      id: 'new-project',
+      coverImage: undefined,
+    };
+    const fixture = await setup(project);
+    expect(fixture.nativeElement.querySelector('.artwork-symbol')?.textContent).toBe(
+      project.symbol,
+    );
+    expect(fixture.nativeElement.querySelector('img')).toBeNull();
     expect(fixture.nativeElement.querySelector('.primary-button').disabled).toBe(false);
-    await fixture.componentInstance.enter();
-    expect(navigate).toHaveBeenCalledWith(['/projects', projectIntros[0].projectId, 'experience']);
-    expect(accept).not.toHaveBeenCalled();
-    expect(fixture.componentInstance.runtime.snapshot()?.history).toEqual([]);
-    expect(fixture.componentInstance.runtime.draft()).toMatchObject(EMPTY_INTRO_RESPONSE);
     fixture.destroy();
   });
 
-  it('shows the story opening on a return visit and preserves the earlier scene choice', async () => {
-    const config = projectIntros.find((item) => item.projectId === 'frontier-trading-company')!;
-    const fixture = await setup(config);
-    const firstReceipt = { ...receipt(config), choiceId: 'cloth' };
-    await fixture.componentInstance.finishTeaser(firstReceipt);
-    fixture.destroy();
-    TestBed.resetTestingModule();
-    const restored = await setup(config);
-    expect(restored.componentInstance.teaserVisible()).toBe(true);
-    expect(restored.nativeElement.querySelector('h1')?.textContent?.trim()).toBe(
-      config.teaser?.type === 'decision-scene'
-        ? (config.teaser.prologue?.title ?? config.teaser.prompt)
-        : config.headline,
+  it('keeps the opening film playable alongside the pitch without requiring it to finish', async () => {
+    const fixture = await setup(
+      projectCatalog.find((item) => item.id === 'race-around-the-world')!,
     );
-    await restored.componentInstance.finishTeaser({ ...firstReceipt, choiceId: 'rope' });
-    expect(restored.componentInstance.runtime.snapshot()?.draft.teaser).toEqual(firstReceipt);
-    expect(restored.componentInstance.teaserVisible()).toBe(false);
-    restored.destroy();
+    const element = fixture.nativeElement as HTMLElement;
+    const video = element.querySelector('video')!;
+    expect(video.getAttribute('src')).toContain('intro-launch-video.mp4');
+    expect(video.autoplay).toBe(false);
+    expect(video.muted).toBe(true);
+    expect(element.querySelector('track')?.getAttribute('src')).toContain('.vtt');
+    expect(element.querySelector('.play-clip')?.textContent).toContain('Play short scene');
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    video.dispatchEvent(new Event('ended'));
+    expect(navigate).not.toHaveBeenCalled();
+    expect(element.querySelector('h1')).not.toBeNull();
+    expect(element.querySelector<HTMLButtonElement>('.primary-button')!.disabled).toBe(false);
+    fixture.destroy();
   });
 
-  it('keeps Professor Pip visible even with saved planning history, then replaces only the questionnaire', async () => {
+  it('switches between voiced opening clips on the same page without starting the project', async () => {
+    const fixture = await setup(
+      projectCatalog.find((item) => item.id === 'the-fate-of-the-republic')!,
+    );
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    const firstVideo = fixture.nativeElement.querySelector('video') as HTMLVideoElement;
+    expect(firstVideo.getAttribute('src')).toContain('Lucius');
+    expect(firstVideo.controls).toBe(true);
+    expect(firstVideo.autoplay).toBe(false);
+    fixture.nativeElement.querySelectorAll('.speech-choices button')[1].click();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('video').getAttribute('src')).toContain('Cassius');
+    expect(fixture.nativeElement.querySelector('video')).not.toBe(firstVideo);
+    expect(fixture.nativeElement.querySelector('#speech-summary').textContent).toContain(
+      'shared power',
+    );
+    expect(navigate).not.toHaveBeenCalled();
+    fixture.nativeElement.querySelector('video').dispatchEvent(new Event('error'));
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.speech-error').textContent).toContain(
+      'unavailable',
+    );
+    expect(fixture.nativeElement.querySelector('.primary-button').disabled).toBe(false);
+    fixture.destroy();
+  });
+
+  it('retains the museum’s interactive object on the same page as the learning goals', async () => {
+    const fixture = await setup(
+      projectCatalog.find((item) => item.id === 'objects-that-changed-us')!,
+    );
+    expect(fixture.nativeElement.querySelector('app-object-model-viewer')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('.learning-list')).not.toBeNull();
+    fixture.destroy();
+  });
+
+  it('does not load, overwrite, or fabricate learner records when opening, starting, or revisiting', async () => {
     const fixture = await setup();
-    fixture.componentInstance.runtime.update({
-      challengeChoiceId: 'observation',
-      choiceId: 'vial-a',
-      reason: 'Compare properties',
-      question: 'Which test first?',
-    });
-    await fixture.componentInstance.runtime.accept('existing-opening');
-    const savedHistory = fixture.componentInstance.runtime.snapshot()?.history;
-    fixture.destroy();
-    TestBed.resetTestingModule();
-    const restored = await setup();
-    const element = restored.nativeElement as HTMLElement;
-    expect(element.querySelector('h1')?.textContent?.trim()).toContain(
-      'Will both samples react the same way?',
-    );
-    expect(element.querySelector('.illustration')?.getAttribute('aria-label')).toContain(
-      'both look clear',
-    );
-    expect(element.querySelector('.test-button')?.textContent).toContain('Test my prediction');
-    expect(element.querySelector('.chat-preview')).toBeNull();
-    await restored.componentInstance.finishTeaser(receipt());
-    restored.detectChanges();
-    expect(element.querySelector('.first-task')).not.toBeNull();
-    expect(element.querySelector('#future-project-goal')).toBeNull();
-    expect(element.querySelectorAll('.choice-card, input[type="radio"], .step-track')).toHaveLength(
-      0,
-    );
-    expect(restored.componentInstance.runtime.snapshot()?.history).toEqual(savedHistory);
-    restored.destroy();
-  });
-
-  it('keeps existing saved responses intact when starting from the new product page', async () => {
-    const fixture = await setup();
-    const runtime = fixture.componentInstance.runtime;
+    const config = projectIntros[0];
+    const runtime = TestBed.inject(ProjectIntroRuntime);
+    const scope = {
+      session: createLocalPreviewSession(config.projectId, '1.0.0'),
+      introVersion: config.version,
+    };
+    await runtime.initialize(scope, config);
     runtime.update({
-      challengeChoiceId: 'observation',
-      choiceId: 'vial-a',
+      challengeChoiceId: config.challenge.options[0].id,
+      choiceId: config.decision.options[0].id,
       reason: 'Compare properties',
       question: 'Which test first?',
+      teaser: {
+        eventType: 'projectIntro.teaserCompleted',
+        teaserId: config.teaser!.id,
+        teaserVersion: config.teaser!.version,
+        timestamp: new Date().toISOString(),
+        observations: [],
+      },
     });
-    await runtime.accept('existing-opening');
-    const previous = JSON.stringify(runtime.snapshot());
+    expect(await runtime.accept('existing-opening')).toBe(true);
+    const before = JSON.stringify(await TestBed.inject(PROJECT_INTRO_PERSISTENCE).load(scope));
+    const adapter = TestBed.inject(PROJECT_INTRO_PERSISTENCE);
+    const load = vi.spyOn(adapter, 'load');
+    const save = vi.spyOn(adapter, 'save');
     vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     await fixture.componentInstance.enter();
-    expect(JSON.stringify(runtime.snapshot())).toBe(previous);
+    fixture.destroy();
+    const restored = TestBed.createComponent(ProjectIntroComponent);
+    restored.detectChanges();
+    await restored.whenStable();
+    await restored.componentInstance.enter();
+    expect(load).not.toHaveBeenCalled();
+    expect(save).not.toHaveBeenCalled();
+    expect(JSON.stringify(await adapter.load(scope))).toBe(before);
+    restored.destroy();
+  });
+
+  it('prevents duplicate starts while navigation is pending', async () => {
+    const fixture = await setup();
+    let resolve!: (value: boolean) => void;
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockReturnValue(
+      new Promise<boolean>((done) => {
+        resolve = done;
+      }),
+    );
+    const first = fixture.componentInstance.enter();
+    await fixture.componentInstance.enter();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.primary-button').disabled).toBe(true);
+    expect(navigate).toHaveBeenCalledTimes(1);
+    resolve(true);
+    await first;
+    expect(fixture.componentInstance.entering()).toBe(false);
     fixture.destroy();
   });
 
-  it('protects the opening receipt when saving fails and retries its handoff', async () => {
+  it('keeps Start Project usable and reports a failed navigation for retry', async () => {
     const fixture = await setup();
-    const adapter = TestBed.inject(PROJECT_INTRO_PERSISTENCE);
-    const save = adapter.save.bind(adapter);
-    adapter.save = async () => {
-      throw new Error('Unavailable');
-    };
-    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
-    const result = receipt();
-    await fixture.componentInstance.finishTeaser(result);
-    expect(fixture.componentInstance.teaserVisible()).toBe(true);
-    expect(await fixture.componentInstance.canLeave()).toBe(false);
+    const navigate = vi
+      .spyOn(TestBed.inject(Router), 'navigate')
+      .mockRejectedValueOnce(new Error('Unavailable'))
+      .mockResolvedValue(true);
     await fixture.componentInstance.enter();
-    expect(navigate).not.toHaveBeenCalled();
-    adapter.save = save;
-    await fixture.componentInstance.finishTeaser(result);
-    expect(fixture.componentInstance.teaserVisible()).toBe(false);
-    expect(fixture.componentInstance.runtime.snapshot()?.draft.teaser).toEqual(result);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[role="alert"]')?.textContent).toContain(
+      'could not open',
+    );
+    expect(fixture.nativeElement.querySelector('.primary-button').disabled).toBe(false);
+    await fixture.componentInstance.enter();
+    fixture.detectChanges();
+    expect(navigate).toHaveBeenCalledTimes(2);
+    expect(fixture.nativeElement.querySelector('[role="alert"]')).toBeNull();
+    fixture.destroy();
+  });
+
+  it('reports a canceled navigation without leaving the button stuck', async () => {
+    const fixture = await setup();
+    vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(false);
+    await fixture.componentInstance.enter();
+    expect(fixture.componentInstance.entering()).toBe(false);
+    expect(fixture.componentInstance.error()).toContain('did not open');
     fixture.destroy();
   });
 

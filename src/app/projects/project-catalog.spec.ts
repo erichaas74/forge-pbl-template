@@ -2,12 +2,15 @@ import { projectCatalog } from './project-catalog';
 
 describe('project catalog', () => {
   it('exposes the configured projects with unique IDs and routes', () => {
-    expect(projectCatalog).toHaveLength(9);
+    expect(projectCatalog).toHaveLength(12);
     expect(new Set(projectCatalog.map((project) => project.id)).size).toBe(projectCatalog.length);
     expect(new Set(projectCatalog.map((project) => project.route)).size).toBe(
       projectCatalog.length,
     );
     expect(projectCatalog.map((project) => project.route)).toEqual([
+      '/projects/championship-show',
+      '/projects/live-strategy-league',
+      '/projects/cascade-bay-crisis',
       '/projects/robot-delivery-code-lab',
       '/projects/mystery-substance',
       '/projects/frontier-trading-company',
@@ -23,6 +26,9 @@ describe('project catalog', () => {
     ).toBe('/projects/frontier-trading-company/builder-info');
     expect(projectCatalog.every((project) => project.template.id.length > 0)).toBe(true);
     expect(projectCatalog.every((project) => project.packageReference.length > 0)).toBe(true);
+    expect(projectCatalog.find((project) => project.id === 'cascade-bay-crisis')?.entryMode).toBe(
+      'opening',
+    );
     expect(projectCatalog.map((project) => project.status)).not.toContain('Available');
     expect(projectCatalog.find((project) => project.id === 'race-around-the-world')?.status).toBe(
       'Updating',

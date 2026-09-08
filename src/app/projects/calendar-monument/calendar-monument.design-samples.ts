@@ -1,5 +1,6 @@
 import type { EngineeringDesignSample } from '../../templates/engineering-design/domain/engineering-design.models';
 import type { DesignBlock } from '../../shared/engineering/block-design';
+import { solarCalendarStarter } from './calendar-monument.solar-calendar';
 
 const block = (
   id: string,
@@ -14,6 +15,13 @@ const block = (
 
 /** Curriculum geometry only; rendering and sample loading belong to the engineering template. */
 export const calendarMonumentDesignSamples: readonly EngineeringDesignSample[] = [
+  {
+    id: 'solar-calendar-circle',
+    title: 'Solar calendar circle',
+    description:
+      'Start your final project with a Stonehenge-inspired circle of eight stone gates. Amber, blue and ruby jewels fill holes in three lintels. Find the moving light patches and place your own seasonal markers.',
+    design: solarCalendarStarter,
+  },
   {
     id: 'sun-gate',
     title: 'Sun gate',

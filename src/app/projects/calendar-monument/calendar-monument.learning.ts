@@ -65,7 +65,7 @@ export const calendarMonumentLearning: NonNullable<EngineeringDesignConfig['lear
     },
     {
       id: 'mark-the-year',
-      title: 'Make a Sun calendar',
+      title: 'Mark the sundial’s year',
       workspace: 'practice',
       activity: 'sundial-calendar',
       introduction: 'First challenge: make your sundial mark the equinoxes and solstices.',
@@ -84,16 +84,19 @@ export const calendarMonumentLearning: NonNullable<EngineeringDesignConfig['lear
     },
     {
       id: 'sun-monument',
-      title: 'Build a Sun monument',
+      title: 'Build a solar calendar',
       workspace: 'project',
       activity: 'monument',
       introduction:
-        'Now use what you discovered to design a monument to the Sun. Make something beautiful that also marks time.',
+        'Your final project is a solar calendar: a monument that marks the year with light and shadow. Take inspiration from Stonehenge’s standing stones, then invent your own openings and colored jewels.',
       instructions: [
-        'Find Sample models in the ••• menu, or use Build to create your own monument. Your practice sundial stays saved in the earlier steps.',
-        'Use stone shapes, holes, colored glass, and a central sculpture to create a special shadow or light display.',
-        'Choose the date, observation time, target and effect you want. Open Final demonstration from the ••• menu to compare all four special dates and nearby days, then explain your evidence.',
+        'Open Build to arrange your stone circle. For a starting model, choose ••• → Sample models → Solar calendar circle → Use model. Your practice sundial stays saved.',
+        'Use pillars and lintels, cylindrical holes, and colored glass or jewels. Open Markers, choose Place on the floor, and click a light patch or shadow. Name your sunstone and Carve marker to save its position, date, time and Sun angle.',
+        'Keep one location. Use Events & time and Play day to find a useful observation time. Move, rotate, or resize your stones and openings until the light reaches your targets.',
+        'Select a saved sunstone to compare its recorded light with the light now. Show recorded Sun returns to its original observation. Use for a special date sets up its final test. Then choose ••• → Final demonstration and Compare to check all four dates and nearby days. Revise your calendar and Save comparison.',
       ],
+      explanation:
+        'A successful solar calendar has a repeatable alignment and evidence for all four special dates. March and September can share one alignment. Some nearby dates may match too; explain this honestly. Stonehenge inspires the stone-circle idea. Our jeweled openings are a modern invention, and the example uses solar noon at Colorado Springs. Calibrate your own calendar for your chosen place and time.',
     },
   ],
 };

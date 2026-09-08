@@ -1,6 +1,6 @@
 # Project launches and final-example walkthroughs
 
-**Current flow:** The choice-card and written-response screens described below have been replaced with a visual final-product page and an inactive “Future chatbot link” panel across all seven launches. See [the current launch implementation](PROJECT_GOAL_LAUNCH.md). The earlier persistence contracts remain compatible with existing records.
+**Current flow (September 8, 2026):** Every built-in project now uses a [single-page game-style invitation](SINGLE_PAGE_PROJECT_LAUNCH.md): story/media, experiences, learning goals, and **Start Project**. The choice-card, questionnaire, product-page handoff, and inactive chatbot are no longer mounted by the launch. Earlier persistence contracts remain compatible with existing records. The remaining text documents the historical implementation.
 
 Implemented September 5, 2026. Scope: the six project openings, saved starting thoughts, activity navigation, and illustrative teacher walkthroughs. This change does not implement the earlier full-project audit or connect an AI tutor.
 

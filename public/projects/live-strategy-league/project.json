@@ -1,0 +1,283 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "live-strategy-league",
+  "projectVersion": "1.0.0",
+  "template": {
+    "id": "live-strategy-league",
+    "version": "1.0"
+  },
+  "title": "Small moves. Big stakes.",
+  "description": "Build your team's strategy, respond to a changing market, and compete over four rounds. Every decision changes what comes next.",
+  "modelId": "market-v1",
+  "explanation": "Demand = market demand − price × 12 + marketing ÷ 8, with a minimum of zero. Units sold = the smaller of production and demand, rounded down. Profit = units sold × price − production × input cost − marketing. Profit becomes your round points and changes your cash for the next round. Unsold production still costs money. There is no random factor. Equal scores are ordered by team ID.",
+  "decisions": [
+    {
+      "id": "price",
+      "label": "Selling price",
+      "unit": "$ / unit",
+      "min": 5,
+      "max": 40,
+      "step": 1,
+      "initial": 20
+    },
+    {
+      "id": "production",
+      "label": "Production",
+      "unit": "units",
+      "min": 0,
+      "max": 1000,
+      "step": 50,
+      "initial": 500
+    },
+    {
+      "id": "marketing",
+      "label": "Marketing spend",
+      "unit": "$",
+      "min": 0,
+      "max": 2000,
+      "step": 100,
+      "initial": 500
+    }
+  ],
+  "metrics": [
+    {
+      "id": "cash",
+      "label": "Cash available",
+      "unit": "$"
+    },
+    {
+      "id": "sold",
+      "label": "Last units sold",
+      "unit": ""
+    },
+    {
+      "id": "profit",
+      "label": "Last profit",
+      "unit": "$"
+    }
+  ],
+  "initialState": {
+    "cash": 10000,
+    "sold": 0,
+    "profit": 0
+  },
+  "teams": [
+    {
+      "id": "01-nova",
+      "name": "Nova",
+      "color": "#c5ed81",
+      "imageUrl": "/projects/live-strategy-league/teams/nova.png"
+    },
+    {
+      "id": "02-apex",
+      "name": "Apex",
+      "color": "#9cbbff",
+      "imageUrl": "/projects/live-strategy-league/teams/apex.png"
+    },
+    {
+      "id": "03-orbit",
+      "name": "Orbit",
+      "color": "#e5b1ef",
+      "imageUrl": "/projects/live-strategy-league/teams/orbit.png"
+    },
+    {
+      "id": "04-pulse",
+      "name": "Pulse",
+      "color": "#f0b886",
+      "imageUrl": "/projects/live-strategy-league/teams/pulse.png"
+    },
+    {
+      "id": "05-atlas",
+      "name": "Atlas",
+      "color": "#88d6ce",
+      "imageUrl": "/projects/live-strategy-league/teams/atlas.png"
+    }
+  ],
+  "rounds": [
+    {
+      "title": "Find your footing",
+      "headline": "A new market opens.",
+      "description": "Market demand starts at 900 units. Each unit costs $8 to produce. Higher prices reduce demand; marketing can bring customers back. Find a balance you can afford.",
+      "seconds": 180,
+      "world": {
+        "demand": 900,
+        "cost": 8
+      }
+    },
+    {
+      "title": "Read the shift",
+      "headline": "Demand is climbing.",
+      "description": "Market demand rises from 900 to 1,200 units. Input cost remains $8. Will you increase production, change your price, or hold your reserve?",
+      "seconds": 180,
+      "world": {
+        "demand": 1200,
+        "cost": 8
+      }
+    },
+    {
+      "title": "Under pressure",
+      "headline": "Supplies just got expensive.",
+      "description": "Input cost jumps from $8 to $12 per unit. Market demand settles at 1,000 units. Producing too much can erase a good margin.",
+      "seconds": 180,
+      "world": {
+        "demand": 1000,
+        "cost": 12
+      }
+    },
+    {
+      "title": "The final call",
+      "headline": "One round to make your move.",
+      "description": "Final market demand is 1,100 units and input cost is $10. Use what you learned. The team with the most cumulative profit wins.",
+      "seconds": 180,
+      "world": {
+        "demand": 1100,
+        "cost": 10
+      }
+    }
+  ],
+  "finalDemo": {
+    "seconds": 30,
+    "openingScores": {
+      "01-nova": 18400,
+      "02-apex": 21500,
+      "03-orbit": 20200,
+      "04-pulse": 17200,
+      "05-atlas": 16000
+    },
+    "frames": [
+      {
+        "at": 6,
+        "caption": "Orbit moves into first as its early sales arrive. Apex slips to second.",
+        "scores": {
+          "01-nova": 20500,
+          "02-apex": 22000,
+          "03-orbit": 23000,
+          "04-pulse": 18800,
+          "05-atlas": 18500
+        },
+        "decision": {
+          "teamId": "03-orbit",
+          "question": "A buyer wants 280 units. Which offer protects our margin?",
+          "options": [
+            "Sell 280 units at $20 each",
+            "Discount every unit to $14",
+            "Wait for a larger order"
+          ],
+          "selected": 0,
+          "reasoning": "The $20 offer leaves $10 per unit after production costs. Orbit chooses a confirmed order over waiting.",
+          "units": 280,
+          "unitPrice": 20,
+          "unitCost": 10
+        }
+      },
+      {
+        "at": 12,
+        "caption": "Pulse jumps three places. Its extra production pays off in this sample market.",
+        "scores": {
+          "01-nova": 23600,
+          "02-apex": 22800,
+          "03-orbit": 23800,
+          "04-pulse": 24400,
+          "05-atlas": 20100
+        },
+        "decision": {
+          "teamId": "04-pulse",
+          "question": "Demand is rising. What should we do with our extra stock?",
+          "options": [
+            "Keep all stock for later",
+            "Fill a 400-unit order at $24",
+            "Sell at the $10 production cost"
+          ],
+          "selected": 1,
+          "reasoning": "Pulse has stock ready to sell. Filling the order earns $14 per unit instead of leaving that stock unsold.",
+          "units": 400,
+          "unitPrice": 24,
+          "unitCost": 10
+        }
+      },
+      {
+        "at": 18,
+        "caption": "Nova takes the lead. Atlas climbs from fifth to second with a late surge.",
+        "scores": {
+          "01-nova": 27300,
+          "02-apex": 26400,
+          "03-orbit": 24600,
+          "04-pulse": 25300,
+          "05-atlas": 26500
+        },
+        "decision": {
+          "teamId": "05-atlas",
+          "question": "We are in fifth. Which trade gives us a chance to catch up?",
+          "options": [
+            "Reject the order and hold cash",
+            "Cut the price to $12",
+            "Accept 400 units at $26 each"
+          ],
+          "selected": 2,
+          "reasoning": "Atlas accepts the confirmed order with a $16 unit margin. The larger profit moves the team back into contention.",
+          "units": 400,
+          "unitPrice": 26,
+          "unitCost": 10
+        }
+      },
+      {
+        "at": 24,
+        "caption": "Apex fights back into first. Nova is 1,100 points behind with six seconds left.",
+        "scores": {
+          "01-nova": 29100,
+          "02-apex": 30200,
+          "03-orbit": 25700,
+          "04-pulse": 26900,
+          "05-atlas": 28400
+        },
+        "decision": {
+          "teamId": "02-apex",
+          "question": "A late buyer will pay $29. Take the order or chase more volume?",
+          "options": [
+            "Accept 200 units at $29 each",
+            "Offer 200 units at $18 instead",
+            "Hold out for an unconfirmed buyer"
+          ],
+          "selected": 0,
+          "reasoning": "Apex takes the confirmed premium order. The $19 margin makes a smaller sale valuable this late in the round.",
+          "units": 200,
+          "unitPrice": 29,
+          "unitCost": 10
+        }
+      },
+      {
+        "at": 30,
+        "caption": "Time is up. Nova finishes with 33,400 points and wins by 1,300. The final standings are locked.",
+        "scores": {
+          "01-nova": 33400,
+          "02-apex": 32100,
+          "03-orbit": 28900,
+          "04-pulse": 29600,
+          "05-atlas": 31000
+        },
+        "decision": {
+          "teamId": "01-nova",
+          "question": "Six seconds left. Can this final order win the league?",
+          "options": [
+            "Cut the price to $22",
+            "Sell 215 units at $30 each",
+            "Hold the remaining stock"
+          ],
+          "selected": 1,
+          "reasoning": "Nova is 1,100 points behind. This order adds 4,300 points; after the other teams’ last sales, Nova finishes 1,300 points ahead.",
+          "units": 215,
+          "unitPrice": 30,
+          "unitCost": 10
+        }
+      }
+    ],
+    "openingCaption": "Apex starts in first. Nova is third. One last round can change everything."
+  },
+  "launch": {
+    "headline": "Take the",
+    "highlight": "top spot.",
+    "invitation": "Five teams. One place everyone wants. Read the market, outthink your rivals and make the move that changes the leaderboard.",
+    "mission": "Your team starts with $10,000. Set a price, choose how much to produce, and decide what to spend on marketing. When the market changes, adapt. Turn what you learn into your next advantage.",
+    "winCondition": "Finish with the most total profit. Every round adds to your score. One smart final move can change who wins."
+  }
+}

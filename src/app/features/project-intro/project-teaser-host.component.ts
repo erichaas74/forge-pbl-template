@@ -23,6 +23,7 @@ import {
 })
 export class ProjectTeaserHostComponent {
   readonly config = input.required<ProjectTeaserConfig>();
+  readonly storyMode = input(false);
   readonly completed = output<ProjectTeaserResult>();
   readonly error = signal<string | undefined>(undefined);
   private readonly outlet = viewChild('outlet', { read: ViewContainerRef });
@@ -37,6 +38,9 @@ export class ProjectTeaserHostComponent {
         const ref = outlet.createComponent(component, {
           bindings: [
             inputBinding('config', () => config),
+            ...(config.type === 'illustrated-comparison'
+              ? [inputBinding('storyMode', () => this.storyMode())]
+              : []),
             outputBinding<ProjectTeaserResult>('completed', (result) =>
               this.completed.emit(result),
             ),

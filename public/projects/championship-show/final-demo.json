@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "1.0", "fictional": true,
+  "title": "Three weeks. One final.",
+  "openingImage": "/projects/championship-show/art/final-opening-v1.png",
+  "mysteryImage": "/projects/championship-show/art/mystery-duck-v1.png",
+  "highlights": [
+    { "id": "budget-blowup", "week": "WEEK 01", "title": "The budget blew up.", "caption": "Nova counted every supply… except delivery. Their corrected model became the class example.", "narration": "Three weeks ago, eight teams took on one challenge: make a plan, prove it with evidence, and be ready to defend it. Nova's first budget looked perfect. Until delivery arrived. Their best move wasn't the first answer. It was the correction.", "skill": "Decimal operations · Revising a model", "points": { "nova": 34, "atlas": 40, "comets": 29, "falcons": 25, "titans": 30, "ravens": 22, "orbit": 28, "pulse": 22 } },
+    { "id": "graph-detectives", "week": "WEEK 02", "title": "The graph changed the story.", "caption": "Atlas spotted a misleading scale. Comets challenged the conclusion. Both teams backed up their reasoning.", "narration": "Then came the graph nobody agreed on. Atlas spotted the scale. Comets questioned the claim. The room got louder. The evidence got stronger. Every explanation left something worth keeping.", "skill": "Reading data · Supporting a claim", "points": { "nova": 45, "atlas": 41, "comets": 40, "falcons": 35, "titans": 31, "ravens": 30, "orbit": 30, "pulse": 28 } },
+    { "id": "comeback", "week": "WEEK 03", "title": "Nobody stayed where they started.", "caption": "Falcons rebuilt their explanation. Nova finished the strongest qualifier. All eight teams earned a place in the final experience.", "narration": "By week three, the Falcons had rebuilt their explanation, and Nova had found its rhythm. Three rounds of learning became the seeds. Eight teams. Four places in the championship show. And one last chance to change the ending.", "skill": "Evidence-based revision · Explaining a strategy", "points": { "nova": 45, "atlas": 35, "comets": 40, "falcons": 41, "titans": 35, "ravens": 40, "orbit": 30, "pulse": 32 } }
+  ],
+  "rounds": [
+    { "id": "opening-move", "title": "Opening Move", "kind": "simultaneous", "prompt": "Four supply kits cost $18.75 each. Delivery is $6.50. What is the total, and how do you know?", "seconds": 90, "maxPoints": 100, "standards": ["CCSS.MATH.CONTENT.5.NBT.B.7"] },
+    { "id": "beat-the-buzzer", "title": "Beat the Buzzer", "kind": "buzzer", "prompt": "Someone claims 0.4 × 0.5 = 2. What went wrong? Give the correct answer and explain it.", "seconds": 45, "maxPoints": 100, "standards": ["CCSS.MATH.CONTENT.5.NBT.B.7"] },
+    { "id": "final-wager", "title": "The Final Wager", "kind": "wager", "prompt": "You have $120. Each display costs $14.75 and delivery costs $8 for the whole order. How many complete displays can you afford? Defend your answer.", "seconds": 120, "maxPoints": 400, "standards": ["CCSS.MATH.CONTENT.5.NBT.B.7"] }
+  ],
+  "answers": {
+    "opening-move": "$81.50. Four kits cost 4 × $18.75 = $75.00; adding $6.50 delivery gives $81.50.",
+    "beat-the-buzzer": "0.2. Half of 0.4 is 0.2. The product must be smaller than 0.4 because we multiply by one-half.",
+    "final-wager": "Seven displays. 7 × $14.75 + $8 = $111.25. Eight would cost $126.00, which exceeds the budget."
+  },
+  "wagers": { "nova": 100, "atlas": 200, "comets": 80, "falcons": 40 },
+  "missedWagerTeamId": "atlas", "buzzerTeamId": "atlas"
+}

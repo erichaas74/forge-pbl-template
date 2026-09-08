@@ -1,0 +1,265 @@
+:host {
+  display: block;
+  color: #dce8e9;
+  font:
+    14px/1.5 'Segoe UI',
+    sans-serif;
+}
+* {
+  box-sizing: border-box;
+}
+h2,
+p {
+  margin: 0;
+}
+h2 {
+  font-size: 26px;
+  font-weight: 450;
+  line-height: 1.3;
+  letter-spacing: -0.5px;
+}
+button,
+select {
+  font: inherit;
+  color: inherit;
+}
+button {
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+}
+button:hover {
+  color: #d9fff0;
+}
+button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+button:focus-visible,
+select:focus-visible {
+  outline: 2px solid #b7ecdd;
+  outline-offset: 4px;
+}
+section:focus {
+  outline: none;
+}
+app-crisis-icon {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+.station-panel {
+  max-width: 740px;
+  margin: 0 auto;
+}
+.station-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #3c596366;
+}
+.station-heading label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #9ab6bf;
+  font-size: 12px;
+}
+.station-heading select {
+  background: #132d36;
+  border: 1px solid #4a6b7455;
+  border-radius: 3px;
+  padding: 8px 30px 8px 12px;
+  max-width: 220px;
+}
+.station-heading > span {
+  font-size: 12px;
+  color: #9abbb8;
+  white-space: nowrap;
+}
+.station-focus {
+  color: #8fafb9;
+  font-size: 12px;
+  padding: 18px 0 4px;
+  line-height: 1.6;
+}
+.wire-report {
+  display: flex;
+  width: 100%;
+  text-align: left;
+  padding: 22px 0;
+  border-bottom: 1px solid #3c596355;
+  gap: 18px;
+}
+.wire-report:hover {
+  background: #87c9b50c;
+}
+.wire-copy {
+  flex: 1;
+  min-width: 0;
+}
+.wire-copy strong {
+  display: block;
+  font-size: 16px;
+  font-weight: 450;
+  line-height: 1.4;
+  margin-top: 7px;
+}
+.meta {
+  font-size: 11px;
+  color: #8eacb8;
+}
+.confidence {
+  font-size: 10px;
+  color: #a4d9bc;
+  white-space: nowrap;
+}
+.confidence.forecast {
+  color: #e1be84;
+}
+.confidence.unverified {
+  color: #e3a48e;
+}
+.wire-report > app-crisis-icon {
+  color: #81a8b0;
+}
+.back-to-reports {
+  font-size: 12px;
+  color: #b2ced4;
+  margin-bottom: 24px;
+}
+.report-meta {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  flex-wrap: wrap;
+  color: #8faeb9;
+  font-size: 11px;
+  margin-bottom: 12px;
+}
+.report-meta .confidence {
+  font-size: 11px;
+}
+.report-body {
+  font-size: 15px;
+  line-height: 1.9;
+  color: #b9cfd5;
+  margin-top: 22px;
+  max-width: 680px;
+}
+.reading {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  border-top: 1px solid #3c596355;
+  border-bottom: 1px solid #3c596355;
+  padding: 22px 0;
+  margin-top: 24px;
+}
+.reading > div {
+  min-width: 120px;
+}
+.reading span {
+  font-size: 11px;
+  color: #9fbac0;
+}
+.reading strong {
+  display: block;
+  font-size: 42px;
+  font-weight: 300;
+  line-height: 1.3;
+  color: #c2e8dc;
+}
+.reading small {
+  font-size: 20px;
+  color: #91b9b7;
+}
+.reading svg {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  max-width: 360px;
+  height: 85px;
+}
+.report-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: center;
+  padding-top: 24px;
+  margin-top: 24px;
+  border-top: 1px solid #3c596355;
+}
+.report-tools button {
+  font-size: 13px;
+}
+.report-tools .primary {
+  border-radius: 3px;
+  padding: 12px 18px;
+  background: #b1dfcc;
+  color: #112e2c;
+}
+.console-confirmation {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #b5e1c8;
+  font-size: 12px;
+  margin-top: 24px;
+}
+@media (max-width: 620px) {
+  h2 {
+    font-size: 23px;
+  }
+  .station-heading {
+    gap: 12px;
+  }
+  .station-heading label {
+    gap: 8px;
+    font-size: 11px;
+  }
+  .station-heading select {
+    max-width: 170px;
+    padding-right: 15px;
+    font-size: 12px;
+  }
+  .station-heading > span {
+    font-size: 10px;
+  }
+  .wire-report {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 18px 0;
+  }
+  .wire-copy {
+    flex-basis: calc(100% - 26px);
+  }
+  .wire-copy strong {
+    font-size: 15px;
+  }
+  .wire-report > .confidence {
+    order: 3;
+    width: 100%;
+  }
+  .report-body {
+    font-size: 14px;
+  }
+  .reading {
+    gap: 16px;
+  }
+  .reading > div {
+    min-width: 90px;
+  }
+  .reading strong {
+    font-size: 33px;
+  }
+  .report-tools {
+    gap: 16px;
+  }
+}

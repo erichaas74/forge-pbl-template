@@ -1,5 +1,27 @@
 # Professor Pip: illustrated opening for The Unlabeled Shelf
 
+## September 8: story on the launch page and quicker narration
+
+The single-page invitation now embeds the existing illustrated comparison as Professor Pip's story. Students can play the voices, trigger the blue/pink test and POOF, meet the four mystery vials, and replay. **Start Project** stays available on the same page. There are no required prediction or observation questions in this presentation, and watching it does not write an opening response or completion receipt. The earlier practice flow described below remains supported by the scene's default mode for existing consumers.
+
+The registered scene and its host accept an optional `storyMode` input, defaulting to `false`. The launch selects this presentation through the existing `illustrated-comparison` capability configuration, with no project-ID branch, new plugin, dependency, or core schema change. The existing illustrations, captions, audio player, cancellation behavior, and activity route are reused. Launch rendering does not move focus into the story automatically.
+
+Pip's four lines now use a more excited script and Microsoft David Desktop at speech rate `3`. Beep's voice is unchanged. Four new `*-scientist-v2.wav` files preserve the original assets and refresh cached narration. Together, the new Pip clips run approximately 46 seconds, compared with 63 seconds previously. Captions and spoken text still share the dialogue manifest. Regenerate only Pip's clips with:
+
+```powershell
+powershell.exe -NoProfile -NonInteractive -Sta -File scripts/generate-intro-voices.ps1 -Manifests unlabeled-shelf -Speakers scientist
+```
+
+Added: `welcome-scientist-v2.wav`, `testing-scientist-v2.wav`, `reveal-scientist-v2.wav`, and `handoff-scientist-v2.wav` under `public/project-intros/lab-surprise/`.
+
+Modified: the illustrated-comparison component, template, styles, and tests; project-intro component, template, styles, and tests; project-teaser host; project-intros configuration; unlabeled-shelf dialogue manifest; voice-generation script; this report; and SINGLE_PAGE_PROJECT_LAUNCH.md. A small `unknown` callback annotation in the concurrent Crisis Center validator also resolves a strict TypeScript error discovered during the build.
+
+Verification: the production build passes with existing stylesheet-budget warnings outside this change. Seven focused test files pass, **57 tests**, including story playback without practice responses, unchanged practice behavior, all ten invitations, audio cancellation/error handling, scene registration, and the robot workspace. Browser checks cover optional voices without an audio error, the test/reveal/handoff/replay controls, one project heading, and a phone-sized layout without horizontal overflow. WAV headers and clip durations were checked.
+
+No specification deviation or new `TEMPLATE_CAPABILITY_GAP`. Recommended next step: review Pip's pacing in the local preview.
+
+## Original implementation record
+
 Implemented September 5, 2026. This adds the approved overconfident scientist and robot to the science project's opening. The other five openings were subsequently extended in [upgraded project openings](UPGRADED_PROJECT_OPENINGS.md); the Pip scene remains intact.
 
 ## What students experience

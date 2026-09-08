@@ -59,6 +59,7 @@ export class ProjectHostComponent implements OnDestroy {
   readonly error = signal<string | undefined>(undefined);
   readonly isActivity = signal(false);
   readonly hasIntro = signal(false);
+  readonly hasFinalExample = signal(false);
   readonly integratedHeader = signal(false);
   readonly usesIntegratedActivityHeader = computed(
     () =>
@@ -106,7 +107,9 @@ export class ProjectHostComponent implements OnDestroy {
 
     try {
       const intro = projectIntroRegistry.find(project.id);
-      this.hasIntro.set(!!intro);
+      const directEntry = project.entryMode === 'activity';
+      this.hasIntro.set(!directEntry);
+      this.hasFinalExample.set(!!intro || project.finalExampleMode === 'template');
       const view = this.route.snapshot.paramMap.get('view');
       this.isActivity.set(view !== null && view !== 'final-demo');
       const session =
@@ -120,8 +123,8 @@ export class ProjectHostComponent implements OnDestroy {
       }
       let definition: unknown;
       let target: ProjectLaunchTarget;
-      if (view === 'final-demo' || (view === null && intro)) {
-        if (!intro)
+      if ((view === 'final-demo' && project.finalExampleMode !== 'template') || (view === null && !directEntry)) {
+        if (view === 'final-demo' && !intro)
           throw new Error(
             'CAPABILITY_NOT_INSTALLED: This project has no final-example configuration.',
           );
@@ -133,7 +136,7 @@ export class ProjectHostComponent implements OnDestroy {
               : (await import('../../features/project-intro/project-intro.component'))
                   .ProjectIntroComponent,
           providers: [
-            { provide: PROJECT_INTRO_CONFIG, useValue: intro },
+            ...(intro ? [{ provide: PROJECT_INTRO_CONFIG, useValue: intro }] : []),
             ...(view === 'final-demo'
               ? []
               : [

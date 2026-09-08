@@ -1,0 +1,40 @@
+<div class="heading"><div><p class="eyebrow">THE RACE</p><h2 id="standings-title">League standings</h2></div>
+  <span class="broadcast"><i></i>{{ statusLabel() || (rounds() ? 'ROUND ' + rounds() + ' REVEALED' : 'STARTING GRID') }}</span>
+</div>
+<div class="race-call" aria-live="polite">
+  <svg viewBox="0 0 32 32" aria-hidden="true"><path d="m4 9 7 5 5-9 5 9 7-5-3 16H7Z"/><path d="M8 29h16"/></svg>
+  <div><strong>{{ headline() }}</strong>
+    @if (climber(); as team) { <span class="climber">↗ Biggest climber: {{ team.name }} · up {{ team.movement }} {{ team.movement === 1 ? 'place' : 'places' }}</span> }
+    @else { <span>{{ rounds() ? 'Every round can change the order.' : 'Lock your strategy. Make your mark.' }}</span> }
+  </div>
+</div>
+<table>
+  <caption class="sr-only">Cumulative league points and rank movement. {{ trendNote() || 'Compared with the previous revealed round' }}</caption>
+  <thead><tr><th scope="col">Rank</th><th scope="col">Team</th><th scope="col">Points</th><th scope="col">Trend</th><th scope="col">This round</th></tr></thead>
+  <tbody>
+    @for (team of rows(); track team.id) {
+      <tr [attr.data-team-id]="team.id" [class.your-team]="team.id === yourTeamId()" [class.leader]="rounds() > 0 && team.rank === 1" [style.--team-color]="team.color">
+        <td class="rank"><span [class.podium]="rounds() > 0 && team.rank <= 3">{{ team.rank.toString().padStart(2, '0') }}</span></td>
+        <th scope="row"><div class="team-identity">
+          <div class="portrait">
+            @if (team.imageUrl) { <img [src]="team.imageUrl" [alt]="'Fictional ' + team.name + ' group photo'" width="80" height="80"> }
+            @else { <span class="initial">{{ team.name.slice(0, 1) }}</span> }
+            @if (rounds() > 0 && team.rank === 1) { <span class="crown" aria-label="First place"><svg viewBox="0 0 32 32" width="17" height="17" aria-hidden="true"><path fill="currentColor" d="m4 9 7 5 5-9 5 9 7-5-3 16H7Z"/></svg></span> }
+          </div>
+          <div class="team-copy"><span class="team-name">{{ team.name }} @if (team.id === yourTeamId()) { <small class="you">YOU</small> }</span>
+            <small class="team-detail">@if (!rounds()) { Ready to compete } @else if (!team.gap) { {{ snapshot().phase === 'complete' && team.rank === 1 ? 'League champion' : 'At the top' }} } @else { {{ team.gap | number:'1.0-2' }} off the lead }</small>
+          </div>
+        </div></th>
+        <td><strong class="score">{{ team.score | number:'1.0-2' }}</strong></td>
+        <td><span class="trend" [class.up]="team.movement > 0" [class.down]="team.movement < 0" [attr.aria-label]="team.trendLabel" [title]="team.trendLabel">
+          @if (team.movement > 0) { <b aria-hidden="true">↗</b><span aria-hidden="true">{{ team.movement }}</span> }
+          @else if (team.movement < 0) { <b aria-hidden="true">↘</b><span aria-hidden="true">{{ -team.movement }}</span> }
+          @else { <span aria-hidden="true">{{ rounds() === 1 ? 'NEW' : '—' }}</span> }
+        </span></td>
+        <td><span class="delta" [class.positive]="team.delta > 0" [class.negative]="team.delta < 0">{{ team.delta > 0 ? '+' : '' }}{{ team.delta | number:'1.0-2' }}</span></td>
+      </tr>
+    }
+  </tbody>
+</table>
+<p class="legend"><span>↗ Climbing <span class="falling">↘ Falling</span> — Holding</span><span>{{ trendNote() || (rounds() < 2 ? 'Rank trends begin after round 2' : 'Compared with the previous round') }}</span></p>
+<p class="note">{{ note() }}</p>

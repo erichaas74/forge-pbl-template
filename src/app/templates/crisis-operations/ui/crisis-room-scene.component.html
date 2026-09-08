@@ -1,0 +1,63 @@
+<div class="room-environment" [attr.data-camera]="view()">
+  @if (view() === 'map' || view() === 'news') {
+    <button
+      class="room-return-surface"
+      aria-label="Step back into room"
+      tabindex="-1"
+      (click)="navigate.emit('room')"
+    ></button>
+  }
+  <div class="room-scene">
+    <img class="room-art" [src]="config().roomImage" alt="" (error)="imageFailed.emit()" />
+    <div class="room-shade" aria-hidden="true"></div>
+    <app-crisis-monitor-wall
+      [class.wall-focused]="view() === 'news'"
+      [active]="view() === 'news'"
+      [available]="view() === 'room' || view() === 'news'"
+      (open)="navigate.emit('news')"
+      (navigate)="navigate.emit($event)"
+      (locate)="locate.emit($event)"
+    />
+    <div
+      class="table-projection"
+      [class.table-active]="view() === 'map'"
+      [attr.inert]="view() === 'map' || view() === 'room' ? null : ''"
+      [attr.aria-hidden]="view() === 'map' || view() === 'room' ? null : true"
+    >
+      <div
+        class="table-map"
+        [attr.inert]="view() === 'map' ? null : ''"
+        [attr.aria-hidden]="view() === 'map' ? null : true"
+        [style.transform]="'scale(' + (view() === 'map' ? zoom() : 1) + ')'"
+        [style.transform-origin]="zoomOrigin()"
+      >
+        <app-crisis-map
+          [config]="config()"
+          [state]="state()"
+          [miniature]="view() !== 'map'"
+          [layer]="layer()"
+          [selected]="selectedLocation()"
+          (locationSelected)="locationSelected.emit($event)"
+        />
+      </div>
+      @if (view() === 'room') {
+        <button
+          class="table-surface-hit"
+          data-room-entry="map"
+          aria-label="Open situation table"
+          (click)="navigate.emit('map')"
+        >
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <polygon points="24.5,1 75.5,1 99.3,99 0.7,99" />
+          </svg>
+          <span class="surface-label">Situation table <b>↗</b><small>CLICK TO INSPECT</small></span>
+        </button>
+      }
+      <div class="table-sweep" aria-hidden="true"></div>
+      <div class="table-rim" aria-hidden="true">
+        <i></i> OPERATIONAL PROJECTION <span>SIMULATED DATA</span>
+      </div>
+    </div>
+    <div class="table-glow" aria-hidden="true"></div>
+  </div>
+</div>

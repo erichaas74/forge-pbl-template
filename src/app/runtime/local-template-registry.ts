@@ -15,6 +15,7 @@ import { LocalExhibitHallRuntime } from './local-exhibit-hall-runtime';
 import { journeyReplayProjectPackageDescriptor } from '../templates/journey-replay/package/journey-replay-project-package-assembler';
 import { LocalJourneyReplayRuntime } from './local-journey-replay-runtime';
 import { LocalEngineeringDesignRuntime } from './local-engineering-design-runtime';
+import { LocalCrisisOperationsRuntime } from './local-crisis-operations-runtime';
 import {
   LocalProjectConfigRuntime,
   singleProjectConfigPackageDescriptor,
@@ -175,6 +176,24 @@ export function createLocalTemplateRegistry(
   clock: Clock = new SystemClock(),
 ): TemplateRegistry {
   const registry = new TemplateRegistry();
+  const competitionResult = registry.register({
+    id: 'competition-show', version: '1.0.0', compatibleTemplateMajorVersions: [1],
+    projectTypes: ['competition-show'], packageDescriptor: singleProjectConfigPackageDescriptor,
+    createRuntime: () => new LocalProjectConfigRuntime(source, 'competition-show'),
+  });
+  if (!competitionResult.ok) throw new Error(competitionResult.error.message);
+  const leagueResult = registry.register({
+    id: 'live-strategy-league', version: '1.0.0', compatibleTemplateMajorVersions: [1],
+    projectTypes: ['live-strategy-league'], packageDescriptor: singleProjectConfigPackageDescriptor,
+    createRuntime: () => new LocalProjectConfigRuntime(source, 'live-strategy-league'),
+  });
+  if (!leagueResult.ok) throw new Error(leagueResult.error.message);
+  const crisisResult = registry.register({
+    id: 'crisis-operations', version: '1.0.0', compatibleTemplateMajorVersions: [1],
+    projectTypes: ['crisis-operations'], packageDescriptor: { requiredFiles: ['project.json'], optionalFiles: [] },
+    createRuntime: () => new LocalCrisisOperationsRuntime(source),
+  });
+  if (!crisisResult.ok) throw new Error(crisisResult.error.message);
   const engineeringResult = registry.register({
     id: 'engineering-design',
     version: '1.0.0',
