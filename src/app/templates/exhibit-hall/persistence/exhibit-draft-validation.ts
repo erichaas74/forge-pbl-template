@@ -1,5 +1,6 @@
 import { isExhibitObjectModel } from '../../../shared/media/object-model';
 import type { MuseumBoardSnapshotData } from '../domain/exhibit-types';
+import { isMuseumRoomData } from '../rooms/museum-room';
 
 function record(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -46,6 +47,18 @@ export function isExhibitDraft(value: unknown): value is MuseumBoardSnapshotData
   )
     return false;
   const gallery = value['immersiveGallery'];
+  const room = value['museumRoom'];
+  const objects = value['objects'];
+  if (
+    room !== undefined &&
+    (!isMuseumRoomData(room) ||
+      room.placements.length !== value['objects'].length ||
+      room.placements.some(
+        (placement) =>
+          !objects.some((object: Record<string, unknown>) => object['id'] === placement.objectId),
+      ))
+  )
+    return false;
   if (
     gallery !== undefined &&
     (!record(gallery) ||

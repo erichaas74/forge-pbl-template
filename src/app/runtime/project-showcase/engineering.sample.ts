@@ -1,4 +1,4 @@
-import { calendarMonumentSample } from '../../projects/calendar-monument/calendar-monument.sample';
+import { solsticeGatesSample } from '../../projects/calendar-monument/calendar-monument.solstice-sample';
 import { EngineeringFinalDemoComponent } from '../../templates/engineering-design/ui/engineering-final-demo.component';
 import { SolarMonumentComponent } from '../../plugins/simulations/solar-monument/solar-monument.component';
 import {
@@ -11,8 +11,9 @@ export function loadSample(): CompletedSample {
   registry.register('simulation.solar-monument', SolarMonumentComponent);
   return {
     integratedHeader: true,
-    title: 'The Jewel Circle Solar Calendar',
-    subtitle: 'A carved stone circle, bronze crystal and jeweled windows with four tested seasonal alignments.',
+    title: 'Solstice Windows',
+    subtitle:
+      'Horizontal holes send summer and winter morning sunlight onto marks on a central pillar.',
     audience: 'Classmates and families',
     duration: '3–5 minute exhibit',
     trail: [
@@ -24,20 +25,20 @@ export function loadSample(): CompletedSample {
       {
         label: 'Design',
         title: 'Make it reproducible',
-        text: 'Arrange eight gates, four pierced standing stones and a bronze crystal on a stepped base. Three roof jewels align with measured seasonal sunstones; the outer windows add new light patterns.',
+        text: 'Build two upright window stones and one receiving pillar. Aim each horizontal bore at its fixed summer or winter mark, 3 m away.',
       },
       {
         label: 'Revision',
         title: 'Question the precision',
-        text: 'Narrow the blue opening to distinguish nearby equinox dates. The solstice markers still match nearby days, showing the calendar’s limits.',
+        text: 'The starter’s summer window misses its mark. Move that window until light reaches the fixed carving, then retest December and nearby dates.',
       },
     ],
     review: {
       strength:
-        'All four tests connect the same stonework and jeweled openings to measured seasonal light targets.',
+        'Verified rays pass through the complete horizontal bores and land on the central pillar’s marks. Each mark misses the opposite solstice.',
       question: 'How many nearby dates reach each target?',
       revision:
-        'Compare a wide and narrow equinox opening, then explain why the solstice markers still match a week before and after.',
+        'Seal a hole or shift its window, then compare the mark. Explain why nearby solstice dates can also align.',
       assessment:
         'Assess science, reproducibility, evidence, and revision. This is a fictional sample, not a verified physical test.',
     },
@@ -45,8 +46,8 @@ export function loadSample(): CompletedSample {
     providers: [{ provide: DESIGN_SIMULATIONS, useValue: registry }],
     inputs: {
       projectId: 'calendar-monument',
-      title: 'The Jewel Circle Solar Calendar',
-      snapshot: structuredClone(calendarMonumentSample),
+      title: 'Solstice Windows',
+      snapshot: structuredClone(solsticeGatesSample),
       simulationId: 'simulation.solar-monument',
     },
   };

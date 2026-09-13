@@ -1,4 +1,5 @@
 import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
+export * from './museum.schema';
 
 export const journeyClasses = sqliteTable('journey_classes', {
   id: text('id').primaryKey(),

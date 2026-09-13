@@ -2,15 +2,56 @@
   display: block;
   min-width: 0;
 }
+.arena.workshop { padding: 0; border-radius: 2px; background: #142d2c; box-shadow: none; border-color: #647970; }
+.arena.tabletop { padding: 0; background: #bebeb0; border-color: #a2a798; border-radius: 4px; box-shadow: none; }
+.tabletop .arena-hud, .tabletop .arena-bottom { padding: 9px 12px; background: #243c37; }
+.tabletop .view-controls { padding: 7px 10px; background: #243c37; }
+.tabletop .arena-hud { margin-bottom: 0; }
+.tabletop .arena-bottom { margin-top: 0; }
+.patrol-notice { margin: 0; padding: 9px 12px; color: #f4e6c2; background: #3e4b3c; font-size: 12px; line-height: 1.5; }
+.workshop .arena-hud, .workshop .arena-bottom { display: none; }
+.workshop .view-controls { padding: 7px 10px; background: #152b2b; gap: 4px; }
+.workshop .view-controls button { border-radius: 2px; min-height: 32px; padding: 5px 8px; }
+.workshop .course-description { padding: 8px 12px; }
+.view-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px 0 12px;
+}
+.view-controls button {
+  min-height: 36px;
+  padding: 6px 10px;
+  color: #daedf1;
+  background: #1b3545;
+  border: 1px solid #547583;
+  border-radius: 6px;
+  cursor: pointer;
+  font: 600 11px system-ui, sans-serif;
+}
+.view-controls button[aria-pressed='true'] {
+  background: #215b58;
+  border-color: #77dcc8;
+  color: #d6fff2;
+}
+.view-controls button:disabled { opacity: 0.45; cursor: default; }
+.view-controls button:focus-visible,
+.course-description summary:focus-visible { outline: 2px solid #ffcf7d; outline-offset: 3px; }
+.renderer-message { color: #ffdda4; font-size: 12px; line-height: 1.5; }
+.course-description { color: #c0d7df; font-size: 12px; line-height: 1.6; padding-top: 10px; }
+.course-description summary { cursor: pointer; min-height: 32px; }
+.course-description ul { padding-left: 20px; }
 .arena {
   position: relative;
   background: radial-gradient(ellipse at 60% 30%, #203e50, #0b1b2b 80%);
-  border: 1px solid #466273;
-  border-radius: 12px;
+  border: 1px solid #527f8f;
+  border-radius: 16px;
   padding: 13px 10px 10px;
   box-shadow:
-    inset 0 1px 0 #7297a330,
-    0 9px 25px #08151e22;
+    inset 0 1px 0 #b0f7e950,
+    inset 0 -2px 16px #03132070,
+    0 12px 40px #020d2050,
+    0 0 24px #35d4c010;
   overflow: hidden;
 }
 .arena-hud,
@@ -27,13 +68,17 @@
   padding: 0 5px;
 }
 .arena-hud {
-  padding-bottom: 9px;
+  padding: 6px 5px 15px;
+  border-bottom: 1px solid #6994a02b;
+  margin-bottom: 8px;
 }
 .arena-id {
   display: flex;
   gap: 6px;
   align-items: center;
   color: #d7edf0;
+  font-size: 10px;
+  letter-spacing: 1.7px;
 }
 .arena-id i,
 .robot-dot {

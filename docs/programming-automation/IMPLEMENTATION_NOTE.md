@@ -1,5 +1,10 @@
 # Robot Delivery Code Lab — Programming & Automation 1.0
 
+Move commands now support a mission-defined given number and operation with one student
+operand. See [Move math](MOVE_MATH.md) for configuration, execution, and saved-program compatibility.
+
+The course presentation now defaults to a lazy-loaded Phaser 4 warehouse with camera controls, interpolated replay, collision feedback, and a retained SVG map option. See [Phaser upgrade](PHASER_UPGRADE.md) for the implementation boundary, changed files, and deferred verification. Earlier validation results in this document describe the earlier implementation, not this graphics upgrade.
+
 The supplied `ROBOT_DELIVERY_CODE_LAB_BUILD_GUIDE.md` is the product specification for this integrated LMS project. It is installed as a local preview, with a reusable template and separate curriculum configuration.
 
 ## Open the project

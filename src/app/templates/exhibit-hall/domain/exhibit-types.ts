@@ -1,4 +1,5 @@
 import type { ExhibitObjectModel } from '../../../shared/media/object-model';
+import type { AssignedMuseumConfig, MuseumRoomData } from '../rooms/museum-room';
 export type { ExhibitObjectModel } from '../../../shared/media/object-model';
 export type ExhibitUserRole = 'student' | 'teacher' | 'family';
 
@@ -129,6 +130,7 @@ export interface ExhibitCorridorPreview {
 }
 
 export interface MuseumBoardSnapshotData {
+  readonly museumRoom?: MuseumRoomData;
   readonly title: string;
   readonly centralClaim: string;
   readonly objects: readonly MuseumBoardObject[];
@@ -345,6 +347,7 @@ export interface ExhibitSeedBoard {
 }
 
 export interface ExhibitProjectConfig {
+  readonly museum?: AssignedMuseumConfig;
   readonly schemaVersion: string;
   readonly projectId: string;
   readonly projectVersion: string;

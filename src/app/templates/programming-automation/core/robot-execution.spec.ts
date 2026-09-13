@@ -46,7 +46,7 @@ describe('Programming and automation vertical slice', () => {
   });
   it('executes every finished example mission and preserves a failed championship trial', () => {
     const sample = createRobotSampleState();
-    expect(sample.trials.filter((t) => t.completedMission).length).toBe(10);
+    expect(sample.trials.filter((t) => t.completedMission).length).toBe(12);
     const championship = sample.trials.filter((t) => t.challengeId === 'championship');
     expect(championship.map((t) => t.stoppingErrorCm)).toEqual([20, 0, 0]);
     expect(championship.at(-1)?.deliveriesCompleted).toBe(2);

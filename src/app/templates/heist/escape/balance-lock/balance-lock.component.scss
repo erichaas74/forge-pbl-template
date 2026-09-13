@@ -1,0 +1,485 @@
+:host {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  color: #f6edcf;
+  font-family: Arial, sans-serif;
+  background: #091d26;
+}
+* {
+  box-sizing: border-box;
+}
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+button:focus-visible {
+  outline: 3px solid #a4f3d3;
+  outline-offset: 4px;
+}
+h1:focus {
+  outline: none;
+}
+.chamber {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  background: radial-gradient(ellipse at 50% 40%, #29434b, #081b24 75%);
+}
+.workshop-header {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 32px 14px;
+  border-bottom: 1px solid #d1b87730;
+  background: #0b2028;
+}
+.workshop-header > div {
+  text-align: center;
+}
+.eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2.7px;
+  color: #cdb983;
+  margin: 0 0 7px;
+}
+h1 {
+  font:
+    30px Georgia,
+    serif;
+  margin: 0;
+}
+.back,
+.help {
+  background: none;
+  border: 1px solid #cbb67b50;
+  border-radius: 7px;
+  padding: 11px 15px;
+  font-size: 13px;
+}
+.back {
+  border-color: transparent;
+}
+.seals {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 18px;
+  background: #0b2028;
+  flex-shrink: 0;
+}
+.seals button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 216px;
+  padding: 10px 18px;
+  text-align: left;
+  border: 1px solid #b4a17735;
+  background: #112a33;
+  border-radius: 8px;
+  font:
+    16px Georgia,
+    serif;
+  transition: background 0.2s;
+}
+.seals button.active {
+  border-color: #e8c57d;
+  background: #243941;
+  box-shadow: 0 0 22px #e8c57d12;
+}
+.seals button.sealed {
+  border-color: #94d7b4;
+}
+.seals small {
+  display: block;
+  margin-top: 4px;
+  font:
+    8px Arial,
+    sans-serif;
+  letter-spacing: 1.8px;
+  color: #a9bcb6;
+}
+.seal-medal {
+  display: grid;
+  place-items: center;
+  width: 31px;
+  height: 31px;
+  border: 1px solid #b9a373;
+  border-radius: 50%;
+  color: #f1d28e;
+}
+.sealed .seal-medal {
+  color: #9ef1c8;
+  border-color: #9ef1c8;
+}
+.instructions {
+  margin: 0;
+  padding: 12px 30px;
+  background: #27434c;
+  line-height: 1.6;
+  font-size: 13px;
+}
+.instructions strong {
+  color: #f5d692;
+}
+.stage-shell {
+  position: relative;
+  flex: 1;
+  min-height: 300px;
+  overflow: hidden;
+  background: #091c25;
+}
+.stage {
+  position: absolute;
+  inset: 0;
+}
+.stage-instruction {
+  position: absolute;
+  top: 0;
+  left: 15%;
+  right: 15%;
+  text-align: center;
+  font-size: 13px;
+  letter-spacing: 0.3px;
+  color: #f1e6c9;
+  text-shadow: 0 2px 8px #000;
+  padding: 10px;
+  background: linear-gradient(90deg, transparent, #0b2028dd, transparent);
+  pointer-events: none;
+  margin: 0;
+}
+.loading {
+  position: absolute;
+  inset: 35% 20% auto;
+  text-align: center;
+  background: #142f39;
+  padding: 20px;
+  border: 1px solid #e1c78866;
+}
+.release-banner {
+  position: absolute;
+  top: 10%;
+  left: 25%;
+  right: 25%;
+  padding: 22px;
+  text-align: center;
+  background: #0d2a30eb;
+  border: 1px solid #b1f1cbaa;
+  border-radius: 12px;
+  box-shadow: 0 0 70px #90ffd033;
+  pointer-events: none;
+}
+.release-banner > span {
+  display: block;
+  color: #a7f7ce;
+  font-size: 23px;
+  margin-bottom: 5px;
+}
+.release-banner strong {
+  font:
+    30px Georgia,
+    serif;
+  color: #d7ffe6;
+}
+.release-banner p {
+  font-size: 13px;
+  color: #b1d6c6;
+}
+.workbench {
+  flex-shrink: 0;
+  background: linear-gradient(#132b32, #0a2029);
+  border-top: 1px solid #d7b77366;
+  padding: 14px 26px 9px;
+  box-shadow: 0 -10px 36px #06141d70;
+  z-index: 2;
+}
+.equilibrium {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+.equilibrium > div {
+  min-width: 260px;
+}
+.equation {
+  font:
+    27px Georgia,
+    serif;
+  margin: 0;
+  color: #efd59a;
+}
+.equation.equal {
+  color: #b4f6d7;
+}
+.status {
+  flex: 1;
+  color: #afc7c6;
+  font-size: 12px;
+  line-height: 1.6;
+  max-width: 560px;
+  margin: 0 auto;
+}
+.primary {
+  white-space: nowrap;
+  margin-left: auto;
+  border: 1px solid #f9dda0;
+  border-radius: 7px;
+  padding: 15px 23px;
+  background: linear-gradient(135deg, #f1d792, #b18a48);
+  color: #253238;
+  font-weight: bold;
+  font-size: 13px;
+  box-shadow:
+    0 4px 0 #776035,
+    0 0 22px #e7bd6b20;
+}
+.primary span {
+  margin-left: 12px;
+  font-size: 18px;
+}
+.tools-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 10px;
+  font-size: 10px;
+  color: #8aacab;
+}
+.tools-row button {
+  background: transparent;
+  border: 0;
+  padding: 7px 0;
+  color: #c2d3ca;
+  font-size: 11px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.accessible-controls {
+  border-top: 1px solid #b4b69530;
+  margin-top: 8px;
+  padding-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 25px;
+}
+.piece-buttons,
+.pan-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.piece-buttons button {
+  min-width: 60px;
+  background: #31434a;
+  border: 1px solid #9f916d;
+  border-radius: 5px;
+  padding: 7px 12px;
+  font:
+    17px Georgia,
+    serif;
+}
+.piece-buttons button[aria-pressed='true'] {
+  border-color: #aff4d9;
+  background: #35675f;
+}
+.piece-buttons small {
+  display: block;
+  font:
+    8px Arial,
+    sans-serif;
+  margin-top: 5px;
+  color: #c4d1c8;
+  letter-spacing: 1px;
+}
+.pan-buttons button {
+  background: #183941;
+  border: 1px solid #6b9993;
+  border-radius: 5px;
+  padding: 12px;
+  font-size: 11px;
+}
+.save-warning {
+  color: #ffd29a;
+  font-size: 12px;
+}
+@media (max-width: 800px) {
+  .workshop-header {
+    padding: 12px;
+    gap: 8px;
+  }
+  h1 {
+    font-size: 22px;
+  }
+  .eyebrow {
+    font-size: 8px;
+    letter-spacing: 1.5px;
+  }
+  .back,
+  .help {
+    font-size: 11px;
+    padding: 8px;
+  }
+  .seals {
+    gap: 6px;
+    padding: 8px;
+  }
+  .seals button {
+    min-width: 0;
+    flex: 1;
+    gap: 6px;
+    padding: 8px;
+    font-size: 12px;
+  }
+  .seals small {
+    font-size: 6px;
+    letter-spacing: 0.5px;
+  }
+  .seal-medal {
+    width: 25px;
+    height: 25px;
+    flex-shrink: 0;
+  }
+  .stage-shell {
+    min-height: 290px;
+  }
+  .stage-instruction {
+    font-size: 11px;
+    left: 3%;
+    right: 3%;
+  }
+  .equilibrium {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .equilibrium > div {
+    min-width: 0;
+    flex: 1;
+  }
+  .equation {
+    font-size: 22px;
+  }
+  .status {
+    order: 3;
+    flex-basis: 100%;
+    max-width: none;
+  }
+  .workbench {
+    padding: 12px;
+  }
+  .primary {
+    padding: 12px;
+    font-size: 11px;
+  }
+  .tools-row > span {
+    display: none;
+  }
+  .accessible-controls {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .piece-buttons button {
+    min-width: 50px;
+    padding: 6px 10px;
+  }
+  .release-banner {
+    left: 12%;
+    right: 12%;
+  }
+  .release-banner strong {
+    font-size: 23px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+
+.header-tools {
+  display: flex;
+  gap: 8px;
+}
+@media (max-width: 520px) {
+  .header-tools {
+    flex-direction: column;
+    gap: 3px;
+  }
+  .header-tools .help {
+    padding: 5px 8px;
+  }
+}
+
+.release-banner {
+  animation: release-reveal 2.1s both;
+  left: 32%;
+  right: 32%;
+  padding: 16px;
+}
+@keyframes release-reveal {
+  0%,
+  80% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+.reduced-motion .release-banner {
+  animation: none;
+}
+@media (max-width: 800px) {
+  .release-banner {
+    left: 12%;
+    right: 12%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .release-banner {
+    animation: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .stage-shell {
+    flex: 0 0 auto;
+    height: calc(68vw + 24px);
+    min-height: 0;
+  }
+  .workbench {
+    flex: 1 0 auto;
+  }
+  .stage-instruction {
+    font-size: 10px;
+    padding: 5px;
+  }
+  .equilibrium .primary {
+    padding: 12px 10px;
+  }
+  .accessible-controls {
+    gap: 14px;
+    padding-top: 15px;
+  }
+  .piece-buttons button {
+    min-width: 55px;
+    min-height: 52px;
+  }
+  .pan-buttons button {
+    min-height: 44px;
+    padding: 10px;
+  }
+}

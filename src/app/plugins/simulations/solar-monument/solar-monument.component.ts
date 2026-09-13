@@ -15,6 +15,15 @@ import {
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import type {
+  DesignWalkthroughAction,
+  DesignWalkthroughSetup,
+} from '../../../shared/engineering/design-walkthrough';
+import {
+  DESIGN_EDITOR,
+  transformBlocks,
+  type DesignTransform,
+} from '../../../shared/engineering/design-editor';
 import {
   solarMarkerRecord,
   markerClock,
@@ -46,6 +55,9 @@ import {
 })
 export class SolarMonumentComponent {
   readonly design = input.required<BlockDesign>();
+  readonly surfaceTargets = computed(() =>
+    this.design().targets.filter((target) => target.y && target.normal),
+  );
   readonly restore = input<DesignCapture>();
   readonly checks = input<readonly DesignCheck[]>([]);
   readonly active = input(true);
@@ -53,11 +65,19 @@ export class SolarMonumentComponent {
   readonly readOnly = input(false);
   readonly building = input(false);
   readonly activity = input('');
+  readonly walkthrough = input<DesignWalkthroughSetup>();
+  readonly walkthroughReadings = signal<readonly { label: string; value: string }[]>([]);
+  readonly walkthroughReady = signal(false);
+  private walkthroughId = '';
+  private guidedReviewId = '';
   readonly frameHeight = signal(850);
   readonly onChrome = inject(DESIGN_CHROME, { optional: true });
+  readonly editor = inject(DESIGN_EDITOR, { optional: true });
   private readonly toolbar = viewChild<TemplateRef<unknown>>('toolbar');
   private readonly guide = viewChild<TemplateRef<unknown>>('guide');
   readonly toolsOpen = signal(false);
+  readonly seasonPictures = signal<readonly { src: string; caption: string }[]>([]);
+  private readonly pictureClose = viewChild<ElementRef<HTMLButtonElement>>('pictureClose');
   readonly reviewOpen = signal(false);
   readonly eventSelection = signal('');
   readonly markersOpen = signal(false);
@@ -76,6 +96,8 @@ export class SolarMonumentComponent {
       this.active() &&
       !this.readOnly() &&
       !this.presentation() &&
+      !this.ui().centerView &&
+      this.ui().mode !== 'explore' &&
       !this.activity().startsWith('sundial-') &&
       !!this.onDesign,
   );
@@ -101,6 +123,9 @@ export class SolarMonumentComponent {
     canPlay: true,
     noon: true,
     sun: true,
+    sunDay: false,
+    centerView: false,
+    mode: 'test' as 'build' | 'explore' | 'test',
     season: '',
     height: 60,
     marks: 0,
@@ -146,6 +171,8 @@ export class SolarMonumentComponent {
   private pendingId = '';
   private reviewId = '';
   private contextKey = '';
+  private sunDayTrigger?: HTMLElement;
+  private centerViewTrigger?: HTMLElement;
   private timer?: ReturnType<typeof setTimeout>;
   private reviewTimer?: ReturnType<typeof setTimeout>;
   constructor() {
@@ -160,16 +187,44 @@ export class SolarMonumentComponent {
     effect(() => {
       const toolbar = this.toolbar(),
         guide = this.guide();
-      if (toolbar && guide) this.onChrome?.({ toolbar, guide });
+      if (toolbar && guide)
+        this.onChrome?.({
+          toolbar,
+          guide,
+          walkthrough: {
+            ready: () =>
+              this.ready() && this.walkthroughReady() && !this.busy() && !this.reviewing(),
+            readings: this.walkthroughReadings,
+            status: () => this.ui().message || this.status(),
+            run: (action) => this.runWalkthroughAction(action),
+          },
+        });
     });
     effect(() => {
       if (this.connected()) this.send({ type: 'hosted-chrome', active: true });
+    });
+    effect(() => {
+      if (!this.editor) return;
+      const ids = this.editor.selection(),
+        snap = this.editor.snap(),
+        assemblies = this.editor.assemblies();
+      this.design();
+      if (this.connected()) this.send({ type: 'editor-state', ids, snap, assemblies });
     });
     effect(() => {
       const design = this.design();
       untracked(() => this.cancelMarkerDraft());
       if (this.connected()) {
         this.send({ type: 'design', design });
+        if (this.editor)
+          untracked(() =>
+            this.send({
+              type: 'editor-state',
+              ids: this.editor!.selection(),
+              snap: this.editor!.snap(),
+              assemblies: this.editor!.assemblies(),
+            }),
+          );
         const targetId = untracked(this.markerSelected);
         if (design.targets.some((t) => t.id === targetId))
           this.send({ type: 'marker-focus', targetId });
@@ -177,6 +232,8 @@ export class SolarMonumentComponent {
     });
     effect(() => {
       const capture = this.restore();
+      const index = this.cases.findIndex((item) => item.id === capture?.settings['scenarioId']);
+      if (this.presentation() && index >= 0) this.selected.set(index);
       if (this.connected() && capture) this.send({ type: 'restore', capture });
     });
     effect(() => {
@@ -224,10 +281,64 @@ export class SolarMonumentComponent {
       const presenting = this.presentation(),
         ready = this.connected();
       this.results.set([]);
+      if (!presenting) {
+        clearTimeout(this.reviewTimer);
+        this.reviewId = '';
+        this.reviewing.set(false);
+      }
       if (presenting) untracked(() => this.cancelMarkerDraft());
       if (ready) this.send({ type: 'presentation', active: presenting });
       if (presenting && ready) this.runReview();
     });
+    effect(() => {
+      const setup = this.walkthrough();
+      if (!this.connected() || !setup) return;
+      this.walkthroughId = crypto.randomUUID();
+      this.guidedReviewId = '';
+      this.walkthroughReady.set(false);
+      this.walkthroughReadings.set([]);
+      this.status.set('');
+      this.send({ type: 'walkthrough-setup', id: this.walkthroughId, setup });
+    });
+  }
+  runWalkthroughAction(action: DesignWalkthroughAction): void {
+    const setup = this.walkthrough();
+    if (
+      !setup ||
+      !this.walkthroughReady() ||
+      !this.active() ||
+      this.readOnly() ||
+      this.presentation() ||
+      this.busy() ||
+      this.reviewing()
+    )
+      return;
+    this.status.set('');
+    if (action.command === 'capture') {
+      this.status.set('Saving this observation…');
+      this.capture();
+    } else if (action.command === 'review-save') {
+      this.status.set('Checking all four dates…');
+      this.runReview();
+      this.guidedReviewId = this.reviewId;
+    } else if (action.command === 'nudge') {
+      const id = setup['blockId'];
+      if (
+        typeof id !== 'string' ||
+        !this.design().blocks.some((b) => b.id === id) ||
+        ![-0.05, 0.05].includes(Number(action.value)) ||
+        !this.editor
+      ) {
+        this.status.set('Load the starting challenge before moving the window.');
+        return;
+      }
+      // Use the shared edit history, but move exactly this window, never its neighbours.
+      const next = transformBlocks(this.design(), [id], { dz: Number(action.value) });
+      if (this.editor.commit(next))
+        this.status.set('Window moved 5 cm ' + (Number(action.value) < 0 ? 'north.' : 'south.'));
+      else this.status.set(this.editor.message());
+    } else if (['markDial', 'post', 'shadowView', 'targetView'].includes(action.command))
+      this.command(action.command, action.value);
   }
   toggleMarkers(): void {
     if (this.markersOpen()) {
@@ -386,9 +497,30 @@ export class SolarMonumentComponent {
   connect(): void {
     this.send({ type: 'connect' });
   }
+  toggleSunDay(event: Event): void {
+    if (event.currentTarget instanceof HTMLElement) this.sunDayTrigger = event.currentTarget;
+    this.command('sunDayToggle');
+  }
+  toggleCenterView(event: Event): void {
+    if (event.currentTarget instanceof HTMLElement) this.centerViewTrigger = event.currentTarget;
+    this.cancelMarkerDraft();
+    this.markersOpen.set(false);
+    this.reviewOpen.set(false);
+    this.command('centerViewToggle');
+  }
   command(action: string, value?: number | string): void {
     if (!this.ready()) return;
     this.send({ type: 'toolbar-action', action, value });
+  }
+  chooseMode(mode: 'build' | 'explore' | 'test'): void {
+    this.seasonPictures.set([]);
+    this.closeMarkers();
+    this.reviewOpen.set(false);
+    this.command(mode === 'build' ? 'buildMode' : mode === 'explore' ? 'exploreToggle' : 'showSun');
+  }
+  closePictures(): void {
+    this.seasonPictures.set([]);
+    this.command('closeSeasonPictures');
   }
   event(value: string): void {
     this.eventSelection.set(value);
@@ -404,7 +536,15 @@ export class SolarMonumentComponent {
     if (!this.presentation()) queueMicrotask(() => this.eventSelection.set(''));
   }
   capture(): void {
-    if (this.busy() || !this.ready() || this.readOnly() || !this.onCapture) return;
+    if (
+      this.ui().mode === 'explore' ||
+      this.ui().centerView ||
+      this.busy() ||
+      !this.ready() ||
+      this.readOnly() ||
+      !this.onCapture
+    )
+      return;
     this.onView?.('observe');
     this.pendingId = crypto.randomUUID();
     this.busy.set(true);
@@ -434,7 +574,13 @@ export class SolarMonumentComponent {
     this.selected.set((index + 4) % 4);
     this.eventSelection.set(this.cases[this.selected()].id);
     const capture = this.results()[this.selected()];
-    if (capture) this.send({ type: 'restore', capture });
+    if (capture) {
+      this.send({ type: 'restore', capture });
+      const target = this.design().targets.find(
+        (target) => target.id === capture.settings['targetId'],
+      );
+      if (target?.y) this.selectMarker(target);
+    }
   }
   checkFor(id: string): DesignCheck | undefined {
     return this.checks().find((check) => check.scenarioId === id);
@@ -504,7 +650,15 @@ export class SolarMonumentComponent {
     return result?.measurements.find((m) => m.label === label)?.value ?? '—';
   }
   recordReview(): void {
-    if (!this.configured() || this.recorded() || this.readOnly() || !this.onBatch) return;
+    if (
+      this.ui().mode === 'explore' ||
+      this.ui().centerView ||
+      !this.configured() ||
+      this.recorded() ||
+      this.readOnly() ||
+      !this.onBatch
+    )
+      return;
     try {
       this.onBatch(this.results());
       this.savedReview.set(String(this.results()[0].settings['reviewId']));
@@ -533,6 +687,27 @@ export class SolarMonumentComponent {
       return;
     const data = event.data as Record<string, unknown>;
     if (data['channel'] !== 'forge.design-simulation.v1') return;
+    if (
+      data['type'] === 'walkthrough-readings' &&
+      data['id'] === this.walkthroughId &&
+      this.walkthroughId
+    ) {
+      const readings = data['readings'];
+      if (
+        Array.isArray(readings) &&
+        readings.length <= 8 &&
+        readings.every(
+          (r) =>
+            r &&
+            typeof r === 'object' &&
+            ['label', 'value'].every((k) => typeof r[k] === 'string' && r[k].length <= 200),
+        )
+      ) {
+        this.walkthroughReadings.set(readings);
+        this.walkthroughReady.set(true);
+      }
+      return;
+    }
     if (data['type'] === 'marker-selected' && !this.activity().startsWith('sundial-')) {
       const target = this.design().targets.find((t) => t.id === data['targetId']);
       if (target) {
@@ -594,9 +769,93 @@ export class SolarMonumentComponent {
         ['canPlay', 'noon', 'sun', 'canUndo', 'canReturn'].every(
           (k) => typeof s[k] === 'boolean',
         ) &&
+        (s['sunDay'] === undefined || typeof s['sunDay'] === 'boolean') &&
+        (s['centerView'] === undefined || typeof s['centerView'] === 'boolean') &&
+        (s['mode'] === undefined || ['build', 'explore', 'test'].includes(String(s['mode']))) &&
         Number(s['end']) >= Number(s['start'])
       ) {
-        this.ui.set(s as unknown as ReturnType<typeof this.ui>);
+        const wasOpen = this.ui().sunDay;
+        const wasCenter = this.ui().centerView;
+        this.ui.set({
+          ...s,
+          mode: s['mode'] ?? (s['sun'] ? 'test' : 'build'),
+          sunDay: s['sunDay'] === true,
+          centerView: s['centerView'] === true,
+        } as unknown as ReturnType<typeof this.ui>);
+        if (wasOpen && !this.ui().sunDay && this.sunDayTrigger?.isConnected)
+          this.sunDayTrigger.focus({ preventScroll: true });
+        if (wasCenter && !this.ui().centerView && this.centerViewTrigger?.isConnected)
+          this.centerViewTrigger.focus({ preventScroll: true });
+      }
+      return;
+    }
+    if (data['type'] === 'season-pictures' && this.active() && this.ui().mode === 'explore') {
+      const pictures = data['pictures'];
+      if (
+        !Array.isArray(pictures) ||
+        pictures.length !== 2 ||
+        !pictures.every(
+          (p) =>
+            p &&
+            typeof p === 'object' &&
+            typeof p.src === 'string' &&
+            p.src.length < 16000000 &&
+            /^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(p.src) &&
+            typeof p.caption === 'string' &&
+            p.caption.length <= 160,
+        )
+      )
+        return;
+      this.seasonPictures.set(pictures);
+      afterNextRender(() => this.pictureClose()?.nativeElement.focus({ preventScroll: true }), {
+        injector: this.injector,
+      });
+      return;
+    }
+    if (data['type'] === 'editor-select' || data['type'] === 'editor-transform') {
+      if (
+        !this.editor ||
+        !this.building() ||
+        this.readOnly() ||
+        this.presentation() ||
+        !this.active() ||
+        this.ui().centerView ||
+        this.ui().mode === 'explore'
+      )
+        return;
+      if (data['type'] === 'editor-select') {
+        const id = data['id'];
+        if (
+          typeof id === 'string' &&
+          (id === '' || this.design().blocks.some((b) => b.id === id)) &&
+          typeof data['additive'] === 'boolean'
+        )
+          this.editor.select(id, data['additive']);
+      } else {
+        const ids = data['ids'],
+          op = data['operation'];
+        if (
+          !Array.isArray(ids) ||
+          !ids.length ||
+          ids.length > 100 ||
+          !ids.every((id) => typeof id === 'string' && this.editor!.selection().includes(id)) ||
+          data['expected'] !== JSON.stringify(this.design())
+        )
+          return;
+        if (
+          !op ||
+          typeof op !== 'object' ||
+          Array.isArray(op) ||
+          !Object.entries(op).every(
+            ([k, v]) =>
+              ['dx', 'dy', 'dz', 'turn'].includes(k) &&
+              typeof v === 'number' &&
+              Number.isFinite(v) &&
+              Math.abs(v) <= (k === 'turn' ? 360 : 24),
+          )
+        )
+          return;
+        this.editor.commit(transformBlocks(this.design(), ids, op as DesignTransform));
       }
       return;
     }
@@ -609,6 +868,8 @@ export class SolarMonumentComponent {
     ) {
       try {
         this.onDesign?.(data['design']);
+        if (this.walkthrough())
+          this.status.set(`Sundial saved · ${data['design'].targets.length} fixed marks.`);
       } catch (error) {
         this.status.set(error instanceof Error ? error.message : 'The sundial could not be saved.');
       }
@@ -673,7 +934,18 @@ export class SolarMonumentComponent {
       clearTimeout(this.reviewTimer);
       this.reviewing.set(false);
       this.results.set(data['captures'] as DesignCapture[]);
-      this.viewCase(this.selected());
+      if (this.guidedReviewId === data['id']) {
+        this.guidedReviewId = '';
+        this.recordReview();
+        if (this.recorded())
+          this.status.set(
+            `${this.matches()} of 4 expectations met. Four measured tests saved to your notebook.`,
+          );
+        else if (!this.configured())
+          this.status.set(
+            'Load the starting challenge to include all four expectations, then run the check again.',
+          );
+      } else this.viewCase(this.selected());
     }
     if (
       data['type'] === 'capture' &&

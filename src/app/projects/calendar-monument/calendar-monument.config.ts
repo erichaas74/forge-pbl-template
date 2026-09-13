@@ -1,7 +1,7 @@
 import type { EngineeringDesignConfig } from '../../templates/engineering-design/domain/engineering-design.models';
 import { calendarMonumentDesignSamples } from './calendar-monument.design-samples';
 import { calendarMonumentLearning } from './calendar-monument.learning';
-import { solarCalendarStarter } from './calendar-monument.solar-calendar';
+import { solsticeGatesStarter, solsticeGatesChecks } from './calendar-monument.solstice-gates';
 export const calendarMonumentConfig: EngineeringDesignConfig = {
   schemaVersion: '1.0',
   projectId: 'calendar-monument',
@@ -97,27 +97,27 @@ export const calendarMonumentConfig: EngineeringDesignConfig = {
     },
   ],
   designBrief:
-    'Build a solar calendar inspired by Stonehenge. Arrange standing stones and lintels into your own monument, then use cylindrical openings and colored jewels or glass to send light onto seasonal markers. Include a plan for June, December, and the shared equinox alignment. The stone-circle starter has openings but no markers: locating and testing them is your challenge. Match your classroom model’s dimensions, level base and true-north orientation.',
+    'Align a horizontal hole with a fixed mark on a central pillar. The three-stone starter has a misplaced summer window and a working winter window. At Colorado Springs in 2026, test 30 minutes after sunrise and move the summer window until its light patch reaches the summer carving. Keep the pillar and marks fixed. Extend the solved design into your own solar calendar and test all four special dates.',
   testInstructions: [
-    'Choose your actual location on the globe or enter its latitude and longitude. Keep this location fixed for your first comparison.',
-    'Build your monument, make a prediction, then choose Show Sun. Use See shadows to look behind the stones. Play day follows this date from sunrise to sunset; pause when a pattern appears.',
-    'Choose March equinox, then Solar Noon. Solar noon is not always 12:00 on a clock. Predict the result, then save a trial.',
-    'Repeat for June solstice, September equinox, and December solstice. Select Solar Noon again after changing the date.',
-    'Open Markers → Place on the floor. Click a patch of light or shadow, name the sunstone, then Carve marker. The saved record includes the ground point, date, time, place, Sun height and compass direction, and light at its centre. Place by measurements provides an alternative using centimetres.',
-    'Try Shape the light in Build: add a supported light window, choose a colored glass or jewel insert, and place a sculpture behind it. Use Inspect sculpture and turn the camera to see the face catching the light.',
-    'Measure the opening diameter, its axis, and the block depth. Rotate the block to aim the tunnel. Change the date and time to find when colored light reaches a ground target or sculpture face. Colored filters in this model do not focus light like a curved lens.',
-    'Choose Solar noon, then compare June and December. Open Guide → Earth’s tilt to connect the changing shadow to Earth’s fixed tilt and orbit. In Final demonstration → Compare, choose a target, expectation and time for each date. Test a week before and after: does the marker identify one day or a range? Shadows change slowly near a solstice.',
-    'Revise the design and record another trial. Earlier designs remain in the evidence notebook.',
-    'Open Final demonstration. Choose a target and expected sunlight, shadow, or colored light for each equinox and solstice. Walk through all four dates on the same 3D model, compare the target outcomes and sculpture surface samples, then record the final comparison.',
-    'Check the physical model outdoors today at the matching time. Measure its shadow, compare with the simulation, and record differences. Observe shadows; never look directly at the Sun.',
+    'For the starting challenge, use Colorado Springs (38.83, −104.82), 2026. Keep the location, pillar and carved marks fixed.',
+    'Choose June solstice → Test sunlight → Morning light. This sets 30 minutes after sunrise. Predict whether the misplaced summer window will light the summer carving; save a trial.',
+    'Choose Build, select Summer window and move it north in small steps. Return to Test sunlight. Inspect pillar shows both marks close up; Markers → Summer carving reports sunlight or shadow at the fixed point.',
+    'Use Ray guide to follow the actual light path through the hole. Turn the guide off to see the projected patch alone. When it reaches the summer ring, save another trial.',
+    'Choose December solstice and Morning light. Check that the winter carving lights and the summer carving is shaded. In Final demonstration → Compare, the starter supplies both solstice expectations and the same morning observation rule.',
+    'Compare the equinox dates using sunlight at the open center as a baseline. These records do not claim an equinox alignment through a solstice hole. Later, design a separate equinox feature if you want one.',
+    'Seal a hole, turn its bore vertically, or change its depth. Does the mark still receive sunlight? Undo the change and compare. Test a week before and after a solstice to investigate how many nearby dates also align.',
+    'After the starting challenge, add your own openings, colored filters, or markers. Build supports ground and pillar targets with explicit height and face direction. Each changed design needs its own predictions and observations.',
+    'Use Explore Earth to connect daily rotation and yearly orbit with the changing Sun direction. Record the final seasonal comparison and explain your revision.',
+    'For a physical model, scale every dimension and mark together, keep true north and a level base, and test the projected sunlight on an available day. Record differences from the simulation.',
   ],
   exhibitPrompts: [
     'Introduce your solar calendar. Show how its stone openings and colored jewels or glass create repeatable seasonal alignments.',
     'Explain Earth’s tilt, the changing Sun angle, and why your monument’s shadows change.',
     'Describe the block dimensions, location, true-north orientation, target positions, and observation times needed to reproduce your design.',
-    'Use evidence from all four seasonal dates. Explain why the two equinoxes share an approximate alignment.',
+    'Use evidence from all four seasonal dates. Distinguish the solstice-hole alignments from the equinox baseline, and explain any additional equinox feature you built.',
     'Describe a revision and what your nearby-date and outdoor tests taught you. Explain the limits of your model.',
     'Compare the Moon’s monthly pattern with the Sun’s yearly pattern and credit your research sources.',
   ],
-  starterDesign: solarCalendarStarter,
+  starterDesign: solsticeGatesStarter,
+  starterChecks: solsticeGatesChecks,
 };

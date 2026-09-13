@@ -38,6 +38,7 @@ export const DESIGN_CHANGE = new InjectionToken<
 export interface DesignChrome {
   readonly toolbar: TemplateRef<unknown>;
   readonly guide: TemplateRef<unknown>;
+  readonly walkthrough?: import('./design-walkthrough').DesignWalkthroughControls;
 }
 export const DESIGN_CHROME = new InjectionToken<(chrome: DesignChrome | undefined) => void>(
   'DESIGN_CHROME',

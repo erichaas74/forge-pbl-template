@@ -1,0 +1,91 @@
+<main class="heist-gallery">
+  <header class="mission-bar"><a routerLink="/" class="back" aria-label="Back to projects">← <span>PROJECTS</span></a><span class="brand-mark">⌖</span><div class="mission-name"><strong>{{ mission.title }}</strong><span>{{ mission.subtitle }}</span></div><span class="practice">LOCAL PRACTICE</span><button (click)="open('notes')">▤ <span>Field notebook</span><b>{{ engine().facts.length }}</b></button><button (click)="open('dossier')" class="dossier-button">Dossier ↗</button></header>
+  @if (runtime.warning()) { <div class="warning" role="alert">{{ runtime.warning() }} @if (runtime.restoreBlocked()) { <button (click)="runtime.reset()">Start a new practice</button> } @else { <button (click)="runtime.retrySave()">Retry save</button><button (click)="exportDossier('json')">Export work</button> }</div> }
+  <section class="gallery-heading"><div><p class="eyebrow">ACADEMIC HEIST <span> / </span> CHAMBER {{ number().toString().padStart(2, '0') }} OF {{ mission.chambers.length }}</p><h1>{{ displayChamber().title }}</h1><p>{{ displayChamber().briefing }}</p></div><div class="setting"><span>THE SCENE CLAIMS</span><strong>{{ displayChamber().date }}</strong><small>{{ displayChamber().location }}</small></div></section>
+  <nav class="audit-tools" aria-label="Clue guidance and audit"><button (click)="open('audit')">How clues work &amp; vault audit →</button><span>{{ audit().fraudCount }} frauds identified · {{ audit().sealedCount }} sealed</span></nav>
+  @for (encounter of currentEncounters(); track encounter.id) {
+    <section class="scene-invitation" aria-label="Living scene"><img [src]="encounter.image" alt=""><div><span>ENTER THE WORLD BEHIND THE PAINTING</span><strong>{{ encounter.title }}</strong><p>{{ encounter.invitation }}</p></div><button class="primary" [disabled]="runtime.restoreBlocked()" (click)="enterEncounter(encounter.id)">Step into the scene →</button></section>
+  }
+  <section class="world" aria-label="Interactive historical gallery">
+    <div #stage class="phaser-stage" tabindex="-1" role="img" [attr.aria-label]="displayChamber().title + ': three paintings above their passages. Use the painting buttons below for keyboard inspection.'"></div>
+    <div class="world-label"><span class="status-dot"></span>{{ replayIndex() !== null ? 'REPLAY · ' + phaseText() : phaseText() }}<small>{{ engine().solved.length }} mechanisms aligned</small></div>
+    @if (!ready() && !artError()) { <div class="loading" role="status"><span>⌖</span>Lighting the gallery…</div> }
+    @if (artError()) { <div class="loading error" role="alert">{{ artError() }}<button (click)="loadScene()">Reload artwork</button></div> }
+    <div class="painting-controls" aria-label="Inspect a painting above its passage">
+      @for (p of chamber().paintings; track p.id) { <button [disabled]="!ready() || !!artError() || runtime.restoreBlocked()" (click)="inspect(p.id)" [class.confirmed-fraud]="engine().frauds.includes(p.id)"><small>PASSAGE {{ passage(p) }}</small><strong>{{ p.title }}</strong><span>{{ engine().frauds.includes(p.id) ? 'Fraud confirmed' : hasInspected(p) ? 'Inspect again ↗' : 'Inspect painting ↗' }}</span></button> }
+    </div>
+  </section>
+  <section class="operation-strip" aria-label="Current objective">
+    <div><span class="step-icon">{{ engine().phase === 'unlocked' || engine().phase === 'extracted' ? '✓' : '⌖' }}</span><p><strong>{{ phaseText() }}</strong><span>{{ engine().phase === 'recon' ? 'Three paintings. One authentic scene. Inspect a detail, consult the evidence, then choose its passage.' : engine().phase === 'fraud' ? 'Identify the category and the specific detail that makes this scene impossible.' : engine().phase === 'unlocked' ? 'Your answer operated the mechanism. The open passage is ready.' : engine().phase === 'extracted' ? 'The collection is safe. Review the evidence and defend your decisions.' : 'Use your evidence to physically align the lock. Each setting changes the mechanism.' }}</span></p></div>
+    @if (engine().phase === 'unlocked') { <button class="primary" (click)="continue()">{{ chamber().next ? 'Enter next gallery' : 'Recover the collection' }} →</button> }
+    @else if (engine().phase !== 'recon') { <button class="primary" (click)="resume()">{{ engine().phase === 'fraud' ? 'Investigate fraud' : engine().phase === 'extracted' ? 'Open dossier' : 'Open mechanism' }} →</button> }
+    @else { <button class="outline" (click)="open('notes')">Consult field notes ↗</button> }
+  </section>
+  @if (feedback()) { <p class="world-feedback" role="status">{{ feedback() }}</p> }
+  <footer class="route-footer"><div class="route-heading"><span>THE RECOVERY ROUTE</span><button (click)="open('replay')" [disabled]="!engine().events.length">View replay ↗</button></div><ol class="route-progress">@for (c of mission.chambers; track c.id; let i = $index) { <li [class.current]="chamber().id === c.id" [class.complete]="engine().cleared.includes(c.id)" [attr.aria-current]="chamber().id === c.id ? 'step' : null"><b>{{ engine().cleared.includes(c.id) ? '✓' : (i + 1).toString().padStart(2, '0') }}</b><span>{{ c.title }}</span></li> }</ol><div class="footer-notes"><span>Illustrated reconstructions with inspectable detail studies. “Authentic” means the scene fits its historical claim.</span><label><input type="checkbox" [ngModel]="reducedMotion()" (ngModelChange)="reducedMotion.set($event)"> Reduce motion</label></div></footer>
+  <dialog #dialog class="workspace-dialog" [class.encounter-workspace]="panel() === 'encounter'" (cancel)="cancel($event)" (close)="closed()" aria-labelledby="workspace-title">
+    @if (panel() !== 'encounter') { <div class="dialog-top"><span>{{ panel() === 'inspect' ? 'PAINTING INSPECTION' : panel() === 'lock' ? 'ACADEMIC MECHANISM' : panel() === 'notes' ? 'INTELLIGENCE NOTEBOOK' : panel() === 'replay' ? 'OPERATION REPLAY' : panel() === 'audit' ? 'CLUE LOG & VAULT AUDIT' : 'RECOVERY RECORD' }}</span><button (click)="close()" aria-label="Close workspace">✕</button></div> }
+    @switch (panel()) {
+      @case ('encounter') {
+        <h2 id="workspace-title" class="encounter-title" tabindex="-1">{{ activeEncounter()?.title }}</h2>
+        @if (activeEncounter(); as encounter) { @if (encounterState(); as state) { <app-historical-encounter [definition]="encounter" [state]="state" [sources]="mission.evidence" [reducedMotion]="reducedMotion()" (action)="encounterAction($event)" (leave)="leaveEncounter()" /> } }
+      }
+      @case ('audit') {
+        <h2 id="workspace-title" tabindex="-1">Clue log &amp; vault audit</h2>
+        <app-gallery-audit [audit]="audit()" (resume)="returnFromAudit()" (notebook)="open('notes')" (revisit)="enterEncounter($event)" />
+      }
+      @case ('inspect') {
+        @if (painting(); as p) {
+          <h2 id="workspace-title" tabindex="-1">Passage {{ passage(p) }} · {{ p.title }}</h2><p class="painting-caption">{{ p.caption }}</p>
+          <div class="painting-inspection" [class.zoomed]="zoom()"><div class="painting-art" [style.background-image]="'url(' + p.image + ')'" [style.background-position]="artPosition(p)" role="img" [attr.aria-label]="p.caption"></div>
+            @for (h of p.hotspots; track h.id) { <button class="hotspot" [class.inspected]="engine().inspections[p.id]?.includes(h.id)" [style.left.%]="h.x" [style.top.%]="h.y" (click)="inspectHotspot(h.id)" [attr.aria-label]="'Inspect ' + h.label">{{ h.symbol }}<span>{{ h.label }}</span></button> }
+            <button class="zoom-button" (click)="zoom.set(!zoom())" [attr.aria-pressed]="zoom()">{{ zoom() ? '− Restore view' : '＋ Zoom painting' }}</button>
+          </div>
+          <p class="small-note">Inspect the marked detail studies and the setting inscription. Use the field notes to test their claims.</p>
+          <div class="detail-studies">@for (h of p.hotspots; track h.id) { <button [class.selected]="hotspot() === h.id" (click)="inspectHotspot(h.id)"><span>{{ engine().inspections[p.id]?.includes(h.id) ? '✓ INSPECTED' : 'INSPECT DETAIL' }}</span><strong>{{ h.label }}</strong>@if (hotspot() === h.id) { <p>{{ h.detail }}</p> }</button> }</div>
+          @if (engine().phase === 'fraud' && engine().paintingId === p.id) {
+            <section class="fraud-panel"><h3>The passage has caught.</h3><p>Which category and inspected detail prove this scene impossible?</p><div class="fraud-categories">@for (c of categories; track c.id) { <button [class.selected]="category() === c.id" [attr.aria-pressed]="category() === c.id" (click)="category.set(c.id)"><span>{{ c.symbol }}</span>{{ c.label }}</button> }</div><p class="small-note">Selected detail: {{ hotspot() ? (p.hotspots[0].id === hotspot() ? p.hotspots[0].label : p.hotspots[1].label) : 'Inspect a detail above' }}</p><button class="primary" [disabled]="!category() || !hotspot()" (click)="classify()">Confirm fraud analysis →</button></section>
+          } @else if (engine().frauds.includes(p.id)) { <p class="fraud-confirmed">FRAUD CONFIRMED · {{ p.fraud?.explanation }}</p> }
+          @else if (engine().phase === 'recon') { <button class="primary full" [disabled]="!hasInspected(p) || !ready() || !!artError()" (click)="choose()">Choose the passage beneath this painting →</button> }
+          @else { <button class="primary full" (click)="resume()">Return to the active mechanism →</button> }
+          @for (encounter of currentEncounters(); track encounter.id) { <button class="primary full" [disabled]="runtime.restoreBlocked()" (click)="enterEncounter(encounter.id)">Enter the scene →</button><p class="small-note">{{ encounter.invitation }}</p> }
+          <button class="text-button" (click)="open('notes')">Consult the field notebook ↗</button>
+        }
+      }
+      @case ('lock') {
+        <h2 id="workspace-title" tabindex="-1">{{ engine().phase === 'recovery' ? 'Repair the fraud lock' : chamber().layout === 'vault' ? 'The master vault' : 'Knowledge moves the machinery.' }}</h2>
+        @if (engine().phase === 'recovery') { <p class="fraud-confirmed">{{ engine().painting?.fraud?.explanation }}</p> }
+        <div class="lock-progress"><span>{{ engine().phase === 'recovery' ? 'CORRECT THE HISTORICAL ERROR' : 'PASSAGE MECHANISMS' }}</span><b>{{ engine().activeLocks.length }} remaining</b></div>
+        @if (currentLock(); as lock) { <app-academic-lock [lock]="lock" [saved]="lockDrafts.get(lock.id) ?? engine().mechanisms[lock.id]" (operate)="operate($event)" /> }
+        <button class="text-button" (click)="open('notes')">Open evidence & field notes ↗</button>
+        <button class="text-button" (click)="open('audit')">Review clues &amp; audit steps ↗</button>
+      }
+      @case ('notes') {
+        <h2 id="workspace-title" tabindex="-1">The field notebook</h2><p>Read the reference notes before committing to a passage. Confirmed facts receive a seal as you authenticate scenes and solve their mechanisms.</p>
+        <button class="text-button" (click)="open('audit')">Open running fraud-clue list &amp; audit ↗</button>
+        @if (availableEncounters().length) { <section class="notebook-group"><h3>Living scenes</h3>@for (encounter of availableEncounters(); track encounter.id) { <button class="text-button" (click)="enterEncounter(encounter.id)">{{ engine().encounters[encounter.id] ? 'Revisit' : 'Enter' }} {{ encounter.title }} ↗</button> }</section> }
+        @for (group of groups; track group) { <section class="notebook-group"><h3>{{ group }}</h3>@for (e of mission.evidence; track e.id) { @if (e.category === group) { <details (toggle)="toggleEvidence($event, e.id)"><summary><span>{{ engine().facts.includes(e.id) ? '✓' : '◇' }}</span>{{ e.title }}@if (engine().facts.includes(e.id)) { <small>CONFIRMED</small> }</summary><p>{{ e.text }}</p><a [href]="e.sourceUrl" target="_blank" rel="noopener noreferrer">{{ e.sourceTitle }} ↗</a></details> } }</section> }
+        @if (engine().phase !== 'recon' && engine().phase !== 'extracted') { <button class="primary full" (click)="resume()">Return to the mechanism →</button> }
+        @else if (selectedPainting() && engine().phase === 'recon') { <button class="primary full" (click)="open('inspect')">Return to painting →</button> }
+      }
+      @case ('replay') {
+        <h2 id="workspace-title" tabindex="-1">Replay the evidence trail</h2><p>Jump between meaningful decisions. The gallery behind this panel shows the mechanisms and route at that moment.</p>
+        @if (engine().events.length) { <label class="replay-slider">Decision {{ (replayIndex() ?? 0) + 1 }} of {{ engine().events.length }}<input type="range" min="0" [max]="engine().events.length - 1" [ngModel]="replayIndex()" (ngModelChange)="replayIndex.set(+$event)" aria-label="Replay decision"></label>
+          <p class="replay-current" role="status">{{ engine().events[replayIndex() ?? 0].message }}</p>
+          <ol class="event-list">@for (e of engine().events; track e.id; let i = $index) { <li><button [class.selected]="replayIndex() === i" (click)="replayIndex.set(i)"><time>{{ time(e.elapsed) }}</time><span>{{ e.message }}</span></button></li> }</ol>
+        }
+      }
+      @case ('dossier') {
+        <h2 id="workspace-title" tabindex="-1">Historical Authentication Dossier</h2><p>{{ engine().phase === 'extracted' ? 'The collection is recovered. Your evidence tells the story of how.' : 'Your working record grows with every inspection, correction, and mechanism.' }}</p>
+        <div class="dossier-stats"><div><strong>{{ engine().cleared.length }}/{{ mission.chambers.length }}</strong><span>Galleries cleared</span></div><div><strong>{{ engine().frauds.length }}</strong><span>Frauds corrected</span></div><div><strong>{{ engine().solved.length }}</strong><span>Locks operated</span></div></div>
+        <button class="text-button" (click)="open('audit')">Review running fraud-clue list &amp; vault audit ↗</button>
+        <h3>Confirmed scenes</h3>@for (e of engine().events; track e.id) { @if (e.type === 'choose' && e.correct) { <p class="record-row">✓ {{ e.chamberId }} · authenticated at {{ time(e.elapsed) }}</p> } }
+        <h3>Evidence collected</h3>@for (e of mission.evidence; track e.id) { @if (engine().facts.includes(e.id)) { <p class="record-row"><b>{{ e.category }}</b> · {{ e.title }}</p> } }
+        @if (engine().phase === 'extracted') { <h3>Defend your decisions</h3>@for (prompt of mission.defensePrompts; track prompt; let i = $index) { <label class="defense-label">{{ prompt }}<textarea rows="3" maxlength="4000" [(ngModel)]="responses[i]" (blur)="saveDefense()"></textarea></label> }<button class="primary" (click)="saveDefense()">Save defense</button> }
+        <div class="export-actions"><button class="primary" (click)="exportDossier('md')">Download dossier ↓</button><button class="outline" (click)="exportDossier('json')">Export evidence JSON</button></div>
+        <details class="new-practice"><summary>Start another practice</summary><p>Export your dossier first to keep this record. Starting again replaces this browser’s saved practice.</p><button (click)="reset()">Start a new practice</button></details>
+      }
+    }
+    @if (feedback() && panel() !== 'replay' && panel() !== 'encounter') { <p class="dialog-feedback" role="status">{{ feedback() }}</p> }
+  </dialog>
+</main>

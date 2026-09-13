@@ -1,5 +1,16 @@
 # UI 03 — Route Map
 
+## September 2026 gameplay feedback slice
+
+The Phaser atlas adds a selected-trail banner, destination beacon, departure
+pennant, rolling wagon, reached checkpoint marks and confirmed milestone bursts.
+A textual checkpoint list and compact mobile journey panel share the runtime's
+progress. Pending events retain their immediate decision-screen handoff;
+consequence effects now follow accepted runtime decisions and use recorded
+outcomes. Arrival restores from actual history on map reload, including after a
+final-day event. The basic-map wagon and checkpoints use static SVG transforms.
+See [the gameplay slice report](../frontier-trading/ROUTE_GAMEPLAY_SLICE.md).
+
 ## Page Purpose
 
 The Route Map lets students compare travel options between trading locations using distance, terrain, travel time, and risk information. It should make route choice a mathematical/evidence decision, not a hidden random click.
@@ -223,3 +234,98 @@ This profile changes composition and feedback only. Cash, cargo, travel, evidenc
 ## Implemented choice progression profile — September 2026
 
 Route uses the same optional progression rank as Market. Open routes remain selectable and comparable; future current-location routes stay visible as muted, labeled, noninteractive trails so students can see the network grow. The rank panel states the route count and next requirements. The domain route command independently rejects a locked route. Active and completed journeys remain visible from their official records even if a project version changes its progression configuration.
+
+## Implemented Phaser gameplay profile — September 2026
+
+A lazy-loaded Phaser 4.2.1 canvas renders the configured landscape, trails,
+checkpoints, and wagons. Its geometry is sampled from the same paths as the
+accessible SVG controls. The atlas provides a labeled Scout trail preview,
+motion control, live reduced-motion support, and explicit basic-map fallback.
+Scouting has no runtime or accounting effects. Confirmed travel snapshots drive
+wagon motion; tween completion does not advance simulation state.
+
+Reviewed departure stays on the map. Travel next day uses the existing travel
+command, hands pending events to the decision screen, and shows a market action
+after confirmed arrival. All existing route/forecast/math gates remain enforced.
+See [the implementation report](../frontier-trading/PHASER_GAMEPLAY_UPGRADE.md).
+The multiplayer showcase is reserved for the final project day and remains
+dependent on the planned live-session backend.
+
+### Focused map reliability improvements
+
+Wheel zoom uses the pointer's world position as its anchor and shares the
+100–300% camera bounds with keyboard controls. Ctrl/Command-wheel stays
+available for browser zoom. Resizing preserves the current view. Company focus
+uses the same saved-position projection as the renderer, including the fallback
+when SVG path measurement is unavailable.
+
+Immutable route geometry is sampled only when its definitions or locations
+change. Unrelated scenery, motion, and preview updates retain route labels.
+Late geometry refreshes the saved company position; a newer travel snapshot
+continues from the displayed position while still ending at confirmed progress.
+Background load errors apply only to the currently requested image.
+
+## Fifth-grade student flow
+
+The primary game pages are Map and Shop. Wagon, trip records, other saved
+work, help and teacher controls are grouped under Project in one integrated
+header. A concise next-action button follows actual route, shopping, math, and
+travel state; its trip action opens the saved planner before moving focus.
+
+Price overlays start closed and open with Show prices. Camera previews,
+scouting, motion, and fallback controls are grouped under Map tools. Town
+inspection emphasizes destination, travel cost, days, and a short description
+of possible problems. Longer reports remain available in disclosure controls.
+
+Zoom buttons and the percentage display are removed. The existing outer frame
+keeps its size while the complete map fits inside it with equal horizontal and
+vertical scale. Space around the centered map accommodates different screen
+shapes. Phaser artwork, SVG destinations, and HTML overlay anchors all preserve
+the same proportions; the basic map uses the same fit.
+
+Choosing a town saves the plan and directs students to finish shopping. Trip
+math waits until shopping is complete and presents sales and profit as two
+separate questions. The Next math question action moves focus to the second
+answer; explaining the route and checking departure follow correct answers.
+Existing accounting, progression, forecast, and departure validation still
+apply. The full-screen page-change curtain has been removed.
+
+## Trade-world workspace (schema 1.10, template 1.5)
+
+The desktop workspace uses 70% of its width for the proportional map and 30%
+for a scrollable economy/trip panel; narrow screens stack them. Map controls are
+declared by the atlas and projected into the integrated header. The map has no
+additional heading or toolbar strip. The side panel exposes supplies, stock,
+live buy/sell prices and recorded profit/cost figures without revealing required
+forecast answers.
+
+Optional `tradeWorld` configuration defines bounded pulse timing, seeded events,
+price effects and freight routes. The runtime reducer alone advances pulses,
+expires effects, confirms deliveries, adds stock and changes market quotes.
+`world.pulsed` carries an expected tick for idempotency; `world.pauseToggled`
+persists the player's pause. Price calculations accept an optional snapshot;
+legacy configurations remain static. Package validators check shape and all
+route/location/good references. History is bounded and no offline catch-up occurs.
+
+Phaser town and wagon artwork is scene-owned and retained across updates. Weather
+visibility, landscape and motion are presentation controls. SVG labels and input
+targets remain above the canvas, with basic artwork restored when Phaser is
+unavailable. The same confirmed freight positions appear in the basic map.
+All price/news information is also available in HTML. See the
+[implementation and verification report](../frontier-trading/TRADE_WORLD_WORKSPACE.md).
+
+## Turn-based world timing (schema 1.11, template 1.6)
+
+Optional `tradeWorld.timing: 'turn-based'` disables the interval and independent
+world pulse/pause controls. Omission or `'real-time'` preserves previous behavior.
+After validation, `route.committed` and `travel.advanced` each settle exactly one
+world turn in the same reducer result as the player's action. Forecast validation
+uses pre-departure prices. Browsing, purchases, rejected actions, checkpoint
+resolution and reloading never advance the world. Event delays may add calendar
+days without extra world turns. A departure turn leaves player travel progress at
+zero; each subsequent travel turn spends one travel day.
+
+The header and market report expose the turn number. Departure confirmation
+explains when quotes will change. Phaser interpolates confirmed freight positions
+even though the automatic clock is disabled. UI motion never decides, advances,
+or retries a turn. SVG and reduced-motion views show the same confirmed state.

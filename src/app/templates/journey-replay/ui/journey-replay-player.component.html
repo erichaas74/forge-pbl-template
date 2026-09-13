@@ -20,6 +20,13 @@
       <article class="scene-card" aria-live="polite">
         <span>Scene {{ sceneIndex() + 1 }} · {{ currentScene.type }}</span>
         <h2 #sceneHeading tabindex="-1">{{ currentScene.title }}</h2>
+        @if (runtime.config.historicalFrame; as history) {
+          <app-journey-history-context
+            [history]="history"
+            [includeEpilogue]="runtime.state().completionStatus === 'complete'"
+          />
+          <small>Your recorded experience · fictional crew</small>
+        }
         <p>{{ currentScene.systemNarration }}</p>
         @if (stepRecord(); as record) {
           <blockquote>

@@ -50,38 +50,57 @@ button:disabled {
   box-shadow: 0 0.35rem 1rem #130a05a0;
   backdrop-filter: blur(6px);
 }
-.zoom-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-.zoom-controls button {
-  width: 2.6rem;
-  padding: 0;
-  font-size: 1.1rem;
-}
-output {
-  width: 2.8rem;
-  color: #ead9b8;
-  text-align: center;
-  font:
-    700 0.7rem Arial,
-    sans-serif;
-  font-variant-numeric: tabular-nums;
-}
 .map-window {
   position: relative;
   min-height: 38rem;
   overflow: hidden;
-  background: radial-gradient(circle at center, #d6c48e, #6f5939);
+  background: #302b22;
 }
 .route-map {
+  position: relative;
   display: block;
   width: 100%;
   height: clamp(38rem, calc(100dvh - 5.8rem), 52rem);
   min-height: 38rem;
   touch-action: pan-y;
   user-select: none;
+}
+.phaser-active .route-map > rect,
+.phaser-active .map-scene-background,
+.phaser-active .map-scene-wash,
+.phaser-active .trail-glow,
+.phaser-active .trail-underlay,
+.phaser-active .trail-line,
+.phaser-active .trail-progress,
+.phaser-active .checkpoint,
+.phaser-active .wagon-marker {
+  opacity: 0;
+}
+.scout-button {
+  border-color: #79b9b1;
+}
+.canvas-notice {
+  position: absolute;
+  z-index: 7;
+  bottom: 0.7rem;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: calc(100% - 2rem);
+  width: max-content;
+  padding: 0.65rem 1rem;
+  border: 1px solid #77c2b9;
+  border-radius: 0.5rem;
+  background: #152c28f2;
+  color: #f2f3d5;
+  box-shadow: 0 4px 16px #10251fa0;
+  font:
+    0.75rem/1.5 Arial,
+    sans-serif;
+  pointer-events: none;
+}
+.canvas-notice strong,
+.canvas-notice span {
+  display: block;
 }
 .route-map.zoomed {
   cursor: grab;
@@ -132,6 +151,7 @@ output {
   vector-effect: non-scaling-stroke;
 }
 .trail-underlay {
+  pointer-events: none;
   fill: none;
   stroke: #20160f;
   stroke-width: 3;
@@ -141,6 +161,7 @@ output {
   vector-effect: non-scaling-stroke;
 }
 .trail-line {
+  pointer-events: none;
   fill: none;
   stroke: #e6c986;
   stroke-width: 1.5;
@@ -672,6 +693,33 @@ output {
   flex: 1;
   min-height: 0;
 }
+.map-options {
+  position: relative;
+}
+.map-options summary {
+  cursor: pointer;
+  padding: 0.7rem;
+  min-height: 44px;
+  box-sizing: border-box;
+  color: #f8ecd5;
+  font:
+    700 13px Arial,
+    sans-serif;
+}
+.map-options > div {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 25;
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.6rem;
+  width: 170px;
+  border: 1px solid #ac8c57;
+  border-radius: 5px;
+  background: #302315;
+  box-shadow: 0 6px 18px #0006;
+}
 .workspace-atlas .route-map {
   height: 100%;
   min-height: 0;
@@ -696,6 +744,103 @@ output {
 }
 .still * {
   animation: none !important;
+}
+.phaser-active .freight-marker {
+  opacity: 0;
+}
+.phaser-active [data-map-stop] :is(.landmark, .node-disc, .shadow) {
+  opacity: 0;
+}
+.map-tools.header-controls {
+  position: static;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.35rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.header-controls :is(button, summary) {
+  min-height: 40px;
+  padding: 0.6rem 0.7rem;
+  color: #fff0c7;
+  background: #273f32;
+  border: 1px solid #6e8167;
+  border-radius: 5px;
+  font:
+    bold 12px Arial,
+    sans-serif;
+}
+.header-controls .map-options {
+  position: relative;
+}
+.header-controls .map-options > div {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  left: auto;
+  min-width: 13rem;
+  max-height: 70dvh;
+  overflow: auto;
+  background: #fff0cd;
+}
+.header-controls .map-options > div button {
+  text-align: left;
+  background: transparent;
+  color: #263c2c;
+  border: 0;
+  width: 100%;
+}
+.checkpoint.reached circle {
+  fill: #a5e2bf;
+  stroke: #265a43;
+}
+.trail-signal {
+  position: absolute;
+  bottom: 0.65rem;
+  left: 0.65rem;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  max-width: min(22rem, calc(100% - 6rem));
+  padding: 0.65rem 0.85rem;
+  border: 1px solid #d8b363;
+  border-radius: 0.4rem;
+  background: #241b13ed;
+  color: #fff1c8;
+  box-shadow: 0 4px 18px #160e0866;
+  pointer-events: none;
+}
+.trail-signal > span {
+  font-size: 1.7rem;
+  color: #f4cc74;
+}
+.trail-signal strong {
+  display: block;
+  font:
+    bold 0.95rem Georgia,
+    serif;
+}
+.trail-signal small {
+  display: block;
+  font:
+    700 0.65rem/1.6 Arial,
+    sans-serif;
+  letter-spacing: 0.05em;
+}
+.trail-signal[data-phase='arrival'],
+.trail-signal[data-phase='checkpoint'] {
+  border-color: #96dcc3;
+}
+.trail-signal[data-phase='event'] {
+  border-color: #ffb777;
+  background: #47281aee;
+}
+.atlas .map-window:has(.trail-signal) .pan-controls {
+  bottom: 6.5rem;
 }
 @keyframes beacon {
   to {
@@ -750,12 +895,8 @@ output {
 @media (max-width: 500px) {
   .map-tools {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, auto);
     padding: 0.45rem;
-  }
-  .zoom-controls {
-    grid-column: 1/-1;
-    justify-self: center;
   }
   .map-tools > button {
     padding-inline: 0.3rem;
@@ -772,7 +913,7 @@ output {
     display: none;
   }
   .workspace-atlas .map-tools {
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     gap: 0.15rem;
   }
   .workspace-atlas .map-tools button {

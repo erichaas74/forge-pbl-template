@@ -1,3 +1,4 @@
+import { touchesCourseActor } from './course-actors';
 import type {
   AutomationProjectConfig,
   CompiledCommand,
@@ -71,15 +72,33 @@ export function executeRobot(
   const event = (message: string): void => {
     events.push({ commandId: active, message, timeMs: round(seconds * 1000) });
   };
-  const consume = (time: number, cost: number): number => {
-    const fraction = Math.min(
+  const consume = (time: number, cost: number, destination = pose): number => {
+    let fraction = Math.min(
       1,
       cost > 0 ? Math.max(0, capacity - battery) / cost : 1,
       time > 0 ? Math.max(0, 600 - seconds) / time : 1,
     );
+    let hit: string | undefined;
+    if (time > 0 && course.actors?.length) {
+      const speed = Math.max(...course.actors.map(actor => actor.speedCmPerSecond));
+      const steps = Math.max(1, Math.ceil(time * fraction / Math.min(0.025, 0.5 / speed)));
+      for (let i = 0; i <= steps; i++) {
+        const f = fraction * i / steps;
+        const candidate = { xCm: pose.xCm + (destination.xCm - pose.xCm) * f,
+          yCm: pose.yCm + (destination.yCm - pose.yCm) * f };
+        const actor = course.actors.find(actor => touchesCourseActor(candidate, robot.radiusCm, actor, (seconds + time * f) * 1000));
+        if (actor) { hit = actor.label; fraction = f; break; }
+      }
+    }
     seconds += time * fraction;
     battery += cost * fraction;
-    if (fraction < 1 || battery >= capacity || seconds >= 600) {
+    if (hit) {
+      collisions++;
+      battery = Math.min(capacity, battery + course.battery.collision);
+      halted = true;
+      stoppedReason = `Collision with ${hit}`;
+      event(`${stoppedReason}. Adjust your route or WAIT timing.`);
+    } else if (fraction < 1 || battery >= capacity || seconds >= 600) {
       halted = true;
       stoppedReason = battery >= capacity ? 'Battery empty' : '600-second run limit reached';
     }
@@ -121,7 +140,7 @@ export function executeRobot(
           if (course.stopOnCollision) halted = true;
           break;
         }
-        const fraction = consume(step / speed, step * course.battery.move);
+        const fraction = consume(step / speed, step * course.battery.move, next);
         pose = {
           ...pose,
           xCm: pose.xCm + (next.xCm - pose.xCm) * fraction,
@@ -161,7 +180,7 @@ export function executeRobot(
         event('Pickup failed: check the package, distance and cargo capacity.');
       else {
         const fraction = consume(1, course.battery.pickup);
-        if (fraction === 1) {
+        if (fraction === 1 && !halted) {
           carrying.add(item.id);
           event(`Picked up ${item.label}.`);
         }
@@ -173,7 +192,7 @@ export function executeRobot(
         event('Delivery failed: carry the right package into its matching zone.');
       else {
         const fraction = consume(1, course.battery.dropoff);
-        if (fraction === 1) {
+        if (fraction === 1 && !halted) {
           carrying.delete(item.id);
           delivered.add(item.id);
           event(`Delivered ${item.label}.`);

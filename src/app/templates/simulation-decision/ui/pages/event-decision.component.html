@@ -1,8 +1,11 @@
 <section class="journey-page">
   @if (event(); as event) {
     <header class="decision-banner">
-      <span aria-hidden="true">!</span><strong>Decision required</strong>
-      <p>Trading and route changes are temporarily locked until this event is resolved.</p>
+      <span aria-hidden="true">!</span><strong>Something happened!</strong>
+      <p>
+        Your wagon is stopped at checkpoint {{ journey()?.progressDays }} of
+        {{ journey()?.totalDays }}. Read what happened and choose what to do next.
+      </p>
     </header>
     <div class="event-layout page-card">
       <section class="event-story">
@@ -92,8 +95,8 @@
       <section class="decision-workspace">
         <header>
           <div>
-            <span class="eyebrow">Review known effects</span>
-            <h2>Choose your action</h2>
+            <span class="eyebrow">Look at your choices</span>
+            <h2>What will you do?</h2>
           </div>
           <span>{{ event.choices.length }} choices</span>
         </header>
@@ -173,7 +176,7 @@
           }
         </div>
         <label class="field"
-          >Why does this choice fit your strategy?<textarea
+          >Why did you choose this?<textarea
             rows="3"
             [ngModel]="reasoning()"
             (ngModelChange)="reasoning.set($event)"
@@ -182,8 +185,8 @@
         </label>
         @if (selectedChoice(); as selected) {
           <section class="outcome-preview">
-            <strong>Known outcome preview</strong
-            ><span>Cash after: {{ runtime.money(runtime.cash() + selected.cashChangeCents) }}</span
+            <strong>What this choice will do</strong
+            ><span>Money left: {{ runtime.money(runtime.cash() + selected.cashChangeCents) }}</span
             ><span
               >Day change: {{ selected.dayChange > 0 ? '+' + selected.dayChange : 'none' }}</span
             ><span>Risk: {{ selected.riskLabel }}</span>
@@ -195,7 +198,7 @@
           [disabled]="selectedChoice() === undefined"
           (click)="openReview()"
         >
-          Review official choice
+          Check my choice
         </button>
       </section>
     </div>
@@ -287,7 +290,7 @@
           </div>
         </div>
         @if (lastDecision(); as decision) {
-          <section class="outcome">
+          <section #outcomePanel class="outcome" tabindex="-1" role="status">
             <span aria-hidden="true">✓</span>
             <div>
               <small>Last event resolved · {{ lastEvent()?.title }}</small
@@ -328,6 +331,7 @@
           <button class="primary" type="button" [disabled]="journeyPaused()" (click)="advance()">
             Advance travel
           </button>
+          <button type="button" (click)="runtime.navigate('route')">Continue on the map</button>
         </section>
         <ol class="event-log">
           <li>Route committed and supply cost recorded.</li>
@@ -363,8 +367,26 @@
             [transportName]="runtime.transport()?.name ?? 'Prairie Wagon'"
             [cargo]="wagonCargo()"
           />
-          <h1>No journey is active</h1>
-          <p>Compare reachable routes, commit travel, and return here for day-by-day progress.</p>
+          <h1>{{ journey()?.phase === 'arrival' ? journey()?.title : 'No journey is active' }}</h1>
+          <p>
+            {{
+              journey()?.phase === 'arrival'
+                ? journey()?.detail
+                : 'Compare reachable routes, commit travel, and return here for day-by-day progress.'
+            }}
+          </p>
+          @if (journey()?.phase === 'arrival' && lastDecision(); as decision) {
+            <section #outcomePanel class="outcome" tabindex="-1" role="status">
+              <div>
+                <strong>{{ decision.outcome }}</strong>
+                <p>
+                  Cash
+                  {{ runtime.money(decision.cashAfterCents - decision.cashBeforeCents, true) }} ·
+                  Cargo {{ decision.cargoBefore }} → {{ decision.cargoAfter }}
+                </p>
+              </div>
+            </section>
+          }
           <div>
             <button class="primary" type="button" (click)="runtime.navigate('route')">
               Choose a route
@@ -382,24 +404,20 @@
     </section>
   }
 
-  @if (resolvingChoice(); as resolving) {
-    <div class="consequence-backdrop" role="status" aria-live="assertive">
+  @if (resolvedFeedback(); as resolving) {
+    <div class="consequence-backdrop" aria-hidden="true">
       <section>
         <span class="impact-icon" aria-hidden="true">{{
-          resolving.cashChangeCents < 0 ? '¤' : '✦'
+          resolving.cashAfterCents < resolving.cashBeforeCents ? '¤' : '✦'
         }}</span>
-        <span class="eyebrow">Decision in motion</span>
-        <h2>{{ resolving.label }}</h2>
+        <span class="eyebrow">Decision recorded</span>
+        <h2>{{ lastEvent()?.title }}</h2>
         <div class="impact-numbers">
-          <strong [class.signed-negative]="resolving.cashChangeCents < 0">{{
-            runtime.money(resolving.cashChangeCents, true)
+          <strong [class.signed-negative]="resolving.cashAfterCents < resolving.cashBeforeCents">{{
+            runtime.money(resolving.cashAfterCents - resolving.cashBeforeCents, true)
           }}</strong>
-          <strong>{{
-            resolving.dayChange > 0
-              ? '+' + resolving.dayChange + ' travel day'
-              : 'Schedule protected'
-          }}</strong>
-          <strong>{{ resolving.riskLabel }} risk</strong>
+          <strong>Day {{ runtime.state().currentDay }}</strong>
+          <strong>Cargo {{ resolving.cargoBefore }} → {{ resolving.cargoAfter }}</strong>
         </div>
         <p>{{ resolving.outcome }}</p>
       </section>
@@ -408,7 +426,13 @@
 
   @if (reviewOpen() && selectedChoice(); as choice) {
     <div class="review-backdrop">
-      <section role="alertdialog" aria-modal="true" aria-labelledby="event-review-title">
+      <section
+        appReviewDialog
+        (dismissReview)="reviewOpen.set(false)"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="event-review-title"
+      >
         <span class="eyebrow">Official event decision</span>
         <h2 id="event-review-title">Confirm: {{ choice.label }}?</h2>
         <p>{{ choice.description }}</p>

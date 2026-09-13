@@ -39,7 +39,7 @@ describe('journey replay engine', () => {
     });
     expect(record.replayTimeline[0]).toMatchObject({
       id: 'scene-step-sponsor',
-      title: 'Why We Sailed',
+      title: 'The Company You Keep',
       order: 0,
     });
     expect(record.mastery[0]?.status).toBe('evidence-collected');

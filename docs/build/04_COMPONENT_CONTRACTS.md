@@ -986,3 +986,23 @@ Official live attempts use an attempt-aware runtime scope. Practice runtimes may
 omit `attemptId`; official live runtimes require a server-issued value. Scope,
 persistence, realtime, idempotency, event, cache, and trace identities must not
 collide across attempts.
+
+---
+
+# 45. Optional Guided Encounter Presenter
+
+The Heist gallery's `heist.encounters` extension consumes a validated
+`EncounterDefinition`, `EncounterState`, source list, and reduced-motion preference.
+Its Angular presenter emits typed actions and a leave request. It does not mutate
+gallery progress or award mastery. Curriculum, scripts, media paths, question
+prerequisites, and insight criteria belong to versioned package data.
+
+The shared domain registry owns enter, exit, viewpoint, chapter, question,
+object-feature, and insight transitions. The gallery adapter validates room
+eligibility and routes these through its existing scoped command/persistence
+boundary. Access, visit exit, and a correctly assessed insight remain separate.
+Unsupported required encounter kinds fail with `CAPABILITY_NOT_INSTALLED`.
+
+This local-practice extension does not register official grading or a core LMS
+event handler. Its contract, event metadata, compatibility requirements, and
+coverage are documented in [Living scenes implementation](../heist/LIVING_SCENES_IMPLEMENTATION.md).

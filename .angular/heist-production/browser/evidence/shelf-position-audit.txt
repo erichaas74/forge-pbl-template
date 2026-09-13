@@ -1,0 +1,17 @@
+SHELF POSITION AUDIT
+Case: SHELF-4
+
+POSITION 1 - Upper left:  Vial A, blue cap, sealed
+POSITION 2 - Upper right: Vial B, gold cap, sealed
+POSITION 3 - Lower left:  Vial C, violet cap, sealed
+POSITION 4 - Lower right: Vial D, teal cap, sealed
+
+RECOVERED SCENE DETAILS
+- Four empty label clips were attached to the shelf edge.
+- No loose label remained beside a specific vial.
+- No container was broken and no substance was spilled.
+- Vial position documents the scene; it does not identify the contents.
+
+CHAIN-OF-EVIDENCE NOTE
+Use this record to reconstruct where each vial was found. Use repeatable property
+and reaction evidence to decide which product label belongs on each vial.

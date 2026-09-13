@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "championship-show",
+  "projectVersion": "1.0.0",
+  "template": { "id": "competition-show", "version": "1.0" },
+  "title": "The Championship Show",
+  "description": "Turn three weeks of learning into a championship. Set your seeds, take on your opponents, and defend your answers when the final is on the line. These sample mathematics prompts let you rehearse the complete final before adding your own curriculum and stage graphics.",
+  "defaultMode": "hybrid",
+  "broadcast": {
+    "id": "midnight-gold", "label": "Midnight / Gold",
+    "palette": { "background": "#050b18", "metal": "#243145", "accent": "#edc875", "secondary": "#65bde8", "text": "#f8f4e9", "teamColors": ["#73cafa", "#e8b862", "#ac99f2", "#77d5b4", "#e993a5", "#8eaef8", "#dac284", "#8ac6c0"] },
+    "assets": {
+      "backdrop": "/projects/championship-show/art/midnight-studio-wall-v1.png",
+      "bracketBackdrop": "/projects/championship-show/art/midnight-studio-wall-v1.png",
+      "winnerBackdrop": "/projects/championship-show/art/midnight-studio-wall-v1.png"
+    },
+    "camera": { "moveMs": 1500, "revealMs": 850, "fieldOfView": 39 },
+    "materials": { "floorRoughness": 0.18, "podiumMetalness": 0.72 }
+  },
+  "teams": [
+    { "id": "nova", "name": "Nova", "qualificationPoints": 124 },
+    { "id": "atlas", "name": "Atlas", "qualificationPoints": 116 },
+    { "id": "comets", "name": "Comets", "qualificationPoints": 109 },
+    { "id": "falcons", "name": "Falcons", "qualificationPoints": 101 },
+    { "id": "titans", "name": "Titans", "qualificationPoints": 96 },
+    { "id": "ravens", "name": "Ravens", "qualificationPoints": 92 },
+    { "id": "orbit", "name": "Orbit", "qualificationPoints": 88 },
+    { "id": "pulse", "name": "Pulse", "qualificationPoints": 82 }
+  ],
+  "rounds": [
+    { "id": "opening-move", "title": "Opening Move", "kind": "simultaneous", "prompt": "A team spends $18.75 on each of four supply kits and pays $6.50 for delivery. What is the total? Show your calculation.", "seconds": 90, "maxPoints": 100, "standards": ["CCSS.MATH.CONTENT.5.NBT.B.7"] },
+    { "id": "beat-the-buzzer", "title": "Beat the Buzzer", "kind": "buzzer", "prompt": "A teammate says 0.4 × 0.5 = 2. Buzz when you can explain the error and give the correct product.", "seconds": 45, "maxPoints": 100, "standards": ["CCSS.MATH.CONTENT.5.NBT.B.7"] },
+    { "id": "defend-it", "title": "Make Your Case", "kind": "simultaneous", "prompt": "One pack contains 6 markers for $4.50. Another contains 10 markers for $7. Explain which has the lower price per marker and support your decision with calculations.", "seconds": 120, "maxPoints": 200, "standards": ["CCSS.MATH.CONTENT.6.RP.A.3.B"] },
+    { "id": "final-wager", "title": "The Final Wager", "kind": "wager", "prompt": "Your team has $120. Each display costs $14.75 and delivery for the whole order costs $8. How many complete displays can you afford? Explain why one more display would exceed the budget.", "seconds": 120, "maxPoints": 400, "standards": ["CCSS.MATH.CONTENT.5.NBT.B.7"] }
+  ]
+}

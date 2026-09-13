@@ -90,6 +90,7 @@
   }
   function trace(design, point, direction, skipObject = false) {
     if (direction.y <= 0) return { value: 'unavailable', rgb: [0, 0, 0] };
+    if (point.normal && point.normal[0] * direction.x + point.normal[1] * direction.y + point.normal[2] * direction.z <= 0) return { value: 'shadow', rgb: [0, 0, 0] };
     const origin = { x: point.x + direction.x * 1e-5, y: (point.y || 0) + direction.y * 1e-5, z: point.z + direction.z * 1e-5 };
     let rgb = [1, 1, 1]; const filters = new Set();
     for (const b of design.blocks) {
@@ -125,7 +126,7 @@
   function validDesign(v) {
     const finite = (n, min, max) => typeof n === 'number' && Number.isFinite(n) && n >= min && n <= max;
     const text = (s, max = 200) => typeof s === 'string' && s.length > 0 && s.length <= max;
-    const solid = b => b && finite(b.x, -12, 12) && finite(b.y, 0, 10) && finite(b.z, -12, 12) && finite(b.width, .01, 5) && finite(b.height, .01, 5) && finite(b.depth, .01, 5) && finite(b.rotation, 0, 359);
+    const solid = b => b && finite(b.x, -12, 12) && finite(b.y, 0, 10) && finite(b.z, -12, 12) && finite(b.width, .01, 5) && finite(b.height, .01, 5) && finite(b.depth, .01, 5) && finite(b.rotation, 0, 360) && b.rotation < 360;
     const aperture = b => {
       const a = b.aperture; if (a === undefined) return true;
       if (!a || !axes.includes(a.axis) || !['open', 'glass', 'jewel'].includes(a.insert) || !Object.hasOwn(colors, a.color)) return false;
@@ -133,14 +134,16 @@
       return finite(a.diameter, .005, Math.min(...cross) * .9);
     };
     if (!v || !Array.isArray(v.blocks) || !Array.isArray(v.targets) || v.blocks.length > 100 || v.targets.length > 12 ||
-      !v.blocks.every(b => solid(b) && text(b.id) && aperture(b)) ||
+      !v.blocks.every(b => solid(b) && text(b.id) && (b.label === undefined || text(b.label,80)) && (b.assemblyId === undefined || text(b.assemblyId,80)) && aperture(b)) ||
       !v.targets.every(t => t && text(t.id) && text(t.label, 80) && finite(t.x, -12, 12) && finite(t.z, -12, 12) &&
+        (t.y === undefined || finite(t.y, 0, 15)) &&
+        (t.normal === undefined || (Array.isArray(t.normal) && t.normal.length === 3 && t.normal.every(n => finite(n, -1, 1)) && Math.abs(Math.hypot(...t.normal) - 1) < 1e-6)) &&
         (t.settings === undefined || (t.settings && typeof t.settings === 'object' && !Array.isArray(t.settings) && Object.entries(t.settings).length <= 8 && Object.entries(t.settings).every(([k, value]) => text(k, 40) && (typeof value === 'string' ? text(value, 80) : finite(value, -100000, 100000)))))) ||
       new Set(v.blocks.map(b => b.id)).size !== v.blocks.length || new Set(v.targets.map(t => t.id)).size !== v.targets.length) return false;
     const solids = [...v.blocks];
     if (v.displayObject !== undefined) {
       const o = v.displayObject;
-      if (!o || !['sphere', 'crystal', 'obelisk'].includes(o.model) || !['limestone', 'bronze', 'porcelain'].includes(o.material) || !solid({ ...o, depth: o.width }) || o.width < .05 || o.height < .05) return false;
+      if (!o || !['sphere', 'crystal', 'obelisk'].includes(o.model) || !['limestone', 'bronze', 'porcelain'].includes(o.material) || !solid({ ...o, depth: o.width }) || o.rotation > 359 || o.width < .05 || o.height < .05) return false;
       solids.push({ ...o, depth: o.width });
     }
     return !solids.some((a, i) => solids.slice(i + 1).some(b => {

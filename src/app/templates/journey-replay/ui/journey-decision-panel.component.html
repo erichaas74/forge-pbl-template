@@ -1,4 +1,33 @@
 <section class="decision-panel" aria-labelledby="journey-step-title">
+  @if (showOutcome()) {
+    <section
+      class="outcome-report"
+      tabindex="-1"
+      aria-label="Recorded decision consequence"
+      aria-live="polite"
+    >
+      <span>Decision recorded · your experience changes</span>
+      @if (runtime.config.historicalFrame) {
+        <p>Your crew’s route and experience can change. The historical record stays the same.</p>
+      }
+      <h3>{{ runtime.config.steps[runtime.state().completedSteps.length - 1]?.title }}</h3>
+      <p>{{ lastOutcome()?.consequence }}</p>
+      <dl>
+        @for (change of outcomeChanges(); track change.id) {
+          <div>
+            <dt>{{ change.label }}</dt>
+            <dd>{{ change.before }} → {{ change.after }}{{ change.unit }}</dd>
+          </div>
+        }
+      </dl>
+      <p class="outcome-reflection">
+        Compare this with your prediction. What will you protect in the next decision?
+      </p>
+      <button type="button" (click)="dismissedOutcome.set(lastOutcome()?.stepId)">
+        Continue the adventure →
+      </button>
+    </section>
+  }
   @if (runtime.step(); as step) {
     <header>
       <div>
@@ -9,6 +38,19 @@
         >{{ runtime.state().completedSteps.length + 1 }} / {{ runtime.config.steps.length }}</small
       >
     </header>
+    <nav class="work-progress" aria-label="Chapter tasks">
+      @for (label of workSteps; track label; let index = $index) {
+        <button
+          type="button"
+          [attr.aria-current]="workStep() === index ? 'step' : null"
+          [disabled]="!canVisitWorkStep(index)"
+          (click)="goToWorkStep(index)"
+        >
+          <span>{{ index + 1 }}</span
+          >{{ label }}
+        </button>
+      }
+    </nav>
 
     @if (runtime.choice(); as selected) {
       <p class="selected-choice">
@@ -22,6 +64,18 @@
       [attr.aria-label]="workSteps[workStep()] + ' task content — scroll for details'"
     >
       <div [hidden]="workStep() !== 0">
+        @if (step.adventure; as adventure) {
+          <details class="learning-brief">
+            <summary>Captain’s briefing · learn to succeed</summary>
+            <p>{{ adventure.narrative }}</p>
+            <ul>
+              @for (goal of adventure.learningGoals; track goal) {
+                <li>{{ goal }}</li>
+              }
+            </ul>
+          </details>
+          <p class="decision-stakes">{{ adventure.stakes }}</p>
+        }
         @if (step.choices[0]?.planning) {
           <section class="mission-planning" aria-labelledby="mission-planning-title">
             @if (runtime.choice(); as choice) {
@@ -196,6 +250,30 @@
         }
       </div>
       @if (runtime.choice(); as choice) {
+        @if (workStep() === 0 || workStep() === 4) {
+          @if (outcomePreview(); as preview) {
+            <section class="consequence-preview" aria-label="Projected resource tradeoffs">
+              <h3>What you commit</h3>
+              <p>
+                Simulated costs with your current cargo and earlier decisions. Changes apply when
+                you record the chapter.
+              </p>
+              <dl>
+                @for (change of preview.changes; track change.id) {
+                  <div>
+                    <dt>{{ change.label }}</dt>
+                    <dd>
+                      {{ change.before }} → <strong>{{ change.after }}{{ change.unit }}</strong>
+                    </dd>
+                  </div>
+                }
+              </dl>
+              @for (effect of preview.carriedForward; track effect) {
+                <p class="carried-forward">↳ {{ effect }}</p>
+              }
+            </section>
+          }
+        }
         <section class="reasoning" aria-labelledby="captains-question" tabindex="-1">
           <div class="evidence-strip" [hidden]="workStep() !== 1">
             <span>Evidence on the chart</span>

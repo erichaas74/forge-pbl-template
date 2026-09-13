@@ -1,6 +1,7 @@
 import { applyBasisPoints, sumCents } from './money';
 import { deterministicSample } from './seeded-random';
 import { choiceProgression, goodIsUnlocked, routeIsUnlocked } from './choice-progression';
+import { advanceTradeWorld, initialTradeWorld, tradeWorldPriceBps } from './trade-world.engine';
 import type {
   AcquisitionLot,
   EvidenceReference,
@@ -41,6 +42,7 @@ export function createSimulationState(
     emblemId: config.emblems[0]?.id ?? '',
     currentLocationId: config.startingLocationId,
     currentDay: 1,
+    ...(config.tradeWorld ? { tradeWorld: initialTradeWorld(config.tradeWorld) } : {}),
     ledger: [],
     inventory: [],
     routeHistory: [],
@@ -85,6 +87,28 @@ export function reduceSimulationDecision(
   }
 
   switch (action.type) {
+    case 'world.pulsed': {
+      if (
+        !config.tradeWorld ||
+        config.tradeWorld.timing === 'turn-based' ||
+        !['planning', 'active'].includes(state.status) ||
+        state.pendingEventId
+      )
+        return { state, errors: [] };
+      const before = state.tradeWorld ?? initialTradeWorld(config.tradeWorld);
+      const next = advanceTradeWorld(config, before, action.expectedTick, state.seed);
+      return next === before ? { state, errors: [] } : success(state, { tradeWorld: next });
+    }
+    case 'world.pauseToggled': {
+      if (
+        !config.tradeWorld ||
+        config.tradeWorld.timing === 'turn-based' ||
+        !['planning', 'active', 'event_pending'].includes(state.status)
+      )
+        return { state, errors: [] };
+      const world = state.tradeWorld ?? initialTradeWorld(config.tradeWorld);
+      return success(state, { tradeWorld: { ...world, paused: !world.paused } });
+    }
     case 'view.changed':
       return success(state, { lastView: action.view });
     case 'company.started':
@@ -168,16 +192,18 @@ export function marketPrice(
   locationId: string,
   goodId: string,
   direction: 'buy' | 'sell',
+  state?: Readonly<SimulationDecisionState>,
 ): number | undefined {
   const good = config.goods.find((item) => item.id === goodId);
   const marketGood = marketAt(config, locationId)?.goods.find((item) => item.goodId === goodId);
   if (good === undefined || marketGood === undefined) {
     return undefined;
   }
-  return applyBasisPoints(
+  const base = applyBasisPoints(
     good.baseBuyPriceCents,
     direction === 'buy' ? marketGood.buyMultiplierBps : marketGood.sellMultiplierBps,
   );
+  return applyBasisPoints(base, tradeWorldPriceBps(state?.tradeWorld, locationId, goodId));
 }
 
 export function purchaseDiscountPercent(
@@ -197,8 +223,9 @@ export function effectiveTradeUnitPrice(
   config: SimulationDecisionConfig,
   locationId: string,
   line: Pick<TradeLineInput, 'goodId' | 'direction' | 'quantity'>,
+  state?: Readonly<SimulationDecisionState>,
 ): number {
-  const postedPrice = marketPrice(config, locationId, line.goodId, line.direction) ?? 0;
+  const postedPrice = marketPrice(config, locationId, line.goodId, line.direction, state) ?? 0;
   const discountPercent = purchaseDiscountPercent(config, line.direction, line.quantity);
   return Math.round((postedPrice * (100 - discountPercent)) / 100);
 }
@@ -207,8 +234,9 @@ export function tradeLineTotal(
   config: SimulationDecisionConfig,
   locationId: string,
   line: Pick<TradeLineInput, 'goodId' | 'direction' | 'quantity'>,
+  state?: Readonly<SimulationDecisionState>,
 ): number {
-  return effectiveTradeUnitPrice(config, locationId, line) * line.quantity;
+  return effectiveTradeUnitPrice(config, locationId, line, state) * line.quantity;
 }
 
 export function marketStockRemaining(
@@ -233,7 +261,12 @@ export function marketStockRemaining(
         total + (entry.type === 'purchase' ? 1 : -1) * (entry.details?.quantity ?? 0),
       0,
     );
-  return Math.max(0, configured.availableQuantity - netPurchased);
+  return Math.max(
+    0,
+    configured.availableQuantity +
+      (state.tradeWorld?.deliveredStock[locationId]?.[goodId] ?? 0) -
+      netPurchased,
+  );
 }
 
 export function inventoryAverageCost(item: InventoryItem): number {
@@ -251,7 +284,7 @@ export function inventoryValueAtCurrentMarket(
   state: Readonly<SimulationDecisionState>,
 ): number {
   return state.inventory.reduce((total, item) => {
-    const price = marketPrice(config, state.currentLocationId, item.goodId, 'sell') ?? 0;
+    const price = marketPrice(config, state.currentLocationId, item.goodId, 'sell', state) ?? 0;
     return total + price * item.quantity;
   }, 0);
 }
@@ -300,7 +333,14 @@ export function previewTrade(
       errors.push(`${good.name}: enter a whole-number quantity above zero.`);
       continue;
     }
-    const lineTotal = tradeLineTotal(config, state.currentLocationId, line);
+    if (
+      line.quotedUnitPriceCents !== undefined &&
+      line.quotedUnitPriceCents !==
+        marketPrice(config, state.currentLocationId, line.goodId, line.direction, state)
+    ) {
+      errors.push(`${good.name}: the market price changed. Review the new price before trading.`);
+    }
+    const lineTotal = tradeLineTotal(config, state.currentLocationId, line, state);
     if (line.direction === 'buy') {
       const nextPurchased = (purchased.get(line.goodId) ?? 0) + line.quantity;
       purchased.set(line.goodId, nextPurchased);
@@ -362,7 +402,8 @@ export function routeProfitForecast(
   route: RouteDefinition,
 ): RouteProfitForecast {
   const expectedSalesRevenueCents = state.inventory.reduce((total, item) => {
-    const destinationPrice = marketPrice(config, route.toLocationId, item.goodId, 'sell') ?? 0;
+    const destinationPrice =
+      marketPrice(config, route.toLocationId, item.goodId, 'sell', state) ?? 0;
     return total + destinationPrice * item.quantity;
   }, 0);
   const goodsCostCents = state.inventory.reduce(
@@ -549,12 +590,13 @@ function commitTrade(
       state.currentLocationId,
       line.goodId,
       line.direction,
+      state,
     );
     if (good === undefined || postedUnitPrice === undefined) {
       return failure(state, 'A trade item is no longer available at this market.');
     }
     const discountPercent = purchaseDiscountPercent(config, line.direction, line.quantity);
-    const unitPrice = effectiveTradeUnitPrice(config, state.currentLocationId, line);
+    const unitPrice = effectiveTradeUnitPrice(config, state.currentLocationId, line, state);
     const lineTotal = unitPrice * line.quantity;
     if (config.transactionMath?.answerRequired && line.studentTotalCents === undefined) {
       return failure(
@@ -752,6 +794,7 @@ function commitRoute(
       },
     ],
     activeTravel: { routeId: route.id, progressDays: 0, eventIds, resolvedEventIds: [] },
+    ...worldAfterTravelTurn(config, state),
   });
 }
 
@@ -773,6 +816,7 @@ function advanceTravel(
     ...state,
     currentDay: state.currentDay + 1,
     activeTravel: { ...travel, progressDays },
+    ...worldAfterTravelTurn(config, state),
   };
   if (eventId !== undefined && !travel.resolvedEventIds.includes(eventId)) {
     return success(state, { ...next, status: 'event_pending', pendingEventId: eventId });
@@ -780,6 +824,19 @@ function advanceTravel(
   return progressDays >= route.estimatedDays
     ? arrive(config, state, next, route)
     : success(state, next);
+}
+
+/** Settle world outcomes in the same transaction, after validating the player's action.
+ * Arrival valuation sees these prices; rendering and animation never advance the world. */
+function worldAfterTravelTurn(
+  config: SimulationDecisionConfig,
+  state: Readonly<SimulationDecisionState>,
+): Partial<SimulationDecisionState> {
+  if (config.tradeWorld?.timing !== 'turn-based') return {};
+  const world = state.tradeWorld ?? initialTradeWorld(config.tradeWorld);
+  return {
+    tradeWorld: advanceTradeWorld(config, { ...world, paused: false }, world.tick, state.seed),
+  };
 }
 
 function resolveEvent(

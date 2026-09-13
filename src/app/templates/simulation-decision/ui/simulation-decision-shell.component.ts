@@ -1,16 +1,23 @@
-import { TaskGuideComponent } from '../../../shared/learning/task-guide.component';
+import { NgTemplateOutlet } from '@angular/common';
+import {
+  SIMULATION_DECISION_PROJECT_ROUTE,
+  SIMULATION_DECISION_FINAL_EXAMPLE_ROUTE,
+} from '../runtime/simulation-decision.tokens';
+import { ReviewDialogDirective } from './review-dialog.directive';
 import {
   afterEveryRender,
+  afterNextRender,
   Component,
   computed,
   ElementRef,
   HostListener,
+  Injector,
   inject,
   OnDestroy,
   signal,
+  viewChild,
 } from '@angular/core';
 
-import { ChoiceProgressionPanelComponent } from './progression/choice-progression-panel.component';
 import { choiceProgression } from '../domain/choice-progression';
 import { routeProfitForecast } from '../domain/simulation-decision.engine';
 import type { SimulationView } from '../domain/simulation-decision.models';
@@ -25,6 +32,7 @@ import { SimulationSeasonResultsComponent } from './pages/season-results.compone
 import { SimulationStrategyReportComponent } from './pages/strategy-report.component';
 import { SimulationTeacherControlComponent } from './pages/teacher-control.component';
 import { SimulationTradeLedgerComponent } from './pages/trade-ledger.component';
+import { TradeWorldPanelComponent } from './map/trade-world-panel.component';
 
 type StudentSpace = 'plan' | 'travel' | 'finish';
 
@@ -53,13 +61,6 @@ interface NextMission {
   action?: 'navigate' | 'complete-season';
 }
 
-interface SceneTransition {
-  icon: string;
-  eyebrow: string;
-  title: string;
-  subtitle: string;
-}
-
 interface ResourceFeedback {
   direction: 'positive' | 'negative' | 'neutral';
   icon: string;
@@ -70,8 +71,9 @@ interface ResourceFeedback {
 @Component({
   selector: 'app-simulation-decision-shell',
   imports: [
-    TaskGuideComponent,
-    ChoiceProgressionPanelComponent,
+    NgTemplateOutlet,
+    ReviewDialogDirective,
+    TradeWorldPanelComponent,
     SimulationCargoViewComponent,
     SimulationCompanySetupComponent,
     SimulationEventDecisionComponent,
@@ -84,14 +86,17 @@ interface ResourceFeedback {
     SimulationTradeLedgerComponent,
   ],
   templateUrl: './simulation-decision-shell.component.html',
-  styleUrl: './simulation-decision-shell.component.scss',
+  styleUrls: ['./simulation-decision-shell.component.scss', './simulation-project-header.scss'],
 })
 export class SimulationDecisionShellComponent implements OnDestroy {
   private readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
+  readonly routePage = viewChild(SimulationRouteMapComponent);
+  readonly projectRoute = inject(SIMULATION_DECISION_PROJECT_ROUTE, { optional: true });
+  readonly finalExampleRoute = inject(SIMULATION_DECISION_FINAL_EXAMPLE_ROUTE, { optional: true });
   private previousView?: SimulationView;
   private previousCash?: number;
   private previousCargo?: number;
-  private transitionTimer?: ReturnType<typeof setTimeout>;
   private feedbackTimer?: ReturnType<typeof setTimeout>;
   private missionFocusTimer?: ReturnType<typeof setTimeout>;
   constructor() {
@@ -99,7 +104,6 @@ export class SimulationDecisionShellComponent implements OnDestroy {
       const view = this.runtime.state().lastView;
       if (this.runtime.state().status !== 'not_started') {
         if (view !== this.previousView) {
-          if (this.previousView !== undefined) this.showSceneTransition(view);
           this.previousView = view;
           const workspace = this.element.nativeElement.querySelector<HTMLElement>('.workspace');
           this.element.nativeElement.ownerDocument.defaultView?.scrollTo({
@@ -118,7 +122,6 @@ export class SimulationDecisionShellComponent implements OnDestroy {
   );
   readonly helpOpen = signal(false);
   readonly teacherConfirmOpen = signal(false);
-  readonly sceneTransition = signal<SceneTransition | undefined>(undefined);
   readonly resourceFeedback = signal<ResourceFeedback | undefined>(undefined);
   readonly cashFeedbackActive = computed(
     () => this.resourceFeedback()?.lines.some((line) => line.startsWith('Cash')) ?? false,
@@ -132,9 +135,8 @@ export class SimulationDecisionShellComponent implements OnDestroy {
     { space: 'finish', label: 'Finish', icon: '★' },
   ];
   readonly expeditionNavigation: readonly ContextNavigationItem[] = [
-    { view: 'route', label: 'Choose Route', icon: '⌁' },
-    { view: 'market', label: 'Shops & Goods', icon: '▦' },
-    { view: 'cargo', label: 'Check Wagon', icon: '▣' },
+    { view: 'route', label: 'Map', icon: '⌁' },
+    { view: 'market', label: 'Shop', icon: '▦' },
   ];
   readonly journalNavigation: readonly ContextNavigationItem[] = [
     { view: 'ledger', label: 'Money Record', icon: '≡' },
@@ -209,7 +211,6 @@ export class SimulationDecisionShellComponent implements OnDestroy {
     ),
   );
   ngOnDestroy(): void {
-    clearTimeout(this.transitionTimer);
     clearTimeout(this.feedbackTimer);
     clearTimeout(this.missionFocusTimer);
   }
@@ -233,7 +234,32 @@ export class SimulationDecisionShellComponent implements OnDestroy {
   }
 
   navigate(view: SimulationView): void {
+    this.element.nativeElement
+      .querySelectorAll<HTMLDetailsElement>('.unified-project-header details[open]')
+      .forEach((menu) => (menu.open = false));
     this.runtime.navigate(view);
+  }
+
+  headerClick(event: MouseEvent): void {
+    const summary = (event.target as Element).closest('summary');
+    const selected = summary?.parentElement;
+    if (!selected?.matches('.header-menu, .map-options, .world-menu')) return;
+    this.element.nativeElement
+      .querySelectorAll<HTMLDetailsElement>('.unified-project-header details[open]')
+      .forEach((menu) => {
+        if (menu !== selected) menu.open = false;
+      });
+  }
+
+  @HostListener('document:keydown.escape')
+  closeHeaderMenus(): void {
+    if (this.helpOpen() || this.teacherConfirmOpen()) return;
+    const menus = this.element.nativeElement.querySelectorAll<HTMLDetailsElement>(
+      '.unified-project-header details[open]',
+    );
+    const first = menus[0];
+    menus.forEach((menu) => (menu.open = false));
+    first?.querySelector('summary')?.focus();
   }
 
   navigateSpace(space: StudentSpace): void {
@@ -305,6 +331,24 @@ export class SimulationDecisionShellComponent implements OnDestroy {
       this.runtime.planning.at(this.runtime.state().currentLocationId).showAll.set(true);
     }
     this.navigate(mission.actionView);
+    if (mission.actionView === 'route') {
+      afterNextRender(
+        () => {
+          const page = this.routePage();
+          if (
+            mission.focusSelector === '.trip-card' ||
+            mission.focusSelector === '.forecast-challenge'
+          ) {
+            page?.predictionOpen.set(false);
+            page?.showTripDetails(mission.focusSelector === '.forecast-challenge');
+          } else {
+            page?.atlas()?.svg()?.nativeElement.focus({ preventScroll: true });
+          }
+        },
+        { injector: this.injector },
+      );
+      return;
+    }
     if (mission.focusSelector === undefined) return;
     clearTimeout(this.missionFocusTimer);
     this.missionFocusTimer = setTimeout(() => this.focusMissionTarget(mission.focusSelector!), 180);
@@ -313,13 +357,15 @@ export class SimulationDecisionShellComponent implements OnDestroy {
   private focusMissionTarget(selector: string): void {
     const target = this.element.nativeElement.querySelector<HTMLElement | SVGElement>(selector);
     if (target === null) return;
-    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const reduced =
+      typeof matchMedia !== 'function' || matchMedia('(prefers-reduced-motion: reduce)').matches;
+    target.scrollIntoView?.({ behavior: reduced ? 'auto' : 'smooth', block: 'nearest' });
     if (target instanceof HTMLElement && !target.matches('button, a, input, textarea, select')) {
       target.tabIndex = -1;
     }
     if (target instanceof HTMLElement) target.focus({ preventScroll: true });
-    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      target.animate(
+    if (!reduced) {
+      target.animate?.(
         [
           { filter: 'brightness(1)', transform: 'scale(1)' },
           { filter: 'brightness(1.22)', transform: 'scale(1.015)', offset: 0.45 },
@@ -328,72 +374,6 @@ export class SimulationDecisionShellComponent implements OnDestroy {
         { duration: 850, easing: 'ease-out' },
       );
     }
-  }
-
-  private showSceneTransition(view: SimulationView): void {
-    const location = this.runtime.currentLocation()?.shortName ?? 'Frontier';
-    const scenes: Record<SimulationView, SceneTransition> = {
-      setup: { icon: '✥', eyebrow: 'New company', title: 'Start Your Company', subtitle: location },
-      market: {
-        icon: '▦',
-        eyebrow: 'Trading post',
-        title: `${location} Market`,
-        subtitle: 'Prices and opportunities have changed',
-      },
-      cargo: {
-        icon: '▣',
-        eyebrow: 'Wagon check',
-        title: 'Wagon Load',
-        subtitle: 'Check what fits before you travel',
-      },
-      route: {
-        icon: '⌁',
-        eyebrow: 'Trip plan',
-        title: 'Choose Your Route',
-        subtitle: `Leaving from ${location}`,
-      },
-      events: {
-        icon: '!',
-        eyebrow: this.runtime.state().pendingEventId ? 'Decision required' : 'On the trail',
-        title: this.runtime.state().pendingEventId ? 'Trail Challenge' : 'Journey',
-        subtitle: this.runtime.state().pendingEventId
-          ? 'Travel stops until you choose'
-          : 'Advance toward the next checkpoint',
-      },
-      ledger: {
-        icon: '≡',
-        eyebrow: 'Game records',
-        title: 'Money Record',
-        subtitle: 'See where every dollar changed',
-      },
-      results: {
-        icon: '★',
-        eyebrow: 'Final score',
-        title: 'My Score',
-        subtitle: 'See points for trading, math, and explaining',
-      },
-      report: {
-        icon: '✎',
-        eyebrow: 'Four questions',
-        title: 'My Reflection',
-        subtitle: 'Explain what you chose and learned',
-      },
-      showcase: {
-        icon: '✦',
-        eyebrow: 'Company defense',
-        title: 'Final Showcase',
-        subtitle: 'Present the plan, mathematics, revision, and evidence',
-      },
-      teacher: {
-        icon: '⚙',
-        eyebrow: 'Facilitator view',
-        title: 'Teacher Controls',
-        subtitle: 'Local classroom controls',
-      },
-    };
-    this.sceneTransition.set(scenes[view]);
-    clearTimeout(this.transitionTimer);
-    this.transitionTimer = setTimeout(() => this.sceneTransition.set(undefined), 900);
   }
 
   private showResourceChange(): void {
@@ -416,8 +396,7 @@ export class SimulationDecisionShellComponent implements OnDestroy {
     this.resourceFeedback.set({
       direction: cashChange > 0 ? 'positive' : cashChange < 0 ? 'negative' : 'neutral',
       icon: cashChange > 0 ? '↑' : cashChange < 0 ? '↓' : '▣',
-      title:
-        cashChange > 0 ? 'Company gain' : cashChange < 0 ? 'Resources committed' : 'Wagon updated',
+      title: cashChange > 0 ? 'Money earned' : cashChange < 0 ? 'Money spent' : 'Wagon updated',
       lines,
     });
     clearTimeout(this.feedbackTimer);
@@ -429,9 +408,9 @@ export class SimulationDecisionShellComponent implements OnDestroy {
     if (state.pendingEventId !== undefined || state.status === 'event_pending') {
       return {
         eyebrow: 'Trail decision',
-        title: 'Resolve the current challenge',
-        description: 'Use the known facts and show the required reasoning before travel continues.',
-        actionLabel: 'Open Journey',
+        title: 'Choose what to do on the trail',
+        description: 'Read what happened. Check the costs, then explain your choice.',
+        actionLabel: 'See what happened',
         actionView: 'events',
         focusSelector: '.event-layout',
       };
@@ -442,11 +421,12 @@ export class SimulationDecisionShellComponent implements OnDestroy {
       );
       return {
         eyebrow: 'Journey in progress',
-        title: 'Reach the next checkpoint',
-        description: 'Advance one travel day and prepare for a route event.',
-        actionLabel: 'Continue Journey',
-        actionView: 'events',
-        focusSelector: '.travel-controls',
+        title: 'Travel to the next town',
+        description:
+          'Press “Travel next day” on the map. Stop and make a choice if something happens.',
+        actionLabel: 'Show my trip',
+        actionView: 'route',
+        focusSelector: '.trip-card',
         current: state.activeTravel.progressDays,
         target: route?.estimatedDays ?? 1,
         progressLabel: `${state.activeTravel.progressDays} of ${route?.estimatedDays ?? 1} travel days`,
@@ -455,36 +435,58 @@ export class SimulationDecisionShellComponent implements OnDestroy {
     if (state.status === 'submitted') {
       return {
         eyebrow: 'Mission complete',
-        title: 'Present your company strategy',
-        description:
-          'Your official work is locked and ready for a timed defense with another group.',
-        actionLabel: 'Open Final Showcase',
+        title: 'Share your story',
+        description: 'Tell the class what you bought, what happened, and what you learned.',
+        actionLabel: 'See my work',
         actionView: 'showcase',
       };
     }
     if (state.status === 'season_complete') {
       return {
         eyebrow: 'Final chapter',
-        title: 'Explain your season result',
-        description:
-          'Review the final numbers, then use records and calculations in your strategy.',
-        actionLabel: 'Open Season Results',
+        title: 'See how you did',
+        description: 'Look at your score. Then explain one choice you made.',
+        actionLabel: 'See my score',
         actionView: 'results',
       };
     }
 
     const progression = choiceProgression(this.runtime.config, state);
     const requirement = progression.nextRequirements.find((item) => !item.complete);
+    if (
+      state.routeHistory.length === 0 &&
+      !this.plannedRouteId() &&
+      progression.currentStage.availableRouteIds.length
+    ) {
+      return {
+        eyebrow: '1 · Choose a town',
+        title: 'Choose a town',
+        description:
+          'Click a bright town or a travel-price sign. Look at the cost and number of days.',
+        actionLabel: 'Show the map',
+        actionView: 'route',
+      };
+    }
+    if (this.runtime.planning.at(state.currentLocationId).draft().length) {
+      return {
+        eyebrow: '2 · Buy goods',
+        title: 'Finish your shopping',
+        description: 'Your items are not bought or sold yet. Check the total, then confirm.',
+        actionLabel: 'Check my items',
+        actionView: 'market',
+        focusSelector: '.trade-builder',
+      };
+    }
     if (requirement?.key === 'minimumDiscoveredStalls') {
       const remaining = requirement.target - requirement.current;
       return {
         eyebrow: `Mission ${progression.currentStageIndex + 1} · Learn the post`,
-        title: 'Visit two shops',
+        title: `Visit ${requirement.target} shops`,
         description:
           remaining === 1
-            ? 'Choose one more glowing shop and read what the merchant knows.'
-            : 'Visit the General Store and one more shop. Each shop reveals goods and a clue.',
-        actionLabel: 'Find the next shop, then select it',
+            ? 'Open one more shop. Look at what it sells and read the shopkeeper’s tip.'
+            : 'Click a shop door. Look at what it sells, then visit another shop.',
+        actionLabel: 'Go to the shops',
         actionView: 'market',
         focusSelector: '.stall.mission-target',
         current: requirement.current,
@@ -495,9 +497,9 @@ export class SimulationDecisionShellComponent implements OnDestroy {
     if (state.routeHistory.length === 0 && this.plannedRouteId().length === 0) {
       return {
         eyebrow: 'Step 2 · Choose a destination',
-        title: 'Pick your route',
-        description: 'Compare travel cost, days, and destination needs. Select one route to plan.',
-        actionLabel: 'Show the routes',
+        title: 'Choose a town',
+        description: 'Click a bright town on the map. Compare the cost and travel days.',
+        actionLabel: 'Show the map',
         actionView: 'route',
         focusSelector: 'app-route-atlas .map-node:not(.unavailable)',
       };
@@ -505,10 +507,10 @@ export class SimulationDecisionShellComponent implements OnDestroy {
     if (requirement?.key === 'minimumPurchasedGoodTypes') {
       return {
         eyebrow: 'Step 3 · Buy goods',
-        title: 'Buy two kinds of goods',
+        title: `Buy ${requirement.target} kinds of goods`,
         description:
-          'Choose two route-matched goods. Keep the shown travel money before confirming the trade.',
-        actionLabel: 'Show recommended goods',
+          'Choose an item, pick how many, and check the price. Save enough money for your trip.',
+        actionLabel: 'Go shopping',
         actionView: 'market',
         focusSelector: '[data-mission-target="supplies"]',
         current: requirement.current,
@@ -522,11 +524,11 @@ export class SimulationDecisionShellComponent implements OnDestroy {
       !this.routeForecastReady()
     ) {
       return {
-        eyebrow: 'Step 4 · Harder math',
-        title: 'Predict your trip profit',
+        eyebrow: '3 · Check and travel',
+        title: 'Check your trip math',
         description:
-          'Calculate your destination sales total, then subtract goods and travel costs.',
-        actionLabel: 'Open profit forecast',
+          'First find how much you could earn from selling. Then subtract what you spent.',
+        actionLabel: 'Check my math',
         actionView: 'route',
         focusSelector: '.forecast-challenge',
         current: this.routeForecastCorrectCount(),
@@ -537,10 +539,9 @@ export class SimulationDecisionShellComponent implements OnDestroy {
     if (state.routeHistory.length === 0) {
       return {
         eyebrow: 'Step 5 · Check and depart',
-        title: 'Review your trip plan',
-        description:
-          'Check your route, money, and two kinds of goods. Then explain your choice and depart.',
-        actionLabel: 'Review and depart',
+        title: 'Get ready to travel',
+        description: 'Write why you chose this town. Check your plan, then start your trip.',
+        actionLabel: 'Open my trip',
         actionView: 'route',
         focusSelector: '.trip-card',
       };
@@ -551,10 +552,9 @@ export class SimulationDecisionShellComponent implements OnDestroy {
     if (arrived && hasCargo && !hasSale) {
       return {
         eyebrow: 'Destination mission',
-        title: 'Sell the cargo strategically',
-        description:
-          'Compare destination prices, test quantities, and keep the strongest profit plan.',
-        actionLabel: 'Open Destination Market',
+        title: 'Sell your goods',
+        description: 'You arrived! Open a shop, choose an item you own, and press Sell.',
+        actionLabel: 'Go sell my goods',
         actionView: 'market',
         focusSelector: '.stall',
       };
@@ -564,7 +564,7 @@ export class SimulationDecisionShellComponent implements OnDestroy {
         eyebrow: 'Final step',
         title: 'Finish and see your score',
         description:
-          'Your route is complete and a sale is recorded. Finish the season to see all three score parts.',
+          'You made a trip and sold goods. You can finish now or sell more of what is in your wagon.',
         actionLabel: 'Finish and see my score',
         actionView: 'results',
         action: 'complete-season',

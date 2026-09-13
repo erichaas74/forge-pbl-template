@@ -1,0 +1,374 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "castle-archive-rescue",
+  "projectVersion": "1.1.0",
+  "template": {
+    "id": "heist",
+    "version": "1.0"
+  },
+  "title": "The Archive Rescue",
+  "briefing": "Save a box of important old books! Choose a path through the castle, solve three math questions, then bring the books to the boat. Your team picks up the box for you.",
+  "history": "An archive is a place that keeps old records safe. This castle and its rescue story are made up for this game.",
+  "map": {
+    "image": "/projects/castle-archive-rescue/castle-map.svg",
+    "width": 1000,
+    "height": 680,
+    "pixelsPerCm": 20,
+    "metersPerCm": 10
+  },
+  "entry": "entry",
+  "extraction": "river",
+  "speed": 2,
+  "deadline": 600,
+  "detectionGrace": 5,
+  "target": {
+    "location": "archive",
+    "name": "Box of old books",
+    "mass": 60,
+    "capacity": 80,
+    "pickupSeconds": 10,
+    "loadedSpeed": 2
+  },
+  "locations": [
+    {
+      "id": "entry",
+      "name": "South entry",
+      "x": 100,
+      "y": 520,
+      "description": "Your team starts here with an empty cart."
+    },
+    {
+      "id": "market",
+      "name": "Market square",
+      "x": 280,
+      "y": 520,
+      "description": "Walk past the stalls on your way to the gate."
+    },
+    {
+      "id": "gate",
+      "name": "West gate",
+      "x": 280,
+      "y": 340,
+      "description": "The gate stays open. Walk straight to the hall or take the longer path past the tower."
+    },
+    {
+      "id": "tower",
+      "name": "North tower",
+      "x": 280,
+      "y": 160,
+      "description": "This path takes a little longer. You get to explore more of the castle!"
+    },
+    {
+      "id": "hall",
+      "name": "Castle hall",
+      "x": 520,
+      "y": 340,
+      "description": "The books are in the next room. Keep going!"
+    },
+    {
+      "id": "archive",
+      "name": "Book room",
+      "x": 700,
+      "y": 340,
+      "description": "Your team loads the 60 kg box into the cart. The cart can carry 80 kg."
+    },
+    {
+      "id": "bridge",
+      "name": "River bridge",
+      "x": 700,
+      "y": 520,
+      "description": "Cross the bridge with the books. The boat is close!"
+    },
+    {
+      "id": "river",
+      "name": "Boat landing",
+      "x": 920,
+      "y": 520,
+      "description": "Bring the books here before the 10-minute game timer ends."
+    }
+  ],
+  "routes": [
+    {
+      "from": "entry",
+      "to": "market"
+    },
+    {
+      "from": "market",
+      "to": "gate"
+    },
+    {
+      "from": "gate",
+      "to": "tower"
+    },
+    {
+      "from": "tower",
+      "to": "hall"
+    },
+    {
+      "from": "gate",
+      "to": "hall"
+    },
+    {
+      "from": "hall",
+      "to": "archive"
+    },
+    {
+      "from": "archive",
+      "to": "bridge"
+    },
+    {
+      "from": "bridge",
+      "to": "river"
+    },
+    {
+      "from": "market",
+      "to": "bridge",
+      "blocked": true
+    }
+  ],
+  "walls": [
+    {
+      "x": 345,
+      "y": 390,
+      "width": 270,
+      "height": 175
+    },
+    {
+      "x": 570,
+      "y": 170,
+      "width": 200,
+      "height": 105
+    },
+    {
+      "x": 120,
+      "y": 225,
+      "width": 105,
+      "height": 170
+    }
+  ],
+  "guards": [
+    {
+      "id": "court",
+      "name": "Courtyard watch",
+      "speed": 24,
+      "range": 25,
+      "angle": 65,
+      "points": [
+        {
+          "x": 340,
+          "y": 580,
+          "wait": 3
+        },
+        {
+          "x": 220,
+          "y": 580,
+          "wait": 2
+        },
+        {
+          "x": 220,
+          "y": 440,
+          "wait": 2
+        },
+        {
+          "x": 340,
+          "y": 440,
+          "wait": 3
+        }
+      ]
+    }
+  ],
+  "gate": {
+    "location": "gate",
+    "cycle": 60,
+    "openSeconds": 60
+  },
+  "math": {
+    "distanceTolerance": 0,
+    "timeTolerance": 0,
+    "routeChecks": "first-leg",
+    "required": [
+      {
+        "id": "capacity",
+        "type": "CAPACITY",
+        "title": "Will the books fit?",
+        "prompt": "Your cart can carry 80 kg. The books weigh 60 kg. How many more kilograms could the cart carry?",
+        "answer": 20,
+        "tolerance": 0,
+        "unit": "kg",
+        "hint": "Subtract 60 from 80. Count up from 60 to 80 if that helps."
+      }
+    ]
+  },
+  "crisis": {
+    "title": "Oh no! A cart wheel broke.",
+    "description": "The game is paused. Take your time! Work out how much the cart can carry, then choose how to save the books.",
+    "challenge": {
+      "id": "crisis-capacity",
+      "type": "CAPACITY",
+      "title": "How much can the broken cart carry?",
+      "prompt": "The cart could carry 80 kg. The broken wheel lowers that limit by 30 kg. What is the new limit?",
+      "answer": 50,
+      "tolerance": 0,
+      "unit": "kg",
+      "hint": "Subtract 30 from 80. Try counting back three groups of 10."
+    },
+    "choices": [
+      {
+        "id": "team",
+        "label": "Carry the books together",
+        "capacity": 60,
+        "speedMultiplier": 0.5,
+        "delay": 10
+      },
+      {
+        "id": "repair",
+        "label": "Fix the wheel",
+        "capacity": 80,
+        "speedMultiplier": 1,
+        "delay": 30
+      }
+    ]
+  },
+  "presentation": {
+    "ground": "/projects/castle-archive-rescue/art/ground.webp",
+    "buildings": "/projects/castle-archive-rescue/art/buildings.webp",
+    "characters": "/projects/castle-archive-rescue/art/characters.webp",
+    "props": "/projects/castle-archive-rescue/art/props.webp",
+    "wallFrames": [
+      0,
+      1,
+      2
+    ],
+    "responseStyles": {
+      "team": "carry",
+      "repair": "repair",
+      "cart": "cart"
+    },
+    "buildingFrames": [
+      {
+        "x": 10,
+        "y": 90,
+        "width": 612,
+        "height": 425
+      },
+      {
+        "x": 646,
+        "y": 147,
+        "width": 590,
+        "height": 340
+      },
+      {
+        "x": 160,
+        "y": 563,
+        "width": 380,
+        "height": 620
+      },
+      {
+        "x": 725,
+        "y": 620,
+        "width": 440,
+        "height": 570
+      }
+    ],
+    "groundSlices": [
+      {
+        "source": [
+          0,
+          0,
+          1050,
+          1035
+        ],
+        "destination": [
+          0,
+          0,
+          805,
+          680
+        ]
+      },
+      {
+        "source": [
+          1050,
+          0,
+          470,
+          615
+        ],
+        "destination": [
+          805,
+          0,
+          195,
+          480
+        ]
+      },
+      {
+        "source": [
+          1050,
+          615,
+          470,
+          135
+        ],
+        "destination": [
+          805,
+          480,
+          195,
+          80
+        ]
+      },
+      {
+        "source": [
+          1050,
+          750,
+          470,
+          285
+        ],
+        "destination": [
+          805,
+          560,
+          195,
+          120
+        ]
+      }
+    ],
+    "landmarks": [
+      {
+        "frame": 3,
+        "x": 240,
+        "y": 52,
+        "width": 80,
+        "height": 95
+      }
+    ]
+  },
+  "guidance": {
+    "routes": [
+      {
+        "id": "courtyard",
+        "label": "Courtyard path",
+        "description": "A shorter walk through the castle hall. A good first path.",
+        "nodes": [
+          "entry",
+          "market",
+          "gate",
+          "hall",
+          "archive",
+          "bridge",
+          "river"
+        ]
+      },
+      {
+        "id": "tower",
+        "label": "Tower path",
+        "description": "Explore the north tower. This walk takes one extra minute.",
+        "nodes": [
+          "entry",
+          "market",
+          "gate",
+          "tower",
+          "hall",
+          "archive",
+          "bridge",
+          "river"
+        ]
+      }
+    ]
+  }
+}

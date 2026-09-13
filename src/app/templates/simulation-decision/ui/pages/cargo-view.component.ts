@@ -36,6 +36,7 @@ export class SimulationCargoViewComponent {
           this.runtime.state().currentLocationId,
           item.goodId,
           'sell',
+          this.runtime.state(),
         ) ?? 0;
       const currentValueCents = currentUnitValueCents * item.quantity;
       return {

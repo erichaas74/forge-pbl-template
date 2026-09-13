@@ -5,11 +5,11 @@ import { museumBoardTemplate } from './museum-board-template';
 import { isExhibitObjectModel } from '../../../../shared/media/object-model';
 
 describe('museum board 3D model contract', () => {
-  it('uses all four supplied models, credits each one, and replaces generated object pictures', () => {
-    expect(egyptianObjectModels).toHaveLength(4);
+  it('uses all three supplied models, credits each one, and replaces generated object pictures', () => {
+    expect(egyptianObjectModels).toHaveLength(3);
     expect(egyptianObjectModels.every((object) => isExhibitObjectModel(object.model))).toBe(true);
     const objects = classExhibitHallConfig.seedBoards.flatMap((seed) => seed.data.objects);
-    expect(new Set(objects.map((object) => object.model!.src)).size).toBe(4);
+    expect(new Set(objects.map((object) => object.model!.src)).size).toBe(3);
     expect(objects.every((object) => object.model && !object.imageAssetId)).toBe(true);
     expect(classExhibitHallConfig.seedBoards.every((seed) => !seed.corridorPreview)).toBe(true);
   });

@@ -1,0 +1,577 @@
+:host {
+  display: block;
+  background: linear-gradient(120deg, #f8f1e2, #f0e5cb);
+  color: #243f50;
+  min-height: 100vh;
+  font:
+    14px/1.5 Arial,
+    sans-serif;
+}
+app-museum-scene {
+  --museum-scene-height: clamp(340px, calc(100svh - 355px), 560px);
+}
+* {
+  box-sizing: border-box;
+}
+button,
+input,
+textarea {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+.room-workspace {
+  max-width: 1700px;
+  margin: auto;
+  padding: 0 34px 26px;
+}
+.workspace-header {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  justify-content: space-between;
+  min-height: 92px;
+  border-bottom: 1px solid #d8cfbb;
+  border-top: 4px solid #23495b;
+  box-shadow: 0 -2px 0 #bc8b39;
+}
+.museum-brand {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.museum-monogram {
+  font:
+    29px Georgia,
+    serif;
+  border: 1px solid #a7874a;
+  padding: 3px 10px;
+  outline: 1px solid #b79b63;
+  outline-offset: 3px;
+  background: #23495b;
+  color: #e3c787;
+}
+.museum-brand div {
+  display: flex;
+  flex-direction: column;
+}
+.museum-brand div > span {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: #757665;
+}
+.museum-brand strong {
+  font:
+    21px/1.5 Georgia,
+    serif;
+}
+.assignment {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.assignment i {
+  width: 6px;
+  height: 6px;
+  background: #477c80;
+  border-radius: 50%;
+}
+.assignment span {
+  border-left: 1px solid #c9c0ab;
+  padding-left: 12px;
+  margin-left: 3px;
+  color: #777967;
+  font-weight: 400;
+}
+.save-indicator {
+  font-size: 11px;
+  color: #6d725e;
+}
+.room-introduction {
+  padding: 29px 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+}
+.eyebrow {
+  font-size: 9px;
+  font-weight: bold;
+  letter-spacing: 0.14em;
+  color: #95743b;
+}
+h1 {
+  font:
+    38px/1.15 Georgia,
+    serif;
+  font-weight: 400;
+  margin: 9px 0 12px;
+  letter-spacing: -0.02em;
+}
+.room-introduction p {
+  font-size: 13px;
+  color: #727461;
+  margin: 0;
+  max-width: 760px;
+  line-height: 1.6;
+}
+.room-actions {
+  flex: none;
+}
+.secondary {
+  border: 1px solid #bcb097;
+  color: #294c60;
+  background: #faf7ee;
+  padding: 11px 17px;
+  border-radius: 4px;
+  font-size: 12px;
+  min-height: 43px;
+}
+.secondary:hover {
+  background: #e8e6d7;
+}
+.primary {
+  background: #23495b;
+  color: #fff8e7;
+  border: 1px solid #23495b;
+  border-radius: 4px;
+  min-height: 46px;
+  padding: 12px 22px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.primary:hover:enabled {
+  background: #163747;
+}
+.primary span {
+  margin-left: 20px;
+}
+.wide {
+  width: 100%;
+  margin-top: 12px;
+}
+.studio-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 325px;
+  gap: 24px;
+  align-items: start;
+}
+.room-stage {
+  min-width: 0;
+}
+.curator-panel {
+  background: #fffaf0;
+  border: 1px solid #d9cfb7;
+  border-radius: 4px;
+  border-top: 3px solid #b28c4c;
+  box-shadow: inset 0 3px #23495b;
+  padding: 25px 23px;
+  min-height: 495px;
+}
+.panel-heading {
+  border-bottom: 1px solid #e1d8c5;
+  margin-bottom: 20px;
+  padding-bottom: 13px;
+}
+.panel-heading h2 {
+  font:
+    24px/1.25 Georgia,
+    serif;
+  font-weight: 400;
+  margin: 9px 0 0;
+}
+.panel-intro {
+  font-size: 12px;
+  color: #6a6f5d;
+  margin: 0 0 20px;
+  line-height: 1.7;
+}
+label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  margin: 17px 0 7px;
+  color: #365063;
+}
+label small {
+  float: right;
+  font-size: 10px;
+  color: #969481;
+  font-weight: 400;
+}
+input,
+textarea {
+  width: 100%;
+  border: 1px solid #cfc4aa;
+  border-radius: 3px;
+  background: #fffdf7;
+  color: #263f50;
+  padding: 11px 12px;
+  font-size: 12px;
+  line-height: 1.55;
+}
+textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+input::placeholder,
+textarea::placeholder {
+  color: #989584;
+}
+.curator-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #eee7d5;
+  border: 1px solid #d9ccaf;
+  padding: 12px;
+  margin: 20px 0 12px;
+  border-radius: 3px;
+  color: #70765b;
+}
+.curator-tip > span {
+  font-size: 20px;
+  color: #9b8649;
+  line-height: 1;
+}
+.curator-tip p {
+  font-size: 11px;
+  line-height: 1.65;
+  margin: 0;
+}
+.display-selector {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+.display-selector button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  text-align: left;
+  min-height: 63px;
+  padding: 11px;
+  border: 1px solid #d4c9b1;
+  border-radius: 4px;
+  background: #fffaf0;
+  color: #345367;
+  min-width: 0;
+}
+.display-selector button[aria-pressed='true'] {
+  background: #23495b;
+  border-color: #23495b;
+  color: #fff8e7;
+}
+.display-selector button > span:nth-child(2) {
+  display: block;
+  min-width: 0;
+  flex: 1;
+}
+.display-selector strong {
+  display: block;
+  font-size: 11px;
+}
+.display-selector small {
+  display: block;
+  font-size: 9px;
+  opacity: 0.67;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.display-number {
+  font:
+    22px Georgia,
+    serif;
+  color: #b89450;
+}
+.display-selector i {
+  width: 5px;
+  height: 5px;
+  border: 1px solid #9b947b;
+  border-radius: 50%;
+  flex: none;
+}
+.display-selector i.filled {
+  background: #b79350;
+  border-color: #b79350;
+}
+.room-footnote {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  color: #91917c;
+  font-size: 10px;
+  margin-top: 11px;
+}
+.artifact-library {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.artifact-library button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  padding: 15px 12px;
+  border: 1px solid #d5cab0;
+  background: #f7f3e7;
+  border-radius: 4px;
+  color: #345367;
+  min-height: 83px;
+}
+.artifact-library button:hover:enabled {
+  background: #e9edeb;
+  border-color: #8ba2a4;
+}
+.artifact-library button > span:nth-child(2) {
+  flex: 1;
+}
+.artifact-library strong {
+  font:
+    17px/1.25 Georgia,
+    serif;
+  font-weight: 400;
+  display: block;
+}
+.artifact-library small {
+  font-size: 9px;
+  color: #93917d;
+  margin-top: 6px;
+  display: block;
+}
+.artifact-symbol {
+  font-size: 32px;
+  color: #a88448;
+  width: 33px;
+  text-align: center;
+}
+.artifact-library button > span:last-child {
+  font-size: 23px;
+  font-weight: 300;
+}
+.source-credit {
+  font-size: 10px;
+  line-height: 1.7;
+  color: #797760;
+  border-top: 1px solid #e0d6be;
+  margin-top: 17px;
+  padding-top: 11px;
+}
+.source-credit summary {
+  cursor: pointer;
+  color: #426276;
+}
+.source-credit a {
+  color: #345c74;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+.artifact-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px solid #e0d6be;
+  padding-top: 9px;
+  margin-top: 14px;
+}
+.text-button {
+  background: none;
+  border: 0;
+  font-size: 10px;
+  color: #426276;
+  padding: 10px 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.text-button.remove {
+  color: #93745a;
+}
+.curator-panel h3 {
+  font:
+    24px/1.3 Georgia,
+    serif;
+}
+.curator-panel p {
+  font-size: 12px;
+  line-height: 1.7;
+}
+.curator-panel h4 {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.muted {
+  color: #99937b;
+}
+.submission-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 21px 0 0;
+  margin-top: 23px;
+  border-top: 1px solid #d8cfb9;
+}
+.submission-bar div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.submission-bar strong {
+  font:
+    19px Georgia,
+    serif;
+  font-weight: 400;
+}
+.submission-bar span {
+  font-size: 11px;
+  color: #80816d;
+}
+.submission-bar small {
+  font-size: 9px;
+  color: #989783;
+  margin-top: 3px;
+}
+.validation {
+  border: 1px solid #bd9971;
+  background: #fff4dc;
+  padding: 18px;
+  color: #6c4932;
+  margin-top: 20px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.validation ul {
+  padding-left: 20px;
+}
+.validation p {
+  margin: 0;
+}
+.validation button {
+  margin-top: 8px;
+  background: #fffaf0;
+  border: 1px solid #b7986e;
+  padding: 8px;
+  border-radius: 3px;
+  color: #6c4932;
+}
+.museum-return {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 22px 0;
+}
+.museum-return button {
+  background: #faf5e7;
+  border: 1px solid #cdbf9d;
+  padding: 12px;
+  border-radius: 4px;
+  color: #345367;
+}
+.museum-return span {
+  font-size: 12px;
+  color: #81816a;
+}
+.unassigned {
+  padding: 80px 0;
+}
+button:focus-visible,
+a:focus-visible,
+summary:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+[tabindex='-1']:focus {
+  outline: 3px solid #a9803b;
+  outline-offset: 3px;
+}
+@media (min-width: 1500px) {
+  .studio-grid {
+    grid-template-columns: minmax(0, 1fr) 355px;
+  }
+  .curator-panel {
+    padding: 28px;
+  }
+}
+@media (max-width: 1050px) {
+  .room-workspace {
+    padding: 0 20px 25px;
+  }
+  .studio-grid {
+    grid-template-columns: minmax(0, 1fr) 290px;
+    gap: 15px;
+  }
+  .curator-panel {
+    padding: 20px 17px;
+  }
+  .assignment span {
+    display: none;
+  }
+  .display-selector {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  h1 {
+    font-size: 32px;
+  }
+}
+@media (max-width: 760px) {
+  .workspace-header {
+    min-height: 77px;
+    gap: 12px;
+  }
+  .museum-brand div > span {
+    font-size: 7px;
+  }
+  .museum-brand strong {
+    font-size: 17px;
+  }
+  .museum-monogram {
+    font-size: 23px;
+  }
+  .save-indicator {
+    display: none;
+  }
+  .assignment {
+    font-size: 10px;
+  }
+  .room-introduction {
+    display: block;
+    padding: 23px 0 18px;
+  }
+  .room-actions {
+    margin-top: 16px;
+  }
+  .studio-grid {
+    grid-template-columns: 1fr;
+  }
+  .curator-panel {
+    min-height: 0;
+  }
+  .room-footnote span:last-child {
+    display: none;
+  }
+  .submission-bar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .submission-bar .primary {
+    width: 100%;
+  }
+  .museum-return span {
+    display: none;
+  }
+  .room-workspace {
+    padding: 0 13px 20px;
+  }
+}

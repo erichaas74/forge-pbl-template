@@ -32,6 +32,19 @@ small {
   padding: 5px 10px;
   border-radius: 20px;
 }
+.addition-status { min-height: 18px; margin: 6px 0; color: #296253; font-size: 12px; }
+.editor-layout { display: grid; grid-template-columns: minmax(0, 1fr) clamp(144px, 35cqw, 230px); gap: 14px; align-items: start; }
+.program-column { min-width: 0; max-height: min(80vh, 980px); overflow: auto; padding: 4px; scrollbar-width: thin; }
+.palette-host { position: sticky; top: 12px; min-width: 0; border-radius: 14px; }
+.palette-host:focus-visible { outline: 3px solid #bd790b; outline-offset: 3px; }
+.command.insertion-target > .collapse { color: #fff0a0; }
+.command.insertion-target > .loop-body { box-shadow: inset 4px 0 #e8a126; }
+.move-equation { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 8px; max-width: 100%; }
+.given-number, .student-number { display: grid; gap: 3px; justify-items: center; }
+.move-equation small { color: inherit; font-size: 9px; letter-spacing: .3px; white-space: nowrap; }
+.given-number strong { display: grid; place-items: center; min-height: 38px; min-width: 42px; padding: 3px 9px; background: #ffffff26; border: 1px solid #ffffff60; border-radius: 8px; font-size: 18px; }
+.math-operation { align-self: center; padding-top: 14px; font-size: 24px; font-weight: 800; }
+.math-unit { align-self: flex-end; padding-bottom: 9px; font-weight: 700; font-size: 13px; }
 summary {
   cursor: pointer;
   font-weight: 700;
@@ -59,6 +72,7 @@ summary {
   --block-edge: #82450c;
 }
 .script-canvas {
+  min-width: 280px;
   padding: 24px 12px 24px 32px;
   border: 1px solid #d2dce7;
   border-radius: 12px;
@@ -411,7 +425,12 @@ select {
   border-radius: 8px;
   padding: 10px;
   background: #f5f8fc;
+  width: 100%;
+  min-height: 48px;
+  text-align: left;
 }
+.add span { display: block; margin-top: 4px; font-size: 11px; font-weight: 400; }
+.add:hover { background: #e5effd; border-color: #628ebd; }
 .add select {
   display: block;
   margin-top: 7px;
@@ -421,6 +440,7 @@ select {
 .loop-add {
   margin-right: 8px;
   padding: 8px;
+  width: calc(100% - 8px);
 }
 .empty {
   padding: 16px 10px;
@@ -507,6 +527,9 @@ button:disabled {
     width: 24px;
     height: 24px;
   }
+}
+@container (max-width: 559px) {
+  .editor-layout { gap: 8px; }
 }
 @container (max-width: 220px) {
   .block-line {

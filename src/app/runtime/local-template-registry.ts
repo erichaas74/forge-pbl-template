@@ -176,6 +176,12 @@ export function createLocalTemplateRegistry(
   clock: Clock = new SystemClock(),
 ): TemplateRegistry {
   const registry = new TemplateRegistry();
+  const heistResult = registry.register({
+    id: 'heist', version: '1.0.0', compatibleTemplateMajorVersions: [1],
+    projectTypes: ['heist'], packageDescriptor: singleProjectConfigPackageDescriptor,
+    createRuntime: () => new LocalProjectConfigRuntime(source, 'heist'),
+  });
+  if (!heistResult.ok) throw new Error(heistResult.error.message);
   const competitionResult = registry.register({
     id: 'competition-show', version: '1.0.0', compatibleTemplateMajorVersions: [1],
     projectTypes: ['competition-show'], packageDescriptor: singleProjectConfigPackageDescriptor,

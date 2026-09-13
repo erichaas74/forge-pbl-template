@@ -1,36 +1,91 @@
-<div class="atlas" [class.still]="!motion()" [class.workspace-atlas]="workspace()">
-  <div class="map-tools" aria-label="Map controls">
-    <div class="zoom-controls">
-      <button
-        type="button"
-        aria-label="Zoom out"
-        [disabled]="view().zoom <= 1"
-        (click)="zoom(-0.25)"
-      >
-        −
-      </button>
-      <output aria-label="Map zoom">{{ zoomPercent() }}%</output>
-      <button type="button" aria-label="Zoom in" [disabled]="view().zoom >= 3" (click)="zoom(0.25)">
-        +
-      </button>
-    </div>
-    <button type="button" aria-label="Center on me" (click)="centerOnCompany()">◎ Company</button>
-    <button type="button" aria-label="Fit all routes" (click)="fitAll()">↗ World</button>
+<ng-template #mapControls>
+  <div class="map-tools" [class.header-controls]="externalControls()" aria-label="Map controls">
     <button
       type="button"
-      aria-label="Focus route"
-      [disabled]="!selectedTrail()"
-      (click)="focusRoute()"
+      [attr.aria-pressed]="showPrices()"
+      (click)="showPrices.set(!showPrices())"
     >
-      ⌖ Trail
+      {{ showPrices() ? 'Hide prices' : 'Show prices' }}
     </button>
+    <details class="map-options">
+      <summary>Map tools</summary>
+      <div>
+        <button type="button" aria-label="Center on me" (click)="centerOnCompany()">
+          Find my wagon
+        </button>
+        <button type="button" aria-label="Fit all routes" (click)="fitAll()">Fit all routes</button>
+        <button
+          type="button"
+          aria-label="Focus route"
+          [disabled]="!selectedTrail()"
+          (click)="focusRoute()"
+        >
+          Focus selected trail
+        </button>
+        <button
+          type="button"
+          class="scout-button"
+          [disabled]="!canScout()"
+          [attr.aria-pressed]="!!previewRouteId()"
+          (click)="scoutTrail()"
+        >
+          {{ previewRouteId() ? 'Stop scouting' : 'Scout trail' }}
+        </button>
+        <button
+          type="button"
+          [disabled]="reducedMotion()"
+          [attr.aria-pressed]="effectiveMotion()"
+          [attr.aria-label]="
+            reducedMotion() ? 'Motion off: device preference' : 'Toggle map motion'
+          "
+          (click)="motion.set(!motion())"
+        >
+          Motion {{ effectiveMotion() ? 'on' : 'off' }}
+        </button>
+        <button
+          type="button"
+          [attr.aria-pressed]="showTerrain()"
+          (click)="showTerrain.set(!showTerrain())"
+        >
+          Landscape {{ showTerrain() ? 'on' : 'off' }}
+        </button>
+        <button
+          type="button"
+          [attr.aria-pressed]="showWeather()"
+          (click)="showWeather.set(!showWeather())"
+        >
+          Weather overlays {{ showWeather() ? 'on' : 'off' }}
+        </button>
+        <button type="button" [attr.aria-pressed]="basicMap()" (click)="toggleBasicMap()">
+          {{ basicMap() ? 'Animated map' : 'Basic map' }}
+        </button>
+      </div>
+    </details>
   </div>
+</ng-template>
+<div
+  class="atlas"
+  [class.still]="!effectiveMotion()"
+  [class.workspace-atlas]="workspace()"
+  [class.phaser-active]="canvasStatus() === 'ready' && !basicMap()"
+>
+  @if (!externalControls()) {
+    <ng-container [ngTemplateOutlet]="mapControls" />
+  }
   <div #mapWindow class="map-window">
+    @if (!basicMap()) {
+      <app-phaser-route-canvas
+        [snapshot]="canvasSnapshot()"
+        [viewport]="canvasViewport()"
+        (statusChanged)="canvasStatus.set($event)"
+        (previewEnded)="previewRouteId.set('')"
+      />
+    }
     <svg
       #mapCanvas
       class="route-map"
       [attr.viewBox]="viewBox()"
-      [attr.preserveAspectRatio]="workspace() ? 'none' : 'xMidYMid meet'"
+      preserveAspectRatio="xMidYMid meet"
       tabindex="0"
       role="group"
       aria-label="Interactive route map"
@@ -38,6 +93,7 @@
       [class.zoomed]="view().zoom > 1"
       [class.dragging]="dragging()"
       (keydown)="mapKey($event)"
+      (wheel)="wheelZoom($event)"
       (pointerdown)="startPan($event)"
       (pointermove)="movePan($event)"
       (pointerup)="endPan()"
@@ -81,7 +137,7 @@
           y="0"
           width="100"
           height="80"
-          preserveAspectRatio="none"
+          preserveAspectRatio="xMidYMid meet"
           aria-hidden="true"
         />
         <rect
@@ -122,17 +178,25 @@
           }
           @if (trail.route.id === selectedRouteId() || trail.state === 'traveling') {
             @for (checkpoint of checkpoints(trail.route); track checkpoint) {
-              <g class="checkpoint" aria-hidden="true">
+              <g
+                class="checkpoint"
+                aria-hidden="true"
+                [class.reached]="
+                  trail.state === 'completed' ||
+                  (travel()?.routeId === trail.route.id && checkpoint <= (travel()?.progress ?? 0))
+                "
+                [attr.transform]="trailPoint(trail.route.id, checkpoint)"
+              >
                 <circle r="1.65" />
-                <text y=".7">{{ $index + 1 }}</text>
-                <animateMotion
-                  dur="1ms"
-                  [attr.path]="trail.route.path"
-                  [attr.keyPoints]="checkpoint + ';' + checkpoint"
-                  keyTimes="0;1"
-                  calcMode="linear"
-                  fill="freeze"
-                />
+                <text y=".7">
+                  {{
+                    trail.state === 'completed' ||
+                    (travel()?.routeId === trail.route.id &&
+                      checkpoint <= (travel()?.progress ?? 0))
+                      ? '✓'
+                      : $index + 1
+                  }}
+                </text>
               </g>
             }
           }
@@ -150,37 +214,34 @@
               </title>
             </path>
           }
-          @if (
-            trail.costLabel &&
-            (trail.state === 'available' ||
-              trail.state === 'unavailable' ||
-              trail.state === 'traveling')
-          ) {
-            <g
-              class="route-cost"
-              [attr.data-route-cost]="trail.route.id"
-              [attr.role]="trail.state !== 'traveling' ? 'button' : null"
-              [attr.tabindex]="trail.state !== 'traveling' ? 0 : null"
-              [attr.aria-expanded]="predictionRouteId() === trail.route.id"
-              aria-controls="route-prediction"
-              [attr.aria-label]="trail.route.name + ', travel cost ' + trail.costLabel"
-              (click)="routeSelected.emit(trail.route.id)"
-              (keydown.enter)="routeSelected.emit(trail.route.id)"
-              (keydown.space)="$event.preventDefault(); routeSelected.emit(trail.route.id)"
-            >
-              <rect x="-8" y="-2.5" width="16" height="5" rx="1" />
-              <text y="0.65">{{ trail.costLabel }} travel</text>
-              <animateMotion
-                dur="1ms"
-                [attr.path]="trail.route.path"
-                keyPoints="0.5;0.5"
-                keyTimes="0;1"
-                calcMode="linear"
-                fill="freeze"
-              />
-            </g>
-          }
         </g>
+      }
+      @for (trail of trails(); track trail.route.id) {
+        @if (trail.costLabel && (trail.state === 'available' || trail.state === 'unavailable')) {
+          <g
+            class="route-cost"
+            [attr.data-route-cost]="trail.route.id"
+            role="button"
+            tabindex="0"
+            [attr.aria-expanded]="predictionRouteId() === trail.route.id"
+            aria-controls="route-prediction"
+            [attr.aria-label]="trail.route.name + ', travel cost ' + trail.costLabel"
+            (click)="routeSelected.emit(trail.route.id)"
+            (keydown.enter)="routeSelected.emit(trail.route.id)"
+            (keydown.space)="$event.preventDefault(); routeSelected.emit(trail.route.id)"
+          >
+            <rect x="-8" y="-2.5" width="16" height="5" rx="1" />
+            <text y="0.65">{{ trail.costLabel }} travel</text>
+            <animateMotion
+              dur="1ms"
+              [attr.path]="trail.route.path"
+              keyPoints="0.5;0.5"
+              keyTimes="0;1"
+              calcMode="linear"
+              fill="freeze"
+            />
+          </g>
+        }
       }
       @for (location of locations(); track location.id) {
         <g
@@ -249,24 +310,41 @@
       @if (travel(); as journey) {
         @for (trail of trails(); track trail.route.id) {
           @if (trail.route.id === journey.routeId) {
-            <g class="wagon-marker" aria-hidden="true">
+            <g
+              class="wagon-marker"
+              aria-hidden="true"
+              [attr.transform]="trailPoint(journey.routeId, journey.progress)"
+            >
               <ellipse class="wagon-map-shadow" cy="2.3" rx="4.3" ry="1.1" />
               <path class="wagon-map-canvas" d="M-3 .3Q-3-4 0-5.1Q3-4 3 .3Z" />
               <path class="wagon-map-body" d="M-4 0h8l-1 2.5h-6Z" />
               <path class="wagon-map-tongue" d="M-4 1.2l-3 1" />
               <circle class="wagon-map-wheel" cx="-2.4" cy="2.5" r="1.25" />
               <circle class="wagon-map-wheel" cx="2.2" cy="2.5" r="1.1" />
-              <animateMotion
-                dur="1ms"
-                [attr.path]="trail.route.path"
-                [attr.keyPoints]="journey.progress + ';' + journey.progress"
-                keyTimes="0;1"
-                calcMode="linear"
-                fill="freeze"
-              />
             </g>
           }
         }
+      }
+      @for (freight of world()?.freight ?? []; track freight.id) {
+        <g
+          class="freight-marker"
+          [attr.transform]="trailPoint(freight.routeId, freight.progress)"
+          aria-hidden="true"
+        >
+          <rect
+            x="-2"
+            y="-2.6"
+            width="4"
+            height="3"
+            rx="1"
+            fill="#72d2dc"
+            stroke="#224e51"
+            stroke-width=".35"
+          />
+          <path d="M-2.5.3h5" stroke="#694d2b" stroke-width="1" />
+          <circle cx="-1.5" cy="1" r=".6" fill="#282319" />
+          <circle cx="1.5" cy="1" r=".6" fill="#282319" />
+        </g>
       }
       <g class="compass" transform="translate(92 9)" aria-hidden="true">
         <circle r="4" />
@@ -274,7 +352,41 @@
         <text y="-5.5">N</text>
       </g>
     </svg>
-    @if (marketLabels().length) {
+    @if (journeyCue(); as cue) {
+      <div class="trail-signal" [attr.data-phase]="cue.kind" aria-hidden="true">
+        <span>{{ cue.kind === 'arrival' ? '⚑' : cue.kind === 'event' ? '!' : '◆' }}</span>
+        <div>
+          <small>{{ cue.label }}</small
+          ><strong>{{ selectedTrail()?.route?.name }}</strong>
+        </div>
+      </div>
+    } @else if (selectedTrail(); as trail) {
+      @if (trail.state === 'available' && !previewRouteId()) {
+        <div class="trail-signal" aria-hidden="true">
+          <span>⚑</span>
+          <div>
+            <small>YOUR SELECTED TRAIL</small><strong>{{ trail.route.name }}</strong>
+            <small
+              >{{ trail.route.estimatedDays }} days · {{ trail.route.distanceMiles }} miles</small
+            >
+          </div>
+        </div>
+      }
+    }
+    @if (previewTrail(); as trail) {
+      <div class="canvas-notice scout-notice" role="status">
+        <strong>Scouting {{ trail.route.name }}</strong>
+        <span
+          >{{ trail.route.estimatedDays }} planned days · Preview only. Your company stays
+          put.</span
+        >
+      </div>
+    } @else if (canvasStatus() === 'failed' && !basicMap()) {
+      <div class="canvas-notice" role="status">
+        Animated map unavailable. The basic map is active.
+      </div>
+    }
+    @if (showPrices() && marketLabels().length) {
       <svg
         class="market-leaders"
         [attr.viewBox]="'0 0 ' + mapSize().width + ' ' + mapSize().height"
@@ -406,7 +518,7 @@
     }
   </div>
   <p id="atlas-help" class="map-help">
-    Zoom to explore, then drag or use the arrow controls. With the map focused, use + / −, arrow
-    keys, or Home to reset. Drawing not to scale.
+    Use the mouse wheel to explore, then drag or use the arrow controls. With the map focused, use +
+    / −, arrow keys, or Home to reset. Drawing not to scale.
   </p>
 </div>

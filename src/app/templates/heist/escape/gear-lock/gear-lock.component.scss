@@ -1,0 +1,366 @@
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  color: #f8edd4;
+  font-family: 'Trebuchet MS', sans-serif;
+}
+* {
+  box-sizing: border-box;
+}
+.workshop {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: #071b21;
+  overflow: auto;
+}
+button {
+  font: inherit;
+  color: #e9e4d8;
+  border: 1px solid #57716e;
+  background: #163139;
+  border-radius: 6px;
+  min-height: 44px;
+  padding: 9px 15px;
+  cursor: pointer;
+}
+button:hover:not(:disabled) {
+  background: #275055;
+  border-color: #ead295;
+}
+button:focus-visible {
+  outline: 3px solid #ffe3a2;
+  outline-offset: 3px;
+}
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+header {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+  padding: 15px 28px;
+  border-bottom: 1px solid #c69b474d;
+  background: linear-gradient(110deg, #0a222c, #172b2a);
+  flex-shrink: 0;
+}
+.heading {
+  flex: 1;
+}
+.heading span {
+  color: #d6b577;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+}
+h1 {
+  font:
+    27px Georgia,
+    serif;
+  margin: 3px 0 0;
+}
+h1:focus {
+  outline: none;
+}
+.calibrations {
+  display: flex;
+  justify-content: center;
+  gap: 70px;
+  padding: 10px 20px;
+  background: #10262a;
+  flex-shrink: 0;
+  border-bottom: 1px solid #b18b4340;
+}
+.calibrations > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.calibrations b {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #b99a61;
+  border-radius: 50%;
+  color: #f0cf86;
+  font:
+    22px Georgia,
+    serif;
+}
+.calibrations p {
+  margin: 0;
+  font-size: 11px;
+  color: #a3b8b6;
+}
+.calibrations strong {
+  display: block;
+  color: #f8e5b6;
+  font-size: 18px;
+  margin-top: 3px;
+}
+.stage-shell {
+  position: relative;
+  flex: 1;
+  min-height: 220px;
+  overflow: hidden;
+  background: #06151c;
+}
+.stage {
+  position: absolute;
+  inset: 0;
+}
+.stage ::ng-deep canvas {
+  display: block;
+  touch-action: none;
+}
+.loading {
+  position: absolute;
+  inset: 30% 15%;
+  text-align: center;
+  background: #0b252eee;
+  padding: 25px;
+  height: fit-content;
+}
+.run-caption {
+  position: absolute;
+  bottom: 14px;
+  left: 15%;
+  right: 15%;
+  background: #061b22f5;
+  border: 1px solid #bfa366;
+  padding: 12px 18px;
+  text-align: center;
+  box-shadow: 0 8px 30px #0008;
+  font-size: 15px;
+}
+.run-caption span {
+  display: block;
+  color: #f6cf7b;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  margin-bottom: 6px;
+}
+.run-caption button {
+  margin-left: 14px;
+  font-size: 12px;
+}
+footer {
+  flex-shrink: 0;
+  padding: 12px 28px 9px;
+  border-top: 1px solid #b6944d;
+  background: linear-gradient(110deg, #122d33, #091e27);
+}
+.operation {
+  display: flex;
+  gap: 25px;
+  align-items: center;
+}
+.crank {
+  text-align: center;
+  flex-shrink: 0;
+}
+.crank > span {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: #d4b576;
+}
+.crank > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 5px;
+}
+.crank output {
+  font:
+    30px Georgia,
+    serif;
+  width: 28px;
+}
+.crank button {
+  font-size: 22px;
+  padding: 3px 13px;
+}
+.status {
+  flex: 1;
+}
+.status p {
+  margin: 5px 0;
+  font-size: 13px;
+  color: #bfd4cf;
+}
+.status .instruction {
+  color: #f1e8d3;
+  font-size: 15px;
+}
+.primary {
+  background: linear-gradient(#f0d18e, #c5984b);
+  color: #14232a;
+  font-weight: bold;
+  border-color: #fae4b3;
+  padding: 16px 23px;
+}
+.primary:hover:not(:disabled) {
+  background: #ffe1a0;
+}
+.toolbar {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 7px;
+}
+.toolbar button {
+  border: 0;
+  background: transparent;
+  font-size: 12px;
+  text-decoration: underline;
+  min-height: 32px;
+  padding: 5px;
+}
+aside {
+  padding: 12px;
+  line-height: 1.6;
+  font-size: 13px;
+  background: #ffffff08;
+  border-left: 2px solid #d3b274;
+}
+aside strong {
+  display: block;
+}
+.accessible-controls {
+  padding: 10px 0;
+}
+.inventory {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.inventory button {
+  min-width: 94px;
+  font-size: 12px;
+}
+.inventory strong {
+  font-size: 20px;
+}
+.inventory small {
+  display: block;
+  margin-top: 4px;
+  color: #a6c7c2;
+}
+.inventory [aria-pressed='true'] {
+  outline: 2px solid #f3cf82;
+  background: #305053;
+}
+.destinations {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+.save-warning {
+  color: #ffd1a4;
+}
+@media (max-width: 800px) {
+  header {
+    padding: 10px 14px;
+    gap: 10px;
+  }
+  h1 {
+    font-size: 21px;
+  }
+  .heading span {
+    font-size: 8px;
+  }
+  .calibrations {
+    gap: 20px;
+  }
+  .calibrations strong {
+    font-size: 15px;
+  }
+  footer {
+    padding: 10px 14px;
+  }
+  .operation {
+    gap: 12px;
+  }
+  .status .instruction {
+    font-size: 13px;
+  }
+  .primary {
+    padding: 14px;
+  }
+}
+@media (max-width: 600px) {
+  header {
+    flex-wrap: wrap;
+  }
+  .heading {
+    order: -1;
+    flex-basis: 100%;
+  }
+  header > button:last-child {
+    margin-left: auto;
+  }
+  .calibrations {
+    gap: 8px;
+    padding: 8px;
+  }
+  .calibrations b {
+    width: 25px;
+    height: 25px;
+    font-size: 16px;
+  }
+  .calibrations > div {
+    gap: 5px;
+  }
+  .calibrations p {
+    font-size: 9px;
+  }
+  .calibrations strong {
+    font-size: 12px;
+  }
+  .stage-shell {
+    flex: 0 0 auto;
+    height: 48vw;
+    min-height: 0;
+  }
+  .operation {
+    flex-wrap: wrap;
+  }
+  .crank {
+    order: 1;
+  }
+  .status {
+    flex-basis: 100%;
+  }
+  .primary {
+    order: 2;
+    flex: 1;
+  }
+  .toolbar {
+    gap: 14px;
+  }
+  .toolbar button {
+    min-height: 44px;
+  }
+  .run-caption {
+    inset: 8px;
+    bottom: auto;
+    font-size: 12px;
+  }
+  .run-caption button {
+    margin: 5px 0 0;
+  }
+  .inventory button {
+    min-width: 86px;
+  }
+  .destinations {
+    gap: 5px;
+  }
+  .destinations button {
+    padding: 8px;
+    font-size: 12px;
+  }
+}

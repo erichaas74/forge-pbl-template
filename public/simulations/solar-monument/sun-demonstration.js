@@ -21,10 +21,16 @@
       const b = design.blocks.find(b => 'block:' + b.id === selected) || design.blocks.find(b => b.aperture) || [...design.blocks].sort((a, b) => b.y + b.height - a.y - a.height)[0];
       const target = design.targets.find(t => 'target:' + t.id === selected);
       const centre = b ? { x: b.x, y: b.y + b.height / 2, z: b.z } : frame.centre;
-      let end = target ? { ...target, y: .00002 } : { x: centre.x - centre.y * direction.x / direction.y, y: .00002, z: centre.z - centre.y * direction.z / direction.y };
+      let end = target ? { ...target, y: target.y || .00002 } : { x: centre.x - centre.y * direction.x / direction.y, y: .00002, z: centre.z - centre.y * direction.z / direction.y };
       // At very low angles the actual landing point is far away. Inspect the object instead.
       const offCourt = Math.hypot(end.x - centre.x, end.z - centre.z) > Math.max(6, frame.height * 7);
       if (offCourt && !target) end = centre;
+      // Continue through a low, horizontal opening to its receiving surface.
+      // The measured solver decides whether the full bore transmits the ray.
+      if (offCourt && !target && b?.aperture) {
+        const distance = Math.min(span * 2, centre.y / direction.y);
+        end = { x: centre.x - direction.x * distance, y: centre.y - direction.y * distance, z: centre.z - direction.z * distance };
+      }
       const length = Math.max((frame.height + span * .5 - end.y) / direction.y, span * 1.5);
       const travel = { x: -direction.x, y: -direction.y, z: -direction.z };
       let featured;
@@ -43,7 +49,7 @@
           const distance = to.distanceTo(from);
           if (distance > .04) group.add(new THREE.ArrowHelper(vector(travel), from.clone().lerp(to, .5), Math.min(distance * .3, span * .22), color, Math.min(.10, span * .075), Math.min(.055, span * .04)));
         }
-        const dot = new THREE.Mesh(new THREE.SphereGeometry(span * (offset ? .009 : .017), 12, 8), new THREE.MeshBasicMaterial({ color: result.blocked ? '#efbc6b' : '#fff3bc' }));
+        const dot = new THREE.Mesh(new THREE.SphereGeometry(Math.min(.025, span * (offset ? .004 : .006)), 12, 8), new THREE.MeshBasicMaterial({ color: result.blocked ? '#efbc6b' : '#fff3bc' }));
         dot.position.copy(vector(result.hit)); group.add(dot);
       }
       const height = b ? b.y + b.height : frame.height;
@@ -60,7 +66,10 @@
         return { x: anchor.x + radius * Math.cos(a) * direction.x / horizontal, y: anchor.y + radius * Math.sin(a), z: anchor.z + radius * Math.cos(a) * direction.z / horizontal };
       });
       line([anchor, arc[0]], '#e5c889'); line(arc, '#f5c24d'); line([anchor, arc[32]], '#f5c24d');
-      return { reference, referenceVisible, caption: featured?.blocked ? 'The highlighted ray stops at the solid surface. No direct sunlight continues behind that point.' : offCourt ? 'The ray is shown at the model. Its ground landing is beyond this view.' : featured?.filters.some(c => c !== 'clear') ? `The ray passes through ${featured.filters.filter(c => c !== 'clear').join(' + ')} glass and reaches the highlighted point.` : 'The highlighted ray reaches the ground through an open path.', offCourt };
+      const blocker = design.blocks.find(stone => stone.id === featured?.id);
+      const reachesTarget = target && Math.hypot(featured.hit.x - target.x, featured.hit.y - (target.y || 0), featured.hit.z - target.z) < .005;
+      const caption = reachesTarget ? `Sunlight reaches ${target.label}${target.y ? ' on the receiving surface' : ''}.` : featured?.blocked ? `${blocker?.label || (blocker ? 'Block '+(design.blocks.indexOf(blocker)+1) : 'The sculpture')} receives the highlighted ray. No direct sunlight continues behind that point.` : offCourt ? 'The ray is shown at the model. Its ground landing is beyond this view.' : featured?.filters.some(c => c !== 'clear') ? `The ray passes through ${featured.filters.filter(c => c !== 'clear').join(' + ')} glass and reaches the highlighted point.` : 'The highlighted ray reaches the ground through an open path.';
+      return { reference, referenceVisible, caption, offCourt };
     }
     return { update, setVisible: visible => { group.visible = visible; }, dispose() { clear(); scene.remove(group); } };
   };

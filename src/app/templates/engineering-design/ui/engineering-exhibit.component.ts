@@ -70,7 +70,7 @@ import type { EngineeringSnapshot } from '../domain/engineering-design.models';
     @for (target of snapshot().design.targets; track target.id) {
       <p>
         <strong>{{ target.label }}</strong
-        >: X {{ target.x }} m, Z {{ target.z }} m.
+        >: X {{ target.x }} m, Y {{ target.y ?? 0 }} m, Z {{ target.z }} m.
       </p>
     }
     <h3>Testing evidence</h3>

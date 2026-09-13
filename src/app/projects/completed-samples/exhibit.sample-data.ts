@@ -1,4 +1,4 @@
-import { classExhibitHallConfig } from '../class-exhibit-hall/class-exhibit-hall.config';
+import { studentMuseumConfig as classExhibitHallConfig } from '../class-exhibit-hall/student-museum.config';
 import type {
   ExhibitCuratorRecord,
   HallLocationView,
@@ -63,7 +63,7 @@ export const exhibitCurators: readonly ExhibitCuratorRecord[] = [
     reflection:
       'Avery: I can describe visible features, but I need source records to establish materials and original context.',
     transcript:
-      'Welcome to Materials and Skilled Making. Compare the mummy cartonnage and coffin with the model of Nefertiti’s bust. Rotate each one and describe a visible shape or decorated surface before offering an interpretation. Our first claim treated exceptional objects as evidence of everyone’s life. We revised it to focus on craft and representation. The supplied models help us look closely, while the creator records provide a starting point for checking what the digital versions represent. A model alone cannot establish the original materials or the lives of every maker.',
+      'Welcome to Materials and Skilled Making. Compare the Coffin of Ankh-Khonsu with the model of Nefertiti’s bust. Rotate each one and describe a visible shape or decorated surface before offering an interpretation. Our first claim treated exceptional objects as evidence of everyone’s life. We revised it to focus on craft and representation. The supplied models help us look closely, while the creator records provide a starting point for checking what the digital versions represent. A model alone cannot establish the original materials or the lives of every maker.',
   },
   {
     hangingId: 'sample-wing-1',
@@ -83,7 +83,7 @@ export const exhibitCurators: readonly ExhibitCuratorRecord[] = [
       'We now describe funerary forms and decoration while acknowledging the limits of surviving burial evidence.',
     reflection: 'Emery: I changed “everyone” to a narrower claim that these examples can support.',
     transcript:
-      'Compare the Coffin of Ankh-Khonsu with the supplied mummy cartonnage and coffin. Rotate the models to observe the relationship between shape and decorated surfaces. These examples help us discuss funerary preparation and the work involved in making an enclosure. Our first claim was too broad: two surviving examples cannot establish what everyone in Egypt believed or how every burial was prepared. We distinguish observation from interpretation and use the linked museum model records as a starting point for further research.',
+      'Look closely at the Coffin of Ankh-Khonsu. Rotate the model to observe the relationship between shape and decorated surfaces. It helps us discuss funerary preparation and the work involved in making an enclosure. Our first claim was too broad: two surviving examples cannot establish what everyone in Egypt believed or how every burial was prepared. We distinguish observation from interpretation and use the linked museum model records as a starting point for further research.',
   },
   {
     hangingId: 'sample-wing-3',

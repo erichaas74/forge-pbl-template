@@ -15,12 +15,18 @@ import { museumBoardTemplate } from './museum-board-template';
 import { isExhibitObjectModel } from '../../../../shared/media/object-model';
 import { parseMetaStepsEmbed } from '../metasteps/metasteps-embed';
 import { parsePresentationVideo } from '../video/presentation-video';
+import { isMuseumRoomData, validateMuseumRoom } from '../../rooms/museum-room';
 
 export class MuseumBoardAdapter implements ArtifactComposerAdapter<MuseumBoardSnapshotData> {
   readonly type = 'notebook-slots';
-  readonly allowedSlotIds = museumBoardTemplate.sourceAdapter.allowedSlotIds;
+  readonly allowedSlotIds: readonly string[];
 
-  constructor(private readonly validator = new ArtifactValidator()) {}
+  constructor(
+    private readonly validator = new ArtifactValidator(),
+    private readonly template = museumBoardTemplate,
+  ) {
+    this.allowedSlotIds = template.sourceAdapter.allowedSlotIds;
+  }
 
   compose(source: NotebookArtifactSource): ArtifactComposerResult<MuseumBoardSnapshotData> {
     const approved = Object.fromEntries(
@@ -32,7 +38,7 @@ export class MuseumBoardAdapter implements ArtifactComposerAdapter<MuseumBoardSn
       (slotId) => !this.allowedSlotIds.includes(slotId),
     );
     const data = normalizeMuseumBoard(approved);
-    const validation = validateMuseumBoard(museumBoardTemplate, data, this.validator);
+    const validation = validateMuseumBoard(this.template, data, this.validator);
     return { data, validation, omittedSlotIds };
   }
 }
@@ -53,6 +59,8 @@ export function museumBoardFieldValue(data: MuseumBoardSnapshotData, fieldId: st
       return data.teamCredit.displayName;
     case 'immersive-gallery':
       return data.immersiveGallery?.embedUrl;
+    case 'museum-room':
+      return data.museumRoom?.roomId;
     case 'video-presentation':
       return data.videoPresentation?.prototype
         ? 'prototype-video-preview'
@@ -67,6 +75,7 @@ function normalizeMuseumBoard(slots: Readonly<Record<string, unknown>>): MuseumB
     title: stringValue(slots['exhibit-title']),
     centralClaim: stringValue(slots['central-claim']),
     objects: objectList(slots['selected-objects'], slots['object-captions']),
+    museumRoom: isMuseumRoomData(slots['museum-room']) ? slots['museum-room'] : undefined,
     sources: sourceList(slots['source-list']),
     immersiveGallery: immersiveGallery(slots['immersive-gallery']),
     videoPresentation: videoPresentation(slots['video-presentation']),
@@ -82,6 +91,7 @@ export function validateMuseumBoard(
 ): ArtifactValidationResult {
   const base = validator.validate(template, data, museumBoardFieldValue);
   const errors = [...base.errors];
+  if (data.museumRoom !== undefined) errors.push(...validateMuseumRoom(data));
   for (const object of data.objects) {
     if (object.model !== undefined && !isExhibitObjectModel(object.model)) {
       errors.push({

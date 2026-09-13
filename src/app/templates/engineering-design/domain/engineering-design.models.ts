@@ -1,4 +1,8 @@
 import {
+  isWalkthroughTask,
+  type DesignWalkthroughTask,
+} from '../../../shared/engineering/design-walkthrough';
+import {
   isBlockDesign,
   isDesignCapture,
   isDesignChecks,
@@ -25,6 +29,7 @@ export interface EngineeringDesignConfig {
   readonly testInstructions: readonly string[];
   readonly exhibitPrompts: readonly string[];
   readonly starterDesign: BlockDesign;
+  readonly starterChecks?: readonly DesignCheck[];
   readonly designSamples?: readonly EngineeringDesignSample[];
   readonly learningSequence?: {
     readonly practiceDesign: BlockDesign;
@@ -33,6 +38,7 @@ export interface EngineeringDesignConfig {
 }
 /** Ordered curriculum prompts; the installed simulation owns each activity's behavior. */
 export interface EngineeringLearningStep {
+  readonly tasks?: readonly DesignWalkthroughTask[];
   readonly id: string;
   readonly title: string;
   readonly introduction: string;
@@ -48,11 +54,14 @@ export interface EngineeringDesignSample {
   readonly title: string;
   readonly description: string;
   readonly design: BlockDesign;
+  readonly checks?: readonly DesignCheck[];
 }
 export interface EngineeringSnapshot {
   readonly schemaVersion: '1.0';
   readonly revision: number;
   readonly learningStepId?: string;
+  readonly learningTaskId?: string;
+  readonly walkthroughNotes?: Readonly<Record<string, string>>;
   readonly practiceDesign?: BlockDesign;
   readonly design: BlockDesign;
   readonly research: Readonly<Record<string, string>>;
@@ -82,6 +91,7 @@ export function requireEngineeringConfig(v: unknown, projectId: string): Enginee
     v['template']['version'] !== '1.0' ||
     !['title', 'mission', 'simulationId', 'designBrief'].every((k) => text(v[k])) ||
     !isBlockDesign(v['starterDesign']) ||
+    (v['starterChecks'] !== undefined && !isDesignChecks(v['starterChecks'])) ||
     !Array.isArray(v['research']) ||
     !v['research'].length ||
     v['research'].some(
@@ -110,7 +120,8 @@ export function requireEngineeringConfig(v: unknown, projectId: string): Enginee
           !text(s['id']) ||
           !text(s['title']) ||
           !text(s['description']) ||
-          !isBlockDesign(s['design']),
+          !isBlockDesign(s['design']) ||
+          (s['checks'] !== undefined && !isDesignChecks(s['checks'])),
       ) ||
       new Set(config.designSamples.map((s) => s.id)).size !== config.designSamples.length)
   )
@@ -129,6 +140,15 @@ export function requireEngineeringConfig(v: unknown, projectId: string): Enginee
       step['instructions'].every(text) &&
       (step['explanation'] === undefined || text(step['explanation'])) &&
       (step['showGuides'] === undefined || typeof step['showGuides'] === 'boolean') &&
+      (step['tasks'] === undefined ||
+        (Array.isArray(step['tasks']) &&
+          step['tasks'].length > 0 &&
+          step['tasks'].length <= 12 &&
+          step['tasks'].every(isWalkthroughTask) &&
+          new Set(step['tasks'].map((t) => t.id)).size === step['tasks'].length &&
+          step['tasks'].every(
+            (t) => !t.sampleId || config.designSamples?.some((s) => s.id === t.sampleId),
+          ))) &&
       (question === undefined ||
         (record(question) &&
           text(question['prompt']) &&
@@ -157,6 +177,13 @@ export function isEngineeringSnapshot(v: unknown): v is EngineeringSnapshot {
     Number.isInteger(v['revision']) &&
     (v['revision'] as number) >= 0 &&
     (v['learningStepId'] === undefined || text(v['learningStepId'])) &&
+    (v['learningTaskId'] === undefined || text(v['learningTaskId'])) &&
+    (v['walkthroughNotes'] === undefined ||
+      (record(v['walkthroughNotes']) &&
+        Object.keys(v['walkthroughNotes']).length <= 120 &&
+        Object.entries(v['walkthroughNotes']).every(
+          ([k, n]) => k.length <= 250 && typeof n === 'string' && n.length <= 2000,
+        ))) &&
     (v['practiceDesign'] === undefined || isBlockDesign(v['practiceDesign'])) &&
     isBlockDesign(v['design']) &&
     record(v['research']) &&

@@ -63,3 +63,70 @@ export function drawPodium(screen: StudioScreen, team: StudioTeam, theme: Broadc
   text(ctx, String(team.score), width / 2, 390, 108, '#ffffff', width - 50);
   text(ctx, `SEED ${team.seed}`, width / 2, 475, 23, team.color, width - 50); screen.done();
 }
+
+/** Starburst behind a verdict. Drawn in canvas rather than as art so any palette works. */
+function rays(ctx: CanvasRenderingContext2D, cx: number, cy: number, color: string, spin: number): void {
+  ctx.save(); ctx.translate(cx, cy); ctx.rotate(spin); ctx.globalAlpha = .16; ctx.fillStyle = color;
+  for (let i = 0; i < 24; i++) {
+    ctx.rotate(Math.PI / 12); ctx.beginPath(); ctx.moveTo(0, 0);
+    ctx.lineTo(2600, -110); ctx.lineTo(2600, 110); ctx.closePath(); ctx.fill();
+  }
+  ctx.restore();
+}
+function stamp(ctx: CanvasRenderingContext2D, label: string, x: number, y: number, color: string, scale: number): void {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(-.06); ctx.scale(scale, scale);
+  ctx.lineWidth = 9; ctx.strokeStyle = color; ctx.globalAlpha = .9;
+  const w = 30 + label.length * 46;
+  ctx.beginPath(); ctx.roundRect(-w / 2, -62, w, 124, 14); ctx.stroke();
+  text(ctx, label, 0, 2, 86, color, w - 30); ctx.restore();
+}
+/**
+ * The moment the points land. One answering team gets the full-bleed treatment;
+ * a field of teams gets a results board so nobody has to hunt for their own score.
+ */
+export function drawVerdict(screen: StudioScreen, view: StudioView, theme: BroadcastConfig, spin: number, reveal: number): void {
+  const ctx = screen.clear(theme.palette.background); const { width, height } = screen.canvas;
+  const scored = view.teams.filter(t => t.verdict !== null);
+  const hero = scored.length === 1 ? scored[0] : undefined;
+  const winner = hero ?? scored.find(t => t.verdict === 'correct');
+  const glowColor = hero ? (hero.verdict === 'correct' ? hero.color : '#e0736b') : theme.palette.accent;
+  rays(ctx, width / 2, height / 2, glowColor, spin);
+  const wash = ctx.createRadialGradient(width / 2, height / 2, 40, width / 2, height / 2, width * .62);
+  wash.addColorStop(0, `${glowColor}2e`); wash.addColorStop(1, '#00000000');
+  ctx.fillStyle = wash; ctx.fillRect(0, 0, width, height);
+  ctx.fillStyle = theme.palette.accent; ctx.fillRect(100, 55, (width - 200) * reveal, 4);
+  text(ctx, 'THE SCORES ARE IN', width / 2, 105, 34, theme.palette.accent, width - 220);
+
+  if (hero) {
+    const correct = hero.verdict === 'correct';
+    stamp(ctx, correct ? 'CORRECT' : 'NOT THIS TIME', width / 2, 300, correct ? hero.color : '#e0736b', .8 + reveal * .35);
+    text(ctx, hero.name.toUpperCase(), width / 2, 470, 84, theme.palette.text, width - 260);
+    const delta = hero.award ?? 0;
+    text(ctx, `${delta >= 0 ? '+' : '−'}${Math.abs(delta)} POINTS`, width / 2, 610,
+      Math.round(96 * (.7 + reveal * .3)), correct ? hero.color : '#e0736b', width - 260);
+    text(ctx, `${hero.score} TOTAL`, width / 2, 730, 40, theme.palette.text, width - 260);
+    screen.done(); return;
+  }
+  const rows = scored.slice(0, 8);
+  const top = 210; const rowHeight = Math.min(92, (height - top - 90) / Math.max(1, rows.length));
+  rows.forEach((team, i) => {
+    const y = top + i * rowHeight; const correct = team.verdict === 'correct';
+    const appeared = Math.max(0, Math.min(1, reveal * rows.length - i));
+    if (appeared <= 0) return;
+    ctx.save(); ctx.globalAlpha = appeared;
+    ctx.fillStyle = team.id === winner?.id ? `${team.color}26` : '#0c1526cc';
+    ctx.fillRect(150, y, width - 300, rowHeight - 12);
+    ctx.fillStyle = correct ? team.color : '#e0736b'; ctx.fillRect(150, y, 8, rowHeight - 12);
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.font = `600 ${Math.round(rowHeight * .42)}px Arial, sans-serif`;
+    ctx.fillStyle = theme.palette.text; ctx.fillText(team.name, 200, y + (rowHeight - 12) / 2);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = correct ? team.color : '#e0736b';
+    ctx.fillText(correct ? '✓' : '✗', width - 620, y + (rowHeight - 12) / 2);
+    const delta = team.award ?? 0;
+    ctx.fillText(`${delta >= 0 ? '+' : '−'}${Math.abs(delta)}`, width - 420, y + (rowHeight - 12) / 2);
+    ctx.fillStyle = theme.palette.text; ctx.fillText(String(team.score), width - 200, y + (rowHeight - 12) / 2);
+    ctx.restore();
+  });
+  screen.done();
+}

@@ -11,7 +11,7 @@ export const romanSenateDebateConfig: DebateStudioProjectConfig = {
   historicalSetting: 'Rome · The late Republic · 44 BCE',
   sessionDateLabel: 'World History · Period 3',
   centralQuestion: 'Was Julius Caesar a leader Rome needed, or a threat to the Roman Republic?',
-  chamberImageUrl: '/debate-studio/roman-senate-chamber.png',
+  chamberImageUrl: '/debate-studio/roman-senate-chamber.webp',
   chamberImageAlt:
     'An empty Roman Senate chamber with marble floors, facing benches, bronze braziers, and a central presiding chair.',
   factions: [

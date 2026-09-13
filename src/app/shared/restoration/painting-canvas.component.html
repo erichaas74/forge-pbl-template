@@ -1,0 +1,9 @@
+<div class="painting" [style.background-image]="'url(' + definition().image.src + ')'" [style.background-size]="backgroundSize()" [style.background-position]="position()" role="group" [attr.aria-label]="(original() ? 'Original study: ' : 'Reconstruction: ') + definition().imageAlt">
+  @for (region of definition().regions; track region.id; let i = $index) {
+    <div class="paint-layer" [style.left.%]="region.x" [style.top.%]="region.y" [style.width.%]="region.width" [style.height.%]="region.height" [attr.data-region]="region.id" [attr.data-option]="option(region).id">
+      @if (option(region).image; as src) { <img [src]="src" [alt]="option(region).label"> }
+      @if (option(region).text; as text) { <span class="inscription">{{ text }}</span> }
+      @if (interactive()) { <button class="region-target" [class.guided]="guides()" [class.selected]="state().selectedRegionId === region.id" [attr.aria-label]="'Inspect ' + region.title" [attr.aria-pressed]="state().selectedRegionId === region.id" (click)="select.emit(region.id)"><span>{{ i + 1 }}</span></button> }
+    </div>
+  }
+</div>

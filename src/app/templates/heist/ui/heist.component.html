@@ -1,0 +1,169 @@
+<main class="heist" [class.guided]="guided">
+  <header class="masthead">
+    <a routerLink="/projects" class="back">← Projects</a>
+    <div class="identity"><span class="eyebrow">{{ guided ? 'A CASTLE MATH ADVENTURE' : 'A MATHEMATICAL RECOVERY MISSION' }}</span><h1>{{ mission.title }}</h1></div>
+    <div class="mode"><span class="dot"></span>{{ replay() ? 'Replay' : guided ? stageLabel() : engine().mode }}<small>Local practice</small></div>
+    <div class="clock"><strong>{{ clock(guided ? Math.max(0, mission.deadline - time()) : time()) }}</strong><small>{{ guided ? 'GAME TIME LEFT' : 'LOCKDOWN ' + clock(mission.deadline) }}</small></div>
+  </header>
+  <div class="status-strip">
+    @if (guided) {
+      <span [class.current-step]="guideStep() === 1">① Choose a path</span>
+      <span [class.current-step]="guideStep() === 2">② Solve three questions</span>
+      <span [class.current-step]="guideStep() === 3">③ Save the books</span>
+    } @else {
+    <span>⌖ {{ targetSecured() ? 'TARGET SECURED' : 'RECOVER THE ARCHIVE' }}</span>
+    <span>GATE: {{ gateOpen() ? 'OPEN' : 'CLOSED' }}</span>
+    <span>EXPOSURE: {{ replay() ? 'SEE REPLAY EVENTS' : engine().exposure.toFixed(1) + ' / ' + mission.detectionGrace + ' s' }}</span>
+    <span>{{ engine().problems.length ? 'PLAN NEEDS EVIDENCE' : 'PLAN VERIFIED' }}</span>
+    }
+  </div>
+  @if (runtime.error()) { <p class="notice error" role="alert">{{ runtime.error() }}</p> }
+  @if (runtime.storageError()) { <p class="notice error" role="alert">{{ runtime.storageError() }}</p> }
+  <div class="workspace" [class.drawer-open]="drawerOpen()">
+    <nav class="tools" aria-label="Map tools">
+      @for (name of tools; track name) { <button [class.active]="tool() === name" [attr.aria-pressed]="tool() === name" [disabled]="!engine().editable && (name === 'Route' || name === 'Measure')" (click)="setTool(name)"><span>{{ name === 'Inspect' ? '⌖' : name === 'Measure' ? '↔' : name === 'Route' ? '⋯' : '✥' }}</span>{{ name }}</button> }
+      <div class="separator"></div>
+      @if (!guided) { <button (click)="security.set(!security())" [attr.aria-pressed]="security()"><span>◉</span>Patrols</button> }
+      <button (click)="zoom(0.25)" aria-label="Zoom in"><span>+</span>Zoom in</button>
+      <button (click)="zoom(-0.25)" aria-label="Zoom out"><span>−</span>Zoom out</button>
+      <button (click)="overview()"><span>⊞</span>Overview</button>
+    </nav>
+    <section class="map-region" aria-label="Mission map">
+      <div class="map-caption"><span>{{ mission.title.toUpperCase() }} · {{ tool().toUpperCase() }}</span><span>1 cm : {{ mission.map.metersPerCm }} m</span></div>
+      <div class="field-objective"><span class="eyebrow">{{ targetSecured() ? 'BRING THE BOOKS TO SAFETY' : 'FIND THE BOOK ROOM' }}</span><strong>{{ targetSecured() ? label(mission.extraction) : mission.target.name }}</strong><small>{{ guided ? 'Your team follows the path you choose.' : mission.target.mass + ' kg · ' + mission.target.capacity + ' kg cart' }}</small></div>
+      <div class="drawer-controls">
+        <button [attr.aria-expanded]="drawerOpen()" aria-controls="heist-details" (click)="drawerOpen() ? closePanel() : showPanel(engine().mode === 'SUCCESS' || engine().mode === 'FAILURE' ? 'results' : engine().editable && !guided ? 'intel' : 'plan')">{{ drawerOpen() ? 'See the map' : engine().mode === 'CRISIS' ? 'Help your team' : guided ? 'Your next step' : 'Mission briefing' }} ☰</button>
+        @if (engine().editable && !drawerOpen()) { <button class="begin-plan" (click)="setTool('Route')">Plan route →</button> }
+        @if (engine().mode === 'EXECUTING') { <button (click)="pause()">{{ paused() ? 'Keep going' : 'Pause game' }}</button> }
+      </div>
+      <div #mapHost class="map-host" role="img" [attr.aria-label]="guided ? 'Castle route and patrol map. Open Explore the map and settings below for keyboard controls.' : 'Castle route and patrol map. Use location buttons and timeline below for keyboard control.'"></div>
+      @if (!ready() && !mapError()) { <div class="map-message">Preparing the field map…</div> }
+      @if (mapError()) { <div class="map-message" role="alert">{{ mapError() }}</div> }
+      <div class="map-foot"><span>{{ guided ? stageLabel() : currentAction()?.type ?? engine().mode }} @if (currentAction(); as action) { · {{ label(action.to) }} }</span><span>{{ guided ? 'GOLD LINE · YOUR PATH' : 'TEAL · TEAM / RED · WATCH' }}</span></div>
+      @if (sceneStatus(); as event) { <div class="scene-event" [class.danger-event]="event.type === 'CRISIS' || event.type === 'FAILED' || event.type === 'DETECTED'" role="status"><b>{{ guided ? stageLabel() : event.type.replaceAll('_', ' ') }}</b><span>{{ guided && event.type === 'CRISIS_RESOLVED' ? 'Your team is on the way again!' : guided && event.type === 'NEAR_MISS' ? 'A guard walked nearby. Your team kept going.' : event.message }}</span></div> }
+      @if (mapWarning()) { <p class="art-warning" role="status">{{ mapWarning() }}</p> }
+      @if (debug) { <small>DEBUG · location {{ selected() }} · operation {{ time().toFixed(1) }} s · actions {{ engine().actual.length }} · events {{ engine().events.length }}</small> }
+    </section>
+    <aside #detailPanel id="heist-details" class="detail-panel" [hidden]="!drawerOpen()" tabindex="-1" aria-label="Mission details">
+      <button class="close-drawer" (click)="closePanel()" aria-label="Close mission details">×</button>
+      @if (engine().mode !== 'CRISIS') {
+        <nav class="panel-nav" aria-label="Mission panels">
+          <button (click)="panel.set('intel')">{{ guided ? 'The story' : 'Intelligence' }}</button><button (click)="panel.set('plan')">{{ guided ? 'Your plan' : 'Operation plan' }}</button>
+          @if (engine().mode === 'SUCCESS' || engine().mode === 'FAILURE') { <button (click)="panel.set('results')">Results</button> }
+        </nav>
+      }
+      @if (engine().mode === 'CRISIS') {
+        <span class="eyebrow danger">{{ guided ? 'TAKE YOUR TIME · GAME PAUSED' : 'OPERATION INTERRUPTED · CLOCK PAUSED' }}</span><h2>{{ mission.crisis.title }}</h2><p>{{ mission.crisis.description }}</p>
+      }
+      @if (panel() === 'math' && !(guided && engine().mode === 'CRISIS' && isVerified(mission.crisis.challenge)) && activeChallenge(); as q) {
+        <span class="eyebrow">{{ guided ? engine().mode === 'CRISIS' ? 'ONE LAST MATH QUESTION' : 'QUESTION ' + questionNumber() + ' OF ' + engine().challenges.length : 'MATHEMATICAL EVIDENCE' }}</span><h2>{{ q.title }}</h2><p>{{ q.prompt }}</p>
+        @if (guided) { <button class="hint-toggle" [attr.aria-expanded]="showHint()" (click)="showHint.set(!showHint())">{{ showHint() ? 'Hide hint' : 'Show a hint' }}</button>@if (showHint()) { <p class="math-hint">{{ q.hint }}</p> } }
+        <form (ngSubmit)="submitMath()">
+          <label for="heist-answer">Your answer ({{ q.unit }})</label>
+          <div class="answer-line"><input id="heist-answer" name="answer" type="number" step="any" [(ngModel)]="answer" required autocomplete="off"><span>{{ q.unit }}</span></div>
+          <button class="primary" type="submit">{{ guided ? 'Check my answer' : 'Check calculation' }}</button>
+        </form>
+        <p class="feedback" aria-live="polite">{{ feedback() }}</p>
+        @if (!guided) { <small>{{ attempts(q.id) }} attempts · tolerance ±{{ q.tolerance }} {{ q.unit }}</small> }
+        @if (engine().mode !== 'CRISIS') {
+          @if (guided && isVerified(q)) { <button class="primary" (click)="nextQuestion()">{{ solvedCount() === engine().challenges.length ? 'Ready to rescue! →' : 'Next question →' }}</button> }
+          <button class="text-button" (click)="panel.set('plan')">← Back to your plan</button>
+        }
+      }
+      @if (engine().mode === 'CRISIS') {
+        @if (!guided || isVerified(mission.crisis.challenge)) {
+          <h3>How will you help?</h3>
+          @if (guided) { <p class="feedback" role="status">You got it! The broken cart holds {{ mission.crisis.challenge.answer }} kg, but the books weigh {{ mission.target.mass }} kg. Choose a way to carry them.</p> }
+          @for (choice of mission.crisis.choices; track choice.id) { <button class="choice" [disabled]="!isVerified(mission.crisis.challenge)" (click)="respond(choice.id)">{{ choice.label }}@if (guided) { <small>Holds {{ choice.capacity }} kg · Takes {{ choice.delay }} seconds to get ready. {{ choice.speedMultiplier < 1 ? 'Your team will walk more slowly.' : 'Then walk at your usual speed.' }}</small> }</button> }
+        }
+      } @else if (panel() === 'intel') {
+        <span class="eyebrow">{{ guided ? 'EXPLORE THE CASTLE' : 'FIELD INTELLIGENCE' }}</span><h2>{{ detail().name }}</h2><p>{{ detail().description }}</p>
+        @if (engine().editable) { <button class="primary" (click)="setTool('Route')">{{ guided ? 'Back to your adventure →' : 'Plan the operation →' }}</button> }
+        <div class="brief"><h3>Your mission</h3><p>{{ mission.briefing }}</p><p class="history">{{ mission.history }}</p></div>
+        @if (measurement(); as m) { <div class="measurement"><h3>Field measurement</h3><strong>{{ m.cm.toFixed(2) }} cm</strong><p>Scale: 1 cm = {{ mission.map.metersPerCm }} m. Multiply to find the real distance.</p><small>({{ m.from.x.toFixed(0) }}, {{ m.from.y.toFixed(0) }}) → ({{ m.to.x.toFixed(0) }}, {{ m.to.y.toFixed(0) }})</small></div> }
+        @if (feedback()) { <p aria-live="polite">{{ feedback() }}</p> }
+      } @else if (panel() === 'plan') {
+        @if (guided && engine().editable) {
+          <span class="eyebrow">{{ selectedRoute() ? 'YOUR PATH IS READY' : 'STEP 1 · CHOOSE A PATH' }}</span>
+          <h2>{{ selectedRoute() ? 'A little math, then go!' : 'Let’s save the books.' }}</h2>
+          @if (!selectedRoute()) { <p>{{ mission.briefing }}</p> }
+          <div class="route-options" aria-label="Choose your rescue path">
+            @for (route of mission.guidance!.routes; track route.id) {
+              <button class="route-option" [class.chosen]="selectedRoute()?.id === route.id" [attr.aria-pressed]="selectedRoute()?.id === route.id" (click)="chooseRoute(route.id)"><strong>{{ selectedRoute()?.id === route.id ? '✓ ' : '' }}{{ route.label }}</strong><span>{{ route.description }}</span></button>
+            }
+          </div>
+          @if (selectedRoute()) {
+            <p class="pickup-note">✓ Your team will pick up the books and take them to {{ label(mission.extraction) }}.</p>
+            <div class="question-progress" role="status">{{ solvedCount() }} of {{ engine().challenges.length }} questions solved</div>
+            @if (solvedCount() < engine().challenges.length) { <button class="primary" (click)="nextQuestion()">{{ solvedCount() ? 'Keep solving →' : 'Start the math →' }}</button> }
+            @else { <p>You’re ready! Watch your team follow your path. The game pauses when they need your help.</p><button class="primary lock" [disabled]="engine().problems.length > 0 || !ready() || !!mapError()" (click)="lock()">Start the rescue →</button> }
+          }
+        } @else if (guided) {
+          <span class="eyebrow">STEP 3 · SAVE THE BOOKS</span><h2>Your team is on the way!</h2>
+          <p>Your team follows your chosen path. Watch the map to see where they go next.</p>
+          @if (engine().mode === 'EXECUTING') { <button class="primary" (click)="pause()">{{ paused() ? 'Keep going' : 'Pause game' }}</button> }
+          <button (click)="closePanel()">Watch the map →</button>
+        } @else {
+        <span class="eyebrow">THE OPERATION BOARD</span><h2>{{ engine().editable ? 'Make every second count.' : 'The plan is in motion.' }}</h2>
+        @if (engine().editable) { <p class="hint">Choose connected locations on the map or below. Finish at the river, and verify each calculation.</p> }
+        <ol class="waypoints">@for (id of engine().plan.nodes; track $index) { <li><span>{{ label(id) }}</span>@if (engine().plan.waits[$index.toString()]) { <small>WAIT {{ engine().plan.waits[$index.toString()] }} s</small> }</li> }</ol>
+        @if (engine().editable) {
+          <button (click)="runtime.send({ type: 'undo' })" [disabled]="engine().plan.nodes.length < 2">Undo last waypoint</button>
+          <label class="check"><input type="checkbox" [ngModel]="engine().plan.pickup" (ngModelChange)="pickup($event)"> Secure target at archive ({{ mission.target.pickupSeconds }} s)</label>
+          <label for="heist-wait">Wait at last waypoint (seconds)</label><div class="wait-line"><input id="heist-wait" type="number" min="0" [max]="mission.deadline" [(ngModel)]="waitSeconds"><button (click)="addWait()">Set wait</button></div>
+          <h3>Required calculations</h3>
+          <div class="checks">@for (q of engine().challenges; track q.id) { <button (click)="openMath(q)"><span>{{ isVerified(q) ? '✓' : '○' }}</span>{{ q.title }}</button> }</div>
+          <h3>Operation readiness</h3>
+          @for (problem of engine().problems; track problem) { <p class="readiness">○ {{ problem }}</p> } @empty { <p class="feedback">✓ Route, target, capacity, and math ready.</p> }
+          <button class="primary lock" [disabled]="engine().problems.length > 0 || !ready() || !!mapError()" (click)="lock()">Lock plan & execute →</button>
+        } @else {
+          <p>Predicted: {{ clock(engine().predicted.at(-1)?.end ?? 0) }} · Revised: {{ clock(engine().actual.at(-1)?.end ?? 0) }}</p>
+          <p>Watch the team follow your route. The clock pauses for a crisis decision.</p>
+          @if (engine().mode === 'EXECUTING') { <button class="primary" (click)="pause()">{{ paused() ? 'Keep going' : 'Pause game' }}</button> }
+        }
+        }
+      } @else if (panel() === 'results') {
+        @if (guided) {
+          <span class="eyebrow">{{ engine().mode === 'SUCCESS' ? 'YOU DID IT!' : 'ANOTHER TRY' }}</span>
+          <h2>{{ engine().mode === 'SUCCESS' ? 'The books are safe!' : 'Let’s try that again.' }}</h2>
+          <p>{{ engine().mode === 'SUCCESS' ? 'Your team saved the books. You used multiplication, division, and subtraction to help them!' : 'Your team did not reach the boat this time. Try another path. You can use the hints as often as you like.' }}</p>
+          <p>Time used: {{ clock(engine().time) }} of {{ clock(mission.deadline) }}</p>
+          <h3>Think about your adventure</h3><p>Why did you choose to carry the books or fix the wheel?</p>
+          <button class="primary" (click)="reset()">Play again →</button><button (click)="startReplay()">Watch your rescue</button>
+          <details class="extra-details"><summary>Show rescue details</summary><button (click)="exportEvidence()">Save your math work</button><div class="events">@for (event of engine().events; track $index) { <button (click)="jump(event.time, $index)"><time>{{ clock(event.time) }}</time><span>{{ event.message }}</span></button> }</div></details>
+        } @else {
+        <span class="eyebrow">REPLAY / DEFENSE</span><h2>{{ engine().mode === 'SUCCESS' ? 'The archive is safe.' : 'Review the operation.' }}</h2>
+        <p>{{ engine().events.at(-1)?.message }}</p>
+        <dl class="results"><div><dt>Planned</dt><dd>{{ clock(engine().predicted.at(-1)?.end ?? 0) }}</dd></div><div><dt>Actual</dt><dd>{{ clock(engine().time) }}</dd></div><div><dt>Change</dt><dd>{{ (engine().time - (engine().predicted.at(-1)?.end ?? 0)).toFixed(1) }} s</dd></div></dl>
+        <button class="primary" (click)="startReplay()">View replay</button><button (click)="exportEvidence()">Export mathematical evidence</button>
+        <h3>Defend your decisions</h3><p>Which wait or calculation mattered most? Compare the original route timing with the crisis response.</p>
+        <div class="events">@for (event of engine().events; track $index) { <button (click)="jump(event.time, $index)"><time>{{ clock(event.time) }}</time><span><b>{{ event.type.replaceAll('_', ' ') }}</b>{{ event.message }}</span></button> }</div>
+        <button (click)="reset()">Start a new practice plan</button>
+        }
+      }
+    </aside>
+  </div>
+  @if (guided) {
+    <footer class="guided-footer">
+      <p>{{ engine().editable ? 'No rush! The game timer starts when you start the rescue.' : engine().mode === 'CRISIS' ? 'The game is paused while you solve the wheel problem.' : 'You can pause the game at any time.' }}</p>
+      @if (replay()) { <button (click)="playback.set(!playback())">{{ playback() ? 'Pause replay' : 'Play replay' }}</button><label for="guided-replay">Watch from a different moment</label><input id="guided-replay" type="range" min="0" [max]="engine().time" step="1" [ngModel]="time()" (ngModelChange)="jump(+$event)"> }
+      <details class="extra-details"><summary>Explore the map & settings</summary>
+        <div class="locations" aria-label="Map locations">@for (n of mission.locations; track n.id) { <button (click)="selectNode(n.id)">{{ n.name }}</button> }</div>
+        <label>Game speed <select aria-label="Game speed" [ngModel]="speed()" (ngModelChange)="speed.set(+$event)"><option [ngValue]="2">Slow</option><option [ngValue]="4">Normal</option><option [ngValue]="8">Fast</option></select></label>
+        <label><input type="checkbox" [ngModel]="reducedMotion()" (ngModelChange)="reducedMotion.set($event)"> Keep the camera still</label>
+      </details>
+    </footer>
+  } @else {
+  <footer class="timeline">
+    <div class="timeline-heading"><strong>{{ replay() ? 'OPERATION REPLAY' : engine().editable ? 'PREVIEW YOUR TIMING' : 'OPERATION TIMELINE' }}</strong><span>{{ clock(time()) }} / {{ clock(mission.deadline) }}</span>
+      @if (replay()) { <button (click)="playback.set(!playback())">{{ playback() ? 'Pause replay' : 'Play replay' }}</button> }
+      @if (engine().editable) { <button (click)="playback.set(!playback())">{{ playback() ? 'Pause preview' : 'Play preview' }}</button> }
+      <label>Playback <select aria-label="Playback speed" [ngModel]="speed()" (ngModelChange)="speed.set(+$event)"><option [ngValue]="0.5">0.5×</option><option [ngValue]="1">1×</option><option [ngValue]="2">2×</option><option [ngValue]="4">4×</option><option [ngValue]="8">8×</option></select></label>
+    </div>
+    <label class="sr-only" for="heist-timeline">Preview operation time in seconds</label><input id="heist-timeline" type="range" min="0" [max]="replay() ? engine().time : mission.deadline" step="0.1" [disabled]="!engine().editable && !replay()" [ngModel]="time()" (ngModelChange)="jump(+$event)">
+    <div class="timeline-actions">@for (action of (replay() || !engine().editable ? engine().actual : engine().predicted); track action.id) { <button [disabled]="!engine().editable && !replay()" (click)="jump(action.start)"><small>{{ clock(action.start) }}–{{ clock(action.end) }}</small>{{ action.type === 'MOVE' ? label(action.to) : action.type }}</button> }</div>
+    <div class="locations" aria-label="Keyboard accessible map locations">@for (n of mission.locations; track n.id) { <button (click)="selectNode(n.id)" [attr.aria-pressed]="selected() === n.id">{{ n.name }}</button> }</div>
+    <div class="preferences"><span>{{ tool() === 'Measure' ? 'Choose two map points or two location buttons to measure.' : 'Use the timeline to compare your team and the patrols.' }}</span><label><input type="checkbox" [ngModel]="reducedMotion()" (ngModelChange)="reducedMotion.set($event)"> Reduce camera motion</label><div class="pan-controls"><button aria-label="Pan left" (click)="pan(-80, 0)">←</button><button aria-label="Pan up" (click)="pan(0, -80)">↑</button><button aria-label="Pan down" (click)="pan(0, 80)">↓</button><button aria-label="Pan right" (click)="pan(80, 0)">→</button></div></div>
+  </footer>
+  }
+</main>

@@ -5,12 +5,14 @@ import {
   Injector,
   OnDestroy,
   computed,
+  effect,
   inject,
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { choiceProgression, goodIsUnlocked } from '../../domain/choice-progression';
+import { tradeWorldPriceBps } from '../../domain/trade-world.engine';
 import {
   effectiveTradeUnitPrice,
   marketPrice,
@@ -56,7 +58,9 @@ export class SimulationMarketViewComponent implements OnDestroy {
   );
   readonly wagonBump = signal(false);
   readonly tradeFeedback = signal<{ amountCents: number; label: string } | undefined>(undefined);
-  readonly receiptLines = signal<readonly TradeLineInput[]>([]);
+  readonly receiptLines = signal<
+    readonly (TradeLineInput & { unitPriceCents: number; totalCents: number })[]
+  >([]);
   readonly plannedRoute = computed(() =>
     this.runtime.config.routes.find(
       (route) =>
@@ -150,6 +154,7 @@ export class SimulationMarketViewComponent implements OnDestroy {
         this.runtime.state().currentLocationId,
         this.selectedGoodId(),
         this.direction(),
+        this.runtime.state(),
       ) ?? 0,
   );
   readonly selectedDiscountPercent = computed(() =>
@@ -280,6 +285,12 @@ export class SimulationMarketViewComponent implements OnDestroy {
   });
 
   constructor() {
+    effect(() =>
+      this.runtime.holdWorld(
+        'market-math',
+        this.shopInteriorOpen() || this.draft().length > 0 || this.reviewOpen(),
+      ),
+    );
     const intent = this.runtime.takeMarketIntent();
     if (intent !== undefined) {
       const category = this.runtime.config.goods.find(
@@ -294,19 +305,32 @@ export class SimulationMarketViewComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.runtime.holdWorld('market-math', false);
     clearTimeout(this.feedbackTimer);
     clearTimeout(this.bumpTimer);
   }
 
   buyPrice(goodId: string): number {
     return (
-      marketPrice(this.runtime.config, this.runtime.state().currentLocationId, goodId, 'buy') ?? 0
+      marketPrice(
+        this.runtime.config,
+        this.runtime.state().currentLocationId,
+        goodId,
+        'buy',
+        this.runtime.state(),
+      ) ?? 0
     );
   }
 
   sellPrice(goodId: string): number {
     return (
-      marketPrice(this.runtime.config, this.runtime.state().currentLocationId, goodId, 'sell') ?? 0
+      marketPrice(
+        this.runtime.config,
+        this.runtime.state().currentLocationId,
+        goodId,
+        'sell',
+        this.runtime.state(),
+      ) ?? 0
     );
   }
 
@@ -317,13 +341,30 @@ export class SimulationMarketViewComponent implements OnDestroy {
     const destinationSell =
       route === undefined
         ? undefined
-        : marketPrice(this.runtime.config, route.toLocationId, goodId, 'sell');
+        : marketPrice(
+            this.runtime.config,
+            route.toLocationId,
+            goodId,
+            'sell',
+            this.runtime.state(),
+          );
     if (good === undefined || buy <= 0 || destinationSell === undefined) return 0;
     return (destinationSell - buy) / buy / Math.max(1, good.unitCargo);
   }
 
   marketGood(goodId: string) {
-    return this.runtime.currentMarket()?.goods.find((item) => item.goodId === goodId);
+    const good = this.runtime.currentMarket()?.goods.find((item) => item.goodId === goodId);
+    if (!good || !this.runtime.world()) return good;
+    const delta =
+      tradeWorldPriceBps(this.runtime.world(), this.runtime.state().currentLocationId, goodId) -
+      10000;
+    return {
+      ...good,
+      trend: delta > 0 ? 'higher' : delta < 0 ? 'lower' : 'same',
+      note: delta
+        ? `${delta > 0 ? '+' : ''}${delta / 100}% from world events and freight. Open Market news for the causes.`
+        : 'No current world price adjustment.',
+    };
   }
 
   stockRemaining(goodId: string): number {
@@ -348,26 +389,14 @@ export class SimulationMarketViewComponent implements OnDestroy {
     this.selectedStallId.set(stall.id);
     this.shopInteriorOpen.set(true);
     this.runtime.inspectMarketStall(stall.id);
-    const firstGood = this.runtime.config.goods.find(
-      (good) =>
-        stall.categories.includes(good.category) &&
-        goodIsUnlocked(this.runtime.config, this.runtime.state(), good.id),
-    );
-    if (firstGood !== undefined) {
-      this.select(
-        firstGood.id,
-        this.owned(firstGood.id) > 0 &&
-          this.runtime.state().currentLocationId !== this.runtime.config.startingLocationId
-          ? 'sell'
-          : 'buy',
-      );
-    }
+    this.selectedGoodId.set('');
     this.revealInView('.market-board');
   }
 
   returnToStreet(): void {
     const stallId = this.selectedStallId();
     this.shopInteriorOpen.set(false);
+    this.selectedGoodId.set('');
     afterNextRender(
       () => {
         const selector = stallId === undefined ? '.stall' : `[data-stall-id="${stallId}"]`;
@@ -383,8 +412,10 @@ export class SimulationMarketViewComponent implements OnDestroy {
       () => {
         const target = this.element.nativeElement.querySelector<HTMLElement>(selector);
         if (target === null) return;
-        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        target.scrollIntoView({
+        const reducedMotion =
+          typeof window.matchMedia !== 'function' ||
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        target.scrollIntoView?.({
           block: 'nearest',
           inline: 'nearest',
           behavior: reducedMotion ? 'instant' : 'smooth',
@@ -465,6 +496,7 @@ export class SimulationMarketViewComponent implements OnDestroy {
         this.runtime.state().currentLocationId,
         line.goodId,
         line.direction,
+        this.runtime.state(),
       ) ?? 0
     );
   }
@@ -478,11 +510,17 @@ export class SimulationMarketViewComponent implements OnDestroy {
       this.runtime.config,
       this.runtime.state().currentLocationId,
       line,
+      this.runtime.state(),
     );
   }
 
   expectedLineTotal(line: Pick<TradeLineInput, 'goodId' | 'direction' | 'quantity'>): number {
-    return tradeLineTotal(this.runtime.config, this.runtime.state().currentLocationId, line);
+    return tradeLineTotal(
+      this.runtime.config,
+      this.runtime.state().currentLocationId,
+      line,
+      this.runtime.state(),
+    );
   }
 
   mathAnswer(line: Pick<TradeLineInput, 'goodId' | 'direction'>): number | undefined {
@@ -521,6 +559,7 @@ export class SimulationMarketViewComponent implements OnDestroy {
         (item) => item.goodId === this.selectedGoodId() && item.direction === this.direction(),
       );
       if (line) this.editLine(line);
+      this.openTradeReview();
     }
   }
 
@@ -585,14 +624,26 @@ export class SimulationMarketViewComponent implements OnDestroy {
     const verifiedLines = this.draft().map((line) => ({
       ...line,
       studentTotalCents: this.mathAnswer(line),
+      quotedUnitPriceCents: this.postedUnitPrice(line),
     }));
     if (!this.runtime.commitTrade(verifiedLines)) {
       return;
     }
     this.lastReceiptId.set(this.runtime.state().ledger[beforeCount]?.id);
-    this.receiptLines.set(verifiedLines);
+    this.receiptLines.set(
+      verifiedLines.map((line, index) => {
+        const entry = this.runtime.state().ledger[beforeCount + index]!;
+        return {
+          ...line,
+          unitPriceCents: entry.details!.unitPriceCents!,
+          totalCents: Math.abs(entry.cashChangeCents),
+        };
+      }),
+    );
     this.clearDraft();
+    this.selectedGoodId.set('');
     this.pinReceipt();
+    this.revealInView('.receipt');
     this.tradeFeedback.set({
       amountCents: feedback,
       label: 'Trade complete · Cash change',
@@ -615,7 +666,7 @@ export class SimulationMarketViewComponent implements OnDestroy {
       summary: this.receiptLines()
         .map(
           (line) =>
-            `${line.direction} ${line.quantity} ${this.goodName(line.goodId)} × ${this.runtime.money(this.discountedUnitPrice(line))} = ${this.runtime.money(this.expectedLineTotal(line))}`,
+            `${line.direction} ${line.quantity} ${this.goodName(line.goodId)} × ${this.runtime.money(line.unitPriceCents)} = ${this.runtime.money(line.totalCents)}`,
         )
         .join('; '),
     });

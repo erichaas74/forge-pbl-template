@@ -9,5 +9,5 @@
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "skipLibCheck": true
   },
-  "include": ["server/index.ts", "server/journey-policy.ts"]
+  "include": ["server/index.ts", "server/journey-policy.ts", "server/museum/museum-provisioning.ts"]
 }

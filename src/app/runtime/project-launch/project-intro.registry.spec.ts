@@ -1,6 +1,8 @@
 /// <reference types="node" />
 import { readFileSync } from 'node:fs';
 import { vi } from 'vitest';
+// Launcher registration does not exercise the browser-only canvas renderer.
+vi.mock('phaser', () => ({}));
 import { projectCatalog } from '../../projects/project-catalog';
 import { projectIntros } from '../../projects/project-intros';
 import { ProjectIntroRegistry } from './project-intro.registry';
@@ -68,7 +70,7 @@ describe('project opening registration', () => {
     const source = new LocalProjectDefinitionSource();
     const registry = createLocalTemplateLauncherRegistry();
     try {
-      for (const project of projectCatalog) {
+      for (const project of projectCatalog.filter((entry) => entry.entryMode !== 'preview')) {
         const definition = await source.load(project);
         const launcher = await registry.require(project.template.id);
         const target = await launcher.load({

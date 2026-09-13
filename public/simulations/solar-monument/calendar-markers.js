@@ -1,4 +1,4 @@
-/* Calendar observations are fixed ground points. Their carvings never intercept optical rays. */
+/* Fixed ground or surface observations. Their engraved guides never intercept optical rays. */
 (() => {
   'use strict';
   const labels = { march: 'March equinox', june: 'June solstice', sept: 'September equinox', dec: 'December solstice' };
@@ -43,10 +43,12 @@
   }
   function stone(THREE, target, index) {
     const group = new THREE.Group(); group.name = 'calendar-stone:' + target.id;
-    group.position.set(target.x, .009, target.z);
+    const normal = new THREE.Vector3(...(target.normal || [0, 1, 0]));
+    group.position.set(target.x, target.y || 0, target.z).addScaledVector(normal, .002);
+    group.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), normal);
     const s = record(target);
     const color = { 'red light': 0xc75749, 'amber light': 0xd9a938, 'blue light': 0x629add, 'green light': 0x66a178, 'violet light': 0xb280d2, shadow: 0x7c8290 }[s?.light] ?? 0xd0b875;
-    const face = new THREE.Mesh(new THREE.RingGeometry(.067, .125, 48), new THREE.MeshBasicMaterial({ color: 0xbca785, side: THREE.DoubleSide }));
+    const face = new THREE.Mesh(new THREE.RingGeometry(target.y ? .112 : .067, .125, 48), new THREE.MeshBasicMaterial({ color: 0xbca785, side: THREE.DoubleSide }));
     face.rotation.x = -Math.PI / 2; group.add(face);
     const rim = new THREE.Mesh(new THREE.RingGeometry(.119, .13, 48), new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide }));
     rim.rotation.x = -Math.PI / 2; rim.position.y = .001; group.add(rim);
@@ -56,7 +58,7 @@
       lines.push(Math.sin(a) * .105, .003, Math.cos(a) * .105, Math.sin(a) * .119, .003, Math.cos(a) * .119);
     }
     // Engraved arrow points toward the recorded Sun, not the present Sun.
-    if (s) {
+    if (s && !target.normal) {
       const a = s.sunAzimuth * Math.PI / 180, dx = Math.sin(a), dz = -Math.cos(a);
       lines.push(dx * .078, .004, dz * .078, dx * .112, .004, dz * .112);
       for (const side of [-1, 1]) lines.push(dx * .112, .004, dz * .112, dx * .094 + dz * .012 * side, .004, dz * .094 - dx * .012 * side);

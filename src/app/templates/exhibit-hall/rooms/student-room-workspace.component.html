@@ -1,0 +1,342 @@
+<main class="room-workspace">
+  <header class="workspace-header">
+    <div class="museum-brand">
+      <span class="museum-monogram" aria-hidden="true">M</span>
+      <div><span>FORGE · CLASS MUSEUM</span><strong>Curator studio</strong></div>
+    </div>
+    <div class="assignment">
+      <i></i>{{ runtime.assignedRoom()?.label ?? 'Room assignment pending'
+      }}<span>{{ draft().teamCredit.displayName }}</span>
+    </div>
+    <div class="save-indicator" role="status">
+      {{
+        runtime.saveState() === 'save_failed'
+          ? 'Could not save · try again'
+          : runtime.saveState() === 'saving'
+            ? 'Saving…'
+            : 'Saved on this device'
+      }}
+    </div>
+  </header>
+
+  @if (!publication.ready()) {
+    <section class="unassigned" aria-live="polite">
+      <h1>
+        {{
+          publication.status() === 'connecting'
+            ? 'Opening your assigned room…'
+            : 'Reconnect to your room.'
+        }}
+      </h1>
+      <p>{{ publication.error() ?? 'Checking your class and room assignment.' }}</p>
+      @if (publication.status() === 'error') {
+        <button type="button" class="primary" (click)="publication.connect()">
+          Reconnect to my room
+        </button>
+      }
+    </section>
+  } @else if (visiting() && runtime.roomSubmitted()) {
+    <div class="museum-return">
+      <button type="button" (click)="visiting.set(false)">← Back to my room</button
+      ><span>{{
+        publication.shared
+          ? 'Your submitted room is part of the class museum.'
+          : 'Your submitted room is part of this preview museum.'
+      }}</span>
+      @if (publication.shared) {
+        <button
+          type="button"
+          [disabled]="publication.collectionLoading()"
+          (click)="publication.refreshCollection()"
+        >
+          {{ publication.collectionLoading() ? 'Loading rooms…' : 'Refresh rooms' }}
+        </button>
+      }
+    </div>
+    @if (publication.collectionError(); as error) {
+      <div class="validation" role="alert">{{ error }}</div>
+    }
+    <app-museum-walkthrough
+      [locations]="runtime.locations()"
+      [publishedRooms]="publication.collection()"
+    />
+  } @else if (runtime.assignedRoom()) {
+    <section class="room-introduction">
+      <div>
+        <span class="eyebrow">{{
+          runtime.roomSubmitted() ? 'YOUR COLLECTION IS READY' : 'A ROOM. YOUR IDEAS.'
+        }}</span>
+        <h1>
+          {{ runtime.roomSubmitted() ? 'Your story is in the museum.' : 'Make this room yours.' }}
+        </h1>
+        <p>
+          {{
+            runtime.roomSubmitted()
+              ? 'Visitors see the room you submitted, with your artifacts, labels, and sources.'
+              : 'Your teacher has prepared the room. Add an artifact to a display spot, then tell visitors why it matters.'
+          }}
+        </p>
+      </div>
+      <div class="room-actions">
+        @if (!runtime.roomSubmitted()) {
+          <button
+            type="button"
+            class="secondary"
+            [attr.aria-pressed]="preview()"
+            (click)="preview.set(!preview())"
+          >
+            {{ preview() ? '← Keep curating' : 'Preview as a visitor' }}
+          </button>
+        } @else {
+          <button type="button" class="primary" (click)="openMuseum()">
+            Visit the class museum →
+          </button>
+        }
+      </div>
+    </section>
+
+    <div class="studio-grid">
+      <section class="room-stage" aria-label="Your assigned room">
+        <app-museum-scene
+          [content]="sceneContent()"
+          [activeDisplay]="selectedSlot()"
+          (selected)="select($event)"
+        />
+        <nav class="display-selector" aria-label="Room display spots">
+          <button type="button" [attr.aria-pressed]="!selectedSlot()" (click)="select()">
+            <span class="display-number" aria-hidden="true">◇</span
+            ><span><strong>Room story</strong><small>Title & introduction</small></span>
+          </button>
+          @for (slot of slots(); track slot.id) {
+            <button
+              type="button"
+              [attr.aria-pressed]="selectedSlot() === slot.id"
+              (click)="select(slot.id)"
+            >
+              <span class="display-number">{{ $index + 1 }}</span
+              ><span
+                ><strong>{{ slot.label }}</strong
+                ><small>{{ objectAt(slot.id)?.title ?? 'Ready for an artifact' }}</small></span
+              ><i [class.filled]="objectAt(slot.id)"></i>
+            </button>
+          }
+        </nav>
+        <div class="room-footnote">
+          <span>{{ draft().objects.length }} of {{ slots().length }} display spots filled</span
+          ><span>Room design prepared by your teacher</span>
+        </div>
+      </section>
+
+      <aside class="curator-panel" aria-label="Room contents">
+        <div class="panel-heading">
+          <span class="eyebrow">{{ selectedDisplay()?.label ?? 'WELCOME YOUR VISITORS' }}</span>
+          <h2 #panelHeading tabindex="-1">
+            {{
+              selectedSlot()
+                ? selectedObject() && !choosing()
+                  ? selectedObject()!.title
+                  : 'Add an artifact'
+                : 'The story of your room'
+            }}
+          </h2>
+        </div>
+        @if (!selectedSlot()) {
+          @if (editable()) {
+            <label for="room-title">Room title <small>Up to 12 words</small></label
+            ><input
+              id="room-title"
+              [value]="draft().title"
+              maxlength="160"
+              placeholder="Give your collection a name"
+              (input)="runtime.updateBoardTitle(value($event))"
+              (blur)="runtime.saveRoomDraft()"
+            />
+            <label for="room-story"
+              >What connects your artifacts? <small>Up to 60 words</small></label
+            ><textarea
+              id="room-story"
+              rows="5"
+              maxlength="700"
+              [value]="draft().centralClaim"
+              placeholder="What should visitors discover in your room?"
+              (input)="runtime.updateBoardClaim(value($event))"
+              (blur)="runtime.saveRoomDraft()"
+            ></textarea>
+            <div class="curator-tip">
+              <span aria-hidden="true">✧</span>
+              <p>
+                A good collection helps visitors notice a connection. Start with something you can
+                see in the objects.
+              </p>
+            </div>
+            <button type="button" class="primary wide" (click)="addFirst()">
+              {{ draft().objects.length ? 'Choose a display spot' : 'Add your first artifact' }} →
+            </button>
+          } @else {
+            <h3>{{ draft().title || 'Your room title will appear here' }}</h3>
+            <p>{{ draft().centralClaim || 'Your introduction will welcome visitors here.' }}</p>
+            <p class="muted">Select a display to read its label and source credits.</p>
+          }
+        } @else if ((!selectedObject() || choosing()) && editable()) {
+          <p class="panel-intro">
+            Choose an object from your teacher’s collection. It will fit onto this display
+            automatically.
+          </p>
+          <div class="artifact-library" aria-label="Available artifacts">
+            @for (object of runtime.config.museum!.catalog.objects; track object.id) {
+              <button type="button" [disabled]="used(object.id)" (click)="place(object.id)">
+                <span class="artifact-symbol" aria-hidden="true">{{
+                  $index === 0 ? '♜' : $index === 1 ? '▰' : '▥'
+                }}</span
+                ><span
+                  ><strong>{{ object.title }}</strong
+                  ><small>{{
+                    used(object.id)
+                      ? 'Already in your room'
+                      : '3D artifact · ' +
+                        ((object.model?.sizeBytes ?? 0) / 1000000).toFixed(1) +
+                        ' MB'
+                  }}</small></span
+                ><span aria-hidden="true">+</span>
+              </button>
+            }
+          </div>
+          <div class="curator-tip">
+            <span aria-hidden="true">✧</span>
+            <p>
+              You choose the objects and write their stories. Their sources and creator credits stay
+              attached.
+            </p>
+          </div>
+          @if (choosing()) {
+            <button type="button" class="text-button" (click)="choosing.set(false)">
+              Keep current artifact
+            </button>
+          }
+        } @else if (selectedObject(); as object) {
+          @if (editable()) {
+            <label for="artifact-title">Artifact title</label
+            ><input
+              id="artifact-title"
+              [value]="object.title"
+              maxlength="120"
+              (input)="updateLabel('title', $event)"
+              (blur)="runtime.saveRoomDraft()"
+            />
+            <label for="artifact-label">Museum label</label
+            ><textarea
+              id="artifact-label"
+              rows="3"
+              maxlength="1000"
+              [value]="object.description"
+              placeholder="Describe what visitors can see. What is this object?"
+              (input)="updateLabel('description', $event)"
+              (blur)="runtime.saveRoomDraft()"
+            ></textarea>
+            <label for="artifact-connection">Why it matters</label
+            ><textarea
+              id="artifact-connection"
+              rows="3"
+              maxlength="1000"
+              [value]="object.evidenceConnection"
+              placeholder="How does this object help tell your room’s story?"
+              (input)="updateLabel('evidenceConnection', $event)"
+              (blur)="runtime.saveRoomDraft()"
+            ></textarea>
+          } @else {
+            <p>{{ object.description || 'Your museum label will appear here.' }}</p>
+            <h4>Why it matters</h4>
+            <p>{{ object.evidenceConnection || 'Explain the connection to your collection.' }}</p>
+          }
+          <details class="source-credit">
+            <summary>Source & creator credit</summary>
+            @for (source of draft().sources; track source.id) {
+              @if (object.sourceIds.includes(source.id)) {
+                <p>
+                  @if (source.url) {
+                    <a [href]="source.url" target="_blank" rel="noopener noreferrer">{{
+                      source.citation
+                    }}</a>
+                  } @else {
+                    {{ source.citation }}
+                  }
+                </p>
+              }
+            }
+          </details>
+          @if (editable()) {
+            <div class="artifact-actions">
+              <button type="button" class="text-button" (click)="choosing.set(true)">
+                Change artifact</button
+              ><button type="button" class="text-button remove" (click)="remove()">
+                Remove from display
+              </button>
+            </div>
+          }
+        } @else {
+          <p>This display is empty. Return to curating to add an artifact.</p>
+        }
+      </aside>
+    </div>
+
+    @if (showValidation() && !runtime.roomValidation().valid) {
+      <section #validationPanel tabindex="-1" class="validation" role="alert">
+        <strong>A few things to finish</strong>
+        <ul>
+          @for (error of runtime.roomValidation().errors; track $index) {
+            <li>{{ error.message }}</li>
+          }
+        </ul>
+      </section>
+    }
+    @if (runtime.error(); as error) {
+      <div class="validation" role="alert">
+        <p>{{ error }}</p>
+        <button type="button" (click)="runtime.clearError()">Dismiss</button>
+      </div>
+    }
+    @if (publication.error(); as error) {
+      <div class="validation" role="alert">
+        <p>{{ error }}</p>
+        <button type="button" [disabled]="publication.submitting()" (click)="publication.connect()">
+          Reconnect to my room
+        </button>
+      </div>
+    }
+    <footer class="submission-bar">
+      <div>
+        <strong>{{
+          runtime.roomSubmitted() ? 'Room submitted' : 'Ready to welcome visitors?'
+        }}</strong
+        ><span>{{
+          runtime.roomSubmitted()
+            ? 'Your submitted collection is saved separately from drafts.'
+            : 'Add at least one artifact, finish its labels, and give your room a story.'
+        }}</span
+        ><small>{{
+          publication.shared
+            ? runtime.roomSubmitted()
+              ? 'Submission confirmed by the class museum.'
+              : 'Draft saves on this device. Submit to add your room to the class museum.'
+            : 'Local preview · saves and submissions stay on this device.'
+        }}</small>
+      </div>
+      @if (!runtime.roomSubmitted()) {
+        <button
+          type="button"
+          class="primary"
+          [disabled]="!runtime.canEditRoom()"
+          (click)="submit()"
+        >
+          {{ publication.submitting() ? 'Submitting your room…' : 'Submit my room' }}
+          <span aria-hidden="true">↗</span>
+        </button>
+      }
+    </footer>
+  } @else {
+    <section class="unassigned">
+      <h1>Your room is being prepared.</h1>
+      <p>Your teacher needs to assign you a museum room before you can add exhibits.</p>
+    </section>
+  }
+</main>

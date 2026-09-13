@@ -1,6 +1,7 @@
 import type { EngineeringDesignSample } from '../../templates/engineering-design/domain/engineering-design.models';
 import type { DesignBlock } from '../../shared/engineering/block-design';
 import { solarCalendarStarter } from './calendar-monument.solar-calendar';
+import { solsticeGatesStarter, solsticeGatesChecks } from './calendar-monument.solstice-gates';
 
 const block = (
   id: string,
@@ -15,6 +16,14 @@ const block = (
 
 /** Curriculum geometry only; rendering and sample loading belong to the engineering template. */
 export const calendarMonumentDesignSamples: readonly EngineeringDesignSample[] = [
+  {
+    id: 'solstice-gates',
+    title: 'Align the solstice window',
+    description:
+      'Three stones, two sideways holes and a marked central pillar. The summer window is out of alignment. At Colorado Springs in 2026, choose June and Morning light; move that window until sunlight reaches the summer carving. The winter window shows a working alignment.',
+    design: solsticeGatesStarter,
+    checks: solsticeGatesChecks,
+  },
   {
     id: 'solar-calendar-circle',
     title: 'Solar calendar circle',

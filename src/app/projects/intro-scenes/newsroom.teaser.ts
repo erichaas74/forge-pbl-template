@@ -1,7 +1,7 @@
 import type { DecisionSceneConfig } from '../../shared/project-intro/decision-scene.models';
 
 export const bostonAftermathScene = {
-  image: '/history-live/boston-tea-party-aftermath-v1.png',
+  image: '/history-live/boston-tea-party-aftermath-v1.webp',
   alt: 'An imagined Boston waterfront after the Tea Party: a protester gestures to a crowd, a Loyalist holds official papers, a merchant points toward ruined tea with a ledger, and a woman and a Black dockworker watch the argument beside intact sailing ships.',
   fit: 'contain' as const,
 };
@@ -150,7 +150,7 @@ export const newsroomTeaser: DecisionSceneConfig = {
     title: 'One crowded waterfront. More than one story.',
     invitation:
       'You found a lead. Now become a Revolutionary War correspondent: choose a network, investigate a story, and let the evidence shape the report you put on air.',
-    image: '/history-live/assignment-newsroom.png',
+    image: '/history-live/assignment-newsroom.webp',
     imageAlt: 'A newsroom assignment desk waiting for the student’s script.',
     deliverable: 'Your special report',
     steps: [

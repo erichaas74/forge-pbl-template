@@ -1,0 +1,38 @@
+:host { display: block; font-size: 13px; line-height: 1.65; color: #c4d3c0; }
+* { box-sizing: border-box; }
+h3 { color: #e8d49d; font: 23px/1.2 Georgia, serif; margin: 24px 0 12px; }
+h4 { color: #eee7d4; font-size: 14px; line-height: 1.5; margin: 16px 0 8px; }
+p { margin: 0 0 14px; }
+strong { color: #eee7d4; }
+button, summary, a { font: inherit; }
+button { cursor: pointer; border: 1px solid #879576; border-radius: 5px; background: transparent; color: #e7d3a0; min-height: 44px; padding: 10px 13px; margin: 0 8px 12px 0; }
+.primary { background: #e6cb90; color: #123529; font-weight: bold; }
+button:focus-visible, summary:focus-visible, a:focus-visible { outline: 3px solid #f0d08a; outline-offset: 3px; }
+details { padding: 13px; border: 1px solid #60765a; border-radius: 5px; }
+summary { cursor: pointer; color: #e8d49d; min-height: 26px; }
+details[open] > summary { margin-bottom: 14px; }
+.clue-guide ol { padding-left: 20px; }
+.clue-guide li { margin-bottom: 12px; }
+.audit-current { margin: 24px 0; padding: 18px; border: 1px solid #8b8b60; background: #20392e; border-radius: 7px; }
+.eyebrow { letter-spacing: 1.6px; font-size: 10px; color: #d6c18a; margin-bottom: 8px; }
+.audit-current h3 { margin-top: 0; }
+.audit-steps, .clue-list { list-style: none; padding: 0; }
+.audit-steps li { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid #536c4d; }
+.step-number { flex-shrink: 0; width: 28px; height: 28px; border: 1px solid #8b986c; border-radius: 50%; text-align: center; }
+.complete .step-number { background: #456a43; color: #eaf0ca; }
+small { display: block; color: #cfc08e; font-size: 11px; }
+.audit-steps p, .mechanism-checklist p { margin: 6px 0 0; font-size: 12px; }
+[aria-current='step'] { color: #f0dba5; }
+[aria-current='step'] .step-number { background: #e6cb90; color: #123529; }
+.mechanism-checklist { padding-left: 20px; }
+.mechanism-checklist li { margin: 12px 0; padding-left: 4px; }
+.next-action, .recovery-note, .fraud-explanation { padding: 12px; background: #b0924822; border-left: 3px solid #d1b47a; }
+.clue-entry { padding: 16px; margin: 14px 0; border: 1px solid #627759; border-radius: 6px; }
+.clue-entry h4 { margin-top: 8px; }
+.clue-status { font-size: 11px; color: #e8cd94; }
+.clue-entry details { background: #162f26; }
+.clue-entry a { color: #e9ce93; overflow-wrap: anywhere; }
+.empty-log { padding: 18px; border: 1px dashed #748464; }
+.audit-route { padding-left: 20px; }
+.audit-route li { padding: 8px; }
+@media (max-width: 450px) { .audit-current, .clue-entry { padding: 13px; } }

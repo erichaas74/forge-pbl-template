@@ -26,6 +26,7 @@ export const engineeringDesignLauncher: TemplateLauncher = {
     registry.register('simulation.solar-monument', SolarMonumentComponent);
     registry.require(config.simulationId);
     return {
+      integratedHeader: !!config.learningSequence?.steps.some((step) => step.tasks?.length),
       component: (
         await import('../../../templates/engineering-design/ui/engineering-design-page.component')
       ).EngineeringDesignPageComponent,

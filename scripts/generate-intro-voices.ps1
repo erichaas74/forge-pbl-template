@@ -3,6 +3,12 @@ param([string[]]$Manifests = @('unlabeled-shelf', 'senate'), [string[]]$Speakers
 $ErrorActionPreference = 'Stop'
 $introRepoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $introPublicRoot = [IO.Path]::GetFullPath((Join-Path $introRepoRoot 'public'))
+# Narration ships as AAC (.m4a); System.Speech only writes WAV, so synthesized audio is
+# transcoded through the ffmpeg-static devDependency. Keeps generated files playable.
+$introFfmpeg = & node -e "console.log(require('ffmpeg-static'))"
+if (-not $introFfmpeg -or -not (Test-Path -LiteralPath $introFfmpeg)) {
+  throw 'ffmpeg-static not found. Run npm install first.'
+}
 Add-Type -AssemblyName System.Speech
 $introSynth = New-Object System.Speech.Synthesis.SpeechSynthesizer
 try {
@@ -27,9 +33,16 @@ try {
         $introSynth.SelectVoice('Microsoft Zira Desktop')
         $introSynth.Rate = 1
       }
-      $introSynth.SetOutputToWaveFile($introTarget)
+      $introIsWav = [IO.Path]::GetExtension($introTarget) -ieq '.wav'
+      $introRaw = if ($introIsWav) { $introTarget } else { [IO.Path]::ChangeExtension($introTarget, '.tmp.wav') }
+      $introSynth.SetOutputToWaveFile($introRaw)
       $introSynth.Speak([string]$introLine.text)
       $introSynth.SetOutputToNull()
+      if (-not $introIsWav) {
+        & $introFfmpeg -nostdin -y -loglevel error -i $introRaw -c:a aac -b:a 48k -ac 1 -ar 22050 $introTarget
+        if ($LASTEXITCODE -ne 0) { throw ('Transcode failed for ' + $introLine.audioUrl) }
+        Remove-Item -LiteralPath $introRaw -Force
+      }
       Write-Output ('Generated ' + $introLine.audioUrl)
     }
   }

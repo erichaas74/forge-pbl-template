@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { vi } from 'vitest';
 import { PresentationExamplesComponent } from './presentation-examples.component';
 import { broadcastSampleGuide } from '../../projects/completed-samples/broadcast.sample-data';
+import { hostedMediaUrl } from './hosted-media';
 
 describe('presentation example videos', () => {
   it('uses the relocated clips, preserves captions, and pauses other players', () => {
@@ -10,11 +11,12 @@ describe('presentation example videos', () => {
     fixture.detectChanges();
     const videos = [...fixture.nativeElement.querySelectorAll('video')] as HTMLVideoElement[];
     expect(videos).toHaveLength(4);
-    expect(
-      videos.every((video) =>
-        video.getAttribute('src')?.startsWith('/history-live/final-presentations/'),
-      ),
-    ).toBe(true);
+    // The clips are served from Firebase Storage; their captions stay same-origin.
+    const clipPrefix = hostedMediaUrl('history-live/final-presentations/name').replace(
+      'name?alt=media',
+      '',
+    );
+    expect(videos.every((video) => video.getAttribute('src')?.startsWith(clipPrefix))).toBe(true);
     expect(videos.every((video) => !video.autoplay && video.controls)).toBe(true);
     expect(videos[3].querySelector('track')?.getAttribute('src')).toContain(
       'presentation-reel.vtt',

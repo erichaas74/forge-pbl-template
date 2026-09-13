@@ -1,0 +1,21 @@
+# Sunrise from the monument center
+
+Choose **From center** in the solar simulation toolbar. The camera starts at the court origin `(x=0, z=0)`, 0.70 m above the measured floor, facing east. Select March, June, September or December in the date menu to watch the sunrise shift while the camera and stones stay fixed. Nearby dates work in the final presentation; the normal lab also accepts calendar dates through Place & date.
+
+The observer controls preview from 10 minutes before to 60 minutes after sunrise, starting at +10 minutes. Eye height ranges from 0.20 to 3.00 m so students can look through a gate or over the stones. Drag or arrow keys turn in place; zoom changes the field of view without moving the observer. **Face east** restores the initial heading and zoom. The close button, **From center** toggle or Escape returns to the previous camera mode.
+
+Four labeled horizon pins mark the calculated sunrise bearings for the local dates of the equinoxes and solstices. They remain fixed while the selected date changes. The Sun disk and lighting follow the actual preview instant, so the Sun moves beyond its sunrise pin as the morning advances. Reference pins deliberately draw over the stones; the Sun disk uses normal depth testing and can be hidden by a stone. A shared optical ray reports whether the Sun is blocked, visible, or the observer is inside a solid.
+
+This is a local visualization mode in the reusable solar plugin. It uses the installed SunCalc/Luxon models, `SolarDay`, `SolarGeometry`, `SolarOptics`, and the existing USNO season table. It preserves monument transforms and uses the same east/+x, up/+y, south/+z convention as measurement. The apparent Sun size is slightly enlarged. The scene uses a level geometric horizon; local terrain, atmospheric refraction, and light bending through jewels are not simulated. Polar days and nights explicitly report no sunrise and preview solar noon; they do not invent horizon events.
+
+The preview offset is separate from the recorded observation's minutes and time rule. Date selections in the final presentation still restore the selected test; the preview derives its morning instant from that date. Leaving the center view returns to the selected test's exact time. Save/mark controls are unavailable during the preview, and the iframe rejects capture requests in this mode. The 2D **Sunrise & sunset** overlay follows the morning preview. The host validates optional boolean `centerView` state and restores keyboard focus when the observer view closes. Older bridge messages remain valid.
+
+## Files and verification
+
+Added `public/simulations/solar-monument/center-sunrise.js`, `scripts/check-center-sunrise.cjs`, and this document. Modified the simulation's `game.js`, `index.html`, and `style.css`; the solar host component's TypeScript, HTML, and spec; `scripts/check-solar-scene.cjs`; the engineering README; and the engineering template specification.
+
+The center-view script checks calculated seasonal bearings, stable reference positions, east-facing perspective, the fixed camera origin, field-of-view bounds, hemispheres, DST, and polar conditions. Scene integration checks time separation, unchanged block transforms, optical disk depth testing, date changes without camera recentering, eye height, keyboard turning, Escape, 2D synchronization, capture protection, and restoration of the recorded observation. Host tests cover the control, state validation/backward compatibility, focus restoration, and evidence protection.
+
+Validation: all 36 focused Angular tests pass; the center sunrise, scene, Sun-day overlay, and solar calendar checks pass. The production build passes with existing stylesheet budget warnings in unrelated templates. Browser inspection covers equinox-to-solstice changes, a blocked December Sun becoming visible at a higher eye height, and a 390 px layout.
+
+Architecture: additive plugin capability, no core schema or persistence changes. The documented final-presentation policy now explicitly distinguishes a temporary sunrise preview from the selected test. No other specification deviations or `TEMPLATE_CAPABILITY_GAP` items. Recommended next step: compare the pins with the gaps between stones and check nearby dates.

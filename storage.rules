@@ -1,0 +1,23 @@
+rules_version = '2';
+
+// The live rules before this file was checked in (2026-09-13) were the console
+// default: deny all reads and writes. This file keeps that default and opens a
+// single public-read prefix for site media.
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Site media (video) served straight to <video> elements. Public read is
+    // intentional: these are the same clips that used to ship in the public
+    // bundle. Writes stay closed — uploads happen out of band
+    // (npm run media:upload, which uses gcloud IAM and bypasses these rules).
+    match /site-media/{allPaths=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Everything else stays denied.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

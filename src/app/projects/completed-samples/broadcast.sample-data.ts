@@ -8,6 +8,7 @@ import type {
   BroadcastSegment,
 } from '../../templates/history-live/domain/history-live.models';
 import type { SampleGuide } from '../../shared/project-intro/completed-sample-guide';
+import { hostedMediaUrl } from '../../shared/media/hosted-media';
 
 export const broadcastSampleEnrollment: HistoryLiveEnrollment = {
   tenantId: 'completed-sample',
@@ -61,7 +62,7 @@ export function createBroadcastSample(): HistoryLiveRuntimeState {
     ready: true,
     visualLabel: 'Three documents, three perspectives',
     recordingPoster: {
-      src: '/history-live/final-broadcast-video-stand-in.png',
+      src: '/history-live/final-broadcast-video-stand-in.webp',
       alt: 'A student history broadcast presented from a modern newsroom, with the Declaration of Independence, Abigail Adams, a map of the colonies, and a live transcript displayed behind the anchor.',
     },
     script,
@@ -156,27 +157,27 @@ export const broadcastSampleGuide: SampleGuide = {
       title: 'Newsroom report',
       description:
         'A classroom presenter delivers a history report beside a screen showing Boston Harbor.',
-      src: '/history-live/final-presentations/newsroom-report.mp4',
+      src: hostedMediaUrl('history-live/final-presentations/newsroom-report.mp4'),
     },
     {
       id: 'competing-correspondents',
       title: 'Competing correspondents',
       description:
         'Two costumed correspondents appear side by side in a report set at Lexington Green.',
-      src: '/history-live/final-presentations/competing-correspondents.mp4',
+      src: hostedMediaUrl('history-live/final-presentations/competing-correspondents.mp4'),
     },
     {
       id: 'social-report',
       title: 'Social report',
       description: 'A short demonstration of a historical report in a social media format.',
-      src: '/history-live/final-presentations/social-report.mp4',
+      src: hostedMediaUrl('history-live/final-presentations/social-report.mp4'),
     },
     {
       id: 'presentation-reel',
       title: 'Presentation preview reel',
       description:
         'A silent montage of the classroom newsroom and paired correspondents, with descriptive captions.',
-      src: '/history-live/final-presentations/presentation-reel.webm',
+      src: hostedMediaUrl('history-live/final-presentations/presentation-reel.webm'),
       captions: '/history-live/final-presentations/presentation-reel.vtt',
     },
   ],

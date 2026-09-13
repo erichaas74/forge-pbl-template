@@ -11,6 +11,29 @@
   max-width: 1680px;
   margin: 0 auto;
 }
+/* Only the opted-in visual slice receives the game-first workspace. */
+.lab.visual-slice { border-radius: 3px; background: #152b2b; }
+.visual-slice .workspace { grid-template-columns: minmax(350px, 1fr) minmax(580px, 1.1fr); }
+.visual-slice .course-panel { padding: 12px; background: #152b2b; display: flex; flex-wrap: wrap; gap: 8px 16px; }
+.visual-slice .course-panel > * { flex-basis: 100%; min-width: 0; }
+.visual-slice .course-panel > .section-top,
+.visual-slice .mission-goal,
+.visual-slice .telemetry { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.visual-slice .course-panel > .course-toolbar { flex: 1 1 200px; margin: 0; gap: 12px; }
+.visual-slice .course-toolbar label { display: flex; align-items: center; gap: 8px; }
+.visual-slice .course-toolbar select { margin: 0; }
+.visual-slice .course-panel > .run-controls { flex: 1 1 300px; margin: 0; justify-content: flex-end; }
+.visual-slice .run-controls label { margin-left: 0; }
+.visual-slice .code-panel { padding: 16px; background: #eef0e7; }
+.tabletop .mission-goal { position: static; width: auto; height: auto; overflow: visible; clip-path: none; margin: 0 0 4px; color: #d7ded0; }
+.visual-slice .course-panel .run { background: #e6bb6e; color: #202e29; border-color: #f9d89b; box-shadow: none; border-radius: 3px; }
+.visual-slice .course-panel .first-steps { margin: 0; padding: 8px 12px; border: 0; border-left: 2px solid #d8b570; border-radius: 0; background: #203c3a; }
+.visual-slice .first-steps p { margin: 2px 0; }
+@media (max-width: 700px) {
+  .visual-slice .workspace { display: block; }
+  .visual-slice .course-panel.mobile-hidden { display: none; }
+  .visual-slice .run-controls { justify-content: flex-start; }
+}
 
 .masthead {
   display: flex;
@@ -117,7 +140,7 @@
   color: #c0d6df;
 }
 .workspace.guess-stage {
-  grid-template-columns: minmax(0, 1.25fr) minmax(320px, 1fr);
+  grid-template-columns: minmax(350px, 1fr) minmax(610px, 1.2fr);
 }
 .discovery-next {
   margin-top: 16px;
@@ -131,7 +154,7 @@
 }
 .workspace {
   display: grid;
-  grid-template-columns: minmax(350px, 1.4fr) minmax(285px, 0.9fr) minmax(240px, 0.7fr);
+  grid-template-columns: minmax(350px, 1fr) minmax(610px, 1.2fr);
   align-items: start;
 }
 .course-panel,
@@ -219,14 +242,14 @@
   border-left: 1px solid #d7e3e8;
   border-right: 1px solid #d7e3e8;
   background: #f8fbfc;
-  max-height: 1050px;
-  overflow: auto;
+  min-width: 0;
 }
 .math-panel {
+  grid-column: 1 / -1;
+  border-top: 1px solid #d7e3e8;
   background: #fff;
-  max-height: 1050px;
-  overflow: auto;
 }
+.math-panel app-math-workbench { display: block; max-width: 1000px; margin: auto; }
 .section-top {
   display: flex;
   align-items: center;
@@ -442,8 +465,9 @@ summary:focus-visible {
   outline-offset: 3px;
 }
 @media (max-width: 1150px) {
-  .workspace {
-    grid-template-columns: minmax(330px, 1.2fr) minmax(290px, 1fr);
+  .workspace,
+  .workspace.guess-stage {
+    grid-template-columns: minmax(300px, .8fr) minmax(580px, 1.2fr);
   }
   .math-panel {
     grid-column: 1/-1;
@@ -457,6 +481,12 @@ summary:focus-visible {
   .code-panel {
     border-right: 0;
   }
+}
+@media (max-width: 980px) {
+  .workspace,
+  .workspace.guess-stage,
+  .visual-slice .workspace { grid-template-columns: minmax(0, 1fr); }
+  .code-panel { border-left: 0; border-top: 1px solid #d7e3e8; }
 }
 @media (max-width: 700px) {
   .lab {

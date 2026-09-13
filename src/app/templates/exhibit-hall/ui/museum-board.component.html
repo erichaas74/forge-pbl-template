@@ -1,4 +1,6 @@
-@if (board; as board) {
+@if (board?.museumRoom && mode !== 'thumbnail') {
+  <app-museum-room-presentation [board]="board!" />
+} @else if (board; as board) {
   <article
     class="museum-board"
     [class]="'museum-board ' + mode + ' ' + (board.themeVariant ?? 'ochre')"

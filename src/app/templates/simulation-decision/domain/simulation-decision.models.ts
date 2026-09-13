@@ -206,6 +206,7 @@ export interface TransactionMathDefinition {
 }
 
 export interface SimulationDecisionConfig {
+  readonly tradeWorld?: import('./trade-world.models').TradeWorldDefinition;
   schemaVersion: string;
   template: { id: 'simulation-decision'; version: string };
   projectId: string;
@@ -359,6 +360,7 @@ export interface FinalStrategyReportState {
 }
 
 export interface SimulationDecisionState {
+  readonly tradeWorld?: import('./trade-world.models').TradeWorldState;
   simulationId: string;
   projectId: string;
   projectVersion: string;
@@ -389,6 +391,7 @@ export interface SimulationDecisionState {
 }
 
 export interface TradeLineInput {
+  readonly quotedUnitPriceCents?: number;
   goodId: string;
   direction: 'buy' | 'sell';
   quantity: number;
@@ -428,6 +431,8 @@ export interface TradingSeasonResults {
 }
 
 export type SimulationDecisionAction =
+  | { type: 'world.pulsed'; expectedTick: number }
+  | { type: 'world.pauseToggled' }
   | { type: 'view.changed'; view: SimulationView }
   | { type: 'company.started'; companyName: string; emblemId: string; transportId: string }
   | { type: 'trade.committed'; lines: readonly TradeLineInput[] }

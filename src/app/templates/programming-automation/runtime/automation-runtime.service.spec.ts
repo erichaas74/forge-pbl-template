@@ -65,19 +65,33 @@ describe('Automation runtime evidence and championship', () => {
   it('starts with a runnable guess and saves the student revision', () => {
     const { runtime, saved } = setup();
     expect(runtime.challenge().id).toBe('precision-parking');
-    expect(runtime.draft().program.commands[0].value).toBe('3');
+    expect(runtime.draft().program.commands[0]).toMatchObject({ value: '1', moveMath: { given: 2, operation: 'add' } });
     expect(runtime.runPractice()?.completedMission).toBe(false);
-    runtime.editCommand(runtime.draft().program.commands[0].id, { value: '5' });
+    runtime.editCommand(runtime.draft().program.commands[0].id, { value: '3' });
     runtime.runPractice();
     runtime.flush();
     expect(saved()?.trials.at(-1)?.completedMission).toBe(true);
-    expect(saved()?.drafts['precision-parking'].program.commands[0].value).toBe('5');
+    expect(saved()?.drafts['precision-parking'].program.commands[0].value).toBe('3');
+  });
+  it('adds newly published mission drafts while preserving saved work and trial snapshots', () => {
+    const state = createRobotSampleState();
+    const drafts = { ...state.drafts };
+    delete drafts['patrol-crossing'];
+    delete drafts['moving-gates'];
+    const old = { ...state, drafts, selectedChallengeId: 'precision-parking',
+      trials: state.trials.filter(t => !['patrol-crossing', 'moving-gates'].includes(t.challengeId)) };
+    const { runtime } = setup(old);
+    expect(runtime.state().drafts['patrol-crossing'].program.commands).toEqual([]);
+    expect(runtime.state().drafts['moving-gates'].program.commands).toEqual([]);
+    expect(runtime.state().drafts['precision-parking']).toEqual(old.drafts['precision-parking']);
+    expect(runtime.state().trials).toEqual(old.trials);
+    expect(runtime.state().selectedChallengeId).toBe('precision-parking');
   });
   it('unlocks reasoning per challenge after observation, including a successful first guess', () => {
     const { runtime, saved } = setup();
     runtime.openReasoning();
     expect(runtime.reasoningOpened()).toBe(false);
-    runtime.editCommand('guess-rotations', { value: '5' });
+    runtime.editCommand('guess-rotations', { value: '3' });
     const trial = runtime.runPractice()!;
     expect(trial.completedMission).toBe(true);
     runtime.openReasoning();
@@ -99,11 +113,42 @@ describe('Automation runtime evidence and championship', () => {
     state.drafts['precision-parking'].program.commands = [];
     state.drafts['turn-training'].program = { id: 'mine', version: 2, commands: [], variables: [] };
     const { runtime } = setup(state);
-    expect(runtime.draft().program.commands[0].value).toBe('3');
+    expect(runtime.draft().program.commands[0].value).toBe('1');
     expect(runtime.state().drafts['turn-training'].program).toEqual(
       state.drafts['turn-training'].program,
     );
     expect(state.drafts['precision-parking'].program.commands).toEqual([]);
+  });
+  it('creates mission math blocks and freezes both operands in saved trial replays', () => {
+    const { runtime, saved } = setup();
+    runtime.setCommands([]);
+    runtime.addCommand('move-distance');
+    const id = runtime.selectedCommandId();
+    expect(runtime.selectedCommand()).toMatchObject({ value: '', moveMath: { given: 24, operation: 'multiply' } });
+    expect(runtime.runPractice()).toBeUndefined();
+    runtime.editCommand(id, { value: '5' });
+    const trial = runtime.runPractice()!;
+    expect(trial.completedMission).toBe(true);
+    expect(trial.distanceCm).toBe(120);
+    expect(trial.version.program.commands[0]).toMatchObject({ value: '5', moveMath: { given: 24, operation: 'multiply' } });
+    runtime.editCommand(id, { value: '2' });
+    runtime.flush();
+    expect(saved()?.trials.at(-1)?.version.program.commands[0].value).toBe('5');
+    const persisted = saved()!;
+    TestBed.resetTestingModule();
+    const reloaded = setup(persisted).runtime;
+    expect(reloaded.compiled().commands[0].value).toBe(48);
+    reloaded.selectChallenge('turn-training');
+    reloaded.addCommand('move-distance');
+    expect(reloaded.selectedCommand()?.moveMath).toEqual({ given: 150, operation: 'subtract' });
+  });
+  it('upgrades an unlocked numeric draft without changing its movement or source data', () => {
+    const state = structuredClone(initialAutomationState(config));
+    state.drafts['precision-parking'].program.commands = [{ id: 'old-move', type: 'move-rotations', value: '5' }];
+    const { runtime } = setup(state);
+    expect(runtime.draft().program.commands[0]).toMatchObject({ value: '3', moveMath: { given: 2, operation: 'add' } });
+    expect(runtime.compiled().commands[0].value).toBe(5);
+    expect(state.drafts['precision-parking'].program.commands[0].value).toBe('5');
   });
   it('locks an immutable tested version, preserves it after unlock, and requires a new successful test after editing', () => {
     const { runtime } = setup(readyState());

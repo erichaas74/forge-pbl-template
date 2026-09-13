@@ -66,31 +66,31 @@
       "id": "01-nova",
       "name": "Nova",
       "color": "#c5ed81",
-      "imageUrl": "/projects/live-strategy-league/teams/nova.png"
+      "imageUrl": "/projects/live-strategy-league/teams/nova.webp"
     },
     {
       "id": "02-apex",
       "name": "Apex",
       "color": "#9cbbff",
-      "imageUrl": "/projects/live-strategy-league/teams/apex.png"
+      "imageUrl": "/projects/live-strategy-league/teams/apex.webp"
     },
     {
       "id": "03-orbit",
       "name": "Orbit",
       "color": "#e5b1ef",
-      "imageUrl": "/projects/live-strategy-league/teams/orbit.png"
+      "imageUrl": "/projects/live-strategy-league/teams/orbit.webp"
     },
     {
       "id": "04-pulse",
       "name": "Pulse",
       "color": "#f0b886",
-      "imageUrl": "/projects/live-strategy-league/teams/pulse.png"
+      "imageUrl": "/projects/live-strategy-league/teams/pulse.webp"
     },
     {
       "id": "05-atlas",
       "name": "Atlas",
       "color": "#88d6ce",
-      "imageUrl": "/projects/live-strategy-league/teams/atlas.png"
+      "imageUrl": "/projects/live-strategy-league/teams/atlas.webp"
     }
   ],
   "rounds": [

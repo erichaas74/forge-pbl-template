@@ -85,8 +85,23 @@
     </nav>
   </header>
 
-  <section class="map-experience" aria-label="Race Around the World map workspace">
+  <section
+    class="map-experience"
+    [class.has-side-panel]="view() === 'journey' && (decisionOpen() || utility())"
+    aria-label="Journey map and decisions workspace"
+  >
     <div class="map-canvas">
+      <div class="voyage-resources" aria-label="Current expedition resources">
+        @for (resource of runtime.config.resources; track resource.id) {
+          <div>
+            <span>{{ resource.label }}</span
+            ><strong
+              >{{ runtime.state().resources[resource.id]
+              }}<small>{{ resource.unit }}</small></strong
+            >
+          </div>
+        }
+      </div>
       <app-living-journey-map
         [map]="runtime.config.map"
         [route]="runtime.state().route"
@@ -97,12 +112,18 @@
         [candidateLocationIds]="candidateLocationIds()"
         [candidateLocationLabels]="candidateLocationLabels()"
         [selectedCandidateLocationId]="selectedPlanningTarget()?.locationId"
-        [activeLocationId]="runtime.step()?.positionLocationId"
+        [activeLocationId]="currentLocation()?.id"
         [immersive]="true"
         mapLabel="Interactive Atlantic journey map. Choose highlighted routes and inspect places."
         (locationInspected)="inspectLocation($event)"
         (routeInspected)="inspectRoute($event)"
       />
+      @if (adventure(); as scene) {
+        <app-journey-adventure-scene
+          [adventure]="scene"
+          [location]="currentLocation()?.name ?? 'At sea'"
+        />
+      }
     </div>
 
     @if (livingMap(); as map) {
@@ -197,11 +218,17 @@
       aria-label="Current chapter"
     >
       <button type="button" class="sheet-close" (click)="showMapOnly()">
-        <span aria-hidden="true">×</span> Explore map
+        <span aria-hidden="true">⤢</span> Expand map
       </button>
       <div class="sheet-scroll">
+        @if (runtime.config.historicalFrame; as history) {
+          <app-journey-history-context
+            [history]="history"
+            [includeEpilogue]="runtime.state().completionStatus === 'complete'"
+          />
+        }
         @if (planningChoices().length > 0) {
-          <nav class="mission-goal-tabs" aria-label="Choose the expedition goal">
+          <nav class="mission-goal-tabs" aria-label="Choose your expedition affiliation">
             @for (choice of planningChoices(); track choice.id) {
               <button
                 type="button"

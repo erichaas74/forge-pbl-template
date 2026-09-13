@@ -23,7 +23,7 @@
       clipped ||= distance > limit;
       points.push({ x: p.x - p.y * direction.x / direction.y * scale, y: 0, z: p.z - p.y * direction.z / direction.y * scale });
     }
-    points.push(...design.targets.map(p => ({ ...p, y: 0 })));
+    points.push(...design.targets.map(p => ({ ...p, y: p.y || 0 })));
     const min = {}, max = {};
     for (const key of ['x', 'y', 'z']) { min[key] = Math.min(...points.map(p => p[key])); max[key] = Math.max(...points.map(p => p[key])); }
     return { points, min, max, height, clipped, centre: { x: (min.x + max.x) / 2, y: (min.y + max.y) / 2, z: (min.z + max.z) / 2 } };

@@ -11,6 +11,7 @@ import { projectIntros } from '../../projects/project-intros';
 import { frontierTeaser } from '../../projects/intro-scenes/frontier.teaser';
 import { voyageTeaser } from '../../projects/intro-scenes/voyage.teaser';
 import { isTeaserResult } from '../../shared/project-intro/project-teaser.models';
+import { hostedMediaUrl } from '../../shared/media/hosted-media';
 
 describe('opening scene capability', () => {
   it('validates every configured scene and registers the reusable decision renderer', () => {
@@ -18,8 +19,13 @@ describe('opening scene capability', () => {
     projectIntros.flatMap((config) => config.teaser ? [config.teaser] : []).forEach((teaser) =>
       expect(() => validateTeaser(teaser)).not.toThrow(),
     );
-    expect(frontierTeaser.media.image).toBe('/project-intros/frontier/Opening-scene-image.png');
-    expect(voyageTeaser.media.video).toBe('/project-intros/voyage/intro-launch-video.mp4');
+    expect(frontierTeaser.media.image).toBe('/project-intros/frontier/Opening-scene-image.webp');
+    expect(voyageTeaser.media.video).toBe(
+      hostedMediaUrl('project-intros/voyage/intro-launch-video.mp4'),
+    );
+    expect(frontierTeaser.speeches?.[0].video).toBe(
+      hostedMediaUrl('project-intros/frontier/trading-town-launch.mp4'),
+    );
     const registry = new ProjectTeaserRegistry();
     registry.register('decision-scene', DecisionSceneComponent);
     expect(registry.require('decision-scene')).toBe(DecisionSceneComponent);

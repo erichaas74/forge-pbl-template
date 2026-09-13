@@ -8,6 +8,7 @@ import type {
 import { parseMetaStepsEmbed } from '../metasteps/metasteps-embed';
 import { parsePresentationVideo } from '../video/presentation-video';
 import { isExhibitObjectModel } from '../../../../shared/media/object-model';
+import { isMuseumRoomData } from '../../rooms/museum-room';
 
 export class MuseumBoardRenderer implements ExhibitRenderer {
   readonly type = 'museum-board-v1';
@@ -99,6 +100,9 @@ export function isMuseumBoardSnapshotData(data: unknown): data is MuseumBoardSna
     typeof data === 'object' &&
     data !== null &&
     'title' in data &&
+    (!('museumRoom' in data) ||
+      data.museumRoom === undefined ||
+      isMuseumRoomData(data.museumRoom)) &&
     typeof data.title === 'string' &&
     'centralClaim' in data &&
     typeof data.centralClaim === 'string' &&

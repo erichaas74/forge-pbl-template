@@ -11,6 +11,8 @@ import type {
   VoyageRoutePoint,
 } from '../domain/journey-replay.models';
 
+import { resolveJourneyOutcome } from './journey-consequences';
+
 const EMPTY_DRAFT: JourneyResponseDraft = {
   responseMode: 'text',
   text: '',
@@ -98,7 +100,7 @@ export function completeJourneyStep(
   const responseId = `response-${step.id}`;
   const sceneId = `scene-${step.id}`;
   const route = appendRoute(config, record, choice, step.id, now);
-  const resources = applyResourceChanges(config, record.resources, choice);
+  const { resources, consequence } = resolveJourneyOutcome(config, record, choice);
   const stepRecord = {
     stepId: step.id,
     choiceId: choice.id,
@@ -126,7 +128,7 @@ export function completeJourneyStep(
       planningText: record.responseDraft.planningText?.trim() || undefined,
       planningSubmitted: record.responseDraft.planningSubmitted,
     },
-    consequence: choice.consequence,
+    consequence,
     masteryResults: step.masteryTags.map((masteryTag) => ({
       masteryTag,
       status: 'evidence-collected' as const,
@@ -145,7 +147,7 @@ export function completeJourneyStep(
       config.map.routes.find((item) => item.id === choice.routeId)?.toLocationId ??
       route.at(-1)?.locationId ??
       step.positionLocationId,
-    systemNarration: choice.consequence,
+    systemNarration: consequence,
     studentResponseId: responseId,
     evidenceIds: [...choice.evidenceIds],
     masteryHighlights: [...step.masteryTags],
@@ -275,23 +277,6 @@ function appendRoute(
       stateSnapshotId: `decision-${stepId}`,
     })),
   ];
-}
-
-function applyResourceChanges(
-  config: JourneyProjectConfig,
-  resources: Readonly<Record<string, number>>,
-  choice: JourneyChoiceDefinition,
-): Readonly<Record<string, number>> {
-  const next = { ...resources };
-  for (const [resourceId, change] of Object.entries(choice.resourceChanges ?? {})) {
-    const definition = config.resources.find((item) => item.id === resourceId);
-    if (definition === undefined) throw new Error('RESOURCE_NOT_FOUND');
-    next[resourceId] = Math.min(
-      definition.maximum,
-      Math.max(definition.minimum, (next[resourceId] ?? 0) + change),
-    );
-  }
-  return next;
 }
 
 export function hasResponse(draft: JourneyResponseDraft): boolean {

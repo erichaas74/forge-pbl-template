@@ -769,3 +769,114 @@ html, body { min-height: 0; }
 .hosted-chrome #dialLegend { position:absolute; left:12px; bottom:12px; max-width:55%; gap:3px 6px; margin:0; pointer-events:none; }
 .hosted-chrome #dialLegend span { font-size:11px; padding:3px 6px; background:#fff8e5ed; border:1px solid #ae956666; }
 .hosted-chrome .control-panel { top:8px; }
+.guided-mode .scene-tools, .guided-mode #dialLegend, .guided-mode #sunBadge, .guided-mode #sceneCompass span, .guided-mode #rayInspector { display:none !important; }
+.guided-mode .horizon-layout.active { grid-template-rows:clamp(430px,48vw,650px) !important; }
+.guided-mode #sceneCompass { bottom:auto; }
+.guided-earth .horizon-layout.active { grid-template-rows:300px !important; }
+.guided-earth .earth-guide { grid-template-columns:1fr; border-radius:10px; }
+.guided-earth #earthCanvas { height:290px; width:100%; }
+.guided-earth .earth-guide > div:nth-child(2) { display:none; }
+
+/* Picture-in-picture solar day; the main monument keeps its size and camera. */
+.explore-dock[hidden], .season-compare-panel[hidden] { display:none !important; }
+.explore-mode .horizon-layout.active { grid-template-columns:minmax(0,1fr) 360px; grid-template-rows:minmax(660px,auto) !important; gap:8px; align-items:stretch; }
+.explore-mode .horizon-layout > .canvas-panel:first-child { display:none !important; }
+.explore-mode .scene-tools { display:none !important; }
+.explore-dock { min-width:0; grid-column:2; grid-row:1 / span 2; background:#f8f3e8; border:1px solid #b9b19a; border-radius:10px; overflow:hidden; }
+.explore-controls { padding:16px; }
+.explore-controls h2 { margin:4px 0 12px; font:24px Georgia,serif; color:#233f44; }
+.explore-controls p { font:12px/1.5 system-ui,sans-serif; color:#4f655f; margin:8px 0; }
+.explore-controls #exploreClock { display:block; margin:12px 0; font:700 14px system-ui; color:#27494b; }
+.explore-tabs, .explore-seasons, .explore-extras, .explore-fields { display:flex; align-items:center; gap:5px; }
+.explore-tabs button { flex:1; }
+.explore-dock button { padding:6px 9px; min-height:36px; border-radius:6px; font-size:12px; }
+.explore-dock button[aria-pressed="true"] { background:#244b51; color:#fff8df; }
+.explore-fields { flex-wrap:wrap; }
+.explore-fields label { flex:1; min-width:115px; }
+.explore-dock label { color:#4a5f56; font-size:11px; }
+.explore-dock input, .explore-dock select { min-width:0; max-width:100%; box-sizing:border-box; }
+.explore-dock input[type="range"] { width:100%; accent-color:#26756c; margin:10px 0 2px; }
+.explore-dock input[type="date"] { width:100%; padding:4px; }
+.explore-endpoints { display:flex; justify-content:space-between; font-size:10px; color:#6e7364; }
+.explore-seasons { margin-top:12px; }
+.explore-seasons button { flex:1; padding:5px; font-size:11px; }
+.explore-extras { justify-content:space-between; flex-wrap:wrap; }
+.explore-extras label { display:flex; align-items:center; gap:5px; }
+.explore-extras input[type="checkbox"] { width:17px; height:17px; min-height:17px; margin:0; }
+.hosted-chrome.alignment-tools:not(.build-mode):not(.explore-mode):not(.center-mode) .scene-tools { display:block !important; }
+.hosted-chrome.alignment-tools:not(.extra-tools) #moreViews { display:none; }
+.hosted-chrome.alignment-tools:not(.explore-mode):not(.center-mode) .horizon-layout.active { grid-template-rows:clamp(460px,55vw,740px) auto !important; }
+.explore-dock .earth-guide { display:block; padding:12px; }
+.explore-dock #earthCanvas { height:220px; }
+.explore-dock .earth-guide h2, .explore-dock #seasonGraph, .explore-dock #graphCaption { display:none; }
+.season-compare-panel { position:fixed; z-index:60; inset:18px; max-height:calc(100dvh - 36px); overflow:auto; padding:20px; background:#fffaf0; border:1px solid #b2aa90; border-radius:14px; box-shadow:0 0 0 100vmax #12323c99; color:#24474b; }
+.season-compare-panel header { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.season-compare-panel h2 { font:28px Georgia,serif; margin:4px 0 16px; }
+.season-compare-panel header button { font-size:26px; min-width:44px; }
+.season-compare-images { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.season-compare-images figure { margin:0; min-width:0; }
+.season-compare-images img { display:block; width:100%; border-radius:8px; background:#1d3542; }
+.season-compare-images figcaption, .season-compare-panel p { font:12px/1.5 system-ui,sans-serif; margin:8px 0; }
+@media(max-width:1000px) {
+  .explore-mode .horizon-layout.active { grid-template-columns:minmax(0,1fr); grid-template-rows:500px auto !important; }
+  .explore-mode.center-mode .horizon-layout.active { grid-template-rows:620px auto !important; }
+  .explore-dock { grid-column:1; grid-row:auto; }
+  .explore-dock .earth-guide { display:grid; grid-template-columns:1fr 1fr; }
+}
+@media(max-width:600px) {
+  .explore-dock .earth-guide, .season-compare-images { grid-template-columns:1fr; }
+  .season-compare-panel { inset:8px; padding:12px; }
+}
+.sun-day-panel { position:absolute; z-index:12; top:12px; right:12px; width:min(460px,calc(100% - 24px)); box-sizing:border-box; padding:15px; border:1px solid #b8b49c; border-radius:14px; background:#fffaf0f7; color:#263e43; box-shadow:0 10px 35px #20353640; max-height:calc(100% - 76px); overflow:auto; }
+.sun-day-panel[hidden] { display:none; }
+.scene-compass { position:absolute; right:12px; top:12px; padding:8px 11px; border-radius:8px; background:#173b48ed; color:#fff5dc; display:grid; gap:2px; font:12px system-ui,sans-serif; pointer-events:none; z-index:3; }
+.scene-compass span { font-size:10px; color:#c9dcda; }
+.edit-scene-hint { position:absolute; left:12px; bottom:58px; max-width:calc(100% - 48px); margin:0; padding:8px 11px; background:#123f48ee; border-radius:7px; color:#e7fff7; font:12px/1.5 system-ui,sans-serif; z-index:3; }
+.edit-scene-hint[hidden] { display:none; }
+.center-mode .scene-compass { top:auto; bottom:14px; }
+.center-view-panel, .center-view-controls { position:absolute; z-index:5; left:14px; width:min(540px,calc(100% - 28px)); box-sizing:border-box; color:#fff5dc; background:#173b48ed; border:1px solid #b6c8be66; border-radius:12px; padding:12px 15px; box-shadow:0 4px 18px #152b3930; font:12px/1.45 system-ui,sans-serif; }
+.center-view-panel { top:14px; }
+.center-view-controls { bottom:14px; }
+.center-view-panel[hidden], .center-view-controls[hidden] { display:none; }
+.center-view-panel header { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px; }
+.center-view-panel .sun-day-eyebrow { color:#b7d8d6; }
+.center-view-panel h2 { color:#fff5dc; font:24px Georgia,serif; margin:2px 0; }
+.center-view-panel p, .center-view-controls p { margin:3px 0; }
+.center-view-panel button, .center-view-controls button { color:#fff5dc; background:#ffffff12; border:1px solid #c6d5c077; border-radius:7px; min-height:36px; padding:5px 10px; cursor:pointer; }
+.center-view-panel button { font-size:22px; min-width:36px; }
+.center-view-panel button:focus-visible, .center-view-controls :focus-visible { outline:3px solid #ffe094; outline-offset:2px; }
+.center-seasons { display:flex; flex-wrap:wrap; gap:5px 14px; margin-top:8px; }
+.center-seasons span { color:var(--season-color); font-weight:650; }
+.center-seasons span::before { content:'○'; margin-right:5px; }
+.center-view-panel .center-note, .center-view-controls .center-note { color:#bdd0ce; font-size:10px; }
+.center-sliders { display:grid; grid-template-columns:1.3fr 1fr auto; gap:12px; align-items:center; margin-top:5px; }
+.center-sliders label { color:#fff5dc; font-size:11px; }
+.center-sliders label span { display:flex; justify-content:space-between; gap:6px; }
+.center-sliders input { width:100%; margin:4px 0 0; accent-color:#ffe094; }
+.center-mode #sunBadge, .center-mode #frameNotice, .center-mode .quick-camera, .center-mode #rayInspector, .center-mode #dialLegend, .center-mode #buildMode, .center-mode #showSun, .center-mode #playBtn, .center-mode #sundialTools, .center-mode .day-range, .center-mode .day-endpoints, .center-mode .day-heading button, .center-mode .speed-label, .center-mode [aria-labelledby="dateTitle"] .range-label, .center-mode #timeSlider, .center-mode [aria-labelledby="dateTitle"] .button-grid { display:none !important; }
+@media(max-width:600px) {
+  .hosted-chrome.center-mode .horizon-layout.active { grid-template-rows:620px !important; }
+  .center-view-panel, .center-view-controls { left:8px; width:calc(100% - 16px); padding:10px; }
+  .center-view-panel { top:8px; } .center-view-controls { bottom:8px; }
+  .center-view-panel h2 { font-size:21px; }
+  .center-sliders { grid-template-columns:1fr 1fr; gap:6px 12px; }
+  .center-sliders button { grid-column:1 / -1; min-height:32px; }
+}
+.sun-day-panel header { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.sun-day-eyebrow { font:700 9px system-ui,sans-serif; letter-spacing:.13em; color:#66746a; }
+.sun-day-panel h2 { margin:3px 0 0; font:600 22px Georgia,serif; color:#263e43; }
+.sun-day-panel button { min-width:36px; min-height:36px; padding:0; border:1px solid #b5beae; border-radius:50%; background:#fffdf7; color:#324b4a; font:22px system-ui,sans-serif; cursor:pointer; }
+.sun-day-panel button:focus-visible { outline:3px solid #a86816; outline-offset:3px; }
+.sun-day-context { display:flex; flex-wrap:wrap; gap:3px 10px; margin:10px 0; font:11px system-ui,sans-serif; color:#566664; }
+.sun-day-context strong { color:#294f51; }
+.sun-day-panel svg { display:block; width:100%; height:auto; }
+.sun-day-events { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin:12px 0; }
+.sun-day-events div { display:grid; align-content:start; gap:4px; }
+.sun-day-events span { color:#6b7468; font:600 10px system-ui,sans-serif; }
+.sun-day-events strong { font:700 13px system-ui,sans-serif; }
+.sun-day-events small { font:10px/1.4 system-ui,sans-serif; color:#5a706a; }
+.sun-day-now { display:grid; gap:4px; padding:9px 10px; border-radius:8px; background:#e9efdf; font:11px system-ui,sans-serif; }
+.sun-day-now strong { color:#2c4b46; }
+.sun-day-night .sun-day-now { background:#e1e7ed; }
+.sun-day-panel p { margin:9px 0 0; font:10px/1.5 system-ui,sans-serif; color:#687367; }
+@media(max-width:600px) { .sun-day-panel { top:48px; padding:11px; width:min(360px,calc(100% - 24px)); max-height:calc(100% - 113px); } .sun-day-panel h2 { font-size:19px; } }

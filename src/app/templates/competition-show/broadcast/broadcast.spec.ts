@@ -4,6 +4,7 @@ import { afterEach, vi } from 'vitest';
 import { BroadcastDirectorService } from './broadcast-director.service';
 import { midnightBroadcast, polarBroadcast, stationPositions, studioCamera, validateBroadcast } from './broadcast.models';
 import { studioProjection } from './studio-projection';
+import { avatarInterests, interestAt, interestLabel, rosterRotation } from './studio-avatar';
 import { createCompetition } from '../domain/competition-engine';
 import { requireCompetitionConfig } from '../domain/competition.validation';
 import configData from '../../../../../public/projects/championship-show/project.json';
@@ -80,4 +81,18 @@ it('keeps the game in ready state until the reveal completes, and preserves answ
   c.command({ type: 'open' }); c.director.finish();
   expect(c.show.state().phase).toBe('open'); expect(c.show.state().deadline).toBe(Date.now() + 90000);
   c.director.finish(); expect(c.show.state().deadline).toBe(Date.now() + 90000);
+});
+
+it('gives every team a different interest, stable across reloads and independent of the score', () => {
+  const ids = config.teams.map(t => t.id);
+  const rotation = rosterRotation(ids);
+  const assigned = ids.map((_, index) => interestAt(index, rotation));
+  // Eight seats, eight interests: nobody in a full field shares a sport.
+  expect(new Set(assigned).size).toBe(Math.min(ids.length, avatarInterests.length));
+  // Same roster, same result — a reload must not reshuffle the studio.
+  expect(rosterRotation(ids)).toBe(rotation);
+  expect(ids.map((_, index) => interestAt(index, rotation))).toEqual(assigned);
+  // A different roster picks a different arrangement.
+  expect(rosterRotation([...ids].reverse())).not.toBe(rotation);
+  for (const interest of assigned) expect(interestLabel(interest).length).toBeGreaterThan(0);
 });

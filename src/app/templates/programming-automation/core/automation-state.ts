@@ -8,6 +8,8 @@ import type {
 } from '../domain/automation.models';
 import { allCommands, compileProgram } from './automation-compiler';
 import { mathTools } from './automation-math';
+import { isMoveCommand, isMoveMathProblem, prepareMoveMathCommands } from './move-math';
+import { touchesCourseActor, validCourseActors } from './course-actors';
 export const emptyPrediction = () => ({
   route: '',
   distance: '',
@@ -29,7 +31,7 @@ export function initialAutomationState(config: AutomationProjectConfig): Automat
           program: {
             id: `program-${challenge.id}`,
             version: 0,
-            commands: structuredClone(challenge.discovery?.starterCommands ?? []),
+            commands: prepareMoveMathCommands(structuredClone(challenge.discovery?.starterCommands ?? []), challenge.moveMath),
             variables: [],
           },
           targetIndex: 0,
@@ -114,6 +116,11 @@ export function validateAutomationConfig(config: AutomationProjectConfig): void 
   for (const challenge of config.challenges as readonly RobotChallenge[]) {
     if (!config.courses.some((course) => course.id === challenge.courseId))
       throw new Error('CONFIG_INVALID: Unknown course.');
+    if (challenge.moveMath !== undefined && (!challenge.moveMath || typeof challenge.moveMath !== 'object' || Array.isArray(challenge.moveMath) ||
+      Object.entries(challenge.moveMath).some(([type, problem]) =>
+        !isMoveCommand(type as RobotCommand['type']) || !challenge.allowedCommands.includes(type as RobotCommand['type']) ||
+        !isMoveMathProblem(problem))))
+      throw new Error('CONFIG_INVALID: Move math needs an allowed movement type, operation, and valid given number.');
     const discovery = challenge.discovery;
     if (
       discovery &&
@@ -141,6 +148,9 @@ export function validateAutomationConfig(config: AutomationProjectConfig): void 
       );
   }
   for (const course of config.courses as readonly CourseDefinition[]) {
+    if (course?.visualTheme !== undefined && !['workshop', 'tabletop'].includes(course.visualTheme)) {
+      throw new Error('CONFIG_INVALID: Unsupported course visual theme.');
+    }
     if (
       !course ||
       !course.startPose ||
@@ -154,6 +164,14 @@ export function validateAutomationConfig(config: AutomationProjectConfig): void 
       ].every(Array.isArray)
     )
       throw new Error('CONFIG_INVALID: Course geometry is incomplete.');
+    if (course.actors !== undefined && (!validCourseActors(course.actors, course.widthCm, course.heightCm) ||
+      (course.actors.length > 0 && course.visualTheme !== 'tabletop') ||
+      course.actors.some(actor => touchesCourseActor(course.startPose, config.robot.radiusCm, actor, 0))))
+      throw new Error('CONFIG_INVALID: Moving actors need valid bounded routes, a clear start, and the tabletop renderer.');
+    if (course.visualTheme === 'workshop' && (
+      course.obstacles.length || course.packages.length || course.deliveryZones.length || course.checkpoints.length ||
+      course.targets.some(target => target.xCm !== course.startPose.xCm || target.headingDeg !== course.startPose.headingDeg)
+    )) throw new Error('CONFIG_INVALID: Workshop art currently supports straight parking lanes without cargo or obstacles.');
     for (const pose of [course.startPose, ...course.targets])
       if (!Number.isFinite(pose.headingDeg))
         throw new Error('CONFIG_INVALID: Every pose needs a heading in degrees.');

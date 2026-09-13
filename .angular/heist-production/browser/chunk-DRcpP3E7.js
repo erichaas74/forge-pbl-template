@@ -1,0 +1,1 @@
+import{t as e}from"./chunk-KxPZB4Nf.js";export{e as romanSenateDebateConfig};

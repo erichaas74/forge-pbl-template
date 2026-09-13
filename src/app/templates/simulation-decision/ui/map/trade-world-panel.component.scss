@@ -1,0 +1,131 @@
+:host {
+  display: block;
+  position: static;
+  z-index: 21;
+}
+.world-panel {
+  color: #fce8bf;
+  background: #253d36;
+  border-block: 1px solid #839d78;
+  font:
+    13px/1.4 Arial,
+    sans-serif;
+}
+.world-menu > summary {
+  background: #273f32;
+  border-color: #6e8167;
+  color: #fff0c7;
+  min-height: 40px;
+  padding: 0.6rem 0.7rem;
+}
+.news-body {
+  font:
+    13px/1.45 Arial,
+    sans-serif;
+}
+.news-body h2 {
+  font:
+    bold 21px Georgia,
+    serif;
+}
+.world-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  padding: 0.3rem 0.7rem;
+}
+.world-controls > strong {
+  margin-right: auto;
+}
+small {
+  font-weight: normal;
+}
+button,
+summary {
+  min-height: 36px;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid #a1af89;
+  border-radius: 4px;
+  background: #f2e4b8;
+  color: #243a30;
+  cursor: pointer;
+  font:
+    bold 12px Arial,
+    sans-serif;
+  box-sizing: border-box;
+}
+summary {
+  display: list-item;
+}
+button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+button:focus-visible,
+summary:focus-visible {
+  outline: 3px solid #ffcc68;
+  outline-offset: 2px;
+}
+.news-ticker {
+  margin: 0;
+  padding: 0.3rem 0.75rem;
+  color: #fff4d5;
+  background: #152c26;
+}
+.news-body {
+  position: absolute;
+  top: 100%;
+  right: 0.5rem;
+  max-height: min(60dvh, 32rem);
+  overflow: auto;
+  width: min(32rem, calc(100vw - 2rem));
+  padding: 1rem;
+  box-sizing: border-box;
+  border: 2px solid #9d8251;
+  background: #fff1d1;
+  color: #302619;
+  box-shadow: 0 8px 24px #0006;
+}
+article {
+  padding: 0.65rem;
+  border-left: 4px solid #9b613a;
+  margin-block: 0.6rem;
+  background: #f2ddac;
+}
+article[data-kind='shipment'] {
+  border-color: #357961;
+  background: #e1eacb;
+}
+p {
+  margin: 0.4rem 0;
+}
+h3 {
+  font:
+    bold 16px Georgia,
+    serif;
+}
+ul {
+  padding-left: 1.2rem;
+}
+li {
+  margin-block: 0.45rem;
+}
+@media (max-width: 640px) {
+  .world-controls {
+    gap: 0.25rem;
+    padding: 0.3rem;
+  }
+  .world-controls > strong {
+    width: 100%;
+    font-size: 11px;
+  }
+  button,
+  summary {
+    min-height: 40px;
+    font-size: 11px;
+  }
+  .news-ticker {
+    font-size: 11px;
+  }
+}

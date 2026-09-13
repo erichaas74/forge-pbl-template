@@ -6,6 +6,7 @@ import type { MuseumBoardSnapshotData } from '../domain/exhibit-types';
 import { isMuseumBoardSnapshotData } from '../renderers/museum-board/museum-board-renderer';
 import { parseMetaStepsEmbed } from '../renderers/metasteps/metasteps-embed';
 import { ObjectModelViewerComponent } from '../../../shared/media/object-model-viewer.component';
+import { MuseumRoomPresentationComponent } from '../rooms/museum-room-presentation.component';
 import {
   parsePresentationVideo,
   type PresentationVideoParseResult,
@@ -13,7 +14,7 @@ import {
 
 @Component({
   selector: 'app-museum-board',
-  imports: [ObjectModelViewerComponent],
+  imports: [ObjectModelViewerComponent, MuseumRoomPresentationComponent],
   templateUrl: './museum-board.component.html',
   styleUrl: './museum-board.component.scss',
 })

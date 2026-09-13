@@ -7,6 +7,8 @@ import {
   inject,
   signal,
   viewChild,
+  effect,
+  untracked,
 } from '@angular/core';
 import { NgComponentOutlet, NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -30,6 +32,8 @@ import { DesignSampleGalleryComponent } from './design-sample-gallery.component'
 import { EngineeringLearningGuideComponent } from './engineering-learning-guide.component';
 import type { EngineeringLearningStep } from '../domain/engineering-design.models';
 import type { DesignCapture, BlockDesign } from '../../../shared/engineering/block-design';
+import { DESIGN_EDITOR, DesignEditor } from '../../../shared/engineering/design-editor';
+import type { DesignWalkthroughAction } from '../../../shared/engineering/design-walkthrough';
 @Component({
   selector: 'app-engineering-design-page',
   imports: [
@@ -63,6 +67,66 @@ export class EngineeringDesignPageComponent {
     this.learningSteps.findIndex((step) => step.id === this.learningStep()?.id),
   );
   readonly practicing = computed(() => this.learningStep()?.workspace === 'practice');
+  readonly tasks = computed(() => this.learningStep()?.tasks ?? []);
+  readonly taskIndex = computed(() =>
+    Math.max(
+      0,
+      this.tasks().findIndex((t) => t.id === this.runtime.snapshot().learningTaskId),
+    ),
+  );
+  readonly task = computed(() => this.tasks()[this.taskIndex()]);
+  readonly guided = computed(() => !!this.task());
+  readonly taskAnswer = computed(
+    () =>
+      this.runtime.snapshot().walkthroughNotes?.[this.learningStep()?.id + '/' + this.task()?.id] ??
+      '',
+  );
+  readonly walkthroughStatus = signal('');
+  readonly finished = signal(false);
+  readonly canContinue = computed(() => {
+    const task = this.task();
+    if (!task) return false;
+    if (!this.chrome()?.walkthrough?.ready()) return false;
+    if (
+      task.requiredEvidenceCount &&
+      this.runtime
+        .snapshot()
+        .trials.filter(
+          (t) =>
+            t.settings['learningStepId'] === this.learningStep()?.id &&
+            t.settings['learningTaskId'] === task.id &&
+            JSON.stringify(t.design) === JSON.stringify(this.activeDesign()),
+        ).length < task.requiredEvidenceCount
+    )
+      return false;
+    if (
+      task.requiredTargetId &&
+      !this.activeDesign().targets.some((t) => t.id === task.requiredTargetId)
+    )
+      return false;
+    if (!task.response) return true;
+    const answer = this.taskAnswer().trim();
+    return (
+      !!answer &&
+      (!task.response.unit ||
+        (Number.isFinite(Number(answer)) && Number(answer) >= 0 && Number(answer) <= 2400))
+    );
+  });
+  readonly previousNotes = computed(() =>
+    this.learningSteps.flatMap((step) =>
+      (step.tasks ?? []).flatMap((task) => {
+        const answer = this.runtime.snapshot().walkthroughNotes?.[step.id + '/' + task.id];
+        return answer
+          ? [
+              {
+                title: task.title,
+                answer: answer + (task.response?.unit ? ' ' + task.response.unit : ''),
+              },
+            ]
+          : [];
+      }),
+    ),
+  );
   readonly activeDesign = computed(() =>
     this.practicing()
       ? (this.runtime.snapshot().practiceDesign ?? this.config.learningSequence!.practiceDesign)
@@ -71,10 +135,23 @@ export class EngineeringDesignPageComponent {
   readonly preview = computed(() =>
     this.config.designSamples?.find((s) => s.id === this.sampleId()),
   );
+  readonly editor = new DesignEditor(
+    () => this.activeDesign(),
+    (d) => this.saveActiveDesign(d),
+    () => !this.preview() && !this.presenting(),
+  );
+  constructor() {
+    effect(() => {
+      this.activeDesign();
+      const scope = this.practicing() ? 'practice' : 'project';
+      untracked(() => this.editor.sync(scope));
+    });
+  }
   private readonly injector = inject(Injector);
   readonly simulationInjector = Injector.create({
     parent: this.injector,
     providers: [
+      { provide: DESIGN_EDITOR, useValue: this.editor },
       {
         provide: DESIGN_CHROME,
         useValue: (chrome: DesignChrome | undefined) => this.chrome.set(chrome),
@@ -122,6 +199,7 @@ export class EngineeringDesignPageComponent {
     readOnly: !!this.preview(),
     building: this.panel() === 'build',
     ...(this.learningStep() ? { activity: this.learningStep()!.activity } : {}),
+    ...(this.guided() ? { walkthrough: this.task().setup } : {}),
   }));
   selectStep(id: string): void {
     this.runtime.selectLearningStep(id);
@@ -129,6 +207,43 @@ export class EngineeringDesignPageComponent {
     this.restore.set(undefined);
     this.panel.set('');
     this.presenting.set(false);
+    this.finished.set(false);
+    this.walkthroughStatus.set('');
+  }
+  moveTask(direction: -1 | 1): void {
+    if (direction === 1 && !this.canContinue()) return;
+    let step = this.stepIndex(),
+      task = this.taskIndex() + direction;
+    if (task < 0) {
+      step--;
+      task = (this.learningSteps[step]?.tasks?.length ?? 1) - 1;
+    }
+    if (task >= this.tasks().length && direction === 1) {
+      step++;
+      task = 0;
+    }
+    const next = this.learningSteps[step],
+      nextTask = next?.tasks?.[task];
+    if (!nextTask) {
+      if (direction === 1) this.finished.set(true);
+      return;
+    }
+    this.selectStep(next.id);
+    this.runtime.selectLearningTask(next.id, nextTask.id);
+  }
+  answerTask(answer: string): void {
+    this.runtime.saveWalkthroughNote(this.learningStep()!.id, this.task().id, answer);
+    if (this.task().response?.saveAs === 'exhibit') this.runtime.saveText('exhibit', answer);
+  }
+  runTaskAction(action: DesignWalkthroughAction): void {
+    this.walkthroughStatus.set('');
+    this.chrome()?.walkthrough?.run(action);
+  }
+  loadTaskSample(): void {
+    const id = this.task()?.sampleId;
+    if (!id) return;
+    this.runtime.useDesignSample(id);
+    this.walkthroughStatus.set('Starting challenge loaded. Your previous monument is backed up.');
   }
   answerStep(answer: string): void {
     const question = this.learningStep()?.question;
@@ -142,7 +257,12 @@ export class EngineeringDesignPageComponent {
     return step
       ? {
           ...capture,
-          settings: { ...capture.settings, workspace: step.workspace, learningStepId: step.id },
+          settings: {
+            ...capture.settings,
+            workspace: step.workspace,
+            learningStepId: step.id,
+            ...(this.task() ? { learningTaskId: this.task().id } : {}),
+          },
         }
       : capture;
   }

@@ -8,6 +8,8 @@ export const EXHIBIT_HALL_CAPABILITIES = [
   'individualDefense',
   'familySafePublication',
   'exhibitLmsBridge',
+  'assignedMuseumRooms',
+  'sharedMuseumPublication',
 ] as const;
 
 export function registerExhibitHallCapabilities(registry: CapabilityRegistry): void {

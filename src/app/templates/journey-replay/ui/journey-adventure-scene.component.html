@@ -1,0 +1,76 @@
+<section
+  class="adventure-scene"
+  [class]="'adventure-scene ' + adventure().atmosphere"
+  [class.paused]="paused()"
+  aria-label="Adventure dispatch"
+>
+  <div class="scene-art" aria-hidden="true">
+    <svg viewBox="0 0 440 220" preserveAspectRatio="xMidYMid slice">
+      <circle class="sun" cx="325" cy="60" r="36" fill="#f5ce83" />
+      <path
+        class="cloud"
+        d="M-40 45h130c-5-25-42-34-56-16C13 8-19 19-21 33z M270 30h145c-9-20-35-23-47-12-16-20-47-21-59-3-16-5-30 2-39 15"
+        fill="#d8e4d9"
+        opacity=".3"
+      />
+      @if (adventure().atmosphere === 'harbor') {
+        <g fill="#294b50">
+          <path d="M0 143V80h28V63h22v80h12V94h40v49h18V52l15-23 15 23v91h20v-37h40v37z" />
+          <path d="M0 142h220v14H0z" fill="#99784e" />
+          <path d="M18 156v40m44-40v40m44-40v40m44-40v40" stroke="#8b6d4c" stroke-width="8" />
+        </g>
+      } @else if (adventure().atmosphere === 'landfall') {
+        <path d="M245 147l44-75 16 24 24-47 43 59 33-16 35 37v65z" fill="#42675b" />
+        <path d="M284 143l25-50 16 17 8-47 23 49 39 19 45 8v26z" fill="#658573" />
+        <path d="M260 162q80-30 180-8v18H253" fill="#d1b97c" />
+      }
+      <path d="M0 155q55-12 110 0t110 0t110 0t110 0v70H0z" fill="#20777f" />
+      <g class="ship">
+        <path d="M165 147l19 25h99l28-25z" fill="#382e29" />
+        <path d="M170 147h134l-10 10H180z" fill="#b18348" />
+        <path d="M232 43v107m-39-62v61m73-66v66" stroke="#674329" stroke-width="4" />
+        <path
+          d="M237 51q35 23 46 70h-46z M226 56q-37 27-38 65h38z M269 88l27 45h-27z M189 93l-26 40h26z"
+          fill="#f2dfb0"
+        />
+        <path d="M232 42l31 8-31 9z" fill="#dc8657" />
+        <path d="M190 126h89m-94 7h99" stroke="#a58252" opacity=".7" />
+      </g>
+      <g class="waves" fill="none" stroke="#86c4bd" stroke-width="2" opacity=".6">
+        <path
+          d="M-60 179q25-8 50 0t50 0m27 0q25-8 50 0t50 0m27 0q25-8 50 0t50 0m27 0q25-8 50 0t50 0"
+        />
+        <path d="M0 203q30-8 60 0t60 0m26 0q30-8 60 0t60 0m26 0q30-8 60 0t60 0" />
+      </g>
+      @if (adventure().atmosphere === 'storm') {
+        <path class="lightning" d="M340-5l-31 63 23-4-26 63 62-78-29 8 28-52" fill="#f6e8b3" />
+        <g class="rain" stroke="#c2dbe2" opacity=".45">
+          <path
+            d="M40 10l-12 40m85-24-12 40m60-66-12 40m40 34-12 40m85-55-12 40m-192 14-12 40m85-29-12 40m260-65-12 40m-44 29-12 40"
+          />
+        </g>
+      }
+      <path
+        d="M58 62q8-8 16 0 8-8 16 0m12-16q6-6 12 0 6-6 12 0"
+        stroke="#dae3ce"
+        fill="none"
+        opacity=".8"
+      />
+    </svg>
+    <span class="location-stamp">⌖ {{ location() }}</span>
+  </div>
+  <div class="dispatch">
+    <span>From the deck · fictional adventure</span>
+    <h2>{{ adventure().title }}</h2>
+    <p>{{ adventure().narrative }}</p>
+  </div>
+  <button
+    type="button"
+    class="motion-toggle"
+    [attr.aria-pressed]="paused()"
+    (click)="paused.set(!paused())"
+    [attr.aria-label]="paused() ? 'Resume scene animation' : 'Pause scene animation'"
+  >
+    {{ paused() ? '▶' : 'Ⅱ' }}
+  </button>
+</section>

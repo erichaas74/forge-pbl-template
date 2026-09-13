@@ -2,6 +2,8 @@ import { InjectionToken } from '@angular/core';
 import type { ProjectSessionContext } from '../../../core/context/project-session-context';
 import { safeBrowserStorage, ScopedBrowserStore } from '../../../shared/persistence';
 import type { AutomationState } from '../domain/automation.models';
+import { isMoveMathProblem } from '../core/move-math';
+import { validCourseActors } from '../core/course-actors';
 export interface AutomationPersistence {
   load(): AutomationState | undefined;
   save(state: AutomationState): void;
@@ -47,6 +49,8 @@ export function isAutomationState(value: unknown): value is AutomationState {
           'drop-off',
           'repeat',
         ].includes(c['type'] as string) &&
+        (c['moveMath'] === undefined ||
+          (['move-distance', 'move-rotations'].includes(c['type'] as string) && isMoveMathProblem(c['moveMath']))) &&
         (c['commands'] === undefined || commands(c['commands'], depth + 1)),
     );
   const program = (v: unknown): boolean =>
@@ -79,6 +83,8 @@ export function isAutomationState(value: unknown): value is AutomationState {
     prediction(v['prediction']) &&
     math(v['math']) &&
     record(v['course']) &&
+    (v['course']['actors'] === undefined || (validCourseActors(v['course']['actors'], Number(v['course']['widthCm']), Number(v['course']['heightCm'])) &&
+      (!(v['course']['actors'] as unknown[]).length || v['course']['visualTheme'] === 'tabletop'))) &&
     Array.isArray(v['course']['targets']) &&
     Array.isArray(v['course']['packages']) &&
     Array.isArray(v['course']['obstacles']) &&

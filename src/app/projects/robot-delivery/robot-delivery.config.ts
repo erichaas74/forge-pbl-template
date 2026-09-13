@@ -2,15 +2,50 @@ import type {
   AutomationProjectConfig,
   CommandType,
   CourseDefinition,
+  MoveMathProblems,
   RobotChallenge,
 } from '../../templates/programming-automation/domain/automation.models';
 const movement: readonly CommandType[] = ['move-distance', 'move-rotations', 'wait'];
 const navigation: readonly CommandType[] = [...movement, 'turn-degrees', 'turn-fraction'];
 const delivery: readonly CommandType[] = [...navigation, 'pick-up', 'drop-off'];
 const all: readonly CommandType[] = [...delivery, 'repeat'];
+// Each level supplies the first number and operation; the learner supplies the second.
+const moveProblems: Readonly<Record<string, MoveMathProblems>> = {
+  'patrol-crossing': { 'move-distance': { operation: 'multiply', given: 40 }, 'move-rotations': { operation: 'add', given: 2 } },
+  'moving-gates': { 'move-distance': { operation: 'multiply', given: 40 }, 'move-rotations': { operation: 'divide', given: 40 } },
+  'calibration-garage': {
+    'move-distance': { operation: 'multiply', given: 24 },
+    'move-rotations': { operation: 'multiply', given: 0.5 },
+  },
+  'precision-parking': {
+    'move-distance': { operation: 'multiply', given: 24 },
+    'move-rotations': { operation: 'add', given: 2 },
+  },
+  'turn-training': {
+    'move-distance': { operation: 'subtract', given: 150 },
+    'move-rotations': { operation: 'subtract', given: 8 },
+  },
+  'coordinate-courier': {
+    'move-distance': { operation: 'multiply', given: 25 },
+    'move-rotations': { operation: 'multiply', given: 1.25 },
+  },
+  'warehouse-pattern': {
+    'move-distance': { operation: 'divide', given: 200 },
+    'move-rotations': { operation: 'divide', given: 25 },
+  },
+  'battery-emergency': {
+    'move-distance': { operation: 'add', given: 50 },
+    'move-rotations': { operation: 'add', given: 1 },
+  },
+  'cargo-delivery': {
+    'move-distance': { operation: 'multiply', given: 25 },
+    'move-rotations': { operation: 'multiply', given: 1 },
+  },
+};
 const floor = (id: string, name: string): CourseDefinition => ({
   id,
   name,
+  visualTheme: 'tabletop',
   widthCm: 400,
   heightCm: 300,
   gridSizeCm: 25,
@@ -88,6 +123,32 @@ const courses: readonly CourseDefinition[] = [
     deliveryZones: [{ id: 'zone-a', label: 'A', xCm: 235, yCm: 185, widthCm: 30, heightCm: 30 }],
   },
   {
+    ...floor('patrol', 'Patrol crossing'),
+    heightCm: 400,
+    gridSizeCm: 40,
+    startPose: { xCm: 60, yCm: 40, headingDeg: 0 },
+    targets: [{ xCm: 60, yCm: 320, headingDeg: 0, label: 'Cross the patrol lane' }],
+    actors: [{ id: 'patrol-1', label: 'Scout patrol', kind: 'robot', radiusCm: 12,
+      path: [{ xCm: 20, yCm: 180 }, { xCm: 220, yCm: 180 }],
+      speedCmPerSecond: 40, patrol: 'ping-pong', phaseSeconds: 2 }],
+  },
+  {
+    ...floor('gates', 'Patrol and sliding gate'),
+    heightCm: 400,
+    gridSizeCm: 40,
+    startPose: { xCm: 60, yCm: 40, headingDeg: 0 },
+    targets: [{ xCm: 300, yCm: 320, headingDeg: 90, label: 'Beyond the sliding gate' }],
+    headingToleranceDeg: 2,
+    actors: [
+      { id: 'patrol-1', label: 'Scout patrol', kind: 'robot', radiusCm: 12,
+        path: [{ xCm: 20, yCm: 180 }, { xCm: 220, yCm: 180 }],
+        speedCmPerSecond: 40, patrol: 'ping-pong', phaseSeconds: 2 },
+      { id: 'gate-1', label: 'Sliding gate', kind: 'barrier', widthCm: 36, heightCm: 32,
+        path: [{ xCm: 180, yCm: 220 }, { xCm: 180, yCm: 360 }],
+        speedCmPerSecond: 20, patrol: 'ping-pong', pauseSeconds: 1 },
+    ],
+  },
+  {
     ...floor('championship', 'Championship arena'),
     targets: [{ xCm: 50, yCm: 50, headingDeg: 180, label: 'Return to the start dock' }],
     packages: [
@@ -108,7 +169,7 @@ const discovery: Record<string, RobotChallenge['discovery']> = {
     starterCommands: [{ id: 'guess-rotations', type: 'move-rotations', value: '2' }],
     focusCommandId: 'guess-rotations',
     instructions:
-      'Guess how many wheel rotations will reach the target. Replace the highlighted number, or run the starter guess first.',
+      'The Move block multiplies the given half rotation by your number. Guess a number to reach the target, or test the starter guess first.',
     reasoningPrompt:
       'Did the robot stop short or go too far? Compare the rotations you entered with the distance it travelled. What could one rotation tell you?',
     mathTool: 'rotation-distance',
@@ -117,7 +178,7 @@ const discovery: Record<string, RobotChallenge['discovery']> = {
     starterCommands: [{ id: 'guess-rotations', type: 'move-rotations', value: '3' }],
     focusCommandId: 'guess-rotations',
     instructions:
-      'Guess the wheel rotations needed to park on the target. Change the highlighted number, or press Run program to test the starter guess.',
+      'The Move block adds the given 2 rotations to your number. Choose your number to park on the target, or test the starter guess first.',
     reasoningPrompt:
       'Where did the robot stop compared with the target? Use your trial distance and rotation count to find the travel per rotation. How could that help your next guess?',
     mathTool: 'distance-rotations',
@@ -147,7 +208,7 @@ const discovery: Record<string, RobotChallenge['discovery']> = {
     ],
     focusCommandId: 'guess-crossing',
     instructions:
-      'Guess the distance across to delivery zone A. Change the highlighted Move distance block, then run the delivery code.',
+      'The Move block multiplies the given 25 cm grid size by your number. Guess how many spaces cross to delivery zone A, then run the delivery code.',
     reasoningPrompt:
       'Did the robot reach the delivery zone before dropping the package? Count the horizontal grid spaces between pickup and delivery. How do spaces become centimeters?',
     mathTool: 'grid-distance',
@@ -169,6 +230,7 @@ const challenge = (
   courseId,
   mission,
   allowedCommands: commands,
+  moveMath: moveProblems[id],
   requiredMath,
   skills: requiredMath,
   hint,
@@ -290,6 +352,14 @@ export const robotDeliveryConfig: AutomationProjectConfig = {
       ['movement-time'],
       'The loaded robot moves at 17 cm/s instead of 20 cm/s. Update your predicted time.',
     ),
+    challenge('patrol-crossing', 'Patrol Crossing', 3, 'patrol',
+      'Cross the moving scout’s route and reach the goal. The scout travels at 40 cm/s. Every run starts its patrol at the same position.',
+      navigation, ['grid-distance', 'movement-time'],
+      'Watch the dashed patrol route. Use WAIT before moving to change when you cross it. Each grid square is 40 cm.'),
+    challenge('moving-gates', 'Moving Gates', 3, 'gates',
+      'Reach the far goal while avoiding a patrol robot and a sliding gate. The gate moves at 20 cm/s and pauses for 1 second at each end.',
+      navigation, ['grid-distance', 'movement-time', 'fraction-turn'],
+      'Plan the northbound crossing first, then the eastbound crossing. WAIT blocks can change the timing of each part of your route.'),
     {
       ...challenge(
         'championship',

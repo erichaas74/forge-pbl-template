@@ -1,20 +1,11 @@
 <section class="route-page">
   <section class="map-card page-card" aria-labelledby="route-title">
-    <header>
-      <div>
-        <span class="eyebrow">Your trading map</span>
-        <h1 id="route-title">Choose your route</h1>
-        <p>
-          {{ runtime.currentLocation()?.name }} ·
-          {{ runtime.state().activeTravel ? 'Departure point' : 'Current location' }}
-        </p>
-      </div>
-      <span class="map-day"
-        >Day {{ runtime.state().currentDay }}<small>{{ runtime.transport()?.name }}</small></span
-      >
-    </header>
+    <h1 id="route-title" class="sr-only">
+      {{ journey()?.title ?? 'Choose your next destination' }}
+    </h1>
     <app-route-atlas
       [workspace]="true"
+      [externalControls]="true"
       [locations]="runtime.config.locations"
       [trails]="atlasTrails()"
       [backgroundAsset]="runtime.config.world.mapSceneAsset"
@@ -24,6 +15,11 @@
       [destinationMarkets]="destinationMarkets()"
       [currentMarketPrices]="currentMarketPrices()"
       [travel]="mapTravel()"
+      [world]="tradeWorld()"
+      [journeyCue]="journey()?.cue"
+      [motionAllowed]="
+        runtime.saveState() !== 'save_failed' && runtime.state().status !== 'paused_by_teacher'
+      "
       [visitedIds]="visitedIds()"
       (routeSelected)="previewRoute($event)"
       (routeHighlighted)="highlightRoute($event)"
@@ -43,9 +39,9 @@
           >
             <header>
               <div>
-                <span class="eyebrow">Route prediction</span>
+                <span class="eyebrow">About this trip</span>
                 <h3 id="prediction-title">
-                  {{ route.name }} → {{ locationName(route.toLocationId) }}
+                  {{ locationName(route.toLocationId) }}
                 </h3>
               </div>
               <div class="prediction-verdict">
@@ -63,34 +59,33 @@
             </header>
             <div class="prediction-columns">
               <section class="route-intelligence" aria-labelledby="route-intel-title">
-                <span>Travel intelligence</span>
-                <h4 id="route-intel-title">What could change the result?</h4>
-                <dl>
-                  <div>
-                    <dt>Distance</dt>
-                    <dd>{{ route.distanceMiles }} miles</dd>
-                  </div>
-                  <div>
-                    <dt>Weather</dt>
-                    <dd>{{ routeWeather(route) }}</dd>
-                  </div>
-                  <div>
-                    <dt>Terrain</dt>
-                    <dd>{{ route.terrain.join(' · ') }}</dd>
-                  </div>
-                  <div>
-                    <dt>Risk forecast</dt>
-                    <dd>{{ routeRiskPrediction(route) }}</dd>
-                  </div>
-                  <div>
-                    <dt>Market clue</dt>
-                    <dd>{{ route.demandClue }}</dd>
-                  </div>
-                </dl>
-                <p>
-                  Route events can add time or costs and may damage cargo. Keep a cash reserve for
-                  the journey.
-                </p>
+                <h4 id="route-intel-title">What could happen?</h4>
+                <p>{{ routeRiskPrediction(route) }}</p>
+                <details>
+                  <summary>More about this route</summary>
+                  <dl>
+                    <div>
+                      <dt>Distance</dt>
+                      <dd>{{ route.distanceMiles }} miles</dd>
+                    </div>
+                    <div>
+                      <dt>Weather</dt>
+                      <dd>{{ routeWeather(route) }}</dd>
+                    </div>
+                    <div>
+                      <dt>Terrain</dt>
+                      <dd>{{ route.terrain.join(' · ') }}</dd>
+                    </div>
+                    <div>
+                      <dt>Possible problems</dt>
+                      <dd>{{ routeRiskPrediction(route) }}</dd>
+                    </div>
+                    <div>
+                      <dt>Market clue</dt>
+                      <dd>{{ route.demandClue }}</dd>
+                    </div>
+                  </dl>
+                </details>
               </section>
             </div>
             <footer>
@@ -107,9 +102,9 @@
                 {{
                   routeUnlocked(route)
                     ? route.id === selectedRouteId()
-                      ? 'Open selected route plan'
-                      : 'Use this route · plan trip'
-                    : 'Unlock by completing your next mission'
+                      ? 'Open my trip'
+                      : 'Choose this town'
+                    : 'Finish your next step first'
                 }}
               </button>
             </footer>
@@ -117,395 +112,513 @@
         }
       }
     </app-route-atlas>
-  </section>
-  <aside
-    #tripCard
-    class="trip-card page-card"
-    [class.open]="plannerOpen() || !!runtime.state().activeTravel"
-    [attr.aria-hidden]="plannerOpen() || runtime.state().activeTravel ? null : true"
-    [attr.inert]="plannerOpen() || runtime.state().activeTravel ? null : ''"
-    aria-label="Selected trip"
-    tabindex="-1"
-    (keydown.escape)="closePlanner()"
-  >
-    @if (!runtime.state().activeTravel) {
-      <button
-        class="close-planner"
-        type="button"
-        aria-label="Close trip planner"
-        (click)="closePlanner()"
-      >
-        ×
-      </button>
-    }
-    @if (runtime.state().activeTravel; as travel) {
-      <span class="eyebrow">Your journey</span>
-      <h2>{{ locationName(activeRoute()!.toLocationId) }}</h2>
-      <p>{{ activeRoute()?.name }}</p>
-      <div class="journey-progress">
-        <progress
-          [value]="travel.progressDays"
-          [max]="activeRoute()?.estimatedDays ?? 1"
-          aria-label="Travel days completed"
-        ></progress>
-        <strong
-          >{{ travel.progressDays }} of {{ activeRoute()?.estimatedDays }} travel days
-          completed</strong
+    @if (mapArrival()) {
+      <div class="map-arrival" role="status">
+        <span
+          ><strong>Arrived at {{ runtime.currentLocation()?.name }}</strong> · Day
+          {{ journeyHistory()[0]?.dayArrived }}</span
         >
+        <button #arrivalAction type="button" class="primary" (click)="runtime.navigate('market')">
+          Sell your goods →
+        </button>
       </div>
-      <p>
-        Your wagon moves when you advance travel in Journey. Stop there to resolve trail events.
-      </p>
-      <button type="button" class="primary" (click)="runtime.navigate('events')">
-        Continue journey →
-      </button>
-      <button type="button" class="secondary" (click)="showJourneyRecord()">
-        Inspect journey record
-      </button>
-    } @else if (selectedRoute(); as route) {
-      <span class="eyebrow">Your trip plan</span>
-      <h2>{{ selectedDestination()?.name }}</h2>
-      <p>{{ route.name }}</p>
-      <div class="trip-stats">
-        <div>
-          <strong>{{ route.estimatedDays }}</strong
-          ><span>travel days</span>
-        </div>
-        <div>
-          <strong>{{ runtime.money(route.supplyCostCents) }}</strong
-          ><span>supplies</span>
-        </div>
-        <div [class]="'risk ' + route.risk">
-          <strong>{{ route.risk }}</strong
-          ><span>risk</span>
-        </div>
-      </div>
-      <dl class="budget">
-        <div>
-          <dt>Distance</dt>
-          <dd>{{ route.distanceMiles }} miles</dd>
-        </div>
-        <div>
-          <dt>Expected arrival</dt>
-          <dd>Day {{ arrivalDay(route) }}</dd>
-        </div>
-        <div>
-          <dt>Cash after route supplies</dt>
-          @if (plan.draft().length) {
-            <dd>Pending trade math</dd>
-          } @else {
-            <dd>{{ runtime.money(runtime.cash() - route.supplyCostCents) }}</dd>
-          }
-        </div>
-      </dl>
-      <small>Events may add delays or costs.</small>
-      <details>
-        <summary>Terrain & weather report</summary>
-        <p>{{ route.terrain.join(' · ') }}</p>
-        <p>{{ routeWeather(route) }}</p>
-      </details>
-      <section class="intel">
-        <strong>Destination report</strong>
-        <p>{{ route.demandClue }}</p>
-        @if (routeSource(route); as source) {
-          <small>Merchant rumor · {{ source.merchantName }}</small>
-          <p>“{{ source.rumor }}”</p>
-          <small>{{ source.trustCue }}</small>
-        }
-      </section>
-      @if (!compatible(route)) {
-        <p class="validation">
-          {{ runtime.transport()?.name }} cannot use this terrain. You can still compare this route.
-        </p>
-      }
-      @if (plannedTrade().cashAfterCents < route.supplyCostCents) {
-        <p class="validation">
-          Keep {{ runtime.money(route.supplyCostCents) }} for supplies. Your plan needs more cash.
-        </p>
-      }
-      @if (progression().currentStageIndex < progression().stageCount - 1) {
-        <p class="validation">
-          Buy two kinds of goods before departing. Your route choice is saved while you shop.
-        </p>
-        <button type="button" class="secondary" (click)="runtime.navigate('market')">
-          Buy goods →
+    }
+  </section>
+  <aside class="route-sidebar" aria-label="Company and trip panel">
+    <app-route-economy-panel [route]="highlightedRoute() ?? selectedRoute()" />
+    <aside
+      #tripCard
+      class="trip-card page-card"
+      [class.travel-card]="!!runtime.state().activeTravel"
+      [class.open]="plannerOpen() || !!runtime.state().activeTravel"
+      [attr.aria-hidden]="plannerOpen() || runtime.state().activeTravel ? null : true"
+      [attr.inert]="plannerOpen() || runtime.state().activeTravel ? null : ''"
+      aria-label="Selected trip"
+      tabindex="-1"
+      (keydown.escape)="closePlanner()"
+    >
+      @if (!runtime.state().activeTravel) {
+        <button
+          class="close-planner"
+          type="button"
+          aria-label="Close trip planner"
+          (click)="closePlanner()"
+        >
+          ×
         </button>
       }
-      @if (plan.draft().length > 0) {
-        <p class="plan-reminder">
-          Your trade draft is not confirmed. Review it at the market before departing.
-        </p>
-        <button type="button" class="secondary" (click)="runtime.navigate('market')">
-          Return to your trade draft →
-        </button>
-      }
-      @if (
-        runtime.config.routeForecastChallenge?.requiredBeforeDeparture &&
-        progression().currentStageIndex === progression().stageCount - 1 &&
-        runtime.state().inventory.length > 0
-      ) {
-        <section class="forecast-challenge" tabindex="-1" aria-labelledby="forecast-title">
-          <header>
-            <span aria-hidden="true">÷</span>
-            <div>
-              <small>Harder step · 2 math checks</small>
-              <strong id="forecast-title">Predict your trip profit</strong>
-            </div>
-          </header>
-          <p>Use the destination prices below. Trail events may change the actual result later.</p>
-          <ol class="forecast-load">
-            @for (item of runtime.state().inventory; track item.goodId) {
-              <li>
-                <span>{{ item.quantity }} × {{ goodName(item.goodId) }}</span>
-                <strong>{{ runtime.money(destinationSellPrice(item.goodId)) }} each</strong>
+      @if (runtime.state().activeTravel; as travel) {
+        <span class="eyebrow">Your journey</span>
+        <h2>{{ locationName(activeRoute()!.toLocationId) }}</h2>
+        <p>{{ activeRoute()?.name }}</p>
+        @if (journey(); as journey) {
+          <section
+            class="journey-milestone"
+            [attr.data-phase]="journey.phase"
+            role="status"
+            aria-atomic="true"
+          >
+            <strong>{{ journey.title }}</strong>
+            <p>{{ journey.detail }}</p>
+          </section>
+          <ol class="journey-checkpoints" aria-label="Journey checkpoints">
+            @for (checkpoint of journey.checkpoints; track checkpoint.day) {
+              <li
+                [class.reached]="checkpoint.reached"
+                [attr.aria-current]="checkpoint.current ? 'step' : null"
+              >
+                <b aria-hidden="true">{{
+                  checkpoint.reached
+                    ? '✓'
+                    : checkpoint.day === journey.totalDays
+                      ? '⚑'
+                      : checkpoint.day
+                }}</b>
+                <span>{{
+                  checkpoint.day === 0
+                    ? 'Start'
+                    : checkpoint.day === journey.totalDays
+                      ? 'Arrival'
+                      : 'Day ' + checkpoint.day
+                }}</span>
+                <span class="sr-only">{{ checkpoint.reached ? 'completed' : 'ahead' }}</span>
               </li>
             }
           </ol>
-          @if (profitForecast(); as forecast) {
-            <dl class="forecast-knowns">
-              <div>
-                <dt>What your goods cost</dt>
-                <dd>{{ runtime.money(forecast.goodsCostCents) }}</dd>
-              </div>
-              <div>
-                <dt>Travel cost</dt>
-                <dd>{{ runtime.money(forecast.travelCostCents) }}</dd>
-              </div>
-            </dl>
+          @if (journey.outcome; as outcome) {
+            <details class="journey-outcome">
+              <summary>Last trail decision</summary>
+              <p>{{ outcome.text }}</p>
+              <p>
+                Cash {{ runtime.money(outcome.cashChangeCents, true) }} · Wagon space used
+                {{ outcome.cargoChange > 0 ? '+' : '' }}{{ outcome.cargoChange }}
+              </p>
+            </details>
           }
-          <label>
-            <span>1. Predicted money from all sales</span>
-            <div class="money-input">
-              <b aria-hidden="true">$</b>
-              <input
-                type="number"
-                inputmode="decimal"
-                step="0.01"
-                [ngModel]="
-                  forecastSalesRevenueCents() === undefined
-                    ? null
-                    : forecastSalesRevenueCents()! / 100
-                "
-                (ngModelChange)="setForecastSalesRevenue($event)"
-                aria-describedby="sales-forecast-help"
-              />
-            </div>
-            <small id="sales-forecast-help">Multiply each quantity by its price, then add.</small>
-            @if (forecastSalesRevenueCents() !== undefined) {
-              <em [class.correct]="forecastSalesCorrect()">
-                {{
-                  forecastSalesCorrect()
-                    ? '✓ Sales total is correct'
-                    : 'Try again: check each multiplication'
-                }}
-              </em>
-            }
-          </label>
-          <label>
-            <span>2. Predicted trip profit</span>
-            <div class="money-input">
-              <b aria-hidden="true">$</b>
-              <input
-                type="number"
-                inputmode="decimal"
-                step="0.01"
-                [ngModel]="
-                  forecastTripProfitCents() === undefined ? null : forecastTripProfitCents()! / 100
-                "
-                (ngModelChange)="setForecastTripProfit($event)"
-                aria-describedby="profit-forecast-help"
-              />
-            </div>
-            <small id="profit-forecast-help">Sales total − goods cost − travel cost.</small>
-            @if (forecastTripProfitCents() !== undefined) {
-              <em [class.correct]="forecastTripProfitCorrect()">
-                {{
-                  forecastTripProfitCorrect()
-                    ? '✓ Profit forecast is correct'
-                    : 'Try again: subtract both costs'
-                }}
-              </em>
-            }
-          </label>
-          @if (forecastComplete()) {
-            <p class="forecast-ready">
-              ✓ Forecast complete. This math will be saved with your route.
-            </p>
-          }
-        </section>
-      }
-      <label class="field"
-        >Why this route?<textarea
-          rows="3"
-          [ngModel]="rationale()"
-          (ngModelChange)="setRationale($event)"
-          placeholder="I chose this route because…"
-        ></textarea></label
-      ><small>Use a complete reason about time, cost, risk, or cargo.</small>
-      <div class="trip-actions">
-        <button class="secondary" type="button" (click)="pinSelected()">Save route record</button
-        ><button class="primary" type="button" [disabled]="!canDepart()" (click)="openReview()">
-          Review departure
-        </button>
-      </div>
-    } @else {
-      <span class="eyebrow">Trail planner</span>
-      <h2>Choose a destination</h2>
-    }
-  </aside>
-  <div class="map-notebooks">
-    <details class="progress-notebook">
-      <summary>Mission progress · {{ availableRouteCount() }} routes open</summary>
-      <app-choice-progression-panel
-        [progression]="progression()"
-        choiceLabel="routes open"
-        [availableCount]="availableRouteCount()"
-        [totalCount]="runtime.config.routes.length"
-      />
-    </details>
-    @if (reachableRoutes().length > 0 && !runtime.state().activeTravel) {
-      <details class="comparison route-journal page-card">
-        <summary>
-          <span aria-hidden="true">▤</span><strong>Open Route Journal</strong
-          ><small>Compare every route with exact numbers</small>
-        </summary>
-        <section aria-labelledby="comparison-title">
-          <header>
-            <div>
-              <span class="eyebrow">Compare your options</span>
-              <h2 id="comparison-title">Routes from {{ runtime.currentLocation()?.shortName }}</h2>
-            </div>
-            <button
-              type="button"
-              class="secondary"
-              [disabled]="compareIds().length < 2"
-              (click)="compareOnly.set(!compareOnly())"
-            >
-              {{
-                compareOnly()
-                  ? 'Show all routes'
-                  : 'Compare selected (' + compareIds().length + '/3)'
-              }}
-            </button>
-          </header>
-          <div class="route-table">
-            <table>
-              <thead>
-                <tr>
-                  <th>Compare</th>
-                  <th>Destination / route</th>
-                  <th>Distance</th>
-                  <th>Days</th>
-                  <th>Supplies</th>
-                  <th>Risk / access</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (route of displayedRoutes(); track route.id) {
-                  <tr [class.selected]="route.id === selectedRouteId()">
-                    <td>
-                      <input
-                        type="checkbox"
-                        [attr.aria-label]="'Compare ' + route.name"
-                        [checked]="compareIds().includes(route.id)"
-                        [disabled]="!compareIds().includes(route.id) && compareIds().length >= 3"
-                        (change)="toggleCompare(route.id)"
-                      />
-                    </td>
-                    <td>
-                      <button
-                        type="button"
-                        [attr.aria-pressed]="route.id === selectedRouteId()"
-                        (click)="selectRoute(route.id)"
-                      >
-                        <strong>{{ locationName(route.toLocationId) }}</strong
-                        ><small>{{ route.name }}</small>
-                      </button>
-                    </td>
-                    <td>{{ route.distanceMiles }} mi</td>
-                    <td>{{ route.estimatedDays }}</td>
-                    <td>{{ runtime.money(route.supplyCostCents) }}</td>
-                    <td>
-                      <span [class]="'risk ' + route.risk">{{ route.risk }}</span
-                      ><small>{{
-                        compatible(route)
-                          ? '✓ Fits your transport'
-                          : '× Unavailable for your transport'
-                      }}</small>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-        </section>
-      </details>
-    }
-    @if (journeyHistory().length) {
-      <details
-        #historyPanel
-        class="journey-record page-card"
-        tabindex="-1"
-        [open]="historyOpen()"
-        (toggle)="syncHistory($event)"
-      >
-        <summary>
-          Journey record · {{ journeyHistory().length }} recorded
-          {{ journeyHistory().length === 1 ? 'route' : 'routes' }}
-        </summary>
-        @for (entry of journeyHistory(); track entry.id) {
-          <article>
-            <span class="eyebrow">{{
-              entry.dayArrived !== undefined
-                ? 'Arrived · Day ' + entry.dayArrived
-                : 'Journey in progress'
-            }}</span>
-            <h2>{{ entry.knownInfoSnapshot.name }}</h2>
-            <p>
-              {{ locationName(entry.knownInfoSnapshot.fromLocationId) }} →
-              {{ locationName(entry.knownInfoSnapshot.toLocationId) }}
-            </p>
-            <dl class="budget">
-              <div>
-                <dt>Departure</dt>
-                <dd>Day {{ entry.dayStarted }}</dd>
-              </div>
-              <div>
-                <dt>Planned travel</dt>
-                <dd>
-                  {{ entry.knownInfoSnapshot.estimatedDays }} days ·
-                  {{ entry.knownInfoSnapshot.distanceMiles }} miles
-                </dd>
-              </div>
-              @if (entry.dayArrived !== undefined) {
-                <div>
-                  <dt>Actual elapsed time</dt>
-                  <dd>{{ entry.dayArrived - entry.dayStarted }} days</dd>
-                </div>
-              }
-              <div>
-                <dt>Departure supplies</dt>
-                <dd>{{ runtime.money(entry.knownInfoSnapshot.supplyCostCents) }}</dd>
-              </div>
-            </dl>
-            <blockquote>{{ entry.rationale }}</blockquote>
-            <p class="record-note">
-              Route information was saved when you departed. Later trail costs appear in your money
-              record.
-            </p>
-            <button
-              type="button"
-              class="secondary"
-              [disabled]="historyPinned(entry)"
-              (click)="pinHistory(entry)"
-            >
-              {{ historyPinned(entry) ? '✓ Journey record saved' : 'Save journey record' }}
-            </button>
-          </article>
         }
+        <div class="journey-progress">
+          <progress
+            [value]="travel.progressDays"
+            [max]="activeRoute()?.estimatedDays ?? 1"
+            aria-label="Travel days completed"
+          ></progress>
+          <strong
+            >{{ travel.progressDays }} of {{ activeRoute()?.estimatedDays }} travel days
+            completed</strong
+          >
+        </div>
+        <p>
+          Press the button to travel one day. If something happens, you will stop and choose what to
+          do.
+        </p>
+        @if (runtime.state().pendingEventId) {
+          <button type="button" class="primary" (click)="runtime.navigate('events')">
+            Make your trail decision →
+          </button>
+        } @else {
+          <button
+            type="button"
+            class="primary"
+            (click)="advanceMapDay()"
+            [disabled]="
+              dayMoving() ||
+              journeyLaunching() ||
+              runtime.state().status === 'paused_by_teacher' ||
+              runtime.saveState() === 'save_failed'
+            "
+          >
+            {{ dayMoving() || journeyLaunching() ? 'Traveling…' : 'Travel next day →' }}
+          </button>
+        }
+        <details>
+          <summary>Trip details</summary>
+          <button type="button" class="secondary" (click)="runtime.navigate('events')">
+            What happened on my trip?
+          </button>
+          <button type="button" class="secondary" (click)="showJourneyRecord()">
+            My trip record
+          </button>
+        </details>
+      } @else if (selectedRoute(); as route) {
+        <span class="eyebrow">Your town is chosen</span>
+        <h2>{{ selectedDestination()?.name }}</h2>
+        <p>{{ route.name }}</p>
+        <div class="trip-stats">
+          <div>
+            <strong>{{ route.estimatedDays }}</strong
+            ><span>travel days</span>
+          </div>
+          <div>
+            <strong>{{ runtime.money(route.supplyCostCents) }}</strong
+            ><span>travel cost</span>
+          </div>
+          <div [class]="'risk ' + route.risk">
+            <strong>{{ route.risk }}</strong
+            ><span>risk</span>
+          </div>
+        </div>
+        <details>
+          <summary>More about this trip</summary>
+          <dl class="budget">
+            <div>
+              <dt>Distance</dt>
+              <dd>{{ route.distanceMiles }} miles</dd>
+            </div>
+            <div>
+              <dt>Expected arrival</dt>
+              <dd>Day {{ arrivalDay(route) }}</dd>
+            </div>
+            <div>
+              <dt>Cash after route supplies</dt>
+              @if (plan.draft().length) {
+                <dd>Pending trade math</dd>
+              } @else {
+                <dd>{{ runtime.money(runtime.cash() - route.supplyCostCents) }}</dd>
+              }
+            </div>
+          </dl>
+          <small>Problems on the trail may cost extra time or money.</small>
+          <p>{{ route.terrain.join(' · ') }}</p>
+          <p>{{ routeWeather(route) }}</p>
+          <section class="intel">
+            <strong>Destination report</strong>
+            <p>{{ route.demandClue }}</p>
+            @if (routeSource(route); as source) {
+              <small>Merchant rumor · {{ source.merchantName }}</small>
+              <p>“{{ source.rumor }}”</p>
+              <small>{{ source.trustCue }}</small>
+            }
+          </section>
+          <button class="secondary" type="button" (click)="pinSelected()">Save route record</button>
+        </details>
+        @if (!compatible(route)) {
+          <p class="validation">
+            {{ runtime.transport()?.name }} cannot use this terrain. You can still compare this
+            route.
+          </p>
+        }
+        @if (plannedTrade().cashAfterCents < route.supplyCostCents) {
+          <p class="validation">
+            Keep {{ runtime.money(route.supplyCostCents) }} for supplies. Your plan needs more cash.
+          </p>
+        }
+        @if (shoppingNeeded()) {
+          <p class="plan-reminder">
+            Next, finish shopping. Your town is saved. Keep
+            {{ runtime.money(route.supplyCostCents) }} to pay for this trip.
+          </p>
+          <button type="button" class="primary" (click)="runtime.navigate('market')">
+            Go to the shops →
+          </button>
+        }
+        @if (plan.draft().length > 0) {
+          <p class="plan-reminder">You have items to check. They are not bought or sold yet.</p>
+        }
+        @if (!shoppingNeeded() && compatible(route)) {
+          @if (
+            runtime.config.routeForecastChallenge?.requiredBeforeDeparture &&
+            progression().currentStageIndex === progression().stageCount - 1 &&
+            runtime.state().inventory.length > 0
+          ) {
+            <section class="forecast-challenge" tabindex="-1" aria-labelledby="forecast-title">
+              <header>
+                <span aria-hidden="true">÷</span>
+                <div>
+                  <small>Question {{ forecastStep() === 'sales' ? '1' : '2' }} of 2</small>
+                  <strong id="forecast-title">{{
+                    forecastStep() === 'sales'
+                      ? 'How much could you sell for?'
+                      : 'How much could you earn?'
+                  }}</strong>
+                </div>
+              </header>
+              <p>These are the prices in your chosen town. Your trip could change what you earn.</p>
+              <ol class="forecast-load">
+                @for (item of runtime.state().inventory; track item.goodId) {
+                  <li>
+                    <span>{{ item.quantity }} × {{ goodName(item.goodId) }}</span>
+                    <strong>{{ runtime.money(destinationSellPrice(item.goodId)) }} each</strong>
+                  </li>
+                }
+              </ol>
+              @if (profitForecast(); as forecast) {
+                <dl class="forecast-knowns">
+                  <div>
+                    <dt>What your goods cost</dt>
+                    <dd>{{ runtime.money(forecast.goodsCostCents) }}</dd>
+                  </div>
+                  <div>
+                    <dt>Travel cost</dt>
+                    <dd>{{ runtime.money(forecast.travelCostCents) }}</dd>
+                  </div>
+                </dl>
+              }
+              @if (forecastStep() === 'sales') {
+                <label>
+                  <span>Money from selling all your goods</span>
+                  <div class="money-input">
+                    <b aria-hidden="true">$</b>
+                    <input
+                      type="number"
+                      inputmode="decimal"
+                      step="0.01"
+                      [ngModel]="
+                        forecastSalesRevenueCents() === undefined
+                          ? null
+                          : forecastSalesRevenueCents()! / 100
+                      "
+                      (ngModelChange)="setForecastSalesRevenue($event)"
+                      aria-describedby="sales-forecast-help"
+                    />
+                  </div>
+                  <small id="sales-forecast-help"
+                    >Multiply each quantity by its price, then add.</small
+                  >
+                  @if (forecastSalesRevenueCents() !== undefined) {
+                    <em [class.correct]="forecastSalesCorrect()">
+                      {{
+                        forecastSalesCorrect()
+                          ? '✓ Sales total is correct'
+                          : 'Try again: check each multiplication'
+                      }}
+                    </em>
+                  }
+                </label>
+                <button
+                  type="button"
+                  class="primary"
+                  [disabled]="!forecastSalesCorrect()"
+                  (click)="continueForecast()"
+                >
+                  Next math question →
+                </button>
+              } @else {
+                <p>
+                  You could sell your goods for
+                  <strong>{{ runtime.money(forecastSalesRevenueCents() ?? 0) }}</strong
+                  >.
+                </p>
+                <label>
+                  <span>Profit: money left after paying your costs</span>
+                  <div class="money-input">
+                    <b aria-hidden="true">$</b>
+                    <input
+                      type="number"
+                      inputmode="decimal"
+                      step="0.01"
+                      [ngModel]="
+                        forecastTripProfitCents() === undefined
+                          ? null
+                          : forecastTripProfitCents()! / 100
+                      "
+                      (ngModelChange)="setForecastTripProfit($event)"
+                      aria-describedby="profit-forecast-help"
+                    />
+                  </div>
+                  <small id="profit-forecast-help">Sales total − goods cost − travel cost.</small>
+                  @if (forecastTripProfitCents() !== undefined) {
+                    <em [class.correct]="forecastTripProfitCorrect()">
+                      {{
+                        forecastTripProfitCorrect()
+                          ? '✓ Profit forecast is correct'
+                          : 'Try again: subtract both costs'
+                      }}
+                    </em>
+                  }
+                </label>
+                <button type="button" class="secondary" (click)="forecastStep.set('sales')">
+                  ← Check my first answer
+                </button>
+              }
+              @if (forecastComplete()) {
+                <p class="forecast-ready">
+                  ✓ Both answers are correct. Now explain your choice below.
+                </p>
+              }
+            </section>
+          }
+          @if (forecastComplete()) {
+            <label class="field"
+              >Why this route?<textarea
+                rows="3"
+                [ngModel]="rationale()"
+                (ngModelChange)="setRationale($event)"
+                placeholder="I chose this route because…"
+              ></textarea></label
+            ><small>Write one sentence about the cost, travel time, or possible problems.</small>
+            <div class="trip-actions">
+              <button
+                class="primary"
+                type="button"
+                [disabled]="!canDepart()"
+                (click)="openReview()"
+              >
+                Check my trip →
+              </button>
+            </div>
+          }
+        }
+      } @else {
+        <span class="eyebrow">Trail planner</span>
+        <h2>Choose a destination</h2>
+      }
+    </aside>
+    <div class="map-notebooks">
+      <details class="progress-notebook">
+        <summary>Mission progress · {{ availableRouteCount() }} routes open</summary>
+        <app-choice-progression-panel
+          [progression]="progression()"
+          choiceLabel="routes open"
+          [availableCount]="availableRouteCount()"
+          [totalCount]="routeOptions().length"
+        />
       </details>
-    }
-  </div>
+      @if (reachableRoutes().length > 0 && !runtime.state().activeTravel) {
+        <details class="comparison route-journal page-card">
+          <summary>
+            <span aria-hidden="true">▤</span><strong>Open Route Journal</strong
+            ><small>Compare every route with exact numbers</small>
+          </summary>
+          <section aria-labelledby="comparison-title">
+            <header>
+              <div>
+                <span class="eyebrow">Compare your options</span>
+                <h2 id="comparison-title">
+                  Routes from {{ runtime.currentLocation()?.shortName }}
+                </h2>
+              </div>
+              <button
+                type="button"
+                class="secondary"
+                [disabled]="compareIds().length < 2"
+                (click)="compareOnly.set(!compareOnly())"
+              >
+                {{
+                  compareOnly()
+                    ? 'Show all routes'
+                    : 'Compare selected (' + compareIds().length + '/3)'
+                }}
+              </button>
+            </header>
+            <div class="route-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Compare</th>
+                    <th>Destination / route</th>
+                    <th>Distance</th>
+                    <th>Days</th>
+                    <th>Supplies</th>
+                    <th>Risk / access</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (route of displayedRoutes(); track route.id) {
+                    <tr [class.selected]="route.id === selectedRouteId()">
+                      <td>
+                        <input
+                          type="checkbox"
+                          [attr.aria-label]="'Compare ' + route.name"
+                          [checked]="compareIds().includes(route.id)"
+                          [disabled]="!compareIds().includes(route.id) && compareIds().length >= 3"
+                          (change)="toggleCompare(route.id)"
+                        />
+                      </td>
+                      <td>
+                        <button
+                          type="button"
+                          [attr.aria-pressed]="route.id === selectedRouteId()"
+                          (click)="selectRoute(route.id)"
+                        >
+                          <strong>{{ locationName(route.toLocationId) }}</strong
+                          ><small>{{ route.name }}</small>
+                        </button>
+                      </td>
+                      <td>{{ route.distanceMiles }} mi</td>
+                      <td>{{ route.estimatedDays }}</td>
+                      <td>{{ runtime.money(route.supplyCostCents) }}</td>
+                      <td>
+                        <span [class]="'risk ' + route.risk">{{ route.risk }}</span
+                        ><small>{{
+                          compatible(route)
+                            ? '✓ Fits your transport'
+                            : '× Unavailable for your transport'
+                        }}</small>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </details>
+      }
+      @if (journeyHistory().length) {
+        <details
+          #historyPanel
+          class="journey-record page-card"
+          tabindex="-1"
+          [open]="historyOpen()"
+          (toggle)="syncHistory($event)"
+        >
+          <summary>
+            Journey record · {{ journeyHistory().length }} recorded
+            {{ journeyHistory().length === 1 ? 'route' : 'routes' }}
+          </summary>
+          @for (entry of journeyHistory(); track entry.id) {
+            <article>
+              <span class="eyebrow">{{
+                entry.dayArrived !== undefined
+                  ? 'Arrived · Day ' + entry.dayArrived
+                  : 'Journey in progress'
+              }}</span>
+              <h2>{{ entry.knownInfoSnapshot.name }}</h2>
+              <p>
+                {{ locationName(entry.knownInfoSnapshot.fromLocationId) }} →
+                {{ locationName(entry.knownInfoSnapshot.toLocationId) }}
+              </p>
+              <dl class="budget">
+                <div>
+                  <dt>Departure</dt>
+                  <dd>Day {{ entry.dayStarted }}</dd>
+                </div>
+                <div>
+                  <dt>Planned travel</dt>
+                  <dd>
+                    {{ entry.knownInfoSnapshot.estimatedDays }} days ·
+                    {{ entry.knownInfoSnapshot.distanceMiles }} miles
+                  </dd>
+                </div>
+                @if (entry.dayArrived !== undefined) {
+                  <div>
+                    <dt>Actual elapsed time</dt>
+                    <dd>{{ entry.dayArrived - entry.dayStarted }} days</dd>
+                  </div>
+                }
+                <div>
+                  <dt>Departure supplies</dt>
+                  <dd>{{ runtime.money(entry.knownInfoSnapshot.supplyCostCents) }}</dd>
+                </div>
+              </dl>
+              <blockquote>{{ entry.rationale }}</blockquote>
+              <p class="record-note">
+                Route information was saved when you departed. Later trail costs appear in your
+                money record.
+              </p>
+              <button
+                type="button"
+                class="secondary"
+                [disabled]="historyPinned(entry)"
+                (click)="pinHistory(entry)"
+              >
+                {{ historyPinned(entry) ? '✓ Journey record saved' : 'Save journey record' }}
+              </button>
+            </article>
+          }
+        </details>
+      }
+    </div>
+  </aside>
   @if (reviewOpen() && selectedRoute(); as route) {
     <div class="review-backdrop">
       <section
@@ -515,7 +628,7 @@
         aria-modal="true"
         aria-labelledby="travel-review-title"
       >
-        <span class="eyebrow">Ready to depart?</span>
+        <span class="eyebrow">Ready to go?</span>
         <h2 id="travel-review-title">
           {{ runtime.currentLocation()?.shortName }} → {{ selectedDestination()?.shortName }}
         </h2>
@@ -529,28 +642,34 @@
             <dd>{{ route.estimatedDays }} days · {{ route.risk }} risk</dd>
           </div>
           <div>
-            <dt>Supplies paid now</dt>
+            <dt>Pay for travel now</dt>
             <dd>{{ runtime.money(route.supplyCostCents) }}</dd>
           </div>
           <div>
-            <dt>Cash remaining</dt>
+            <dt>Money left</dt>
             <dd>{{ runtime.money(runtime.cash() - route.supplyCostCents) }}</dd>
           </div>
           @if (profitForecast(); as forecast) {
             <div>
-              <dt>Your profit forecast</dt>
+              <dt>What you hope to earn</dt>
               <dd>{{ runtime.money(forecast.expectedTripProfitCents, true) }}</dd>
             </div>
           }
         </dl>
         <p>
-          You will pay for supplies and record your route choice. Advance travel in Journey; trail
-          events may change the time and cost.
+          @if (runtime.turnBasedWorld) {
+            Confirm your route and supplies to run the departure turn. Wagons move, weather may
+            change, and markets update. Each “Travel next day” runs one more turn. Prices stay fixed
+            while you shop, plan, or resolve a checkpoint.
+          } @else {
+            This pays for your trip. On the map, press “Travel next day” to move. Problems on the
+            trail can cost extra time or money.
+          }
         </p>
         <div class="trip-actions">
           <button class="secondary" type="button" (click)="reviewOpen.set(false)">Go back</button
           ><button class="primary" type="button" [disabled]="!canDepart()" (click)="commit()">
-            Begin journey
+            {{ runtime.turnBasedWorld ? 'Confirm supplies & depart' : 'Start my trip' }}
           </button>
         </div>
       </section>

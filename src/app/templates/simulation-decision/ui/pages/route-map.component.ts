@@ -5,6 +5,7 @@ import {
   OnDestroy,
   afterNextRender,
   computed,
+  effect,
   inject,
   signal,
   viewChild,
@@ -26,6 +27,9 @@ import {
   type AtlasMarketPrice,
 } from '../map/route-atlas.component';
 import { ChoiceProgressionPanelComponent } from '../progression/choice-progression-panel.component';
+import { routeJourneyPresentation } from '../map/route-journey.presentation';
+import { tradeWorldCanvas } from '../map/trade-world.presentation';
+import { RouteEconomyPanelComponent } from '../map/route-economy-panel.component';
 
 export interface RoutePriceProjection {
   readonly goodId: string;
@@ -43,20 +47,24 @@ export interface RoutePriceProjection {
     ReviewDialogDirective,
     RouteAtlasComponent,
     ChoiceProgressionPanelComponent,
+    RouteEconomyPanelComponent,
   ],
   templateUrl: './route-map.component.html',
-  styleUrl: './route-map.component.scss',
+  styleUrls: ['./route-map.component.scss', './route-workspace.scss'],
 })
 export class SimulationRouteMapComponent implements OnDestroy {
   private readonly injector = inject(Injector);
   readonly runtime = inject(SimulationDecisionRuntimeService);
-  readonly plan = this.runtime.planning.at(this.runtime.state().currentLocationId);
+  readonly tradeWorld = computed(() =>
+    tradeWorldCanvas(this.runtime.config, this.runtime.state(), this.runtime.worldMotionAllowed()),
+  );
+  get plan() {
+    return this.runtime.planning.at(this.runtime.state().currentLocationId);
+  }
   readonly progression = computed(() =>
     choiceProgression(this.runtime.config, this.runtime.state()),
   );
-  readonly availableRouteCount = computed(
-    () => this.progression().currentStage.availableRouteIds.length,
-  );
+  readonly availableRouteCount = computed(() => this.reachableRoutes().length);
   readonly routeOptions = computed(() =>
     this.runtime.config.routes.filter(
       (route) => route.fromLocationId === this.runtime.state().currentLocationId,
@@ -70,8 +78,12 @@ export class SimulationRouteMapComponent implements OnDestroy {
     this.runtime.state().inventory.forEach((item) => unlockedIds.add(item.goodId));
     return this.runtime.config.goods.filter((good) => unlockedIds.has(good.id));
   });
-  readonly selectedRouteId = this.plan.routeId;
-  readonly compareIds = this.plan.compareIds;
+  get selectedRouteId() {
+    return this.plan.routeId;
+  }
+  get compareIds() {
+    return this.plan.compareIds;
+  }
   readonly rationale = computed(() => this.plan.rationales()[this.selectedRouteId()] ?? '');
   readonly forecastSalesRevenueCents = computed(
     () => this.plan.forecastSalesRevenueCents()[this.selectedRouteId()],
@@ -81,6 +93,12 @@ export class SimulationRouteMapComponent implements OnDestroy {
   );
   readonly reviewOpen = signal(false);
   readonly journeyLaunching = signal(false);
+  readonly dayMoving = signal(false);
+  readonly journey = computed(() =>
+    routeJourneyPresentation(this.runtime.config, this.runtime.state()),
+  );
+  readonly mapArrival = computed(() => this.journey()?.phase === 'arrival');
+  private dayTimer?: ReturnType<typeof setTimeout>;
   readonly compareOnly = signal(false);
   readonly historyOpen = signal(false);
   readonly plannerOpen = signal(false);
@@ -89,6 +107,7 @@ export class SimulationRouteMapComponent implements OnDestroy {
   readonly predictionPanel = viewChild<ElementRef<HTMLElement>>('predictionPanel');
   readonly atlas = viewChild(RouteAtlasComponent);
   readonly tripCard = viewChild<ElementRef<HTMLElement>>('tripCard');
+  readonly arrivalAction = viewChild<ElementRef<HTMLButtonElement>>('arrivalAction');
   readonly historyPanel = viewChild<ElementRef<HTMLDetailsElement>>('historyPanel');
   private launchTimer?: ReturnType<typeof setTimeout>;
   readonly selectedRoute = computed(() =>
@@ -104,7 +123,13 @@ export class SimulationRouteMapComponent implements OnDestroy {
     return this.runtime.config.goods
       .filter((good) => available.has(good.id))
       .flatMap((good) => {
-        const price = marketPrice(this.runtime.config, state.currentLocationId, good.id, 'buy');
+        const price = marketPrice(
+          this.runtime.config,
+          state.currentLocationId,
+          good.id,
+          'buy',
+          state,
+        );
         return price === undefined
           ? []
           : [{ goodId: good.id, name: good.name, price: this.runtime.money(price) }];
@@ -166,6 +191,23 @@ export class SimulationRouteMapComponent implements OnDestroy {
       !this.runtime.config.routeForecastChallenge?.requiredBeforeDeparture ||
       (this.forecastSalesCorrect() && this.forecastTripProfitCorrect()),
   );
+  readonly shoppingNeeded = computed(
+    () =>
+      this.progression().currentStageIndex < this.progression().stageCount - 1 ||
+      this.plan.draft().length > 0,
+  );
+  readonly forecastStep = signal<'sales' | 'profit'>('sales');
+  continueForecast(): void {
+    if (!this.forecastSalesCorrect()) return;
+    this.forecastStep.set('profit');
+    this.afterViewChange(() =>
+      this.focusPanel(
+        this.tripCard()?.nativeElement.querySelector<HTMLInputElement>(
+          '[aria-describedby="profit-forecast-help"]',
+        ) ?? undefined,
+      ),
+    );
+  }
   readonly displayedRoutes = computed(() =>
     this.compareOnly()
       ? this.reachableRoutes().filter((route) => this.compareIds().includes(route.id))
@@ -216,7 +258,8 @@ export class SimulationRouteMapComponent implements OnDestroy {
       state:
         route.id === this.activeRoute()?.id
           ? 'traveling'
-          : this.journeyHistory().some(
+          : route.fromLocationId !== this.runtime.state().currentLocationId &&
+              this.journeyHistory().some(
                 (entry) => entry.routeId === route.id && entry.dayArrived !== undefined,
               )
             ? 'completed'
@@ -245,9 +288,41 @@ export class SimulationRouteMapComponent implements OnDestroy {
     );
   });
   private destroyed = false;
+  constructor() {
+    effect(() =>
+      this.runtime.holdWorld(
+        'route-math',
+        !this.runtime.state().activeTravel &&
+          (this.plannerOpen() || this.predictionOpen() || this.reviewOpen()),
+      ),
+    );
+  }
   ngOnDestroy(): void {
+    this.runtime.holdWorld('route-math', false);
+    clearTimeout(this.dayTimer);
     this.destroyed = true;
     clearTimeout(this.launchTimer);
+  }
+
+  advanceMapDay(): void {
+    if (
+      this.dayMoving() ||
+      this.journeyLaunching() ||
+      this.runtime.saveState() === 'save_failed' ||
+      this.runtime.state().status === 'paused_by_teacher'
+    )
+      return;
+    if (this.runtime.advanceTravel('route')) {
+      if (this.runtime.saveState() === 'save_failed') return;
+      if (this.mapArrival()) {
+        this.afterViewChange(() => this.focusPanel(this.arrivalAction()?.nativeElement));
+      }
+      const reduced =
+        typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      this.dayMoving.set(true);
+      clearTimeout(this.dayTimer);
+      this.dayTimer = setTimeout(() => this.dayMoving.set(false), reduced ? 0 : 2200);
+    }
   }
   locationName(id: string): string {
     return this.runtime.config.locations.find((location) => location.id === id)?.name ?? id;
@@ -310,6 +385,7 @@ export class SimulationRouteMapComponent implements OnDestroy {
     if (this.reachableRoutes().some((route) => route.id === routeId)) {
       this.highlightedRouteId.set(routeId);
       this.selectedRouteId.set(routeId);
+      this.forecastStep.set('sales');
       this.predictionOpen.set(false);
       this.plannerOpen.set(true);
       this.afterViewChange(() => this.focusPanel(this.tripCard()?.nativeElement));
@@ -317,7 +393,7 @@ export class SimulationRouteMapComponent implements OnDestroy {
       this.showJourneyRecord();
     }
   }
-  showTripDetails(): void {
+  showTripDetails(focusMath = false): void {
     if (this.predictionOpen()) {
       this.afterViewChange(() => this.focusPanel(this.predictionPanel()?.nativeElement));
       return;
@@ -327,7 +403,16 @@ export class SimulationRouteMapComponent implements OnDestroy {
       return;
     }
     this.plannerOpen.set(true);
-    this.afterViewChange(() => this.focusPanel(this.tripCard()?.nativeElement));
+    this.afterViewChange(() => {
+      const panel = this.tripCard()?.nativeElement;
+      const question =
+        this.forecastStep() === 'sales' ? 'sales-forecast-help' : 'profit-forecast-help';
+      this.focusPanel(
+        (focusMath
+          ? panel?.querySelector<HTMLInputElement>(`[aria-describedby="${question}"]`)
+          : undefined) ?? panel,
+      );
+    });
   }
   closePlanner(): void {
     this.plannerOpen.set(false);
@@ -389,7 +474,8 @@ export class SimulationRouteMapComponent implements OnDestroy {
     const destinationId = this.selectedRoute()?.toLocationId;
     return destinationId === undefined
       ? 0
-      : (marketPrice(this.runtime.config, destinationId, goodId, 'sell') ?? 0);
+      : (marketPrice(this.runtime.config, destinationId, goodId, 'sell', this.runtime.state()) ??
+          0);
   }
   goodName(goodId: string): string {
     return this.runtime.config.goods.find((good) => good.id === goodId)?.name ?? goodId;
@@ -397,10 +483,21 @@ export class SimulationRouteMapComponent implements OnDestroy {
   routePriceProjections(route: RouteDefinition): readonly RoutePriceProjection[] {
     return this.planningGoods().map((good) => {
       const buyPriceCents =
-        marketPrice(this.runtime.config, this.runtime.state().currentLocationId, good.id, 'buy') ??
-        0;
+        marketPrice(
+          this.runtime.config,
+          this.runtime.state().currentLocationId,
+          good.id,
+          'buy',
+          this.runtime.state(),
+        ) ?? 0;
       const sellPriceCents =
-        marketPrice(this.runtime.config, route.toLocationId, good.id, 'sell') ?? 0;
+        marketPrice(
+          this.runtime.config,
+          route.toLocationId,
+          good.id,
+          'sell',
+          this.runtime.state(),
+        ) ?? 0;
       return {
         goodId: good.id,
         name: good.name,
@@ -413,12 +510,12 @@ export class SimulationRouteMapComponent implements OnDestroy {
   }
   routeRiskPrediction(route: RouteDefinition): string {
     if (route.risk === 'low') {
-      return 'Fewer interruptions are expected, but the crew should still protect a small cash reserve.';
+      return 'Fewer problems are expected. Save a little money in case you need it.';
     }
     if (route.risk === 'moderate') {
-      return 'Plan for a weather delay, crossing cost, or repair expense before counting the profit.';
+      return 'Weather or repairs could slow you down and cost more money.';
     }
-    return 'Difficult terrain raises the chance of delays, emergency costs, or damaged cargo.';
+    return 'This is a tough trip. You could lose goods or need extra time and money.';
   }
   toggleCompare(routeId: string): void {
     this.compareIds.update((ids) =>
@@ -456,9 +553,14 @@ export class SimulationRouteMapComponent implements OnDestroy {
       if (journey !== undefined) this.pinHistory(journey);
       if (this.runtime.saveState() === 'save_failed') return;
       this.journeyLaunching.set(true);
+      this.plannerOpen.set(false);
+      this.afterViewChange(() => this.focusPanel(this.tripCard()?.nativeElement));
       const reducedMotion =
         typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
-      this.launchTimer = setTimeout(() => this.runtime.navigate('events'), reducedMotion ? 0 : 900);
+      this.launchTimer = setTimeout(
+        () => this.journeyLaunching.set(false),
+        reducedMotion ? 0 : 2200,
+      );
     }
   }
   pinSelected(): void {

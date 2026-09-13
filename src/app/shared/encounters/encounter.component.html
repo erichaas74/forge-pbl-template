@@ -1,0 +1,82 @@
+<div class="encounter" [class.still]="reducedMotion()">
+  <header class="encounter-header">
+    <button class="return-button" (click)="pause(); leave.emit()">← Return to gallery</button>
+    <div class="place-heading"><span>THROUGH THE FRAME</span><strong>{{ definition().title }}</strong></div>
+    <span class="account-badge">Historical reconstruction</span>
+  </header>
+  <div class="encounter-body">
+    <section class="scene-stage" [class.seated]="view().mode === 'listen'" aria-label="Explore the reconstructed setting">
+      <div class="scene-art" [style.transform]="'scale(' + view().zoom + ')'" [style.transform-origin]="view().position + '% 58%'">
+        <img [src]="imageSrc()" [alt]="definition().imageAlt" [style.object-position]="view().position + '% center'" (error)="imageError.set(true)">
+      </div>
+      <div class="scene-light" aria-hidden="true"></div>
+      <div class="location-label"><span class="location-dot"></span><div>{{ definition().location }}<small>{{ definition().date }}</small></div></div>
+      @if (imageError()) { <div class="image-fallback" role="status"><p>The scene image could not load. {{ definition().imageAlt }}</p><p>You can use the descriptions and account to continue.</p><button (click)="retryImage()">Retry scene image</button></div> }
+      @if (view().mode === 'observe' && !imageError()) {
+        @for (destination of definition().views; track destination.id) {
+          @if (destination.mode === 'talk' || destination.mode === 'object') {
+            <button class="scene-pin" [class.person-pin]="destination.mode === 'talk'" [style.left.%]="destination.position" [style.top.%]="destination.mode === 'talk' ? 49 : 65" (click)="go(destination.id)"><span>{{ destination.mode === 'talk' ? '◌' : '⌕' }}</span>{{ destination.label }}</button>
+          }
+        }
+      }
+      <div class="scene-caption"><span>{{ view().mode === 'listen' ? 'A PLACE TO LISTEN' : 'TAKE YOUR TIME' }}</span><p>{{ view().description }}</p></div>
+      <nav class="viewpoints" aria-label="Encounter viewpoints">
+        @for (destination of definition().views; track destination.id; let i = $index) { <button [class.active]="!insightOpen() && view().id === destination.id" [attr.aria-pressed]="!insightOpen() && view().id === destination.id" (click)="go(destination.id)"><small>{{ state().visitedViews.includes(destination.id) ? '✓' : '0' + (i + 1) }}</small>{{ destination.label }}</button> }
+      </nav>
+    </section>
+    <aside #panel class="encounter-panel" aria-label="Encounter conversation and activities">
+      @if (insightOpen()) {
+        <p class="eyebrow">TAKE SOMETHING BACK</p><h2 #heading tabindex="-1">{{ definition().insight.title }}</h2>
+        <p class="claim">{{ definition().insight.claim }}</p>
+        <ul class="preparation"><li>{{ state().chapters.length ? '✓' : '○' }} Read or listen to a story chapter</li><li>{{ state().questions.length ? '✓' : '○' }} Ask a question</li><li>{{ state().features.length ? '✓' : '○' }} Observe an object detail</li></ul>
+        @if (state().insightEarned) {
+          <div class="insight-success" role="status"><span>✓ INSIGHT RECORDED</span><p>{{ definition().insight.explanation }}</p></div>
+          <button class="primary" (click)="pause(); leave.emit()">Return with this insight →</button>
+        } @else {
+          <p class="quiet">Use an independent reference to test the claim. The illustration is a reconstruction.</p>
+          <label class="field">Which reference tests the claim?<select [ngModel]="evidenceId()" (ngModelChange)="evidenceId.set($event)"><option value="">Choose a source</option>@for (source of evidence(); track source.id) { <option [value]="source.id">{{ source.title }}</option> }</select></label>
+          @if (chosenEvidence(); as source) { <article class="source-card"><strong>{{ source.title }}</strong><p>{{ source.text }}</p><a [href]="source.sourceUrl" target="_blank" rel="noopener noreferrer">{{ source.sourceTitle }} ↗</a></article> }
+          <label class="field">How does it relate to the claim?<select [ngModel]="relationship()" (ngModelChange)="relationship.set($event)"><option value="">Choose a relationship</option><option value="supports">Supports the claim</option><option value="contradicts">Contradicts the claim</option><option value="does-not-establish">Does not establish the claim</option></select></label>
+          <button class="primary full" [disabled]="!readyForInsight() || !evidenceId() || !relationship()" (click)="checkInsight()">Check &amp; record insight →</button>
+          @if (!readyForInsight()) { <p class="quiet">Complete the three encounter steps above, then return here.</p> }
+          @if (state().lastCorrect === false) { <p class="check-feedback" role="status">{{ definition().insight.hint }}</p> }
+        }
+      } @else {
+        @switch (view().mode) {
+          @case ('observe') {
+            <p class="eyebrow">YOU HAVE STEPPED INSIDE</p><h2 #heading tabindex="-1">Stay a while.</h2><p>{{ definition().invitation }}</p>
+            <div class="welcome"><span class="speaker">{{ definition().host.name }}</span><blockquote>“{{ definition().host.greeting }}”</blockquote><small>{{ definition().host.role }}</small></div>
+            <p>Choose a place below, or use the markers in the scene. You can return to the painting at any time.</p>
+            @for (destination of definition().views; track destination.id) { @if (destination.mode !== 'observe') { <button class="encounter-choice" (click)="go(destination.id)"><span>{{ destination.label }}</span><b>↗</b></button> } }
+          }
+          @case ('listen') {
+            <p class="eyebrow">STORY TIME · MUSEUM AUDIO GUIDE</p><h2 #heading tabindex="-1">{{ definition().title }}</h2><p class="quiet">Listen, read, pause, or stay a little longer. Each chapter’s complete text appears below.</p>
+            <nav class="story-chapters" aria-label="Story chapters">@for (chapter of definition().chapters; track chapter.id; let i = $index) { <button [class.active]="state().chapterId === chapter.id" [attr.aria-pressed]="state().chapterId === chapter.id" (click)="openChapter(chapter.id)"><b>{{ i + 1 }}</b><span>{{ chapter.title }}</span>@if (state().chapters.includes(chapter.id)) { <small>✓</small> }</button> }</nav>
+          }
+          @case ('talk') {
+            <p class="eyebrow">A CONVERSATION IN THE SCENE</p><h2 #heading tabindex="-1">Start with a question.</h2><p class="quiet">{{ definition().host.role }}. Questions identify the speaker and their sources.</p>
+            <div class="question-choices">@for (question of definition().questions; track question.id) { <button class="encounter-choice" [class.active]="state().questionId === question.id" [disabled]="!!question.requiresQuestionId && !state().questions.includes(question.requiresQuestionId)" [attr.aria-pressed]="state().questionId === question.id" (click)="ask(question.id)"><span>{{ question.title }}@if (question.requiresQuestionId && !state().questions.includes(question.requiresQuestionId)) { <small>Follow-up · open the earlier question first</small> }</span><b>{{ state().questions.includes(question.id) ? '✓' : '↗' }}</b></button> }</div>
+          }
+          @case ('object') {
+            <p class="eyebrow">LOOK MORE CLOSELY</p><h2 #heading tabindex="-1">{{ definition().object.title }}</h2><p>{{ definition().object.description }}</p>
+            <div class="object-lens" [style.background-image]="'url(' + definition().image + ')'" [style.background-position]="lens() + '% 70%'" role="img" [attr.aria-label]="'Magnified illustration: ' + definition().object.title"></div>
+            <label class="field">Move the inspection lens<input type="range" min="0" max="100" [ngModel]="lens()" (ngModelChange)="lens.set(+$event)" aria-label="Move the inspection lens"></label>
+            @for (feature of definition().object.features; track feature.id) { <button class="encounter-choice" [class.active]="selectedFeature() === feature.id" (click)="inspectFeature(feature.id)"><span>{{ feature.label }}</span><b>{{ state().features.includes(feature.id) ? '✓' : '＋' }}</b></button> }
+            @if (feature(); as feature) { <p class="observation" role="status">{{ feature.text }}</p> }
+          }
+        }
+        @if (spoken(); as line) {
+          <article class="spoken-account" aria-live="polite"><span class="speaker">{{ line.speaker }}</span><h3>{{ line.title }}</h3>
+            <audio #player controls preload="none" [src]="line.audioSrc" [attr.aria-label]="'Listen to ' + line.title" (error)="audioError.set(true)"></audio>
+            @if (audioError()) { <p role="status">Audio is unavailable. The complete account is readable below.</p> }
+            <p class="transcript">{{ line.text }}</p>
+            <details><summary>Sources behind this account</summary>@for (source of sources(); track source.id) { @if (line.evidenceIds.includes(source.id)) { <p><strong>{{ source.title }}</strong><br>{{ source.text }}<br><a [href]="source.sourceUrl" target="_blank" rel="noopener noreferrer">{{ source.sourceTitle }} ↗</a></p> } }</details>
+          </article>
+        }
+      }
+      <footer class="encounter-notebook"><div class="notebook-heading"><span>YOUR ENCOUNTER NOTES</span><b>{{ state().insightEarned ? '✓' : '◇' }}</b></div><p>{{ state().chapters.length }} chapters opened · {{ state().questions.length }} questions asked · {{ state().features.length }} details observed</p>@if (!insightOpen()) { <button class="primary full" (click)="showInsight()">{{ state().insightEarned ? 'Review your insight' : 'Keep an insight' }} ↗</button> }
+        <details class="about-account"><summary>About this reconstruction</summary><p>{{ definition().attribution }}</p></details>
+      </footer>
+    </aside>
+  </div>
+</div>

@@ -1,0 +1,141 @@
+<section
+  class="chamber"
+  aria-label="Balance lock workshop"
+  [class.is-complete]="completed()"
+  [class.reduced-motion]="reducedMotion()"
+>
+  <header class="workshop-header">
+    <button class="back" (click)="leave.emit()" [disabled]="paused()">← Back to castle</button>
+    <div>
+      <p class="eyebrow">THE KEEPER’S WORKSHOP</p>
+      <h1 #heading tabindex="-1">{{ title() }}</h1>
+    </div>
+    <div class="header-tools">
+      <button class="help" (click)="pauseRequested.emit()">Pause</button
+      ><button class="help" (click)="help.set(!help())" [attr.aria-expanded]="help()">
+        How it works
+      </button>
+    </div>
+  </header>
+  <nav class="seals" aria-label="Connected balance seals">
+    @for (scale of definition().scales; track scale.id; let i = $index) {
+      <button
+        (click)="changeScale(i)"
+        [disabled]="paused()"
+        [class.active]="active() === i"
+        [class.sealed]="sealed().includes(i) || completed()"
+        [attr.aria-current]="active() === i ? 'step' : null"
+      >
+        <span class="seal-medal">{{ sealed().includes(i) || completed() ? '✓' : i + 1 }}</span
+        ><span
+          >{{ scale.title
+          }}<small>{{
+            sealed().includes(i) || completed() ? 'RELEASED' : 'AWAITING BALANCE'
+          }}</small></span
+        >
+      </button>
+    }
+  </nav>
+  @if (help()) {
+    <aside class="instructions">
+      <strong>Equal mass opens the lock.</strong> Drag a weight onto either pan; drag it back to the
+      tray to remove it. Larger block faces mean more mass: 1/2 has twice the face area of 1/4.
+      Fixed blocks stay put. The heavier side drops. Match both loads, then engage the pin. You can
+      also select a block below and use the pan buttons.
+    </aside>
+  }
+  <div class="stage-shell">
+    <div #stage class="stage"></div>
+    <p class="stage-instruction">
+      {{ completed() ? 'ALL SEALS RELEASED · THE WAY IS OPEN' : scale().instruction }}
+    </p>
+    @if (!ready() || error()) {
+      <p class="loading" role="status">
+        {{
+          error()
+            ? 'The chamber artwork could not load. The accessible weight controls below still work.'
+            : 'Winding the balance mechanism…'
+        }}
+      </p>
+    }
+    @if (completed()) {
+      <div class="release-banner">
+        <span>✦</span><strong>Perfect equilibrium.</strong>
+        <p>Chains tighten. Bolts withdraw. The way is open.</p>
+      </div>
+    }
+  </div>
+  <footer class="workbench">
+    <div class="equilibrium">
+      <div>
+        <p class="eyebrow">{{ locked() ? 'SEAL RELEASED' : 'LIVE BALANCE' }}</p>
+        <p class="equation" [class.equal]="reading().balanced">{{ reading().equation }}</p>
+      </div>
+      <p class="status" role="status" aria-live="polite">{{ notice() }}</p>
+      @if (completed()) {
+        <button class="primary" (click)="continued.emit()" [disabled]="paused()">
+          Return to the rescue →
+        </button>
+      } @else if (locked() && sealed().length < definition().scales.length) {
+        <button class="primary" (click)="nextSeal()" [disabled]="paused()">Next seal →</button>
+      } @else if (sealed().length === definition().scales.length) {
+        <button class="primary" (click)="retrySave()" [disabled]="paused()">
+          Retry opening lock
+        </button>
+      } @else {
+        <button class="primary" (click)="engage()" [disabled]="paused()">
+          Engage release pin <span>↗</span>
+        </button>
+      }
+    </div>
+    @if (saveWarning()) {
+      <p class="save-warning" role="alert">{{ saveWarning() }}</p>
+    }
+    <div class="tools-row">
+      <button (click)="controls.set(!controls())" [attr.aria-expanded]="controls()">
+        {{ controls() ? 'Hide' : 'Show' }} keyboard / tap controls
+      </button>
+      <span>Drag between either pan and the tray · {{ scale().unit }}</span>
+      <button (click)="resetScale()" [disabled]="paused() || completed()">Reset this scale</button>
+    </div>
+    @if (controls() || error()) {
+      <div class="accessible-controls" aria-label="Weight placement controls">
+        <div class="piece-buttons">
+          @for (block of blocks(); track block.index) {
+            <button
+              (click)="select(block.index)"
+              [disabled]="locked() || paused()"
+              [attr.aria-pressed]="selected() === block.index"
+              [attr.aria-label]="
+                'Select weight ' + format(block.piece) + ', piece ' + (block.index - offset() + 1)
+              "
+            >
+              {{ format(block.piece)
+              }}<small>{{
+                block.side === 1 ? 'LEFT PAN' : block.side === 2 ? 'RIGHT PAN' : 'TRAY'
+              }}</small>
+            </button>
+          }
+        </div>
+        <div class="pan-buttons">
+          <button
+            (click)="placeSelected(1)"
+            [disabled]="selected() === null || locked() || paused()"
+          >
+            Place on left pan</button
+          ><button
+            (click)="placeSelected(2)"
+            [disabled]="selected() === null || locked() || paused()"
+          >
+            Place on right pan</button
+          ><button
+            (click)="placeSelected(0)"
+            [disabled]="selected() === null || locked() || paused()"
+          >
+            Return to tray
+          </button>
+        </div>
+      </div>
+    }
+  </footer>
+</section>

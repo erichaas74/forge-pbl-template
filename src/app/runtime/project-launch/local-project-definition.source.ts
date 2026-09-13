@@ -9,9 +9,11 @@ export class LocalProjectDefinitionSource implements ProjectDefinitionSource {
   async load(project: ProjectCatalogEntry): Promise<unknown> {
     switch (project.packageReference) {
       case 'projects/calendar-monument':
-        return (await import('../../projects/calendar-monument/calendar-monument.config')).calendarMonumentConfig;
+        return (await import('../../projects/calendar-monument/calendar-monument.config'))
+          .calendarMonumentConfig;
       case 'projects/robot-delivery-code-lab':
-        return (await import('../../projects/robot-delivery/robot-delivery.config')).robotDeliveryConfig;
+        return (await import('../../projects/robot-delivery/robot-delivery.config'))
+          .robotDeliveryConfig;
       case 'projects/mystery-substance':
         return (await import('../../projects/mystery-substance/mystery-substance.package'))
           .mysterySubstanceCatalogPackage;
@@ -19,8 +21,8 @@ export class LocalProjectDefinitionSource implements ProjectDefinitionSource {
         return (await import('../../projects/frontier-trading/frontier-trading.config'))
           .frontierTradingConfig;
       case 'projects/objects-that-changed-us':
-        return (await import('../../projects/class-exhibit-hall/class-exhibit-hall.config'))
-          .classExhibitHallConfig;
+        return (await import('../../projects/class-exhibit-hall/student-museum.config'))
+          .studentMuseumConfig;
       case 'projects/history-live-revolutionary-war':
         return (
           await import('../../projects/history-live-revolutionary-war/history-live-revolutionary-war.config')

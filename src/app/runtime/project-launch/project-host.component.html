@@ -8,6 +8,8 @@
     <p>{{ error() }}</p>
     <a routerLink="/projects">Return to projects</a>
   </main>
+} @else if (previewUrl(); as url) {
+  <iframe class="project-preview" [src]="url" [title]="project()?.title + ' — project preview'"></iframe>
 } @else {
   @if (isActivity() && hasIntro() && !usesIntegratedActivityHeader() && project(); as current) {
     <nav class="project-return-bar" aria-label="Project launch and example">

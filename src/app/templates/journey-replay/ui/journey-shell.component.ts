@@ -21,6 +21,8 @@ import { ClassJourneyMapComponent } from './class-journey-map.component';
 import { JourneyDecisionPanelComponent } from './journey-decision-panel.component';
 import { JourneyReplayPlayerComponent } from './journey-replay-player.component';
 import { LivingJourneyMapComponent } from './map/living-journey-map.component';
+import { JourneyAdventureSceneComponent } from './journey-adventure-scene.component';
+import { JourneyHistoryContextComponent } from './journey-history-context.component';
 
 type JourneyUtility = 'mission' | 'location' | 'manifest' | 'log' | 'records';
 
@@ -32,6 +34,8 @@ type JourneyUtility = 'mission' | 'location' | 'manifest' | 'log' | 'records';
     JourneyReplayPlayerComponent,
     LivingJourneyMapComponent,
     RouterLink,
+    JourneyAdventureSceneComponent,
+    JourneyHistoryContextComponent,
   ],
   templateUrl: './journey-shell.html',
   styleUrl: './journey-shell.scss',
@@ -44,6 +48,14 @@ export class JourneyReplayPageComponent {
   readonly decisionPanel = viewChild(JourneyDecisionPanelComponent);
   readonly livingMap = viewChild(LivingJourneyMapComponent);
   readonly decisionOpen = signal(true);
+  readonly currentLocation = computed(() => {
+    const id =
+      this.runtime.state().route.at(-1)?.locationId ?? this.runtime.step()?.positionLocationId;
+    return this.runtime.config.map.locations.find((location) => location.id === id);
+  });
+  readonly adventure = computed(
+    () => this.runtime.step()?.adventure ?? this.runtime.config.steps.at(-1)?.adventure,
+  );
   readonly utility = signal<JourneyUtility | undefined>(undefined);
   readonly inspectedLocation = signal<MapLocation | undefined>(undefined);
   readonly inspectedRouteId = signal<string | undefined>(undefined);

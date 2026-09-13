@@ -5,7 +5,7 @@ export const robotDeliveryIntro: ProjectIntroConfig = {
   projectId: 'robot-delivery-code-lab',
   version: '1.0.0',
   theme: 'robotics',
-  image: '/robot-delivery/arena-launch-v2.png',
+  image: '/robot-delivery/arena-launch-v2.webp',
   imageAlt:
     'A teal and ivory delivery robot carries an orange crate through a futuristic warehouse with glowing cyan routes, golden parking pads, and green delivery zones.',
   kicker: 'Engineering dispatch · Your robot is waiting.',

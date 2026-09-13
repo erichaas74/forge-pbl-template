@@ -33,6 +33,7 @@ export const engineeringEvents = {
   trial: 'activity.completed',
   checks: 'engineering.checksSaved',
   step: 'engineering.learningStepSelected',
+  walkthrough: 'engineering.walkthroughSaved',
 } as const;
 
 @Injectable()
@@ -46,6 +47,7 @@ export class EngineeringDesignRuntime {
     schemaVersion: '1.0',
     revision: 0,
     design: structuredClone(this.config.starterDesign),
+    checks: structuredClone(this.config.starterChecks ?? []),
     research: {},
     prediction: '',
     exhibit: '',
@@ -87,8 +89,33 @@ export class EngineeringDesignRuntime {
     const current = this.snapshot();
     this.commit(engineeringEvents.design, {
       design: sample.design,
-      checks: [],
+      checks: sample.checks ?? [],
       designBackup: { design: current.design, checks: current.checks ?? [] },
+    });
+  }
+  selectLearningTask(stepId: string, taskId: string): void {
+    if (
+      !this.config.learningSequence?.steps.some(
+        (s) => s.id === stepId && s.tasks?.some((t) => t.id === taskId),
+      )
+    )
+      throw new Error('STATE_INVALID: Unknown walkthrough task.');
+    this.commit(engineeringEvents.walkthrough, { learningStepId: stepId, learningTaskId: taskId });
+  }
+  saveWalkthroughNote(stepId: string, taskId: string, answer: string): void {
+    const task = this.config.learningSequence?.steps
+      .find((s) => s.id === stepId)
+      ?.tasks?.find((t) => t.id === taskId);
+    if (
+      !task?.response ||
+      (task.response.options && !task.response.options.includes(answer) && answer !== '')
+    )
+      throw new Error('STATE_INVALID: Unknown walkthrough response.');
+    this.commit(engineeringEvents.walkthrough, {
+      walkthroughNotes: {
+        ...this.snapshot().walkthroughNotes,
+        [stepId + '/' + taskId]: answer.slice(0, 2000),
+      },
     });
   }
   restoreDesignBackup(): void {

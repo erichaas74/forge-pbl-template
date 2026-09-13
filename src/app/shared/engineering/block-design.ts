@@ -1,6 +1,8 @@
 /** Metres throughout. X points east, Y up, Z south; rotation is degrees about Y. */
 export interface DesignBlock {
   readonly id: string;
+  readonly label?: string;
+  readonly assemblyId?: string;
   readonly x: number;
   readonly y: number;
   readonly z: number;
@@ -32,6 +34,10 @@ export interface DesignTarget {
   readonly label: string;
   readonly x: number;
   readonly z: number;
+  /** Optional elevation in metres. Omitted means a ground target. */
+  readonly y?: number;
+  /** Outward unit normal for a surface mark. Omitted means up. */
+  readonly normal?: readonly [number, number, number];
   /** Optional observation context for a learner-placed reference mark. */
   readonly settings?: Readonly<Record<string, string | number>>;
 }
@@ -95,13 +101,16 @@ export function isBlockDesign(v: unknown): v is BlockDesign {
       (b: unknown) =>
         record(b) &&
         text(b['id']) &&
+        (b['label'] === undefined || text(b['label'], 80)) &&
+        (b['assemblyId'] === undefined || text(b['assemblyId'], 80)) &&
         finite(b['x'], -12, 12) &&
         finite(b['z'], -12, 12) &&
         finite(b['y'], 0, 10) &&
         finite(b['width'], 0.01, 5) &&
         finite(b['height'], 0.01, 5) &&
         finite(b['depth'], 0.01, 5) &&
-        finite(b['rotation'], 0, 359) &&
+        finite(b['rotation'], 0, 360) &&
+        Number(b['rotation']) < 360 &&
         (b['aperture'] === undefined || isDesignAperture(b['aperture'], b)),
     ) &&
     targets.every(
@@ -111,6 +120,12 @@ export function isBlockDesign(v: unknown): v is BlockDesign {
         text(t['label'], 80) &&
         finite(t['x'], -12, 12) &&
         finite(t['z'], -12, 12) &&
+        (t['y'] === undefined || finite(t['y'], 0, 15)) &&
+        (t['normal'] === undefined ||
+          (Array.isArray(t['normal']) &&
+            t['normal'].length === 3 &&
+            t['normal'].every((n: unknown) => finite(n, -1, 1)) &&
+            Math.abs(Math.hypot(...t['normal']) - 1) < 1e-6)) &&
         (t['settings'] === undefined ||
           (record(t['settings']) &&
             Object.entries(t['settings']).length <= 8 &&

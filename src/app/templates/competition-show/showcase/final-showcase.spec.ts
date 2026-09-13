@@ -63,10 +63,16 @@ function showcase(config = demo) {
   return fixture;
 }
 
-it('plays the entire fictional final without reading or writing a rehearsal', () => {
+it('autostarts and advances every four seconds, revealing results before leaving each round without accessing a rehearsal', () => {
   const read = vi.spyOn(Storage.prototype, 'getItem'); const write = vi.spyOn(Storage.prototype, 'setItem');
   const fixture = showcase(); const c = fixture.componentInstance;
-  c.play(); vi.advanceTimersByTime(118000);
+  c.director.reducedMotion.set(false);
+  expect(c.playing()).toBe(true);
+  for (let chapter = 0; chapter < 8; chapter++) {
+    vi.advanceTimersByTime(3999); expect(c.chapter()).toBe(chapter);
+    if ([3, 5, 7].includes(chapter)) expect(c.resultShown()).toBe(true);
+    vi.advanceTimersByTime(1); expect(c.chapter()).toBe(chapter + 1);
+  }
   expect(c.chapter()).toBe(8); expect(c.playing()).toBe(false);
   expect(c.currentState().championId).toBe('nova');
   expect(read).not.toHaveBeenCalled(); expect(write).not.toHaveBeenCalled();
@@ -82,21 +88,78 @@ it('cancels chapter timers and hidden question reveals when the viewer navigates
   fixture.destroy();
 });
 
-it('waits for an uploaded recap to end and recovers to the storyboard when media fails', () => {
+it('keeps the four-second cadence for a recap video and its failed-media storyboard fallback', () => {
   const fixture = showcase({ ...demo, recapVideo: '/projects/championship-show/media/mock-recap.mp4' });
-  const c = fixture.componentInstance; c.play(); vi.advanceTimersByTime(76000);
+  const c = fixture.componentInstance; c.play(); vi.advanceTimersByTime(3999);
   expect(c.chapter()).toBe(1);
-  c.videoEnded(); expect(c.chapter()).toBe(2);
-  c.go(1); c.videoError(); vi.advanceTimersByTime(33000); expect(c.chapter()).toBe(2);
+  vi.advanceTimersByTime(1); expect(c.chapter()).toBe(2);
+  c.go(1); c.videoError(); vi.advanceTimersByTime(3999); expect(c.chapter()).toBe(1);
+  vi.advanceTimersByTime(1); expect(c.chapter()).toBe(2);
   fixture.destroy();
 });
 
 it('lets the audience play all three silly breaks independently of the competition', () => {
-  const fixture = TestBed.createComponent(QuizBreakComponent); fixture.componentRef.setInput('image', demo.mysteryImage); fixture.detectChanges();
-  const c = fixture.componentInstance; c.guess('A tiny submarine'); fixture.detectChanges();
-  expect(fixture.nativeElement.textContent).toContain('rubber duck in sunglasses');
-  c.choose('wrong'); fixture.detectChanges(); expect(fixture.nativeElement.textContent).toContain('calculator join the band');
+  const fixture = TestBed.createComponent(QuizBreakComponent); fixture.detectChanges();
+  const c = fixture.componentInstance; c.guess('Loose pizza'); fixture.detectChanges();
+  expect(fixture.nativeElement.textContent).toContain('Excellent at fractions');
+  expect(fixture.nativeElement.querySelector('.odd-reveal').textContent).toContain('Loose pizza');
+  c.nextOddRound(); fixture.detectChanges(); expect(c.revealed()).toBe(false);
+  expect(fixture.nativeElement.textContent).toContain('T. rex');
+  c.choose('wrong'); fixture.detectChanges(); expect(fixture.nativeElement.textContent).toContain('Homework-Eating Backpack');
+  c.nextPitch(); fixture.detectChanges(); expect(fixture.nativeElement.textContent).toContain('Remote-Control Recess Button');
   c.choose('pose'); fixture.detectChanges(); expect(fixture.nativeElement.textContent).toContain('Play seated or standing');
   expect(fixture.nativeElement.textContent).toContain('No points. No grades.');
+  fixture.destroy();
+});
+
+it('supports optional project recap artwork and rejects unsafe paths or missing descriptions', () => {
+  expect(demo.highlights[0].image?.src).toContain('week-1-budget-surprise');
+  expect(demo.highlights[1].image?.src).toContain('week-2-graph-showdown');
+  const withImage = (image: unknown) => ({ ...demo, highlights: [{ ...demo.highlights[0], image }, ...demo.highlights.slice(1)] });
+  expect(() => requireFinalShowcase(withImage(undefined), project)).not.toThrow();
+  expect(() => requireFinalShowcase(withImage({ src: '//outside.example/image.png', alt: 'Recap' }), project)).toThrow();
+  expect(() => requireFinalShowcase(withImage({ src: '/art/recap.png', alt: '' }), project)).toThrow();
+});
+
+it('reveals the refreshed quiz-break jokes during autoplay and cancels them when paused', () => {
+  vi.useFakeTimers();
+  const fixture = TestBed.createComponent(QuizBreakComponent); const c = fixture.componentInstance;
+  fixture.componentRef.setInput('autoplay', true); fixture.detectChanges();
+  vi.advanceTimersByTime(1599); expect(c.revealed()).toBe(false);
+  vi.advanceTimersByTime(1); expect(c.revealed()).toBe(true);
+  c.choose('wrong'); fixture.detectChanges(); vi.advanceTimersByTime(1600);
+  expect(c.response()).toBe(c.pitches[0].tagline);
+  c.nextPitch(); fixture.detectChanges(); fixture.componentRef.setInput('autoplay', false); fixture.detectChanges();
+  vi.advanceTimersByTime(4000); expect(c.response()).toBe('');
+  c.choose('pose'); fixture.componentRef.setInput('autoplay', true); fixture.detectChanges();
+  vi.advanceTimersByTime(1600); expect(c.frozen()).toBe(true);
+  fixture.destroy();
+});
+
+it('keeps navigation in the header and teacher controls behind an explicitly opened dialog', () => {
+  const fixture = showcase(); const c = fixture.componentInstance; c.pause(); fixture.detectChanges();
+  const root: HTMLElement = fixture.nativeElement;
+  expect(root.querySelector('header nav[aria-label="Fictional final chapters"]')).not.toBeNull();
+  expect(root.querySelector('main nav')).toBeNull(); expect(root.querySelector('footer')).toBeNull();
+  expect(root.querySelectorAll('h1')).toHaveLength(1);
+  expect(root.textContent).not.toContain('Open championship setup');
+  c.play(); c.openTeacher(); fixture.detectChanges();
+  expect(c.playing()).toBe(false); expect(c.teacherOpen()).toBe(true);
+  expect(root.querySelector('dialog')?.textContent).toContain('Open championship setup');
+  const chapter = c.chapter(); vi.advanceTimersByTime(5000); expect(c.chapter()).toBe(chapter);
+  c.closeTeacher(); fixture.detectChanges(); expect(root.textContent).not.toContain('Open championship setup');
+  expect(document.activeElement).toBe(c.teacherButton()?.nativeElement);
+  fixture.destroy();
+});
+
+it('keeps the director off the audience stage and places game selection only in the header', () => {
+  const fixture = showcase(); const c = fixture.componentInstance; c.selectChapter(3); fixture.detectChanges();
+  const root: HTMLElement = fixture.nativeElement;
+  expect(root.querySelector('[aria-label="Camera and show direction"]')).toBeNull();
+  expect(root.textContent).not.toContain('Reveal scripted result');
+  c.selectChapter(4); fixture.detectChanges();
+  expect(root.querySelector('header [aria-label="Quiz break games"]')).not.toBeNull();
+  expect(root.querySelector('main nav')).toBeNull();
+  c.selectGame('wrong'); fixture.detectChanges(); expect(root.querySelector('main')?.textContent).toContain('Homework-Eating Backpack');
   fixture.destroy();
 });

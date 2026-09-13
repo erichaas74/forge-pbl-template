@@ -18,6 +18,25 @@ describe('JourneyReplayProjectPackageAssembler', () => {
       map: { startLocationId: 'lisbon' },
     });
     expect(result.graph?.replay.classVoyages).toHaveLength(5);
+    expect(result.graph?.journey.historicalFrame?.events).toHaveLength(5);
+  });
+
+  it('rejects historical context without a usable source before publishing a package', () => {
+    const journey = simpleJourneyReplayPackage['journey.json'];
+    const result = new JourneyReplayProjectPackageAssembler().assemble(
+      simpleJourneyReplayLocation,
+      {
+        ...simpleJourneyReplayPackage,
+        'journey.json': {
+          ...journey,
+          historicalFrame: { ...journey.historicalFrame, events: [{ id: 'unsupported-event' }] },
+        },
+      },
+    );
+    expect(result.graph).toBeUndefined();
+    expect(result.issues).toContainEqual(
+      expect.objectContaining({ code: 'JOURNEY_HISTORY_INVALID' }),
+    );
   });
 
   it('rejects route choices that reference missing geometry', () => {

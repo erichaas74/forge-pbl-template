@@ -1,38 +1,37 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { afterNextRender, Component, computed, effect, ElementRef, inject, Injector, input, signal, viewChild } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
-import type { CommandType, RobotCommand, RobotProgram } from '../domain/automation.models';
+import type { CommandType, MoveMathOperation, RobotCommand, RobotProgram } from '../domain/automation.models';
 import { AutomationRuntimeService } from '../runtime/automation-runtime.service';
 import { transformCommands } from '../core/automation-state';
 import { evidenceIsCorrect } from '../core/automation-math';
 import { compileProgram } from '../core/automation-compiler';
+import { moveMathOperations } from '../core/move-math';
 import { CommandGraphicComponent } from './command-graphic.component';
-export const commandLabels: Record<CommandType, string> = {
-  'move-distance': 'Move distance',
-  'move-rotations': 'Move rotations',
-  'turn-degrees': 'Turn degrees',
-  'turn-fraction': 'Turn fraction',
-  wait: 'Wait',
-  'pick-up': 'Pick up',
-  'drop-off': 'Drop off',
-  repeat: 'Repeat',
-};
-export const commandDescriptions: Record<CommandType, string> = {
-  'move-distance': 'Drive forward a distance in centimeters.',
-  'move-rotations': 'Drive forward by spinning the wheels.',
-  'turn-degrees': 'Turn left or right by an angle.',
-  'turn-fraction': 'Turn left or right by part of a full circle.',
-  wait: 'Pause before the next block.',
-  'pick-up': 'Collect a package at the robot’s position.',
-  'drop-off': 'Deliver a package to its matching zone.',
-  repeat: 'Run the blocks inside a set number of times.',
-};
+import { CommandPaletteComponent } from './command-palette.component';
+import { commandLabels, commandDescriptions } from './command-catalog';
+export { commandLabels, commandDescriptions } from './command-catalog';
 @Component({
   selector: 'app-command-editor',
-  imports: [NgTemplateOutlet, CommandGraphicComponent],
+  imports: [NgTemplateOutlet, CommandGraphicComponent, CommandPaletteComponent],
   templateUrl: './command-editor.component.html',
   styleUrl: './command-editor.component.css',
 })
 export class CommandEditorComponent {
+  private readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
+  private readonly palette = viewChild<ElementRef<HTMLElement>>('paletteHost');
+  readonly insertion = signal<{ challengeId: string; parentId: string } | undefined>(undefined);
+  readonly addedMessage = signal('');
+  readonly insertionParent = computed(() => {
+    const insertion = this.insertion();
+    if (!insertion || insertion.challengeId !== this.runtime.challenge().id) return undefined;
+    const command = this.commandPath(this.program().commands, insertion.parentId).at(-1);
+    return command?.type === 'repeat' ? command : undefined;
+  });
+  readonly insertionLabel = computed(() => {
+    const parent = this.insertionParent();
+    return parent ? `Inside Repeat (${parent.value || '?'} times)` : 'Program end';
+  });
   readonly shownIssues = computed(
     () =>
       compileProgram(
@@ -69,6 +68,14 @@ export class CommandEditorComponent {
   dragged = '';
   readonly program = computed(() => this.snapshot() ?? this.runtime.draft().program);
   readonly readOnly = computed(() => !!this.snapshot() || !this.runtime.canEdit());
+  constructor() {
+    effect(() => {
+      this.runtime.challenge().id;
+      this.snapshot();
+      this.insertion.set(undefined);
+      this.addedMessage.set('');
+    });
+  }
   label(type: CommandType): string {
     return commandLabels[type];
   }
@@ -80,6 +87,9 @@ export class CommandEditorComponent {
   }
   valueWidth(value: string): number {
     return Math.min(18, Math.max(5, value.length + 2));
+  }
+  mathOperation(operation: MoveMathOperation) {
+    return moveMathOperations[operation];
   }
   unitOptions(type: CommandType): readonly { type: CommandType; label: string }[] {
     return (type.startsWith('move') ? this.motionUnits : this.turnUnits).filter(
@@ -105,10 +115,42 @@ export class CommandEditorComponent {
   edit(id: string, patch: Partial<RobotCommand>): void {
     if (!this.readOnly()) this.runtime.editCommand(id, patch);
   }
-  add(select: HTMLSelectElement, parentId?: string): void {
-    if (select.value && !this.readOnly())
-      this.runtime.addCommand(select.value as CommandType, parentId);
-    select.value = '';
+  private commandPath(commands: readonly RobotCommand[], id: string): readonly RobotCommand[] {
+    for (const command of commands) {
+      if (command.id === id) return [command];
+      const path = this.commandPath(command.commands ?? [], id);
+      if (path.length) return [command, ...path];
+    }
+    return [];
+  }
+  focusPalette(parentId?: string): void {
+    if (parentId && this.readOnly()) return;
+    this.insertion.set(parentId ? { challengeId: this.runtime.challenge().id, parentId } : undefined);
+    afterNextRender(() => {
+      const palette = this.palette()?.nativeElement;
+      palette?.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+      palette?.focus({ preventScroll: true });
+    }, { injector: this.injector });
+  }
+  addBlock(type: CommandType): void {
+    if (this.readOnly() || !this.runtime.challenge().allowedCommands.includes(type)) return;
+    const parent = this.insertionParent();
+    this.runtime.addCommand(type, parent?.id);
+    const id = this.runtime.selectedCommandId();
+    const path = this.commandPath(this.program().commands, id);
+    if (!path.length) return;
+    this.collapsed.update((collapsed) => {
+      const next = new Set(collapsed);
+      path.forEach((command) => next.delete(command.id));
+      return next;
+    });
+    this.addedMessage.set(`${this.labels[type]} added ${parent ? 'inside Repeat' : 'to your program'}.`);
+    afterNextRender(() => {
+      const block = Array.from(this.element.nativeElement.querySelectorAll<HTMLElement>('[data-command-id]'))
+        .find((element) => element.dataset['commandId'] === id);
+      block?.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+      block?.querySelector<HTMLElement>('.block-input, .package, .choose')?.focus({ preventScroll: true });
+    }, { injector: this.injector });
   }
   remove(id: string): void {
     this.runtime.setCommands(transformCommands(this.program().commands, id, () => []));

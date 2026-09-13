@@ -10,9 +10,9 @@
     "id": "midnight-gold", "label": "Midnight / Gold",
     "palette": { "background": "#050b18", "metal": "#243145", "accent": "#edc875", "secondary": "#65bde8", "text": "#f8f4e9", "teamColors": ["#73cafa", "#e8b862", "#ac99f2", "#77d5b4", "#e993a5", "#8eaef8", "#dac284", "#8ac6c0"] },
     "assets": {
-      "backdrop": "/projects/championship-show/art/midnight-studio-wall-v1.png",
-      "bracketBackdrop": "/projects/championship-show/art/midnight-studio-wall-v1.png",
-      "winnerBackdrop": "/projects/championship-show/art/midnight-studio-wall-v1.png"
+      "backdrop": "/projects/championship-show/art/midnight-studio-wall-v1.webp",
+      "bracketBackdrop": "/projects/championship-show/art/midnight-studio-wall-v1.webp",
+      "winnerBackdrop": "/projects/championship-show/art/midnight-studio-wall-v1.webp"
     },
     "camera": { "moveMs": 1500, "revealMs": 850, "fieldOfView": 39 },
     "materials": { "floorRoughness": 0.18, "podiumMetalness": 0.72 }

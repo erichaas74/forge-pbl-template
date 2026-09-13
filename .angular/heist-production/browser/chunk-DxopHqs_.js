@@ -1,0 +1,1 @@
+import{t as I}from"./chunk-zm0lSSrW.js";export{I as classExhibitHallConfig};

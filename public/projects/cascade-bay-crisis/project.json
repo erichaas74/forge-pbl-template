@@ -9,8 +9,8 @@
   "title": "Cascade Bay",
   "region": "Coastal district · Sector 07",
   "operationCode": "CB / 072",
-  "roomImage": "/crisis-center/operations-room-integrated-stations.png",
-  "newsImage": "/crisis-center/river-camera.png",
+  "roomImage": "/crisis-center/operations-room-integrated-stations.webp",
+  "newsImage": "/crisis-center/river-camera.webp",
   "workstations": [
     {
       "id": "river-weather",
@@ -31,7 +31,7 @@
       "weather": {
         "title": "Cascade Bay weather",
         "network": "CASCADE WEATHER",
-        "satelliteImage": "/crisis-center/watershed-satellite.png",
+        "satelliteImage": "/crisis-center/watershed-satellite.webp",
         "frames": [
           { "stage": 0, "minute": 22, "x": 400, "y": 250, "intensity": 0.45 },
           { "stage": 0, "minute": 27, "x": 470, "y": 265, "intensity": 0.55 },
@@ -72,7 +72,7 @@
             "name": "Maya Chen",
             "role": "Field coordinator · Pine Valley",
             "locationId": "pine",
-            "portrait": "/crisis-center/field-coordinator.png",
+            "portrait": "/crisis-center/field-coordinator.webp",
             "evidenceIds": ["field-01", "response-03", "waiting-03"]
           },
           {
@@ -80,7 +80,7 @@
             "name": "Avery Brooks",
             "role": "Logistics lead · Ridge shelter",
             "locationId": "shelter",
-            "portrait": "/crisis-center/logistics-coordinator.png",
+            "portrait": "/crisis-center/logistics-coordinator.webp",
             "evidenceIds": ["resources-01", "hospital-02"]
           },
           {
@@ -88,7 +88,7 @@
             "name": "Jonah Reed",
             "role": "Infrastructure engineer · North bridge",
             "locationId": "bridge",
-            "portrait": "/crisis-center/infrastructure-engineer.png",
+            "portrait": "/crisis-center/infrastructure-engineer.webp",
             "evidenceIds": ["bridge-02", "harbor-03"]
           }
         ]
@@ -594,6 +594,6 @@
         "x": 23
       }
     ],
-    "sprite": "/crisis-center/argus-rover.png"
+    "sprite": "/crisis-center/argus-rover.webp"
   }
 }

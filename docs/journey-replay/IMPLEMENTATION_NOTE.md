@@ -1,5 +1,13 @@
 # Expedition / Journey Replay Implementation Note
 
+## Fixed-history update
+
+Curriculum 1.3.0 places the learner’s fictional personal voyage within a fixed, sourced historical frame. Allegiances, route, and witnessed experiences vary; historical dates and outcomes do not. See [History and player agency](HISTORY_AND_PLAYER_AGENCY.md) for content boundaries, sources, reusable contracts, and verification.
+
+## Adventure update
+
+The 1.2.0 curriculum uses a 30/70 decision-sidebar/map workspace, animated place dispatches, learning briefs, and consequences that carry forward from earlier recorded choices. See [the adventure plan and reusable contract](ADVENTURE_DESIGN.md) for choice design, resource rules, compatibility, and verification. This replaces the earlier overlay-only chapter layout described in the original implementation notes below.
+
 ## Delivered phases
 
 This phase implements the defining Journey loop as a reusable Angular 22 template:

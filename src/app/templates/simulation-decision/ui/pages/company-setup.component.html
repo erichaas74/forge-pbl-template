@@ -13,20 +13,22 @@
       <b>TRAIL 1870</b>
     </div>
     <div>
-      <span class="eyebrow">Company charter · {{ runtime.config.gradeLabel }}</span>
+      <span class="eyebrow">Let’s play · {{ runtime.config.gradeLabel }}</span>
       <h1 id="setup-title">Start your trading company</h1>
-      <p>{{ runtime.config.mission }}</p>
+      <p>
+        Buy goods in one town. Travel to another town and sell them. Can you earn more than you
+        spend?
+      </p>
       <p class="starting-account">
-        The opening was practice. Your company starts a new account with
-        {{ runtime.money(runtime.config.startingCashCents) }}. Choose a name and transport, then
-        compare two shops.
+        You start with {{ runtime.money(runtime.config.startingCashCents) }}. Choose a name and how
+        to travel. Then pick a town on the map.
       </p>
     </div>
   </header>
 
   <div class="setup-grid">
     <section>
-      <h2>1. Name and mark your company</h2>
+      <h2>1. Pick a name and symbol</h2>
       <label class="field">
         Company name
         <span class="company-name-row">
@@ -89,7 +91,7 @@
                   <dd>{{ runtime.money(transport.costCents) }}</dd>
                 </div>
                 <div>
-                  <dt>Capacity</dt>
+                  <dt>Room for goods</dt>
                   <dd>{{ transport.cargoCapacity }} spaces</dd>
                 </div>
                 <div>

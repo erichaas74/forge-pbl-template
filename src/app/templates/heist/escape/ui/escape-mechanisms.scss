@@ -1,0 +1,230 @@
+.timing-mechanism {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  justify-content: center;
+  padding: 7px 0 18px;
+}
+.clock-face {
+  width: 128px;
+  height: 128px;
+  position: relative;
+  border: 6px solid #a69c76;
+  border-radius: 50%;
+  background: conic-gradient(#e2ddc6 0deg 120deg, #a8c48b 120deg 210deg, #e2ddc6 210deg 360deg);
+  box-shadow: inset 0 0 0 3px #f8f2dc;
+}
+.clock-face span {
+  position: absolute;
+  font-size: 10px;
+  color: #4a583e;
+}
+.clock-top {
+  left: 47%;
+  top: 5px;
+}
+.clock-bottom {
+  left: 44%;
+  bottom: 5px;
+}
+.clock-left {
+  left: 5px;
+  top: 46%;
+}
+.clock-right {
+  right: 5px;
+  top: 46%;
+}
+.clock-hand {
+  position: absolute;
+  width: 3px;
+  height: 43px;
+  left: calc(50% - 1.5px);
+  bottom: 50%;
+  background: #334c39;
+  transform-origin: bottom;
+  border-radius: 3px;
+}
+.clock-face i {
+  position: absolute;
+  top: calc(50% - 4px);
+  left: calc(50% - 4px);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #334c39;
+}
+.clock-readout > span {
+  font-size: 8px;
+  letter-spacing: 1.8px;
+  color: #717958;
+  display: block;
+}
+.clock-readout strong {
+  font:
+    39px Georgia,
+    serif;
+}
+.clock-readout small {
+  font-size: 16px;
+}
+.clock-readout p {
+  font-size: 10px;
+  margin: 5px 0 0;
+  color: #657055;
+}
+.range-label,
+.answer-label {
+  display: block;
+  font-size: 11px;
+  margin-bottom: 9px;
+  color: #53634a;
+}
+input[type='range'] {
+  width: 100%;
+  accent-color: #34583b;
+  min-height: 30px;
+}
+.patrol-track {
+  height: 7px;
+  position: relative;
+  background: #d7c7a4;
+  margin: 0 8px;
+  border-radius: 4px;
+}
+.patrol-track > div {
+  position: absolute;
+  height: 100%;
+  background: #739a59;
+}
+.patrol-track > span {
+  position: absolute;
+  top: -3px;
+  width: 2px;
+  height: 13px;
+  background: #2b4b34;
+}
+.track-caption {
+  font-size: 10px;
+  color: #697657;
+  text-align: center;
+  margin: 12px 0;
+  line-height: 1.6;
+}
+.balance-machine {
+  position: relative;
+  height: 107px;
+  padding-top: 30px;
+  margin: 10px 30px 5px;
+}
+.balance-beam {
+  width: 100%;
+  height: 6px;
+  background: #777652;
+  transform: rotate(-8deg);
+  transition: transform 0.3s;
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+}
+.balance-beam.level {
+  transform: rotate(0);
+  background: #426a3c;
+}
+.balance-beam.heavy {
+  transform: rotate(8deg);
+}
+.balance-beam > span {
+  display: grid;
+  place-items: center;
+  width: 70px;
+  height: 55px;
+  border-radius: 0 0 30px 30px;
+  background: #d4c5a1;
+  border: 2px solid #9b926c;
+  font-size: 11px;
+  text-align: center;
+  padding: 8px;
+}
+.fulcrum {
+  position: absolute;
+  top: 33px;
+  left: calc(50% - 25px);
+  width: 0;
+  height: 0;
+  border-left: 25px solid transparent;
+  border-right: 25px solid transparent;
+  border-bottom: 61px solid #9c9c75;
+}
+.weight-options {
+  display: flex;
+  gap: 9px;
+}
+.weight-options button {
+  flex: 1;
+  border: 1px solid #adb091;
+  color: #425237;
+  background: #e5e1cd;
+  padding: 13px 3px 9px;
+  border-radius: 8px 8px 4px 4px;
+  font:
+    23px Georgia,
+    serif;
+  min-height: 76px;
+}
+.weight-options small {
+  font:
+    11px 'Trebuchet MS',
+    sans-serif;
+}
+.weight-options span {
+  display: block;
+  font:
+    9px 'Trebuchet MS',
+    sans-serif;
+  margin-top: 9px;
+}
+.weight-options .selected {
+  background: #36583b;
+  color: #f1f3d7;
+  border-color: #36583b;
+}
+.quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 12px;
+  background: #e8e2ce;
+  border: 1px solid #c7c7aa;
+  border-radius: 9px;
+  margin-bottom: 4px;
+}
+.quantity-control button {
+  width: 42px;
+  height: 44px;
+  flex-shrink: 0;
+  border: 1px solid #a7af8d;
+  border-radius: 5px;
+  background: #eee9d6;
+  color: #4f6844;
+  font-size: 24px;
+}
+.quantity-control input {
+  min-width: 0;
+  width: 85px;
+  height: 56px;
+  font:
+    29px Georgia,
+    serif;
+  text-align: center;
+  border: 1px solid #9aa884;
+  border-radius: 5px;
+  background: #faf7ea;
+  color: #304b35;
+}
+.quantity-control > span {
+  font-size: 12px;
+  color: #657355;
+  margin-left: 5px;
+}

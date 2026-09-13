@@ -138,6 +138,17 @@ small {
     0 0.5rem 1.4rem #1f110a66,
     inset 0 0 0 0.15rem #d6ad5e;
 }
+.map-arrival {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  color: #e8f7df;
+  background: #254338;
+  border-top: 1px solid #a7c188;
+}
 .map-card > header {
   display: flex;
   align-items: center;
@@ -226,6 +237,9 @@ small {
   transform: translateX(0);
   visibility: visible;
   transition-delay: 0s;
+}
+.trip-card.travel-card {
+  padding-top: 1rem;
 }
 .close-planner {
   position: absolute;
@@ -363,6 +377,74 @@ small {
   gap: 0.45rem;
   margin: 1rem 0;
   font-size: 0.82rem;
+}
+.journey-milestone {
+  padding: 0.8rem;
+  margin: 1rem 0 0.75rem;
+  border: 1px solid #748963;
+  border-left: 4px solid #376b52;
+  border-radius: 0.4rem;
+  background: #e2ebcc;
+  color: #203e30;
+}
+.journey-milestone strong {
+  font:
+    bold 1.15rem Georgia,
+    serif;
+}
+.journey-milestone p {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+.journey-milestone[data-phase='event'] {
+  background: #ffe5bf;
+  border-color: #99551d;
+  color: #673911;
+}
+.journey-checkpoints {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0.75rem 0;
+  padding: 0;
+}
+.journey-checkpoints li {
+  flex: 1 0 2.6rem;
+  display: grid;
+  justify-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  color: #5d482d;
+}
+.journey-checkpoints b {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 2px dashed #90794b;
+  border-radius: 50%;
+  font-size: 1rem;
+  background: #fff4d8;
+}
+.journey-checkpoints .reached b {
+  border-style: solid;
+  border-color: #315e44;
+  color: #fff7dc;
+  background: #315e44;
+}
+.journey-checkpoints [aria-current='step'] b {
+  outline: 2px solid #a46d24;
+  outline-offset: 3px;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 .journey-progress progress {
   width: 100%;
@@ -671,6 +753,18 @@ tr.selected {
   gap: 0.5rem;
   padding: 0.25rem 0.5rem;
 }
+.map-card > header {
+  min-height: 0;
+  padding: 0.4rem 0.75rem;
+}
+.map-card > header h1 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+.map-card > header p,
+.map-card > header .map-day {
+  display: none;
+}
 .map-notebooks > details {
   margin: 0;
   border: 0;
@@ -730,6 +824,37 @@ tr.selected {
   .trip-card {
     inset: 40% 0.5rem 3.5rem;
     width: auto;
+  }
+  .trip-card.travel-card {
+    padding: 0.7rem;
+  }
+  .travel-card > .eyebrow,
+  .travel-card > p,
+  .travel-card .journey-progress {
+    display: none;
+  }
+  .travel-card h2 {
+    font-size: 1.1rem;
+    margin: 0;
+  }
+  .travel-card .journey-milestone {
+    margin: 0.4rem 0;
+    padding: 0.4rem 0.6rem;
+  }
+  .travel-card .journey-milestone strong {
+    display: none;
+  }
+  .travel-card .journey-milestone p {
+    margin: 0;
+    font-size: 0.75rem;
+  }
+  .travel-card .journey-checkpoints {
+    margin: 0.6rem 0;
+  }
+  .travel-card > .primary {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
   }
   .prediction-columns > section {
     padding: 0.6rem;

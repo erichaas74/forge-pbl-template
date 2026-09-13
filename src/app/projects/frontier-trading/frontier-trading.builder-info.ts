@@ -2,7 +2,7 @@ import type { SimulationDecisionBuilderInfoDefinition } from '../../templates/si
 
 export const frontierTradingBuilderInfo: SimulationDecisionBuilderInfoDefinition = {
   projectLabel: 'Frontier Trading Company / HBC Builder Brief',
-  snapshotVersion: '1.13.0',
+  snapshotVersion: '1.15.0',
   updatedAt: 'September 4, 2026',
   updatedBy: 'Builder documentation snapshot',
   currentMode: 'Individual browser-local practice simulation',
@@ -183,6 +183,27 @@ export const frontierTradingBuilderInfo: SimulationDecisionBuilderInfoDefinition
     },
   ],
   changes: [
+    {
+      version: '1.15.0',
+      date: 'September 12, 2026',
+      title: 'Plan, confirm, and run a travel turn',
+      changes: [
+        'Prices stay fixed while shopping, choosing routes, doing math, or resolving checkpoints.',
+        'Confirmed departure and each travel day advance freight, weather, and market prices once.',
+        'Phaser animates confirmed turns; the runtime settles and saves all outcomes before rendering.',
+      ],
+    },
+    {
+      version: '1.14.0',
+      date: 'September 12, 2026',
+      title: 'Phaser trade world and connected journeys',
+      changes: [
+        'Expanded the map to 24 directed routes with return trips and connections between towns.',
+        'Added four freight caravans, periodic storms, floods, and a fictional dispute over passage; deliveries replenish stock and ease prices.',
+        'Kept world pulses, price calculations, freight arrivals, and player travel under the simulation runtime, with a saved pause control and calculation holds.',
+        'Added Phaser departure, checkpoints, event and arrival feedback while preserving keyboard controls, reduced motion, and the basic SVG map.',
+      ],
+    },
     {
       version: '1.13.0',
       date: 'September 4, 2026',

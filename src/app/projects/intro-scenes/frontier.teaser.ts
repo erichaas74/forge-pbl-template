@@ -1,5 +1,6 @@
 import type { DecisionSceneConfig } from '../../shared/project-intro/decision-scene.models';
 import dialogue from './frontier.dialogue.json';
+import { hostedMediaUrl } from '../../shared/media/hosted-media';
 
 const street = {
   image: '/frontier-trading/shop-scenes/town-street.webp',
@@ -23,7 +24,7 @@ export const frontierTeaser: DecisionSceneConfig = {
       title: 'Your first trade with Rowan',
       summary:
         'Rowan invites you to help choose goods for the road. Try a practice trade with 30 coins and two cargo spaces: choose supplies, check your costs, and discover what buyers will offer.',
-      video: '/project-intros/frontier/trading-town-launch.mp4',
+      video: hostedMediaUrl('project-intros/frontier/trading-town-launch.mp4'),
     },
   ],
   prologue: {
@@ -31,7 +32,7 @@ export const frontierTeaser: DecisionSceneConfig = {
     setting:
       'A mud-splashed wagon rolls into town at sundown. Rowan climbs down, sets a weathered ledger on a crate, and gathers a crowd. You step closer to hear the tale of a trader just back from the route.',
     media: {
-      image: '/project-intros/frontier/returning-trader-v1.png',
+      image: '/project-intros/frontier/returning-trader-v1.webp',
       alt: 'Rowan, a returning trader, tells an attentive crowd about the route beside a loaded wagon, with an open ledger and a mountain road behind him at sunset.',
     },
     dialogue: dialogue.prologue,
@@ -47,7 +48,7 @@ export const frontierTeaser: DecisionSceneConfig = {
   sceneCaption:
     'Mara, the driver, has a weather report: rain ahead. A merchant promises a big price for cloth. The mule has contributed by eating the corner of the report. Choose two different supplies for this practice trade.',
   media: {
-    image: '/project-intros/frontier/Opening-scene-image.png',
+    image: '/project-intros/frontier/Opening-scene-image.webp',
     alt: 'A frontier trading company prepares wagons and cargo in a busy mountain town while a trade ledger summarizes trips, profit, and goods sold.',
   },
   dialogue: [],

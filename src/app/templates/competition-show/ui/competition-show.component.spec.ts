@@ -4,6 +4,7 @@ import { afterEach, vi } from 'vitest';
 import configData from '../../../../../public/projects/championship-show/project.json';
 import { requireCompetitionConfig } from '../domain/competition.validation';
 import { CompetitionShowComponent } from './competition-show.component';
+import { railIndex, railStops, railWaiting } from '../domain/show-progress';
 import { COMPETITION_CONFIG, CompetitionRuntimeService } from '../runtime/competition-runtime.service';
 import { BrowserCompetitionPersistence, COMPETITION_PERSISTENCE } from '../runtime/competition.persistence';
 import { createLocalPreviewSession } from '../../../core/context/project-session-context';
@@ -14,7 +15,7 @@ import { projectCatalog } from '../../../projects/project-catalog';
 const config = requireCompetitionConfig(configData);
 afterEach(() => { TestBed.resetTestingModule(); vi.useRealTimers(); vi.restoreAllMocks(); });
 
-it('runs a complete host interaction and hides unrevealed responses on the presentation view', async () => {
+it('runs the show from one play card while every choice stays inside the teacher guide', async () => {
   const append = vi.fn();
   await TestBed.configureTestingModule({ imports: [CompetitionShowComponent], providers: [provideRouter([]),
     CompetitionRuntimeService, { provide: COMPETITION_CONFIG, useValue: { ...config, defaultMode: 'game-show', teams: config.teams.slice(0, 2), rounds: [config.rounds[0]] } },
@@ -29,22 +30,59 @@ it('runs a complete host interaction and hides unrevealed responses on the prese
     expect(button, label).toBeDefined(); expect(button!.disabled, label).toBe(false);
     button!.click(); fixture.detectChanges(); await fixture.whenStable();
   };
+  // Controls the class can operate, excluding the stage's own full-screen affordance.
+  const controls = () => Array.from(root.querySelectorAll('button, input, textarea, select'))
+    .filter(el => !el.closest('app-television-stage')).length;
+
+  // The opening screen offers exactly one action plus the teacher's way in.
+  expect(root.textContent).toContain('The line-up');
+  expect(root.textContent).not.toContain('Local rehearsal');
+  expect(controls()).toBe(2);
+  // Navigation, so an anchor rather than a button — it stays out of the operable-control count.
+  const preview = root.querySelector<HTMLAnchorElement>('header .button-link');
+  expect(preview?.textContent).toContain('Preview the final');
+  expect(preview?.getAttribute('href')).toBe(`/projects/${config.projectId}/final-demo`);
+  await click('Start the championship');
+
+  // Everything a host decides lives behind the guide.
+  expect(root.textContent).not.toContain('Bring on');
+  await click('Teacher guide');
   expect(root.textContent).toContain('Local rehearsal');
-  await click('Lock lineup'); await click('Bring on');
+  await click('Bring on');
   expect(root.textContent).not.toContain(config.rounds[0].prompt);
   await click('Reveal prompt'); expect(root.textContent).toContain(config.rounds[0].prompt);
+
   const answer = root.querySelector('textarea')!; answer.value = 'The answer is 81.50 because four kits cost 75.';
   answer.dispatchEvent(new Event('input')); fixture.detectChanges(); await fixture.whenStable();
-  await click('Lock answer'); expect(root.textContent).toContain('evidence saved');
+  await click("Lock Nova's answer"); expect(root.textContent).toContain('Evidence (1)');
   await click('Lock all answers'); expect(root.textContent).toContain('81.50');
-  await click('Presentation view'); expect(root.textContent).not.toContain('81.50'); expect(root.textContent).not.toContain('Host controls');
-  await click('Return to host');
+
+  // Projector mode drops the play card and the guide; only the show remains.
+  await click('Projector mode');
+  expect(root.textContent).not.toContain('81.50'); expect(root.textContent).not.toContain('Host controls');
+  expect(root.querySelector('header .button-link')).toBeNull();
+  expect(root.querySelector('app-show-rail')).not.toBeNull();
+  await click('Leave projector mode');
+
+  await click('Teacher guide');
   const score = root.querySelector<HTMLInputElement>('input[type=number]')!; score.value = '100'; score.dispatchEvent(new Event('input'));
   fixture.detectChanges(); await fixture.whenStable();
   await click('Save points'); await click('Reveal answers');
-  expect(root.querySelector('.scoreboard')?.textContent).toContain('100');
+  expect(root.querySelector('app-scoreboard')?.textContent).toContain('100');
+  // The verdict banner and the award chip are how points visibly land.
+  expect(root.querySelector('.verdict-banner')?.textContent).toContain('Nova takes 100 points');
+  expect(root.querySelector('app-scoreboard .award')?.textContent).toContain('100');
   await click('Show contest results'); await click('Confirm Nova'); expect(root.querySelector('.champion')?.textContent).toContain('Nova');
   expect(append).toHaveBeenCalledTimes(10);
+});
+
+it('collapses nine engine phases onto five student-facing stops', () => {
+  const phases = ['setup', 'bracket', 'ready', 'open', 'paused', 'locked', 'revealed', 'results', 'champion'] as const;
+  expect(phases.map(railIndex)).toEqual([0, 0, 1, 2, 2, 3, 3, 4, 4]);
+  expect(railStops).toHaveLength(5);
+  // `paused` and `locked` are states of a stop, never stops of their own.
+  expect(phases.filter(railWaiting)).toEqual(['paused', 'locked']);
+  expect(railStops.some(stop => (phases as readonly string[]).includes(stop.id))).toBe(false);
 });
 
 it('replays saved requests, closes an expired timer once, and preserves evidence', () => {

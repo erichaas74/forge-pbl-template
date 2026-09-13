@@ -1,6 +1,7 @@
 import type { DecisionSceneConfig } from '../../shared/project-intro/decision-scene.models';
+import { hostedMediaUrl } from '../../shared/media/hosted-media';
 const chamber = {
-  image: '/debate-studio/roman-senate-chamber.png',
+  image: '/debate-studio/roman-senate-chamber.webp',
   alt: 'An illustrated Roman Senate chamber with a central speaking floor.',
 };
 export const senateTeaser: DecisionSceneConfig = {
@@ -24,14 +25,14 @@ export const senateTeaser: DecisionSceneConfig = {
       title: 'The case for strong leadership',
       summary:
         'Consider the promise of decisive leadership. How should a leader be held accountable?',
-      video: '/debate-studio/openings/opening-Senator%20Lucius.mp4',
+      video: hostedMediaUrl('debate-studio/openings/opening-Senator Lucius.mp4'),
     },
     {
       id: 'cassius',
       speaker: 'Senator Cassius',
       title: 'The case for the Republic',
       summary: 'Consider the role of shared power. How can the Senate act effectively in a crisis?',
-      video: '/debate-studio/openings/opening-Senator%20Cassius.mp4',
+      video: hostedMediaUrl('debate-studio/openings/opening-Senator Cassius.mp4'),
     },
   ],
   dialogue: [],

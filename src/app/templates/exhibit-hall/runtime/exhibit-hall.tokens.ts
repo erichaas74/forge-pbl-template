@@ -3,6 +3,11 @@ import { InjectionToken, type Type } from '@angular/core';
 import type { ExhibitProjectConfig } from '../domain/exhibit-types';
 import type { ExhibitPersistenceAdapter } from '../persistence/exhibit-persistence';
 import type { ProjectSessionContext } from '../../../core/context/project-session-context';
+import type { MuseumPublicationAdapter } from '../rooms/museum-publication';
+
+export const MUSEUM_PUBLICATION = new InjectionToken<MuseumPublicationAdapter>(
+  'MUSEUM_PUBLICATION',
+);
 
 export interface ExhibitRendererComponentInputs {
   data: unknown;

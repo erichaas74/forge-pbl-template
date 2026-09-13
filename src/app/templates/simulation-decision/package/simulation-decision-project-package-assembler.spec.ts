@@ -6,6 +6,65 @@ import {
 import { LocalSimulationDecisionRuntime } from '../../../runtime/local-simulation-decision-runtime';
 
 describe('simulation-decision project package', () => {
+  it('loads optional trade-world data and rejects invalid bounds or references', async () => {
+    const tradeWorld = {
+      tickIntervalMs: 20000,
+      eventEveryTicks: 3,
+      events: [
+        {
+          id: 'grain-flood',
+          kind: 'flood',
+          title: 'Flooded fields',
+          description: 'Grain supplies are delayed.',
+          locationIds: ['location-start'],
+          goodIds: ['good-grain'],
+          priceChangeBps: 2000,
+          durationTicks: 4,
+        },
+      ],
+      shipments: [
+        {
+          id: 'grain-cart',
+          name: 'Grain cart',
+          routeId: 'route-start-end',
+          goodIds: ['good-grain'],
+          quantity: 3,
+          travelTicks: 2,
+          startOffset: 0,
+          priceDropBps: 1000,
+          reliefTicks: 3,
+        },
+      ],
+    };
+    async function load(world: unknown) {
+      const files = structuredClone(simpleSimulationDecisionPackage);
+      (files['simulation.json'] as Record<string, unknown>)['tradeWorld'] = world;
+      return new LocalSimulationDecisionRuntime(
+        new InMemoryProjectPackageSource({
+          [simpleSimulationDecisionLocation.reference]: files,
+        }),
+      ).loadProject(simpleSimulationDecisionLocation);
+    }
+    const valid = await load(tradeWorld);
+    expect(valid.issues).toEqual([]);
+    expect(valid.graph?.config.tradeWorld).toEqual(tradeWorld);
+    expect(Object.isFrozen(valid.graph?.config.tradeWorld)).toBe(true);
+    const turnBased = await load({ ...tradeWorld, timing: 'turn-based' });
+    expect(turnBased.issues).toEqual([]);
+    expect(turnBased.graph?.config.tradeWorld?.timing).toBe('turn-based');
+    const invalidTiming = await load({ ...tradeWorld, timing: 'each-frame' });
+    expect(invalidTiming.graph).toBeUndefined();
+    expect(invalidTiming.issues.map((issue) => issue.code)).toContain('INVALID_FILE_SHAPE');
+    const badShape = await load({ ...tradeWorld, tickIntervalMs: 0 });
+    expect(badShape.graph).toBeUndefined();
+    expect(badShape.issues.map((issue) => issue.code)).toContain('INVALID_FILE_SHAPE');
+    const badReference = await load({
+      ...tradeWorld,
+      shipments: [{ ...tradeWorld.shipments[0], routeId: 'missing-route' }],
+    });
+    expect(badReference.issues.map((issue) => issue.code)).toContain('INVALID_TRADE_WORLD');
+  });
+
   it('assembles an immutable config and validates its references', async () => {
     const source = new InMemoryProjectPackageSource({
       [simpleSimulationDecisionLocation.reference]: simpleSimulationDecisionPackage,

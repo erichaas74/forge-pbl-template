@@ -44,11 +44,18 @@ describe('JourneyReplayPageComponent map workspace', () => {
     return fixture;
   }
 
-  it('keeps one map mounted while chapter sheets open and close over it', async () => {
+  it('keeps one map mounted while the chapter sidebar opens and closes beside it', async () => {
     const fixture = await setup();
     const map = fixture.nativeElement.querySelector('app-living-journey-map');
     expect(map).not.toBeNull();
     expect(fixture.nativeElement.querySelector('.decision-sheet').hidden).toBe(false);
+    expect(
+      fixture.nativeElement.querySelector('.map-experience').classList.contains('has-side-panel'),
+    ).toBe(true);
+    expect(fixture.nativeElement.querySelector('.dispatch')?.textContent).toContain(
+      'Three lines across a restless ocean',
+    );
+    expect(fixture.nativeElement.querySelectorAll('.voyage-resources > div')).toHaveLength(5);
     expect(fixture.nativeElement.querySelector('.chapter-task-nav')).toBeNull();
     expect(getComputedStyle(fixture.nativeElement.querySelector('.decision-sheet')).left).toBe(
       '1rem',
@@ -80,6 +87,9 @@ describe('JourneyReplayPageComponent map workspace', () => {
 
     expect(fixture.nativeElement.querySelector('app-living-journey-map')).toBe(map);
     expect(fixture.nativeElement.querySelector('.decision-sheet').hidden).toBe(true);
+    expect(
+      fixture.nativeElement.querySelector('.map-experience').classList.contains('has-side-panel'),
+    ).toBe(false);
     expect(fixture.nativeElement.querySelector('.map-prompt')).not.toBeNull();
   });
 

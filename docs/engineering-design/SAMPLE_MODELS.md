@@ -1,9 +1,10 @@
 # Sample monument gallery
 
-Open **••• → Sample models** in the final project workspace. Seven geometric thumbnails identify the models before loading. The solar-calendar circle is the first option, including for students with existing saved drafts:
+Open **••• → Sample models**, or **Build → Start from a sample model**. Eight geometric thumbnails identify the models before loading. Align the solstice window is first; selecting a preview preserves the existing draft:
 
 | Model | Geometry and investigation |
 | --- | --- |
+| Align the solstice window | Three stones with horizontal holes and a marked central pillar. Move the misplaced summer window until morning light reaches the summer carving; winter is a working comparison. |
 | Solar calendar circle | Eight stone gates; three lintels have amber, blue and ruby jeweled roof openings. Students locate and test their own seasonal markers. |
 | Sun gate | Two pillars and a lintel; compare the bright gap with the gate-shaped shadow. |
 | Round portal | A thin wall with a real 80 cm cylindrical hole; inspect its projected sunlight patch. |

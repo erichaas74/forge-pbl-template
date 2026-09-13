@@ -1,0 +1,324 @@
+{
+  "schemaVersion": "1.2",
+  "experience": "escape",
+  "projectId": "castle-archive-rescue",
+  "projectVersion": "2.0.0",
+  "template": {
+    "id": "heist",
+    "version": "1.0"
+  },
+  "title": "The Midnight Menagerie",
+  "subtitle": "Crack the locks. Free the animals.",
+  "briefing": "The sneaky collector Baron Bramble has stolen animals from the woodland sanctuary and locked them inside his castle. You found his secret gate. Follow the clues, outsmart his locks, and bring every animal home before sunrise.",
+  "setting": "A make-believe castle. A very real need for your math skills.",
+  "environment": "/projects/castle-archive-rescue/rescue-castle.svg",
+  "finale": "The last boat slips into the reeds just as the sun rises. All 12 animals are back at the woodland sanctuary. Baron Bramble finds empty pens, open locks, and one small note: Animals belong at home.",
+  "animals": [
+    {
+      "id": "rabbits",
+      "name": "Rabbits",
+      "count": 6,
+      "image": "/projects/castle-archive-rescue/rabbit.svg",
+      "pen": "Carrot courtyard"
+    },
+    {
+      "id": "foxes",
+      "name": "Foxes",
+      "count": 4,
+      "image": "/projects/castle-archive-rescue/fox.svg",
+      "pen": "Bramble den"
+    },
+    {
+      "id": "owls",
+      "name": "Owls",
+      "count": 2,
+      "image": "/projects/castle-archive-rescue/owl.svg",
+      "pen": "Moon tower"
+    }
+  ],
+  "steps": [
+    {
+      "id": "census",
+      "title": "The keeper’s code",
+      "place": "Secret gate",
+      "story": "A brass lock blocks the entrance. Bramble has scratched three animal symbols above its dials. Peek through the bars and count each kind of animal.",
+      "action": "Open the secret gate",
+      "success": "Click! You are inside.",
+      "explanation": "You counted 6 rabbits, 4 foxes, and 2 owls. In that order, they make the code 642.",
+      "x": 18,
+      "y": 75,
+      "icon": "01",
+      "clues": [
+        {
+          "label": "Lock order",
+          "value": "Rabbit → Fox → Owl"
+        },
+        {
+          "label": "Field tip",
+          "value": "Tap an animal to mark it counted"
+        }
+      ],
+      "puzzle": {
+        "type": "code",
+        "prompt": "Set each dial to the number of that animal. Read the dials from left to right.",
+        "hint": "Count one kind at a time. Tap each animal once so you do not count it twice.",
+        "skill": "Counting & place value",
+        "answer": "642",
+        "labels": [
+          "Rabbits",
+          "Foxes",
+          "Owls"
+        ],
+        "countAnimals": true
+      },
+      "release": []
+    },
+    {
+      "id": "lookout",
+      "title": "A gap in the patrol",
+      "place": "Watchtower passage",
+      "story": "The lookout turns away during part of each minute. Your team needs 10 seconds to cross. Set a delayed start so everyone clears the passage before the lookout turns back.",
+      "action": "Test the crossing",
+      "success": "You slip past the lookout!",
+      "explanation": "The lookout turns back at 35 seconds. Subtract the 10-second crossing: 35 − 10 = 25. Leaving at second 25 gets everyone across exactly at second 35.",
+      "x": 34,
+      "y": 59,
+      "icon": "02",
+      "clues": [
+        {
+          "label": "Lookout faces away",
+          "value": "Seconds 20 to 35"
+        },
+        {
+          "label": "Crossing time",
+          "value": "10 seconds"
+        },
+        {
+          "label": "Patrol repeats",
+          "value": "Every 60 seconds"
+        }
+      ],
+      "puzzle": {
+        "type": "timing",
+        "prompt": "What is the LATEST second you can start? Finishing exactly at second 35 is safe.",
+        "hint": "Work backward from second 35. Subtract the 10 seconds you need to cross.",
+        "skill": "Elapsed time & subtraction",
+        "cycle": 60,
+        "safeStart": 20,
+        "safeEnd": 35,
+        "crossing": 10
+      },
+      "release": []
+    },
+    {
+      "id": "rabbits",
+      "title": "The carrot catch",
+      "place": "Carrot courtyard",
+      "story": "Six rabbits twitch their noses behind a food-powered latch. Each rabbit needs 2 carrots. Load just enough carrots into the feeder and the pen door will pop open.",
+      "action": "Fill the feeder",
+      "success": "Six rabbits hop to freedom!",
+      "explanation": "6 rabbits × 2 carrots each = 12 carrots. Equal groups opened the first pen.",
+      "x": 29,
+      "y": 36,
+      "icon": "03",
+      "clues": [
+        {
+          "label": "Hungry rabbits",
+          "value": "6"
+        },
+        {
+          "label": "Each rabbit needs",
+          "value": "2 carrots"
+        }
+      ],
+      "puzzle": {
+        "type": "number",
+        "prompt": "How many carrots do you need altogether?",
+        "hint": "Add 2 six times, or multiply 6 by 2.",
+        "skill": "Equal groups & multiplication",
+        "answer": 12,
+        "unit": "carrots",
+        "max": 50
+      },
+      "release": [
+        "rabbits"
+      ]
+    },
+    {
+      "id": "foxes",
+      "title": "The fox den cipher",
+      "place": "Bramble den",
+      "story": "Four foxes are waiting at a padlocked den. A trail of numbered paw prints is the clue. Find the missing number, then turn the two lock dials.",
+      "action": "Unlock the fox den",
+      "success": "Four foxes join your rescue team!",
+      "explanation": "The paw-print numbers increase by 4 each time: 4, 8, 12, 16. The missing number is 16.",
+      "x": 51,
+      "y": 39,
+      "icon": "04",
+      "clues": [
+        {
+          "label": "Paw-print trail",
+          "value": "4 → 8 → 12 → ?"
+        },
+        {
+          "label": "Lock format",
+          "value": "Tens, then ones"
+        }
+      ],
+      "puzzle": {
+        "type": "code",
+        "prompt": "Keep the pattern going. Set the dials to the next number.",
+        "hint": "Find the difference between 4 and 8. Add that same amount to 12.",
+        "skill": "Number patterns & place value",
+        "answer": "16",
+        "labels": [
+          "Tens",
+          "Ones"
+        ]
+      },
+      "release": [
+        "foxes"
+      ]
+    },
+    {
+      "id": "owls",
+      "title": "The moon tower lift",
+      "place": "Moon tower",
+      "story": "Two owls are trapped in a lift basket. Balance the counterweight to lower them gently. Each owl weighs 3 kg, and the empty basket weighs 4 kg.",
+      "action": "Lower the owl basket",
+      "success": "Two owls flutter down. Every pen is empty!",
+      "explanation": "The owls and basket weigh (2 × 3) + 4 = 10 kg. The 4 kg and 6 kg weights balance the lift.",
+      "x": 72,
+      "y": 28,
+      "icon": "05",
+      "clues": [
+        {
+          "label": "Owls in the basket",
+          "value": "2 × 3 kg"
+        },
+        {
+          "label": "Empty basket",
+          "value": "4 kg"
+        }
+      ],
+      "puzzle": {
+        "type": "balance",
+        "prompt": "Choose weights that exactly balance the owls AND their basket. Each weight can be used once.",
+        "hint": "First find the weight of both owls. Add the basket. Then choose weights with that same total.",
+        "skill": "Multi-step arithmetic & equality",
+        "target": 10,
+        "weights": [
+          2,
+          4,
+          6,
+          7
+        ]
+      },
+      "release": [
+        "owls"
+      ]
+    },
+    {
+      "id": "bridge",
+      "title": "The missing bridge",
+      "place": "Moonlit moat",
+      "story": "The animals follow you to a gap in the bridge. A winch needs the gap length in meters to lower a rescue plank. Six half-meter markings span the gap.",
+      "action": "Lower the rescue plank",
+      "success": "The plank fits. Everyone crosses safely.",
+      "explanation": "6 sections × 50 cm = 300 cm. Since 100 cm = 1 m, the gap is 3 meters long.",
+      "x": 79,
+      "y": 55,
+      "icon": "06",
+      "clues": [
+        {
+          "label": "Measured sections",
+          "value": "6 × 50 cm"
+        },
+        {
+          "label": "Conversion clue",
+          "value": "100 cm = 1 m"
+        }
+      ],
+      "puzzle": {
+        "type": "number",
+        "prompt": "How many meters long must the rescue plank be?",
+        "hint": "Multiply 6 by 50 to get centimeters. Divide that total by 100 to get meters.",
+        "skill": "Measurement & unit conversion",
+        "answer": 3,
+        "unit": "meters",
+        "max": 20
+      },
+      "release": []
+    },
+    {
+      "id": "water",
+      "title": "A tiny pit stop",
+      "place": "Reed hideout",
+      "story": "You count all 12 rescued animals in the reeds. One quarter of them need a drink before the last part of the escape. Put out one water bowl for each thirsty animal.",
+      "action": "Set out the water",
+      "success": "Refreshed and ready for the river.",
+      "explanation": "One quarter means 1 of 4 equal groups. 12 ÷ 4 = 3, so you need 3 water bowls.",
+      "x": 63,
+      "y": 77,
+      "icon": "07",
+      "clues": [
+        {
+          "label": "Animals together",
+          "value": "6 + 4 + 2 = 12"
+        },
+        {
+          "label": "Thirsty animals",
+          "value": "¼ of the group"
+        }
+      ],
+      "puzzle": {
+        "type": "number",
+        "prompt": "How many water bowls do you need?",
+        "hint": "Split 12 animals into 4 equal groups. How many are in one group?",
+        "skill": "Fractions of a set",
+        "answer": 3,
+        "unit": "bowls",
+        "max": 20
+      },
+      "release": []
+    },
+    {
+      "id": "boat",
+      "title": "The last boat home",
+      "place": "Sanctuary landing",
+      "story": "Your sanctuary guide has a boat with space for 5 animals per trip. The guide handles the return journeys. Plan enough trips from the castle bank to take all 12 animals home.",
+      "action": "Launch the rescue",
+      "success": "All aboard. Next stop: home!",
+      "explanation": "Two trips carry only 10 animals. You need 3 trips: 5 + 5 + 2 = 12. The last trip does not have to be full.",
+      "x": 88,
+      "y": 80,
+      "icon": "08",
+      "clues": [
+        {
+          "label": "Animals to carry",
+          "value": "12"
+        },
+        {
+          "label": "Animal spaces per trip",
+          "value": "5"
+        },
+        {
+          "label": "Count these trips",
+          "value": "Castle → sanctuary only"
+        }
+      ],
+      "puzzle": {
+        "type": "number",
+        "prompt": "What is the FEWEST number of trips that can carry every animal home?",
+        "hint": "Count by fives until there is room for all 12. Remember the animals left after two trips.",
+        "skill": "Division & remainders",
+        "answer": 3,
+        "unit": "trips",
+        "max": 12
+      },
+      "release": []
+    }
+  ],
+  "introductionTitle": "Twelve animals. One secret way out.",
+  "mapTitle": "Bramble Castle"
+}

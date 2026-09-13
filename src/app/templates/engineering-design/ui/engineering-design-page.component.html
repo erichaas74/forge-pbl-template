@@ -1,47 +1,209 @@
-<main class="design-studio">
+<main class="design-studio" [class.guided-studio]="guided()">
   <header class="lab-header" aria-label="Lab navigation and controls">
-    <div class="workspace-navigation">
-      @if (learningStep(); as step) {
-        <select aria-label="Lab step" [ngModel]="step.id" (ngModelChange)="selectStep($event)">
-          @for (item of learningSteps; track item.id; let i = $index) {
-            <option [value]="item.id">{{ i + 1 }} · {{ item.title }}</option>
-          }
-        </select>
-      } @else {
-        <h1>{{ config.title }}</h1>
-      }
-      <button [attr.aria-expanded]="panel() === 'guide'" (click)="togglePanel('guide')">
-        Guide
+    @if (guided()) {
+      <a class="project-return" [routerLink]="['/projects', config.projectId]">← Project</a>
+      <h1>{{ config.title }}</h1>
+      <button
+        class="notebook-button"
+        [attr.aria-expanded]="panel() === 'trials'"
+        (click)="togglePanel('trials')"
+      >
+        Notebook
       </button>
-      <details class="workspace-menu" #menu>
-        <summary aria-label="Workspace menu">•••</summary>
-        <div class="menu-items" (click)="menu.open = false">
-          @if (!practicing()) {
-            <button (click)="togglePanel('samples')">Sample models</button>
-            <button (click)="presenting.set(!presenting()); panel.set('')">
-              {{ presenting() ? 'Back to building' : 'Final demonstration' }}
+    } @else {
+      <div class="workspace-navigation">
+        @if (learningStep(); as step) {
+          <select aria-label="Lab step" [ngModel]="step.id" (ngModelChange)="selectStep($event)">
+            @for (item of learningSteps; track item.id; let i = $index) {
+              <option [value]="item.id">{{ i + 1 }} · {{ item.title }}</option>
+            }
+          </select>
+        } @else {
+          <h1>{{ config.title }}</h1>
+        }
+        <button [attr.aria-expanded]="panel() === 'guide'" (click)="togglePanel('guide')">
+          Guide
+        </button>
+        <details class="workspace-menu" #menu>
+          <summary aria-label="Workspace menu">•••</summary>
+          <div class="menu-items" (click)="menu.open = false">
+            @if (!practicing()) {
+              <button (click)="togglePanel('samples')">Sample models</button>
+              <button (click)="presenting.set(!presenting()); panel.set('')">
+                {{ presenting() ? 'Back to building' : 'Final demonstration' }}
+              </button>
+              <button (click)="togglePanel('explain')">My explanation</button>
+            }
+            <button (click)="togglePanel('trials')">
+              Notebook · {{ runtime.snapshot().trials.length }}
             </button>
-            <button (click)="togglePanel('explain')">My explanation</button>
-          }
-          <button (click)="togglePanel('trials')">
-            Notebook · {{ runtime.snapshot().trials.length }}
-          </button>
-          <button (click)="exportNotebook()">Export notebook & blueprint</button>
-          <a [routerLink]="['/projects', config.projectId]">Project opening</a>
-          <a [routerLink]="['/projects', config.projectId, 'final-demo']">Example</a>
-          <a routerLink="/projects">All projects</a>
-        </div>
-      </details>
-    </div>
-    <ng-container *ngTemplateOutlet="chrome()?.toolbar ?? null" />
-    @if (preview(); as sample) {
-      <div class="preview-actions">
-        <span>Preview: {{ sample.title }}</span> <button (click)="useSample()">Use model</button
-        ><button (click)="stopPreview()">My design</button>
+            <button (click)="exportNotebook()">Export notebook & blueprint</button>
+            <a [routerLink]="['/projects', config.projectId]">Project opening</a>
+            <a [routerLink]="['/projects', config.projectId, 'final-demo']">Example</a>
+            <a routerLink="/projects">All projects</a>
+          </div>
+        </details>
       </div>
+      <ng-container *ngTemplateOutlet="chrome()?.toolbar ?? null" />
+      @if (preview(); as sample) {
+        <div class="preview-actions">
+          <span>Preview: {{ sample.title }}</span> <button (click)="useSample()">Use model</button
+          ><button (click)="stopPreview()">My design</button>
+        </div>
+      }
     }
   </header>
-  <div class="workspace" [class.with-panel]="!!panel()">
+  @if (guided()) {
+    <nav class="lesson-path" aria-label="Five-step walkthrough">
+      @for (step of learningSteps; track step.id; let i = $index) {
+        <button
+          [disabled]="!chrome()?.walkthrough?.ready()"
+          [attr.aria-current]="stepIndex() === i ? 'step' : null"
+          (click)="selectStep(step.id)"
+        >
+          <span>{{ i + 1 }}</span
+          >{{ step.title }}
+        </button>
+      }
+    </nav>
+  }
+  <div
+    class="workspace"
+    [class.guided-workspace]="guided()"
+    [class.with-panel]="!!panel()"
+    [class.building-panel]="panel() === 'build'"
+  >
+    @if (task(); as task) {
+      <aside class="walkthrough-card" aria-label="Current walkthrough task">
+        <div class="task-brief">
+          <p class="task-eyebrow">
+            STEP {{ stepIndex() + 1 }} OF {{ learningSteps.length }} · TASK {{ taskIndex() + 1 }} OF
+            {{ tasks().length }}
+          </p>
+          <h2>{{ task.title }}</h2>
+          <p class="task-instruction">{{ task.instruction }}</p>
+          <div class="look-for">
+            <strong>Look for</strong>
+            <p>{{ task.lookFor }}</p>
+          </div>
+        </div>
+        <div class="task-work">
+          @if (chrome()?.walkthrough; as controls) {
+            <dl class="live-readings" aria-label="Live measurements">
+              @for (reading of controls.readings(); track reading.label) {
+                <div>
+                  <dt>{{ reading.label }}</dt>
+                  <dd>{{ reading.value }}</dd>
+                </div>
+              }
+            </dl>
+            <div class="task-actions">
+              @if (task.sampleId) {
+                <button [disabled]="!controls.ready()" (click)="loadTaskSample()">
+                  Load the starting challenge
+                </button>
+                @if (runtime.snapshot().designBackup) {
+                  <button (click)="restorePreviousDesign()">Restore my previous monument</button>
+                }
+              }
+              @for (action of task.actions ?? []; track action.label) {
+                <button [disabled]="!controls.ready()" (click)="runTaskAction(action)">
+                  {{ action.label }}
+                </button>
+              }
+            </div>
+            <p class="task-feedback" role="status">
+              {{ walkthroughStatus() || controls.status() }}
+            </p>
+          }
+          @if (task.response; as response) {
+            <label class="response-label" for="task-answer">{{ response.label }}</label>
+            @if (response.options) {
+              <select
+                id="task-answer"
+                [ngModel]="taskAnswer()"
+                (ngModelChange)="answerTask($event)"
+              >
+                <option value="">Choose what you observed</option>
+                @for (option of response.options; track option) {
+                  <option [value]="option">{{ option }}</option>
+                }
+              </select>
+            } @else if (response.unit) {
+              <div class="measurement-input">
+                <input
+                  id="task-answer"
+                  type="number"
+                  min="0"
+                  max="2400"
+                  step="0.1"
+                  [ngModel]="taskAnswer()"
+                  (ngModelChange)="answerTask($event == null ? '' : '' + $event)"
+                /><span>{{ response.unit }}</span>
+              </div>
+            } @else {
+              <textarea
+                id="task-answer"
+                rows="3"
+                maxlength="2000"
+                [ngModel]="taskAnswer()"
+                (ngModelChange)="answerTask($event)"
+              ></textarea>
+            }
+          }
+          @if (!canContinue()) {
+            <p class="next-hint">
+              {{
+                task.requiredTargetId
+                  ? 'Place this date mark before continuing.'
+                  : task.requiredEvidenceCount
+                    ? 'Save the four-date check and your explanation to finish.'
+                    : task.response
+                      ? 'Record your observation before continuing.'
+                      : 'Loading this task’s view…'
+              }}
+            </p>
+          }
+          <div class="task-navigation">
+            <button
+              [disabled]="
+                !chrome()?.walkthrough?.ready() || (stepIndex() === 0 && taskIndex() === 0)
+              "
+              (click)="moveTask(-1)"
+            >
+              ← Back
+            </button>
+            <button
+              class="continue"
+              [disabled]="!canContinue() || finished()"
+              (click)="moveTask(1)"
+            >
+              {{
+                stepIndex() === learningSteps.length - 1 && taskIndex() === tasks().length - 1
+                  ? 'Finish walkthrough'
+                  : 'Continue →'
+              }}
+            </button>
+          </div>
+          @if (finished()) {
+            <p class="completion" role="status">
+              Walkthrough finished. Your notes and recorded tests are in the Notebook.
+            </p>
+          }
+          @if (previousNotes().length) {
+            <details class="measurement-notes">
+              <summary>My observations · {{ previousNotes().length }}</summary>
+              @for (note of previousNotes(); track note.title) {
+                <p>
+                  <strong>{{ note.title }}</strong
+                  ><br />{{ note.answer }}
+                </p>
+              }
+            </details>
+          }
+        </div>
+      </aside>
+    }
     <section #canvasRegion class="simulation" tabindex="-1" aria-label="Monument canvas workspace">
       <ng-container
         *ngComponentOutlet="simulation; inputs: simulationInputs(); injector: simulationInjector"
@@ -57,12 +219,17 @@
       >
         <button class="close" (click)="togglePanel(panel())">Close panel ×</button>
         @if (panel() === 'build') {
+          <button (click)="togglePanel('samples')">Start from a sample model</button>
           <h2>Blocks & targets</h2>
           <details>
             <summary>Design brief</summary>
             <p>{{ config.designBrief }}</p>
           </details>
-          <app-block-builder [design]="activeDesign()" (changed)="saveActiveDesign($event)" />
+          <app-block-builder
+            [design]="activeDesign()"
+            [editor]="editor"
+            (changed)="saveActiveDesign($event)"
+          />
         }
         @if (panel() === 'guide') {
           @if (learningStep(); as step) {
@@ -130,6 +297,13 @@
         }
         @if (panel() === 'trials') {
           <h2>Evidence notebook</h2>
+          <button (click)="exportNotebook()">Export notebook & blueprint</button>
+          @for (note of previousNotes(); track note.title) {
+            <p>
+              <strong>{{ note.title }}</strong
+              ><br />{{ note.answer }}
+            </p>
+          }
           <p>Each record keeps its own design, prediction and measurements.</p>
           @for (trial of runtime.snapshot().trials; track trial.id; let i = $index) {
             <details>
@@ -171,7 +345,10 @@
     }
   </div>
   <p class="save-status" role="status">
-    {{ runtime.saveStatus() }} · {{ researchCount() }}/{{ config.research.length }} research notes ·
+    {{ runtime.saveStatus() }} ·
+    @if (!guided()) {
+      {{ researchCount() }}/{{ config.research.length }} research notes ·
+    }
     {{ runtime.snapshot().trials.length }} recorded tests
   </p>
   @if (presenting() && !preview()) {

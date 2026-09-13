@@ -6,7 +6,7 @@
     const scene = new THREE.Scene(), camera = new THREE.PerspectiveCamera(36, 1, .01, 100);
     const closeCamera = new THREE.PerspectiveCamera(38, 1, .01, 100);
     let closeView;
-    camera.position.set(0, 6.8, 8.8); camera.lookAt(0, 0, 0);
+    camera.position.set(6.8, 6.8, 8.8); camera.lookAt(0, 0, 0);
     scene.add(new THREE.HemisphereLight(0xcde4ef, 0x434132, .75));
     const sun = new THREE.Mesh(new THREE.SphereGeometry(.26, 24, 16), new THREE.MeshBasicMaterial({ color: '#ffc54d' })); scene.add(sun);
     const light = new THREE.DirectionalLight('#fff1d2', 2.6); scene.add(light, light.target);
@@ -45,9 +45,8 @@
       renderer.setSize(width, height, false); renderer.setScissorTest(true);
       // Fixed viewing direction preserves the axis orientation as the site spins. The second view locates Earth in its orbit.
       if (!closeView) {
-        closeView = new THREE.Vector3(model.site[0], 0, model.site[2]);
-        if (closeView.length() < .01) closeView.set(model.sun[0], 0, model.sun[2]);
-        closeView.normalize().multiplyScalar(3.2); closeView.y = 1.3;
+        // View across the tilt plane so the gold axis cannot hide behind the gray upright.
+        closeView = new THREE.Vector3(3.2, 1.3, 2.0);
       }
       closeCamera.position.copy(earthGroup.position).add(closeView); closeCamera.lookAt(earthGroup.position);
       closeCamera.aspect = split / height; closeCamera.updateProjectionMatrix();

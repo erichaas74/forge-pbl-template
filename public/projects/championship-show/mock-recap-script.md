@@ -3,7 +3,9 @@
 
 **Purpose:** Sell the final experience by making the audience remember the learning that led here. This is a fictional demonstration, not a recording of real students or a claim that the system already generates highlight videos automatically.
 
-**Opening image:** `art/final-opening-v1.png` — the supplied HD studio opening frame. Use it for the first five seconds and as the video poster. Keep the small label **FICTIONAL DEMONSTRATION** in one corner throughout your mock video.
+**Opening image:** `art/final-opening-v1.webp` — the supplied HD studio opening frame. Use it for the first five seconds and as the video poster. Keep the small label **FICTIONAL DEMONSTRATION** in one corner throughout your mock video.
+
+**New recap stills:** Use `art/week-1-budget-surprise-v1.webp` during Nova's delivery-charge surprise and `art/week-2-graph-showdown-v1.webp` during the graph investigation. Both have room on the left for live titles; a restrained push-in will match the studio opening.
 
 **Delivery:** 1920 × 1080, 16:9, MP4 with H.264 video and AAC audio, approximately 75 seconds. A 24 or 30 fps edit is fine. Use a clean broadcast narrator, restrained music, and fully readable captions. The supplied `mock-recap-captions.vtt` follows the narration below.
 
@@ -48,7 +50,7 @@ The current demo plays a polished three-card storyboard when no video is supplie
 "recapCaptions": "/projects/championship-show/mock-recap-captions.vtt"
 ```
 
-The Season Rewind chapter uses the video, keeps playback controls available, and moves to the bracket after the video ends when demo autoplay is on. Starting the final questions remains a separate cue; watching the video never consumes question time.
+The Season Rewind chapter uses the video and keeps playback controls available. The fast demo advances chapters every four seconds, including this video preview. Pause the demo and use the video's own controls to watch the full 75-second reel. Watching the video never consumes question time.
 
 ## The fictional final story after the video
 
@@ -56,8 +58,10 @@ Quarterfinals send Nova, Falcons, Atlas, and Comets into the show. The first que
 
 ## Quiz-break bits
 
-- **Mystery Zoom, 15 seconds:** Crop tightly into the sunglasses duck image. Invite guesses: “A very confident duck,” “A tiny submarine,” or “The principal's spaceship.” Zoom out. Host: “It was a duck. We apologize to the space program.”
-- **Wrong Answers Only, 15–20 seconds:** “Why did the calculator join the band?” Deliver: “Excellent algorithm and blues,” “The decimal drums,” or “It could count on the bass player.” The audience picks a favorite. No academic scoring.
-- **Victory Pose Freeze, 10–15 seconds:** “A robot who just won a science fair.” Count five seconds, then freeze. Other prompts: “A penguin presenting a serious budget” or “A superhero who discovered a remainder.” Seated participation and passing are welcome.
+- **Odd One Out, 15 seconds live:** Show a pencil, notebook, and loose pizza. Ask who packed the school bag. Reveal: “The pizza. Excellent at fractions. Terrible at keeping your homework clean.” Other lineups feature a T. rex on the teaching staff and a cheese trophy that needs refrigeration. Invite an alternative ridiculous explanation; no points or grades.
+- **Sell Me This!, 15–20 seconds live:** Pitch the Homework-Eating Backpack in one ridiculous sentence: “Finally, a school bag that takes your excuses seriously.” Other inventions: the Remote-Control Recess Button and Emergency Applause Machine. The audience supplies the applause.
+- **Reaction Cam, 10–15 seconds live:** “You just discovered the trophy is made of cheese.” Give a silent dramatic reaction, then freeze. Other prompts: “Your calculator has requested a holiday” or “You won, but your victory dance is still buffering.” Seated participation and passing are welcome.
+
+The four-second app preview compresses these bits and reveals the joke after 1.6 seconds. Pause to play the longer live version.
 
 These breaks keep eliminated teams involved. They are optional entertainment, not mastery evidence, and never change the championship score.

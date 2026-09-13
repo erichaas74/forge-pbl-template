@@ -1,4 +1,7 @@
-<section class="market-page" [class.choosing-shop]="!activeGood() && draft().length === 0">
+<section
+  class="market-page"
+  [class.choosing-shop]="!activeGood() && draft().length === 0 && !lastReceiptId()"
+>
   @if (tradeFeedback(); as feedback) {
     <div
       class="trade-celebration"
@@ -11,7 +14,7 @@
           <i>$</i>
         }
       </div>
-      <small>Trade locked in</small>
+      <small>Done! Your money changed by</small>
       <strong>{{ runtime.money(feedback.amountCents, true) }}</strong>
       <span
         >Cash {{ runtime.money(runtime.cash()) }} · Wagon {{ runtime.usedCargo() }} /
@@ -22,21 +25,29 @@
   @if (scene(); as locationScene) {
     <section
       [class]="'market-world page-card ' + locationScene.environment"
-      aria-labelledby="market-world-title"
+      [attr.aria-labelledby]="shopInteriorOpen() ? 'goods-title' : 'market-world-title'"
     >
-      <header>
-        <div>
-          <span class="eyebrow"
-            >{{ arrival() ? 'You have arrived' : 'Choose a shop' }} · Day
-            {{ runtime.state().currentDay }}</span
+      @if (!shopInteriorOpen()) {
+        <header>
+          <div>
+            <span class="eyebrow"
+              >{{ arrival() ? 'You have arrived' : 'Choose a shop' }} · Day
+              {{ runtime.state().currentDay }}</span
+            >
+            <h1 id="market-world-title">{{ runtime.currentLocation()?.shortName }} Market</h1>
+            <p>
+              {{
+                arrival()
+                  ? 'Open a shop to sell the goods in your wagon.'
+                  : 'Click a shop door to see what you can buy.'
+              }}
+            </p>
+          </div>
+          <span class="status-chip"
+            >{{ discoveredStallIds().length }} / {{ locationScene.stalls.length }} explored</span
           >
-          <h1 id="market-world-title">{{ runtime.currentLocation()?.shortName }} Market</h1>
-          <p>{{ locationScene.weather }}</p>
-        </div>
-        <span class="status-chip"
-          >{{ discoveredStallIds().length }} / {{ locationScene.stalls.length }} explored</span
-        >
-      </header>
+        </header>
+      }
       <div class="living-market" [class.interior-open]="shopInteriorOpen()">
         @if (!shopInteriorOpen()) {
           @if (locationScene.streetSceneAsset; as streetAsset) {
@@ -89,7 +100,7 @@
             <header>
               <div>
                 <span class="eyebrow"
-                  >Live shelf prices · {{ runtime.currentLocation()?.shortName }}</span
+                  >Prices here · {{ runtime.currentLocation()?.shortName }}</span
                 >
                 <h2 id="goods-title">
                   {{
@@ -101,27 +112,30 @@
                 ← Back to the street
               </button>
             </header>
-            <div class="merchant-rumor" aria-live="polite">
-              @if (selectedStall(); as stall) {
-                <div class="merchant-portrait" aria-hidden="true">{{ stall.icon }}</div>
-                <div>
-                  <strong>{{ stall.merchantName }} · {{ stall.merchantRole }}</strong>
-                  <p>“{{ merchantMessage() }}”</p>
-                  <small
-                    >{{ stall.trustCue }} · Heard on Day {{ runtime.state().currentDay }}</small
-                  >
-                </div>
-              } @else {
-                <div class="merchant-portrait" aria-hidden="true">?</div>
-                <div>
-                  <strong>Choose a storefront</strong>
-                  <p>
-                    The merchant, posted prices, and goods will open here without leaving the
-                    street.
-                  </p>
-                </div>
-              }
-            </div>
+            <details class="merchant-tip">
+              <summary>Shopkeeper’s tip</summary>
+              <div class="merchant-rumor" aria-live="polite">
+                @if (selectedStall(); as stall) {
+                  <div class="merchant-portrait" aria-hidden="true">{{ stall.icon }}</div>
+                  <div>
+                    <strong>{{ stall.merchantName }} · {{ stall.merchantRole }}</strong>
+                    <p>“{{ merchantMessage() }}”</p>
+                    <small
+                      >{{ stall.trustCue }} · Heard on Day {{ runtime.state().currentDay }}</small
+                    >
+                  </div>
+                } @else {
+                  <div class="merchant-portrait" aria-hidden="true">?</div>
+                  <div>
+                    <strong>Choose a storefront</strong>
+                    <p>
+                      The merchant, posted prices, and goods will open here without leaving the
+                      street.
+                    </p>
+                  </div>
+                }
+              </div>
+            </details>
             @if (plannedRoute(); as route) {
               <details class="route-clue">
                 <summary>Route tip · {{ route.name }}</summary>
@@ -137,8 +151,8 @@
             <div class="price-shelf">
               <div class="shelf-heading">
                 <div>
-                  <strong>Today’s price cards</strong>
-                  <span>Bulk buying: {{ discountRuleSummary() }}</span>
+                  <strong>Choose an item</strong>
+                  <span>Press Buy, then choose how many.</span>
                 </div>
                 @if (discoveredCategories().length > 0) {
                   <label class="search"
@@ -185,11 +199,11 @@
                     }
                     <dl class="price-pair">
                       <div>
-                        <dt>Buy each</dt>
+                        <dt>You pay each</dt>
                         <dd>{{ runtime.money(buyPrice(good.id)) }}</dd>
                       </div>
                       <div>
-                        <dt>Sell each</dt>
+                        <dt>You get each</dt>
                         <dd>{{ runtime.money(sellPrice(good.id)) }}</dd>
                       </div>
                     </dl>
@@ -237,21 +251,21 @@
       </div>
     </section>
   }
-  @if (activeGood() || draft().length > 0) {
+  @if (activeGood() || draft().length > 0 || lastReceiptId()) {
     <aside class="trade-builder page-card" aria-labelledby="trade-builder-title">
       <header>
         <p class="account-status">
-          Available cash: {{ runtime.money(runtime.cash()) }} · Capacity:
-          {{ runtime.capacity() }} spaces
+          Money: {{ runtime.money(runtime.cash()) }} · Wagon room:
+          {{ runtime.capacity() - runtime.usedCargo() }} spaces left
         </p>
-        <h2 id="trade-builder-title">Your shopping plan</h2>
+        <h2 id="trade-builder-title">
+          {{ lastReceiptId() && !activeGood() ? 'Your receipt' : 'Choose how many' }}
+        </h2>
       </header>
       @if (activeGood(); as good) {
         <section class="selection" tabindex="-1" aria-label="Edit planned goods">
           <h3>{{ direction() === 'buy' ? 'Buy' : 'Sell' }} {{ good.name }}</h3>
-          <p>
-            Posted {{ runtime.money(unitPrice()) }} per unit · {{ good.unitCargo }} cargo spaces
-          </p>
+          <p>{{ runtime.money(unitPrice()) }} each · Uses {{ good.unitCargo }} wagon spaces</p>
           <div class="direction">
             <button
               type="button"
@@ -269,7 +283,7 @@
             </button>
           </div>
           <label class="quantity"
-            ><span>{{ editing() ? 'Planned quantity' : 'Quantity to add' }}</span
+            ><span>How many?</span
             ><span
               ><button type="button" aria-label="Decrease quantity" (click)="adjustQuantity(-1)">
                 −</button
@@ -299,7 +313,7 @@
               </dd>
             </div>
             <div>
-              <dt>Whole plan · cargo after change</dt>
+              <dt>Wagon spaces after this</dt>
               <dd>{{ selectedLinePreview().cargoAfter }} / {{ runtime.capacity() }}</dd>
             </div>
           </dl>
@@ -316,7 +330,7 @@
             [disabled]="!selectedLinePreview().valid"
             (click)="saveSelection()"
           >
-            {{ editing() ? 'Update quantity' : 'Add to trade draft' }}
+            Check the price →
           </button>
         </section>
       }
@@ -367,87 +381,97 @@
           <small>Dashed cargo tags include planned goods. Solid tags are owned cargo.</small>
         </div>
       </details>
-      <section class="draft" aria-label="Current trade draft">
-        <header>
-          <h3>Trade draft</h3>
-          <span>{{ draft().length }} item(s)</span>
-        </header>
-        @for (line of draft(); track line.goodId + line.direction) {
-          <div class="draft-line">
-            <button
-              type="button"
-              (click)="editLine(line)"
-              [attr.aria-label]="'Edit ' + goodName(line.goodId)"
-            >
-              {{ line.direction === 'buy' ? 'Buy' : 'Sell' }} {{ line.quantity }}
-              {{ goodName(line.goodId) }} <small>Edit</small></button
-            ><button
-              type="button"
-              [attr.aria-label]="'Remove ' + goodName(line.goodId) + ' from draft'"
-              (click)="removeLine(line)"
-            >
-              ×
-            </button>
-          </div>
-        } @empty {
-          <p>Choose goods to build a plan. Cash and cargo change only after confirmation.</p>
-        }
-        @if (draft().length > 0) {
-          <dl class="trade-math">
-            <div>
-              <dt>Calculations required</dt>
-              <dd>{{ draft().length }} of {{ draft().length }} trade lines must be solved</dd>
+      @if (draft().length > 0) {
+        <section class="draft" aria-label="Items to check">
+          <header>
+            <h3>Items to check</h3>
+            <span>{{ draft().length }} item(s)</span>
+          </header>
+          @for (line of draft(); track line.goodId + line.direction) {
+            <div class="draft-line">
+              <button
+                type="button"
+                (click)="editLine(line)"
+                [attr.aria-label]="'Edit ' + goodName(line.goodId)"
+              >
+                {{ line.direction === 'buy' ? 'Buy' : 'Sell' }} {{ line.quantity }}
+                {{ goodName(line.goodId) }} <small>Edit</small></button
+              ><button
+                type="button"
+                [attr.aria-label]="'Remove ' + goodName(line.goodId) + ' from draft'"
+                (click)="removeLine(line)"
+              >
+                ×
+              </button>
             </div>
-            <div>
-              <dt>Bulk purchase rule</dt>
-              <dd>{{ discountRuleSummary() }}</dd>
-            </div>
-            <div>
-              <dt>Current plan · cargo</dt>
-              <dd>{{ draftPreview().cargoAfter }} / {{ runtime.capacity() }}</dd>
-            </div>
-          </dl>
-          @if (!draftPreview().valid) {
-            <ul class="validation" role="alert">
-              @for (error of draftPreview().errors; track error) {
-                <li>{{ error }}</li>
-              }
-            </ul>
+          } @empty {
+            <p>Choose goods to build a plan. Cash and cargo change only after confirmation.</p>
           }
-          @if (plannedRoute() && !tradePlanValid()) {
-            <p class="validation" role="alert">
-              Keep {{ runtime.money(travelMoneyNeeded()) }} as travel money. Lower the quantity
-              before reviewing this trade.
-            </p>
+          @if (draft().length > 0) {
+            <dl class="trade-math">
+              <div>
+                <dt>Price checks</dt>
+                <dd>Check the total for {{ draft().length }} item(s).</dd>
+              </div>
+              <div>
+                <dt>Buying more can save money</dt>
+                <dd>{{ discountRuleSummary() }}</dd>
+              </div>
+              <div>
+                <dt>Current plan · cargo</dt>
+                <dd>{{ draftPreview().cargoAfter }} / {{ runtime.capacity() }}</dd>
+              </div>
+            </dl>
+            @if (!draftPreview().valid) {
+              <ul class="validation" role="alert">
+                @for (error of draftPreview().errors; track error) {
+                  <li>{{ error }}</li>
+                }
+              </ul>
+            }
+            @if (plannedRoute() && !tradePlanValid()) {
+              <p class="validation" role="alert">
+                Keep {{ runtime.money(travelMoneyNeeded()) }} as travel money. Lower the quantity
+                before reviewing this trade.
+              </p>
+            }
+            <div class="draft-actions">
+              <button class="secondary" type="button" (click)="clearDraft()">
+                Remove these items</button
+              ><button
+                class="primary"
+                type="button"
+                [disabled]="!tradePlanValid()"
+                (click)="openTradeReview()"
+              >
+                Check my prices
+              </button>
+            </div>
           }
-          <div class="draft-actions">
-            <button class="secondary" type="button" (click)="clearDraft()">Clear draft</button
-            ><button
-              class="primary"
-              type="button"
-              [disabled]="!tradePlanValid()"
-              (click)="openTradeReview()"
-            >
-              Solve trade math
-            </button>
-          </div>
-        }
-      </section>
+        </section>
+      }
       @if (lastReceiptId()) {
-        <section class="receipt" aria-live="polite">
+        <section class="receipt" tabindex="-1" aria-live="polite">
           <strong>✓ Trade complete</strong>
           @for (line of receiptLines(); track line.goodId + line.direction) {
             <span
               >{{ line.direction === 'buy' ? 'Bought' : 'Sold' }} {{ line.quantity }}
-              {{ goodName(line.goodId) }} × {{ runtime.money(discountedUnitPrice(line)) }} =
-              {{ runtime.money(expectedLineTotal(line)) }}</span
+              {{ goodName(line.goodId) }} × {{ runtime.money(line.unitPriceCents) }} =
+              {{ runtime.money(line.totalCents) }}</span
             >
           }
           <p>
             Cash {{ runtime.money(runtime.cash()) }} · Cargo {{ runtime.usedCargo() }} /
             {{ runtime.capacity() }}
           </p>
-          <button type="button" disabled>✓ Receipt saved for your reflection</button>
+          <small>✓ Saved in your money record</small>
+          <button
+            type="button"
+            class="primary"
+            (click)="lastReceiptId.set(undefined); returnToStreet()"
+          >
+            Keep shopping
+          </button>
         </section>
       }
     </aside>
@@ -461,10 +485,10 @@
         aria-modal="true"
         aria-labelledby="trade-review-title"
       >
-        <span class="eyebrow">Required transaction math</span>
-        <h2 id="trade-review-title">Solve every line to trade</h2>
+        <span class="eyebrow">Check before you pay</span>
+        <h2 id="trade-review-title">What is the total price?</h2>
         <p class="math-gate-intro">
-          The merchant will complete the transaction only when every final total is exact.
+          Work out each total. Your money stays the same until you press Confirm.
         </p>
         <div class="transaction-problems">
           @for (line of draft(); track line.goodId + line.direction) {
@@ -518,7 +542,7 @@
           </p>
         } @else {
           <p class="math-gate-pending" role="status">
-            Complete all {{ draft().length }} calculations to unlock the transaction.
+            Check {{ draft().length }} total(s). Then you can confirm.
           </p>
         }
         @if (tradeMathComplete()) {
@@ -531,14 +555,14 @@
         }
         <div>
           <button class="secondary" type="button" (click)="reviewOpen.set(false)">
-            Keep editing</button
+            ← Change my items</button
           ><button
             class="primary"
             type="button"
             [disabled]="!tradePlanValid() || !tradeMathComplete()"
             (click)="confirmTrade()"
           >
-            Complete verified trade
+            Confirm buy or sell
           </button>
         </div>
       </section>

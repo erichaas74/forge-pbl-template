@@ -14,6 +14,7 @@ import {
   mathTools,
 } from '../../templates/programming-automation/core/automation-math';
 import { executeRobot } from '../../templates/programming-automation/core/robot-execution';
+import { prepareMoveMathCommands } from '../../templates/programming-automation/core/move-math';
 import type { SampleGuide } from '../../shared/project-intro/completed-sample-guide';
 import { robotDeliveryConfig as config } from './robot-delivery.config';
 export const robotSampleStudent = { id: 'robot-example-engineer', name: 'Alex · example engineer' };
@@ -65,15 +66,20 @@ export function createRobotSampleState(): AutomationState {
     'A right-angle turn is 90 degrees. At 45 degrees each second, it takes 2 seconds.',
   );
   evidence('degrees-fraction', [90], '90 divided by 360 is one quarter of a full turn.');
-  const move = (value: number, variable?: string): RobotCommand => ({
+  const move = (value: number, variable?: string, grid = 25): RobotCommand => ({
     id: id(),
     type: 'move-distance',
     value: variable ?? String(value),
     mathEvidenceId: evidence(
       'grid-distance',
-      [0, 0, 0, value / 25, 25],
-      `I counted ${value / 25} grid squares and multiplied by 25 cm per square to get ${value} cm.`,
+      [0, 0, 0, value / grid, grid],
+      `I counted ${value / grid} grid squares and multiplied by ${grid} cm per square to get ${value} cm.`,
     ),
+  });
+  const wait = (seconds: number): RobotCommand => ({
+    id: id(), type: 'wait', value: String(seconds),
+    mathEvidenceId: evidence('movement-time', [seconds * 20, 20],
+      `An object moving at 20 cm/s travels ${seconds * 20} cm in ${seconds} seconds. I use that delay to time the crossing.`),
   });
   const turn = (): RobotCommand => ({
     id: id(),
@@ -135,6 +141,8 @@ export function createRobotSampleState(): AutomationState {
   );
   program('warehouse-pattern', [repeat(4, [move(100), turn()])]);
   program('battery-emergency', [move(150), turn(), move(200)]);
+  program('patrol-crossing', [wait(4), move(280, undefined, 40)]);
+  program('moving-gates', [wait(4), move(280, undefined, 40), turn(), wait(4), move(240, undefined, 40)]);
   program('cargo-delivery', [
     move(100),
     cargo('pick-up'),
@@ -171,9 +179,16 @@ export function createRobotSampleState(): AutomationState {
   const versions: ProgramVersion[] = [];
   const drafts = { ...base.drafts };
   for (const challenge of config.challenges) {
-    const currentProgram = programs[challenge.id];
+    const sourceProgram = programs[challenge.id];
+    const currentProgram = { ...sourceProgram,
+      commands: prepareMoveMathCommands(sourceProgram.commands, challenge.moveMath) };
     const course = config.courses.find((c) => c.id === challenge.courseId)!;
-    const prediction = {
+    const patrolPrediction = challenge.id === 'patrol-crossing'
+      ? { route: 'Wait 4 seconds, then travel 280 cm north across the patrol lane to the goal.', distance: '280', turns: '0', seconds: '18', battery: '14.08' }
+      : challenge.id === 'moving-gates'
+        ? { route: 'Wait 4 seconds, travel 280 cm north, turn right, wait another 4 seconds, then travel 240 cm east beyond the sliding gate.', distance: '520', turns: '90', seconds: '36', battery: '27.06' }
+        : undefined;
+    const prediction = patrolPrediction ?? {
       route:
         'Travel north on the west aisle, deliver A across the top, collect B, travel south on the east aisle, then return west to the starting dock.',
       distance: challenge.id === 'championship' ? '800' : '',
@@ -240,7 +255,9 @@ export function createRobotSampleState(): AutomationState {
     const reflection =
       challenge.id === 'championship'
         ? 'Trial 1 delivered both packages but stopped 20 cm east of the dock. RETURN was 90, repeated twice. Changing RETURN to 100 added 20 cm without changing the successful delivery route. The next trial reached the dock with no collisions.'
-        : 'I compared the measured endpoint with the target and used the grid and calculations to check my command values. The completed trial supports this route.';
+        : course.actors?.length
+          ? 'I used the patrol speeds and the robot’s travel time to choose a crossing time. WAIT changes when the robot enters a moving obstacle’s route. The saved replay reaches the goal with no collisions; its timeline lets me check where each moving object was during the crossing.'
+          : 'I compared the measured endpoint with the target and used the grid and calculations to check my command values. The completed trial supports this route.';
     drafts[challenge.id] = {
       ...drafts[challenge.id],
       program: currentProgram,
@@ -248,7 +265,8 @@ export function createRobotSampleState(): AutomationState {
       diagnosis:
         challenge.id === 'championship'
           ? 'The final loop repeated a return distance that was 10 cm too short. Two repeats made a 20 cm error.'
-          : 'Use the trial to check the target, heading, and distance.',
+          : course.actors?.length ? 'Check both position and time at each patrol crossing. Revise WAIT duration or the route if a moving object reaches the same place.'
+            : 'Use the trial to check the target, heading, and distance.',
       reflection,
       completedAt: time,
       ...(challenge.id === 'championship' ? { lockedVersionId: version.id } : {}),

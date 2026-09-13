@@ -12,87 +12,113 @@ import {
 import type { ExhibitCuratorRecord, HallLocationView } from '../domain/exhibit-types';
 import { HallCorridorComponent } from './hall-corridor.component';
 import { MuseumBoardComponent } from './museum-board.component';
+import { MuseumWalkthroughComponent } from '../rooms/museum-walkthrough.component';
+import { isMuseumBoardSnapshotData } from '../renderers/museum-board/museum-board-renderer';
 
 @Component({
   selector: 'app-exhibit-collection-presentation',
-  imports: [HallCorridorComponent, MuseumBoardComponent],
+  imports: [HallCorridorComponent, MuseumBoardComponent, MuseumWalkthroughComponent],
   template: `
-    <section class="collection">
-      <header>
-        <div>
-          <span>THE CLASS MUSEUM · {{ locations().length }} COMPLETED WINGS</span>
-          <h2>Small objects. Big stories.</h2>
-          <p>Step into a wing, inspect its objects, and read the curator’s explanation.</p>
-        </div>
-        <nav aria-label="Museum audience">
-          <button
-            type="button"
-            [attr.aria-pressed]="!teacherView()"
-            (click)="teacherView.set(false)"
-          >
-            Family view</button
-          ><button
-            type="button"
-            [attr.aria-pressed]="teacherView()"
-            (click)="teacherView.set(true)"
-          >
-            Teacher view
-          </button>
+    @if (nativeMuseum()) {
+      <app-museum-walkthrough [locations]="locations()" (opened)="selectedId.set($event)" />
+      @if (selectedId() && curator(); as record) {
+        <article class="curator">
+          <span>CURATOR TOUR · COMPLETED SAMPLE TRANSCRIPT</span>
+          <h3>{{ selected().team.displayName }} explains</h3>
+          <p>{{ record.transcript }}</p>
+          <details>
+            <summary>See the curator’s learning</summary>
+            <dl>
+              <dt>First claim</dt>
+              <dd>{{ record.initialClaim }}</dd>
+              <dt>Feedback question</dt>
+              <dd>{{ record.feedback }}</dd>
+              <dt>Revision</dt>
+              <dd>{{ record.revision }}</dd>
+              <dt>Individual reflection</dt>
+              <dd>{{ record.reflection }}</dd>
+            </dl>
+          </details>
+        </article>
+      }
+    } @else {
+      <section class="collection">
+        <header>
+          <div>
+            <span>THE CLASS MUSEUM · {{ locations().length }} COMPLETED WINGS</span>
+            <h2>Small objects. Big stories.</h2>
+            <p>Step into a wing, inspect its objects, and read the curator’s explanation.</p>
+          </div>
+          <nav aria-label="Museum audience">
+            <button
+              type="button"
+              [attr.aria-pressed]="!teacherView()"
+              (click)="teacherView.set(false)"
+            >
+              Family view</button
+            ><button
+              type="button"
+              [attr.aria-pressed]="teacherView()"
+              (click)="teacherView.set(true)"
+            >
+              Teacher view
+            </button>
+          </nav>
+        </header>
+        <nav class="accessible-list" aria-label="Gallery list — choose a wing">
+          @for (location of locations(); track location.locationId) {
+            <button
+              type="button"
+              [attr.aria-pressed]="selected().locationId === location.locationId"
+              (click)="open(location.hanging!.id)"
+            >
+              {{ location.position + 1 }} · {{ location.snapshot?.accessibleData?.title }}
+            </button>
+          }
         </nav>
-      </header>
-      <nav class="accessible-list" aria-label="Gallery list — choose a wing">
-        @for (location of locations(); track location.locationId) {
-          <button
-            type="button"
-            [attr.aria-pressed]="selected().locationId === location.locationId"
-            (click)="open(location.hanging!.id)"
-          >
-            {{ location.position + 1 }} · {{ location.snapshot?.accessibleData?.title }}
+        @if (!selectedId()) {
+          <app-hall-corridor
+            [locations]="locations()"
+            [focusedHangingId]="selected().hanging?.id"
+            (opened)="open($event)"
+          />
+        } @else {
+          <button class="return-corridor" type="button" (click)="selectedId.set(undefined)">
+            ← Return to all wings
           </button>
         }
-      </nav>
-      @if (!selectedId()) {
-        <app-hall-corridor
-          [locations]="locations()"
-          [focusedHangingId]="selected().hanging?.id"
-          (opened)="open($event)"
-        />
-      } @else {
-        <button class="return-corridor" type="button" (click)="selectedId.set(undefined)">
-          ← Return to all wings
-        </button>
-      }
-      @if (selectedId()) {
-        @if (selected(); as location) {
-          <section class="walkup">
-            <h2 #wingHeading tabindex="-1">{{ location.snapshot?.accessibleData?.title }}</h2>
-            <app-museum-board [data]="location.snapshot?.visitorSafeData" mode="walkup" />
-            @if (curator(); as record) {
-              <article class="curator">
-                <span>CURATOR TOUR · COMPLETED SAMPLE TRANSCRIPT</span>
-                <h3>{{ location.team.displayName }} explains</h3>
-                <p>{{ record.transcript }}</p>
-              </article>
-              @if (teacherView()) {
-                <aside class="curator revision">
-                  <span>BUILDER GUIDANCE EXAMPLE · CURATOR THINKING</span>
-                  <dl>
-                    <dt>First claim</dt>
-                    <dd>{{ record.initialClaim }}</dd>
-                    <dt>Feedback question</dt>
-                    <dd>{{ record.feedback }}</dd>
-                    <dt>Revision</dt>
-                    <dd>{{ record.revision }}</dd>
-                    <dt>Individual reflection</dt>
-                    <dd>{{ record.reflection }}</dd>
-                  </dl>
-                </aside>
+        @if (selectedId()) {
+          @if (selected(); as location) {
+            <section class="walkup">
+              <h2 #wingHeading tabindex="-1">{{ location.snapshot?.accessibleData?.title }}</h2>
+              <app-museum-board [data]="location.snapshot?.visitorSafeData" mode="walkup" />
+              @if (curator(); as record) {
+                <article class="curator">
+                  <span>CURATOR TOUR · COMPLETED SAMPLE TRANSCRIPT</span>
+                  <h3>{{ location.team.displayName }} explains</h3>
+                  <p>{{ record.transcript }}</p>
+                </article>
+                @if (teacherView()) {
+                  <aside class="curator revision">
+                    <span>BUILDER GUIDANCE EXAMPLE · CURATOR THINKING</span>
+                    <dl>
+                      <dt>First claim</dt>
+                      <dd>{{ record.initialClaim }}</dd>
+                      <dt>Feedback question</dt>
+                      <dd>{{ record.feedback }}</dd>
+                      <dt>Revision</dt>
+                      <dd>{{ record.revision }}</dd>
+                      <dt>Individual reflection</dt>
+                      <dd>{{ record.reflection }}</dd>
+                    </dl>
+                  </aside>
+                }
               }
-            }
-          </section>
+            </section>
+          }
         }
-      }
-    </section>
+      </section>
+    }
   `,
   styles: `
     :host {
@@ -229,6 +255,13 @@ export class ExhibitCollectionPresentationComponent {
   readonly curators = input.required<readonly ExhibitCuratorRecord[]>();
   readonly selectedId = signal<string | undefined>(undefined);
   readonly teacherView = signal(false);
+  readonly nativeMuseum = computed(() =>
+    this.locations().some(
+      (location) =>
+        isMuseumBoardSnapshotData(location.snapshot?.visitorSafeData) &&
+        location.snapshot?.visitorSafeData.museumRoom,
+    ),
+  );
   readonly selected = computed(
     () =>
       this.locations().find((item) => item.hanging?.id === this.selectedId()) ??

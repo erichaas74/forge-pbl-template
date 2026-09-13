@@ -9,6 +9,7 @@ import type {
   RobotProgram,
 } from '../domain/automation.models';
 import { calculate, evidenceIsCorrect } from './automation-math';
+import { isMoveCommand, moveMathValue } from './move-math';
 export function allCommands(commands: readonly RobotCommand[], depth = 0): readonly RobotCommand[] {
   return depth > 4
     ? []
@@ -65,9 +66,12 @@ export function compileProgram(
         continue;
       }
       try {
+        if (command.moveMath && !isMoveCommand(command.type))
+          throw new Error('A movement math problem belongs in a Move block.');
         const value =
           command.type === 'pick-up' || command.type === 'drop-off'
             ? 0
+            : command.moveMath ? moveMathValue(command.moveMath, command.value)
             : calculate(command.value, variables);
         if (command.type === 'repeat') {
           if (!Number.isInteger(value) || value < 1 || value > 20 || !command.commands?.length)

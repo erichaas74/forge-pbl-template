@@ -1,5 +1,6 @@
 import type { TeaserDialogueLine } from './project-teaser.models';
 import { isExhibitObjectModel, type ExhibitObjectModel } from '../media/object-model';
+import { isAllowedMediaSrc } from '../media/hosted-media';
 
 export interface OpeningMedia {
   readonly image?: string;
@@ -108,7 +109,7 @@ const mediaValid = (media: OpeningMedia) =>
   nonempty(media.alt) &&
   (media.fit === undefined || ['cover', 'contain'].includes(media.fit)) &&
   (!media.video ||
-    (local(media.video) &&
+    (isAllowedMediaSrc(media.video) &&
       local(media.captions) &&
       media.videoFallback === 'illustration-and-transcript'));
 const linesValid = (lines: readonly TeaserDialogueLine[]) =>
@@ -172,7 +173,7 @@ export function validateDecisionScene(config: DecisionSceneConfig): void {
         config.speeches.some(
           (speech) =>
             ![speech.id, speech.speaker, speech.title, speech.summary].every(nonempty) ||
-            !local(speech.video) ||
+            !isAllowedMediaSrc(speech.video) ||
             (speech.captions !== undefined && !local(speech.captions)),
         ))) ||
     (config.sceneBadge &&

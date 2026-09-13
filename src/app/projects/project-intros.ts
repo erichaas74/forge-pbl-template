@@ -138,7 +138,7 @@ export const projectIntros: readonly ProjectIntroConfig[] = [
     teaser: frontierTeaser,
     version: '1.0.1',
     theme: 'frontier',
-    image: '/project-intros/frontier/trading-town-launch-poster.png',
+    image: '/project-intros/frontier/trading-town-launch-poster.webp',
     imageAlt: 'Rowan welcomes you beside his trading wagon and ledger at sunset.',
     kicker: 'Your charter is waiting · Make every dollar count',
     headline: 'An empty wagon. A new company. Your big move.',
@@ -318,16 +318,16 @@ export const projectIntros: readonly ProjectIntroConfig[] = [
     },
     mission: [
       'Research a collection and connect claims to sources.',
-      'Curate a museum board and record a guided explanation.',
-      'Open your exhibition to classmates and families.',
+      'Add artifacts and write labels in your assigned museum room.',
+      'Submit your room for the final class exhibition.',
     ],
-    action: 'Unlock My Museum Wing',
+    action: 'Open My Assigned Room',
     finalExample: {
       button: 'Tour a completed exhibition example',
-      format: 'Museum board + curator-tour transcript',
+      format: '3D museum rooms + curator-tour transcript',
       title: 'Behind the object: a curator’s story',
       introduction:
-        'An illustrative exhibit walkthrough shows the relationship between objects, sources, and a curator’s explanation. The live project opens the shared museum; this example is a guided text preview.',
+        'Visit furnished rooms in a fixed museum and explore each artifact’s labels and sources. The curator transcript provides a reading companion to the exhibition.',
       chapters: [
         {
           label: '01 · Entrance panel',
@@ -491,7 +491,7 @@ export const projectIntros: readonly ProjectIntroConfig[] = [
     teaser: senateTeaser,
     version: '1.0.0',
     theme: 'senate',
-    image: '/debate-studio/roman-senate-chamber.png',
+    image: '/debate-studio/roman-senate-chamber.webp',
     imageAlt: 'The Roman Senate chamber with tiered seats surrounding a central speaking floor.',
     kicker: 'The Senate is gathering · Your voice carries weight',
     headline: 'The Republic is at a crossroads. Take a stand worth defending.',
@@ -609,16 +609,16 @@ export const projectIntros: readonly ProjectIntroConfig[] = [
     schemaVersion: '1.0',
     projectId: 'race-around-the-world',
     teaser: voyageTeaser,
-    version: '1.0.1',
+    version: '1.1.0',
     theme: 'atlas',
-    image: '/journey-replay/world-atlas-v1.png',
+    image: '/journey-replay/world-atlas-v1.webp',
     imageAlt: 'An illustrated world atlas with coastlines, oceans, and an expedition atmosphere.',
-    kicker: 'Lisbon harbor · A world of consequential choices',
-    headline: 'The horizon is calling. What kind of voyage will you lead?',
+    kicker: 'Lisbon · 1501 · Your own path through history',
+    headline: 'History keeps its course. Where will you stand?',
     story:
-      'Your expedition is preparing to leave Lisbon. The council wants a plan. Your crew needs supplies. Your charts leave questions unanswered. Every route has tradeoffs—and the people you encounter have their own stories, choices, and rights.',
+      'Lead a fictional crew within a documented historical world. Choose the company you keep, the side you support in a local dilemma, and the route you travel. Those choices shape what you witness, your obligations, and your personal account. Real voyages, treaties, and historical outcomes remain unchanged. People you encounter have decisions and histories of their own.',
     hook: 'Can you defend your route when the shortest line is not the wisest journey?',
-    role: 'Expedition captain',
+    role: 'Fictional crew captain and witness',
     challenge: {
       title: 'Two routes. One decision to defend.',
       context:
@@ -650,21 +650,21 @@ export const projectIntros: readonly ProjectIntroConfig[] = [
         'The map records your path. Your explanations show why you took it. The consequences include more than the expedition’s own success.',
     },
     decision: {
-      prompt: 'Which purpose would you propose to the council?',
+      prompt: 'Whose company would you choose for your voyage?',
       options: [
         {
           id: 'trade',
-          label: 'Find a trading route',
+          label: 'Join the merchant venture',
           detail: 'Consider profit, exchange, and the interests of trading partners.',
         },
         {
           id: 'mapping',
-          label: 'Improve the charts',
+          label: 'Sail with the chartmakers',
           detail: 'Reduce uncertainty and document what your sources can support.',
         },
         {
           id: 'influence',
-          label: 'Investigate a bid for influence',
+          label: 'Serve a sponsor’s agent',
           detail: 'Examine the council’s ambitions and consequences for other communities.',
         },
       ],

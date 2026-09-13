@@ -6,11 +6,13 @@ import {
   SIMULATION_DECISION_BUILDER_INFO,
   SIMULATION_DECISION_PERSISTENCE,
   SIMULATION_DECISION_PROJECT_ROUTE,
+  SIMULATION_DECISION_FINAL_EXAMPLE_ROUTE,
   SIMULATION_DECISION_SESSION_CONTEXT,
 } from '../../../templates/simulation-decision/runtime/simulation-decision.tokens';
 import { frontierTradingBuilderInfo } from '../../../projects/frontier-trading/frontier-trading.builder-info';
 import type { SimulationDecisionBuilderInfoDefinition } from '../../../templates/simulation-decision/ui/builder-info/simulation-decision-builder-info.models';
 import type { ProjectLaunchRequest, TemplateLauncher } from '../project-launch.contracts';
+import { projectIntroRegistry } from '../project-intro.registry';
 
 export const simulationDecisionLauncher: TemplateLauncher = {
   templateId: 'simulation-decision',
@@ -18,17 +20,27 @@ export const simulationDecisionLauncher: TemplateLauncher = {
     const config = requireSimulationConfig(request.projectDefinition, request.project.id);
     const providers = [
       { provide: SIMULATION_DECISION_CONFIG, useValue: config },
+      { provide: SIMULATION_DECISION_PROJECT_ROUTE, useValue: request.project.route },
       { provide: SIMULATION_DECISION_SESSION_CONTEXT, useValue: request.session },
       {
         provide: SIMULATION_DECISION_PERSISTENCE,
-        useFactory: () => new BrowserSimulationDecisionPersistenceAdapter(undefined, request.session),
+        useFactory: () =>
+          new BrowserSimulationDecisionPersistenceAdapter(undefined, request.session),
       },
       SimulationDecisionRuntimeService,
     ];
+    if (
+      projectIntroRegistry.find(request.project.id) ||
+      request.project.finalExampleMode === 'template'
+    ) {
+      providers.push({
+        provide: SIMULATION_DECISION_FINAL_EXAMPLE_ROUTE,
+        useValue: `${request.project.route}/final-demo`,
+      });
+    }
     if (request.view === 'builder-info') {
-      const module = await import(
-        '../../../templates/simulation-decision/ui/builder-info/simulation-decision-builder-info.component'
-      );
+      const module =
+        await import('../../../templates/simulation-decision/ui/builder-info/simulation-decision-builder-info.component');
       return {
         component: module.SimulationDecisionBuilderInfoComponent,
         providers: [
@@ -44,10 +56,13 @@ export const simulationDecisionLauncher: TemplateLauncher = {
         ],
       };
     }
-    const module = await import(
-      '../../../templates/simulation-decision/ui/simulation-decision-shell.component'
-    );
-    return { component: module.SimulationDecisionShellComponent, providers };
+    const module =
+      await import('../../../templates/simulation-decision/ui/simulation-decision-shell.component');
+    return {
+      component: module.SimulationDecisionShellComponent,
+      integratedHeader: true,
+      providers,
+    };
   },
 };
 

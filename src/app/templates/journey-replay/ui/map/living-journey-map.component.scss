@@ -688,7 +688,7 @@ output {
   .atlas.immersive .world-map,
   .atlas.immersive.regional .world-map {
     height: 100%;
-    min-height: 20rem;
+    min-height: 0;
     aspect-ratio: auto;
   }
 

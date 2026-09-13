@@ -1,0 +1,74 @@
+<p class="intro">Follow the clues, keep the contradictions, and check off the route. This record updates automatically and returns with your saved practice.</p>
+<nav aria-label="Audit sections"><button (click)="jumpTo(currentStep)">Current audit step ↓</button><button (click)="jumpTo(clueList)">Running clue list · {{ audit().clues.length }} ↓</button></nav>
+<details class="clue-guide" [open]="audit().clues.length === 0">
+  <summary>How the first clues work</summary>
+  <ol>
+    <li><strong>Read the claim.</strong> The date and place tell you what the painting must fit. The setting inscription supplies context; a specific object, date, or community label may contradict it.</li>
+    <li><strong>Inspect, then compare.</strong> Click a marked detail or its text button. Check that claim against the field notebook. An inspected detail is still unverified.</li>
+    <li><strong>Choose a passage.</strong> A compatible scene opens its academic mechanisms. If a passage catches, select the offending detail and its fraud category, then confirm the analysis.</li>
+    <li><strong>Repair and return.</strong> Correct analysis identifies the fraud. Solving its recovery mechanism seals it and returns you to the same three paintings. The authentic passage has its own mechanisms.</li>
+  </ol>
+  <p>For crates or drawers, select an object <em>and then</em> its destination. Place every object before operating the mechanism. For a compass or date lock, enter the calculation and set the physical controls.</p>
+  <p>Fraud routes are optional. You can clear a gallery without exposing both frauds; this log only confirms the ones you actually investigate.</p>
+</details>
+
+<section class="audit-current" aria-labelledby="audit-current-title">
+  <p class="eyebrow">{{ audit().complete ? 'AUDIT COMPLETE' : 'CURRENT GALLERY' }}</p>
+  <h3 #currentStep id="audit-current-title" tabindex="-1">{{ audit().chamber }}</h3>
+  <p>{{ audit().location }} · {{ audit().date }}</p>
+  <ol class="audit-steps">
+    @for (step of audit().steps; track step.title; let i = $index) {
+      <li [class.complete]="step.complete" [attr.aria-current]="audit().currentStep === i ? 'step' : null">
+        <span class="step-number">{{ step.complete ? '✓' : i + 1 }}</span>
+        <div><strong>{{ step.title }}</strong><small>{{ step.complete ? 'Complete' : audit().currentStep === i ? 'Current step' : 'To do' }}</small><p>{{ step.detail }}</p></div>
+      </li>
+    }
+  </ol>
+  @if (audit().phase === 'fraud' || audit().phase === 'recovery') {
+    <p class="recovery-note">{{ audit().phase === 'fraud' ? 'Fraud detour: select the specific contradictory detail and its category. A wrong category can be corrected.' : 'Fraud identified. Complete the recovery lock to seal it and return to the paintings.' }}</p>
+  }
+  <h4>Passage mechanisms · {{ audit().locks.length }} steps</h4>
+  <ol class="mechanism-checklist">
+    @for (lock of audit().locks; track lock.id) {
+      <li [attr.aria-current]="lock.current ? 'step' : null"><strong>{{ lock.title }}</strong><small>{{ lock.complete ? '✓ Complete' : lock.current ? 'Current mechanism' : 'To do' }}</small><p>{{ lock.prompt }}</p></li>
+    }
+  </ol>
+  @if (audit().activeLock; as lock) { <p class="next-action"><strong>Next: {{ lock.title }}</strong><br>{{ lock.prompt }}</p> }
+  <button class="primary" (click)="resume.emit()">{{ audit().complete ? 'Open completed dossier' : audit().phase === 'recon' ? 'Return to paintings' : audit().phase === 'unlocked' ? 'Return to open passage' : audit().phase === 'fraud' ? 'Continue fraud analysis' : 'Continue current mechanism' }} →</button>
+  <button (click)="notebook.emit()">Consult field notes ↗</button>
+  <details class="reference-notes"><summary>Clues to compare in this gallery</summary>
+    @for (e of audit().evidence; track e.id) { <p><strong>{{ e.title }}</strong><br>{{ e.text }}</p> }
+    <p>Open the field notebook to consult the source links and record a note as read.</p>
+  </details>
+</section>
+
+<section aria-labelledby="fraud-log-title">
+  <h3 #clueList id="fraud-log-title" tabindex="-1">Running fraud-clue list</h3>
+  <p>{{ audit().fraudCount }} identified · {{ audit().sealedCount }} sealed · {{ audit().clues.length }} paintings inspected</p>
+  <p>Every inspected claim stays here, including unverified details and authenticated scenes. Fraud explanations appear after a correct analysis.</p>
+  @if (!audit().clues.length) { <p class="empty-log">No clues inspected yet. Open a painting and inspect a marked detail to begin the list.</p> }
+  <ol class="clue-list">
+    @for (clue of audit().clues; track clue.paintingId) {
+      <li class="clue-entry">
+        <span class="clue-status">{{ clue.status }}</span>
+        <h4>{{ clue.chamber }} · Passage {{ clue.passage }}</h4><p>{{ clue.title }} · {{ clue.caption }}</p>
+        @for (detail of clue.details; track detail.id) { <p><strong>{{ detail.label }}</strong><br>{{ detail.detail }}</p> }
+        @if (clue.explanation) { <p class="fraud-explanation"><strong>{{ clue.category }}</strong><br>{{ clue.explanation }}</p> }
+        @if (clue.recovery; as recovery) { <p>Recovery: {{ recovery.title }} · {{ recovery.complete ? 'Complete' : 'Pending' }}</p> }
+        <details><summary>Reference notes for this claim</summary>@for (e of clue.evidence; track e.id) { <p><strong>{{ e.title }}</strong><br>{{ e.text }}<br><a [href]="e.sourceUrl" target="_blank" rel="noopener noreferrer">{{ e.sourceTitle }} ↗</a></p> }</details>
+      </li>
+    }
+  </ol>
+</section>
+@if (audit().encounters.length) {
+  <section aria-labelledby="encounter-records-title"><h3 id="encounter-records-title">Stories &amp; encounter insights</h3>
+    @for (record of audit().encounters; track record.encounterId) {
+      <article class="clue-entry"><span class="clue-status">{{ record.state.insightEarned ? 'Source-linked insight recorded' : 'Encounter in progress' }}</span><h4>{{ record.title }}</h4><p>{{ record.chapters.length }} chapters opened · {{ record.questions.length }} questions asked · {{ record.observations.length }} observations</p>
+        @if (record.insight; as insight) { <p><strong>{{ insight.claim }}</strong></p><p>{{ insight.explanation }}</p>@if (insight.source; as source) { <a [href]="source.sourceUrl" target="_blank" rel="noopener noreferrer">{{ source.title }} ↗</a> } }
+        <details><summary>Review the encounter record</summary><p>{{ record.attribution }}</p>@for (question of record.questions; track question.id) { <p><strong>{{ question.title }}</strong><br>{{ question.speaker }}: {{ question.text }}</p> }@for (observation of record.observations; track observation.id) { <p><strong>{{ observation.label }}</strong><br>{{ observation.text }}</p> }</details>
+        <button (click)="revisit.emit(record.encounterId)">Revisit this scene ↗</button>
+      </article>
+    }
+  </section>
+}
+<section aria-labelledby="audit-route-title"><h3 id="audit-route-title">Vault audit route</h3><ol class="audit-route">@for (room of audit().route; track room.id) { <li [attr.aria-current]="room.current ? 'step' : null">{{ room.title }}<small>{{ room.complete ? '✓ Cleared' : room.current ? 'Current gallery' : 'Ahead' }}</small></li> }</ol></section>

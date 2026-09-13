@@ -1,9 +1,30 @@
 import { TestBed } from '@angular/core/testing';
-import { egyptianObjectModels } from '../../projects/class-exhibit-hall/egyptian-object-models';
+import type { ExhibitObjectModel } from './object-model';
 import {
   LOAD_OBJECT_MODEL_VIEWER,
   ObjectModelViewerComponent,
 } from './object-model-viewer.component';
+
+/**
+ * Local fixtures: the viewer's behaviour must not depend on which project model
+ * happens to declare an initialView or a particular credit. Real project models
+ * are checked against the contract in the exhibit's own object-model spec.
+ */
+const testModel: ExhibitObjectModel = {
+  src: '/exhibit-hall/models/test-object.glb',
+  alt: 'A test object.',
+  initialView: { azimuthDegrees: 75, elevationDegrees: 45, distancePercent: 85 },
+  credit: 'Test Lender',
+  sourceUrl: 'https://example.test/object',
+  license: 'CC BY 4.0',
+};
+const otherModel: ExhibitObjectModel = {
+  src: '/exhibit-hall/models/other-object.glb',
+  alt: 'A different test object.',
+  credit: 'Other Lender',
+  sourceUrl: 'https://example.test/other',
+  license: 'CC BY 4.0',
+};
 
 describe('ObjectModelViewerComponent', () => {
   async function setup(loader = () => Promise.resolve()) {
@@ -12,7 +33,7 @@ describe('ObjectModelViewerComponent', () => {
       providers: [{ provide: LOAD_OBJECT_MODEL_VIEWER, useValue: loader }],
     }).compileComponents();
     const fixture = TestBed.createComponent(ObjectModelViewerComponent);
-    fixture.componentRef.setInput('model', egyptianObjectModels[0].model);
+    fixture.componentRef.setInput('model', testModel);
     fixture.detectChanges();
     return fixture;
   }
@@ -29,13 +50,13 @@ describe('ObjectModelViewerComponent', () => {
     fixture.detectChanges();
     const viewer = fixture.nativeElement.querySelector('model-viewer');
     expect(calls).toBe(1);
-    expect(viewer.getAttribute('src')).toBe(egyptianObjectModels[0].model!.src);
+    expect(viewer.getAttribute('src')).toBe(testModel.src);
     expect(viewer.hasAttribute('camera-controls')).toBe(true);
     expect(viewer.hasAttribute('auto-rotate')).toBe(false);
     viewer.dispatchEvent(new Event('load'));
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('Reset view');
-    expect(fixture.nativeElement.textContent).toContain('The Watt Institution');
+    expect(fixture.nativeElement.textContent).toContain(testModel.credit);
   });
   it('automatically reveals the configured object view without moving keyboard focus', async () => {
     const fixture = await setup();
@@ -70,7 +91,7 @@ describe('ObjectModelViewerComponent', () => {
         }),
     );
     const pending = fixture.componentInstance.load();
-    fixture.componentRef.setInput('model', egyptianObjectModels[1].model);
+    fixture.componentRef.setInput('model', otherModel);
     fixture.detectChanges();
     resolve();
     await pending;

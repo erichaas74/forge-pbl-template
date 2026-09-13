@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { Component } from '@angular/core';
 import { calendarMonumentConfig } from '../../projects/calendar-monument/calendar-monument.config';
 import { calendarMonumentSample } from '../../projects/calendar-monument/calendar-monument.sample';
+import { solsticeGatesSample } from '../../projects/calendar-monument/calendar-monument.solstice-sample';
 import {
   requireEngineeringConfig,
   isEngineeringSnapshot,
@@ -97,6 +98,7 @@ describe('engineering design template', () => {
       }),
     ).toBe(false);
     expect(isEngineeringSnapshot(calendarMonumentSample)).toBe(true);
+    expect(isEngineeringSnapshot(solsticeGatesSample)).toBe(true);
   });
   it('rejects overlapping solids while permitting adjacent blocks and supported stacks', () => {
     const block = towerFixture.blocks[0];
@@ -105,8 +107,87 @@ describe('engineering design template', () => {
     expect(blocksOverlap(block, { ...block, y: 0.1 })).toBe(false);
     expect(blocksOverlap({ ...block, width: 0.4, rotation: 90 }, { ...block, z: 0.15 })).toBe(true);
   });
+  it('validates optional walkthrough tasks and preserves old drafts, task position, and notes', () => {
+    const runtime = TestBed.inject(EngineeringDesignRuntime);
+    runtime.selectLearningTask('make-a-sundial', 'morning');
+    runtime.saveWalkthroughNote('make-a-sundial', 'morning', '74.5');
+    const restored = TestBed.runInInjectionContext(() => new EngineeringDesignRuntime());
+    expect(restored.snapshot().learningTaskId).toBe('morning');
+    expect(restored.snapshot().walkthroughNotes?.['make-a-sundial/morning']).toBe('74.5');
+    expect(() => runtime.selectLearningTask('make-a-sundial', 'unknown')).toThrow('STATE_INVALID');
+    expect(() =>
+      runtime.saveWalkthroughNote('season-surprise', 'compare', 'not an option'),
+    ).toThrow('STATE_INVALID');
+    expect(
+      isEngineeringSnapshot({ ...runtime.snapshot(), walkthroughNotes: { invalid: 42 } }),
+    ).toBe(false);
+    expect(isEngineeringSnapshot(calendarMonumentSample)).toBe(true);
+    const sequence = calendarMonumentConfig.learningSequence!;
+    const task = sequence.steps[0].tasks![0];
+    for (const tasks of [
+      [task, task],
+      [{ ...task, setup: { latitude: NaN } }],
+      [{ ...task, sampleId: 'missing' }],
+      [{ ...task, requiredEvidenceCount: -1 }],
+    ]) {
+      expect(() =>
+        requireEngineeringConfig(
+          {
+            ...calendarMonumentConfig,
+            learningSequence: {
+              ...sequence,
+              steps: [{ ...sequence.steps[0], tasks }, ...sequence.steps.slice(1)],
+            },
+          },
+          'calendar-monument',
+        ),
+      ).toThrow('CONFIG_INVALID');
+    }
+  });
+  it('walks through tasks, requires observations and placed date marks, and tags real evidence', () => {
+    const registry = new DesignSimulationRegistry();
+    registry.register(calendarMonumentConfig.simulationId, ExampleSimulation);
+    TestBed.configureTestingModule({
+      providers: [{ provide: DESIGN_SIMULATIONS, useValue: registry }],
+    });
+    const page = TestBed.runInInjectionContext(() => new EngineeringDesignPageComponent());
+    page.chrome.set({
+      toolbar: null!,
+      guide: null!,
+      walkthrough: { ready: () => true, readings: () => [], status: () => '', run: () => {} },
+    });
+    page.moveTask(1);
+    expect(page.task().id).toBe('morning');
+    expect(page.canContinue()).toBe(false);
+    page.answerTask('75');
+    expect(page.canContinue()).toBe(true);
+    page.moveTask(1);
+    expect(page.task().id).toBe('noon');
+    page.moveTask(-1);
+    expect(page.taskAnswer()).toBe('75');
+    page.selectStep('mark-the-year');
+    expect(page.canContinue()).toBe(false);
+    page.saveActiveDesign({
+      ...page.activeDesign(),
+      targets: [{ id: 'sundial-march', label: 'March', x: 0, z: 1 }],
+    });
+    expect(page.canContinue()).toBe(true);
+    page.selectStep('sun-monument');
+    page.runtime.selectLearningTask('sun-monument', 'evidence');
+    page.answerTask('The two holes send morning light to different fixed rings.');
+    expect(page.canContinue()).toBe(false);
+    for (let i = 0; i < 4; i++)
+      page.simulationInjector.get(DESIGN_CAPTURE)({
+        ...solsticeGatesSample.trials[i],
+        id: 'guided-' + i,
+        design: page.activeDesign(),
+      });
+    expect(page.canContinue()).toBe(true);
+    expect(page.runtime.snapshot().trials[0].settings['learningTaskId']).toBe('evidence');
+    expect(page.runtime.snapshot().exhibit).toContain('fixed rings');
+  });
   it('validates every gallery model and rejects duplicate or malformed sample definitions', () => {
-    expect(calendarMonumentConfig.designSamples).toHaveLength(7);
+    expect(calendarMonumentConfig.designSamples).toHaveLength(8);
     for (const sample of calendarMonumentConfig.designSamples ?? [])
       expect(isBlockDesign(sample.design)).toBe(true);
     const sample = calendarMonumentConfig.designSamples![0];
@@ -121,7 +202,7 @@ describe('engineering design template', () => {
     }
     expect(
       requireEngineeringConfig(
-        { ...calendarMonumentConfig, designSamples: undefined },
+        { ...calendarMonumentConfig, designSamples: undefined, learningSequence: undefined },
         'calendar-monument',
       ).designSamples,
     ).toBeUndefined();
@@ -180,6 +261,35 @@ describe('engineering design template', () => {
     expect(
       isEngineeringSnapshot({ ...loaded.snapshot(), designBackup: { design: {}, checks: [] } }),
     ).toBe(false);
+  });
+  it('loads challenge expectations with a sample and preserves saved drafts across new starter defaults', () => {
+    const runtime = TestBed.inject(EngineeringDesignRuntime);
+    expect(runtime.snapshot().checks).toEqual(calendarMonumentConfig.starterChecks);
+    runtime.saveDesign(opticalDesign);
+    runtime.saveChecks([]);
+    const loaded = TestBed.runInInjectionContext(() => new EngineeringDesignRuntime());
+    expect(loaded.snapshot().design).toEqual(opticalDesign);
+    expect(loaded.snapshot().checks).toEqual([]);
+    loaded.useDesignSample('solstice-gates');
+    expect(loaded.snapshot().checks).toEqual(calendarMonumentConfig.designSamples![0].checks);
+    loaded.restoreDesignBackup();
+    expect(loaded.snapshot().design).toEqual(opticalDesign);
+    expect(loaded.snapshot().checks).toEqual([]);
+    expect(() =>
+      requireEngineeringConfig(
+        { ...calendarMonumentConfig, starterChecks: [{}] },
+        'calendar-monument',
+      ),
+    ).toThrow('CONFIG_INVALID');
+    expect(() =>
+      requireEngineeringConfig(
+        {
+          ...calendarMonumentConfig,
+          designSamples: [{ ...calendarMonumentConfig.designSamples![0], checks: [{}] }],
+        },
+        'calendar-monument',
+      ),
+    ).toThrow('CONFIG_INVALID');
   });
   it('validates optional learning steps and preserves packages with no sequence', () => {
     const learningSequence = calendarMonumentConfig.learningSequence!;
@@ -402,7 +512,7 @@ describe('engineering design template', () => {
     );
     const loaded = TestBed.runInInjectionContext(() => new EngineeringDesignRuntime());
     expect(loaded.snapshot()).toEqual(runtime.snapshot());
-    expect(calendarMonumentConfig.starterDesign.blocks).toHaveLength(24);
+    expect(calendarMonumentConfig.starterDesign.blocks).toHaveLength(3);
   });
   it('rejects invalid or mismatched simulation results instead of reporting completion', () => {
     const runtime = TestBed.inject(EngineeringDesignRuntime);

@@ -1,5 +1,9 @@
 # Delivery arena graphics
 
+Latest: [Tabletop arena](TABLETOP_ARENA.md) brings all current courses closer to the supplied
+tabletop reference using native Phaser graphics and adds two missions with moving hazards.
+The older workshop/warehouse treatments below are retained for historical saved replays.
+
 Launch artwork: `public/robot-delivery/arena-launch-v2.png`.
 
 Created with the built-in image generation tool. Original preserved in the generated-images directory; a project-owned copy supplies both the launch page and catalog card. The original SVG is retained as an earlier asset.
@@ -10,13 +14,21 @@ Use case: stylized-concept. Asset type: exciting landscape launch artwork for a 
 
 ## Playable course
 
+The outer arena now uses four plain colored walls: blue at the top, coral on the right,
+yellow at the bottom, and purple on the left. The workshop view retains the original
+floor texture through an interior crop and replaces the machinery perimeter and service
+light with these walls. The other Phaser courses use the same wall drawing helper outside
+their playable grid. Course geometry, robot artwork, and execution are unchanged.
+
 The reusable course renderer matches the launch art with navy metal floor tiles, teal/ivory robot armor, cyan eyes and headlights, orange crates, steel storage racks with hazard stripes, amber parking pads, green delivery zones, and luminous travel paths. Objects render from existing world coordinates. The course remains top-down so grid distances and headings stay usable for student calculations. Delivery pads show recorded cargo delivery state. SVG definition IDs are unique per renderer instance.
 
-The graphics are presentation-only: course geometry, collision rules, scores, student saves, and replay timing use the existing engine. The course panel includes a live distance readout and delivery counter. There are no decorative animation loops or new graphics dependencies.
+The graphics are presentation-only: course geometry, collision rules, scores, student saves, and replay timing use the existing engine. The course panel includes a live distance readout and delivery counter. The Phaser 4 upgrade now makes a procedural warehouse the default game view, with animated treads and scanner, camera overview/follow/zoom controls, collision markers and sparks, cargo rendering, and delivery confirmation. The SVG arena remains available as Map view and as an explicit graphics-failure fallback. See [Phaser upgrade](PHASER_UPGRADE.md) for the implementation and deferred verification; earlier build/test results below predate this upgrade.
 
 The existing `robotics` presentation theme now features the complete 3:2 launch artwork, with a dark game frame and compact evidence captions. It avoids the default overlapping paper treatment, while other project themes retain their presentation styles.
 
 ## Connected coding blocks
+
+The current add interface is a permanent colored block library to the right of the program, with Motion, Turning, Cargo, and Control sections and category filters. Cards show a command diagram, name, explanation, and plus action. Clicking inserts at the program end or into the chosen Repeat block. The library stays visible in every course theme, including after insertion and during read-only replay. On narrow screens it remains on the right, while the program canvas scrolls independently. The workshop editor has room for both columns; course and code stack at tablet widths. The earlier dropdown-based add description is superseded by this interface; command editing and reorder controls are retained. See [Phaser upgrade](PHASER_UPGRADE.md) for the brighter hangar lighting, docking animations, and unexecuted follow-up specifications.
 
 The shared command editor follows the supplied block-coding HTML reference: a gold start hat, solid-color command bodies with beveled edges and interlocking tabs, white rounded value slots, inline dropdowns, and a dotted programming canvas. Motion is blue, turning is purple, package handling is green, and waiting/repeating uses amber. Repeat commands surround their nested blocks with a C-shaped body. The start hat describes the existing Run program action; it does not add an executable command.
 

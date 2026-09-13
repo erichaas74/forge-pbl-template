@@ -46,6 +46,7 @@ export interface SimulationDecisionDefinition extends BaseEntity {
   readonly choiceProgression?: SimulationDecisionConfig['choiceProgression'];
   readonly routeForecastChallenge?: SimulationDecisionConfig['routeForecastChallenge'];
   readonly transactionMath?: SimulationDecisionConfig['transactionMath'];
+  readonly tradeWorld?: SimulationDecisionConfig['tradeWorld'];
   readonly emblems: SimulationDecisionConfig['emblems'];
   readonly transports: readonly VersionedEntity<TransportDefinition>[];
   readonly goods: readonly VersionedEntity<GoodDefinition>[];

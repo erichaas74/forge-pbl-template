@@ -1,0 +1,51 @@
+.guided {
+  p, label, button { font-size: 15px; }
+  p { line-height: 1.6; }
+  button { min-height: 44px; }
+  small { font-size: 12px; }
+  h2 { font-size: 29px; }
+  h3 { font-size: 16px; text-transform: none; letter-spacing: 0; }
+  .status-strip { justify-content: center; gap: 48px; font-size: 14px; letter-spacing: 0; }
+  .current-step { color: #ffdf90; font-weight: bold; }
+  .workspace { height: max(610px, calc(100dvh - 235px)); }
+  .tools button { font-size: 10px; }
+  .separator { display: none; }
+  .detail-panel { width: 380px; padding: 28px 24px; }
+  .drawer-open .map-region { margin-right: 380px; }
+  .panel-nav button { font-size: 13px; }
+  .field-objective { max-width: 255px; }
+  .field-objective small { font-size: 12px; }
+  .drawer-open .field-objective { display: none; }
+  .map-foot { font-size: 12px; }
+  .route-options { display: grid; gap: 12px; margin-block: 20px; }
+  .route-option { text-align: left; padding: 16px; border-radius: 8px; }
+  .route-option strong, .route-option span { display: block; }
+  .route-option strong { font-size: 17px; margin-bottom: 6px; }
+  .route-option span { line-height: 1.5; color: #d8deca; font-size: 14px; }
+  .route-option.chosen { border: 2px solid #e3c987; background: #334a36; }
+  .pickup-note { font-size: 14px; color: #bce3c7; }
+  .question-progress { color: #f6dda1; padding-block: 10px; font-size: 16px; }
+  .math-hint { padding: 12px; background: #29483b; border-left: 3px solid #e3c987; }
+  .choice small { display: block; margin-top: 6px; color: #d8deca; line-height: 1.5; }
+  .guided-footer { padding: 12px 24px; background: #102522; }
+  .guided-footer > p { margin: 0 0 6px; color: #d4dcc7; }
+  .extra-details { margin-top: 12px; }
+  summary { cursor: pointer; padding-block: 10px; font-size: 14px; color: #e8d399; }
+  summary:focus-visible { outline: 3px solid #f3d58b; outline-offset: 3px; }
+  .locations button { font-size: 14px; }
+  @media (max-width: 1050px) {
+    .detail-panel { width: 340px; padding: 26px 18px; }
+    .drawer-open .map-region { margin-right: 340px; }
+    .status-strip { gap: 20px; font-size: 12px; }
+  }
+  @media (max-width: 760px) {
+    .workspace { height: auto; overflow: visible; }
+    .map-region { height: 430px; }
+    .drawer-open .map-region { margin-right: 0; }
+    .detail-panel { position: relative; width: 100%; max-height: none; box-shadow: none; }
+    .status-strip { gap: 12px; justify-content: space-between; }
+    .drawer-controls { top: 44px; }
+    .field-objective { display: none; }
+    .mode { display: none; }
+  }
+}

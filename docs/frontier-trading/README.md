@@ -1,5 +1,68 @@
 # Frontier Trading Company
 
+The current [Phaser trade-world workspace](TRADE_WORLD_WORKSPACE.md) adds a 70/30
+map and economy panel, one consolidated project header, Phaser town and wagon
+artwork, 24 directed routes, periodic weather/conflict price effects and four
+freight caravans whose deliveries replenish stock and lower prices. The runtime
+owns every outcome; the accessible basic map remains available.
+
+Changes are turn based: finish choosing a route and supplies, confirm departure,
+then advance one travel day at a time. Freight, weather and prices update once
+per confirmed turn and stay fixed while planning or resolving a checkpoint.
+
+The [route gameplay slice](ROUTE_GAMEPLAY_SLICE.md) adds clearer trail selection,
+departure and checkpoint effects, a compact journey panel, recorded event
+consequences and arrival feedback that survives reopening the map. The simulation
+runtime remains authoritative and the accessible SVG/basic map is preserved.
+
+## Simplified student experience
+
+The game now uses two primary pages, **Map** and **Shop**, with wagon and records
+under **Project**, together with help and teacher controls. All global controls
+share one project header. The next-action button follows saved progress: choose a town, visit shops and buy
+goods, check trip math, travel, then sell goods. It opens the relevant trip panel
+when needed. Setup, shopping, route, and trail-event instructions use shorter
+language and explain money and wagon space directly.
+
+Map prices and extra camera controls start closed. Detailed route reports remain
+optional. Zoom buttons and the percentage display are removed. The whole map
+fits proportionally inside the existing frame, centered with space around it
+when needed. Canvas art, SVG controls, price cards, and prediction anchors use
+the same proportional projection on desktop and mobile. Optional wheel and
+keyboard exploration remain available. The trip planner shows shopping before math and presents the sales
+and profit questions one at a time. Browsing a shop no longer automatically
+selects an item; students choose Buy or Sell themselves. Choosing a quantity
+leads directly to its price check. Only a confirmed, valid trade changes money
+and inventory, and a persistent receipt explains the result. Inside a shop,
+the duplicate market heading is removed so the back button remains clickable.
+
+Added `ui/student-flow.spec.ts` under the simulation-decision template and
+`scripts/check-student-trading-flow.cjs`. Modified the shell's TS/HTML/SCSS;
+the route atlas's TS/HTML/SCSS and tests; the setup and event HTML; the route
+and market page TS/HTML/SCSS; existing planning/progression tests; the Phaser
+browser audit; this README and `UI_03_ROUTE_MAP.md`. New regressions cover the
+two primary pages, consolidated controls, state-driven next steps, planner
+opening, progressive math with focus, and explicit shopping/confirmation.
+Proportional framing also updates `map-viewport.ts`, `map-market-layout.ts` and
+its tests, `phaser-route-renderer.ts`, and `scripts/check-route-renderer.cjs`.
+
+The earlier student-flow slice passed 101 simulation tests across 11 files. Its production build
+passes with existing stylesheet budget warnings. Real Chromium checks pass for
+the normal student launch, two-shop/two-item purchases and receipts, sequential
+trip math, departure, first travel day, map proportions, desktop/mobile resize,
+scouting isolation, fallback, reduced motion, and renderer lifecycle. No browser
+page errors occurred. The architecture audit still reports two pre-existing
+violations: the `core/index.ts` template import and the project-local
+`mystery-substance/lab-kit/render-quality.service.ts` service.
+
+That initial student-flow slice was a reusable presentation change. Its core contracts, curriculum settings,
+accounting, scoring, persistence, and math requirements stayed unchanged. The later
+optional trade-world and market extension is documented in the current report above. No new
+TEMPLATE_CAPABILITY_GAP or architectural deviation was introduced. Existing
+working-tree changes were preserved. The next useful check is a short student
+playtest to see whether students can finish their first trip without adult
+navigation help.
+
 Frontier Trading Company is a Grade 5 mathematics project-based learning simulation built with the reusable `simulation-decision` template. It is available at `/frontier-trading`.
 
 Builders can open `/frontier-trading/builder-info` from the Frontier card on the project library. The page reads current settings, stages, routes, and report structure directly from the live configuration, then combines them with the version-matched HBC status, source paths, change log, guardrails, and competition roadmap in `frontier-trading.builder-info.ts`.
@@ -10,11 +73,11 @@ The opening now uses a painted frontier prologue matching the town and route map
 
 ## Route-first planning workspace
 
-The map is the full-width planning workspace. Each unlocked, transport-compatible destination has a readable market-price placard beside its fort showing projected selling prices per unit for currently available goods. Labels move with zoom/pan, stay inside the map frame, and use nearby candidate positions to avoid crowding. A dotted connection identifies the matching town. Long lists scroll within the placard; no separate market sidebar or mobile tray is needed.
+The map is the full-width planning workspace. Show prices opens readable market-price placards for unlocked, transport-compatible destinations with projected selling prices per unit for currently available goods. Labels move with zoom/pan, stay inside the map frame, and use nearby candidate positions to avoid crowding. A dotted connection identifies the matching town. Long lists scroll within the placard.
 
-Each open route displays its own configuration-derived travel cost halfway along its path. Clicking that marker, its fort, or its placard toggles a prediction anchored to the same path midpoint, not to a fixed sidebar. Only one route prediction is open at a time: selecting another route switches its content and location; selecting the same route or pressing Escape closes it. Hover/focus alone does not open or switch the prediction. The card follows map pan/zoom and is clamped inside the map frame; a leader identifies its route anchor. It shows time, travel cost, distance, terrain, weather, and risk without repeating prices or calculated margins. Previewing does not change the saved route, spend cash, or record a domain event. “Use this route” opens the existing forecast/rationale planner and preserves all departure checks.
+Each open route displays its configuration-derived travel cost halfway along its path. Clicking that marker, its fort, or its placard toggles a prediction at the path midpoint. Only one route prediction is open at a time: selecting another route switches its content and location; selecting the same route or pressing Escape closes it. Hover/focus alone does not open or switch the prediction. The card follows map pan/zoom and stays inside the frame; a leader identifies its route anchor. It shows destination, travel cost, days, and a short risk description, with distance, terrain, and weather in optional details. Previewing does not change the saved route, spend cash, or record a domain event. Choose this town opens the planner, which guides shopping before math and preserves all departure checks.
 
-Starting a company and returning to Plan Trip opens Choose Route. The map stays mounted behind overlays; mission progress and route/journey journals remain available in the bottom toolbar. Predictions remain route-anchored on narrow screens; the longer trip planner uses a bounded sheet.
+Starting a company opens Map. The map stays mounted behind overlays; mission progress and the route journal remain available below it, with trip records under My stuff. Predictions remain route-anchored on narrow screens; the longer trip planner uses a bounded sheet.
 
 The atlas's optional `destinationMarkets` input accepts formatted, configuration-derived price rows; optional trail `costLabel` fields carry formatted route costs. Its optional `predictionRouteId` input positions projected prediction content using the rendered SVG path's arc-length midpoint (endpoint fallback for non-SVG test environments). Existing atlas hosts retain their default behavior. The pure `map-market-layout.ts` helper and its tests were added in the map-pricing work; this refinement modifies route page, atlas, `map-viewport.ts`, regression tests, and this documentation without adding files. No core or persistence schema changes, architecture deviations, or template capability gaps were introduced.
 
@@ -30,7 +93,9 @@ The reusable live wagon uses a realistic transparent wagon beneath quantity-driv
 
 ## Painted route world
 
-The route atlas uses a matching pre-rendered frontier landscape beneath the existing live SVG game layer. Trail lines, availability, selected and compared states, checkpoints, destinations, labels, wagon progress, and keyboard controls remain generated from configuration and runtime state. The background adds rivers, forests, mountains, forts, and atmosphere without containing route lines or answers. See [the map scene art system](MAP_SCENE_ART_SYSTEM.md) for the coordinate and overlay contract.
+The route atlas uses a matching pre-rendered frontier landscape inside a lazy-loaded Phaser 4 scene. Trails, checkpoints, animated wagon progress, and scouting previews share geometry with the semantic SVG destination/cost controls and HTML price cards. The background adds rivers, forests, mountains, forts, and atmosphere without containing route lines or answers. See [the map scene art system](MAP_SCENE_ART_SYSTEM.md) for the coordinate contract and [the Phaser gameplay upgrade](PHASER_GAMEPLAY_UPGRADE.md) for implementation and verification.
+
+The map supports reviewed departure and one-day travel, with confirmed arrival opening a market action. Pending events use the existing decision screen. A translucent scouting wagon previews an available route without changing the company account or day. Motion controls, live reduced-motion support, and an explicit basic-map option are available in the map toolbar. Live multiplayer remains scoped to the planned final-day showcase competition and requires the separate live-session backend.
 
 ## Learning experience
 
@@ -48,7 +113,7 @@ The project emphasizes:
 
 | Guide | Implemented workspace                                                                                              |
 | ----- | ------------------------------------------------------------------------------------------------------------------ |
-| UI 01 | Plan Trip, Travel, and Finish spaces; one-action Next Mission guide; live score; save and lock states              |
+| UI 01 | Map and Shop pages; My stuff records; one next-step prompt; separate teacher area; save and lock states             |
 | UI 02 | Living market, staged supply unlocks, NPC stalls, rumor evidence, drag-to-load/sell, trade feedback                |
 | UI 03 | Map-first board, staged route unlocks, checkpoint trails, planner drawer, route journal, wagon progress            |
 | UI 04 | Unit-by-unit physical cargo, weighted suspension, drag-to-sell handoff, profit tooltips, canonical inventory table |

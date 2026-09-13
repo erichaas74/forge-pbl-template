@@ -15,6 +15,12 @@ describe('ProjectHomeComponent', () => {
 
     const links = fixture.debugElement.queryAll(By.css('.project-card a'));
     expect(links.map((link) => link.attributes['href'])).toEqual([
+      '/projects/community-story-network',
+      '/projects/shadow-gallery',
+      '/projects/castle-archive-rescue',
+      '/projects/championship-show',
+      '/projects/live-strategy-league',
+      '/projects/cascade-bay-crisis',
       '/projects/robot-delivery-code-lab',
       '/projects/mystery-substance',
       '/projects/frontier-trading-company',

@@ -1,4 +1,5 @@
 import type { DecisionSceneConfig } from '../../shared/project-intro/decision-scene.models';
+import { hostedMediaUrl } from '../../shared/media/hosted-media';
 const clip = (name: string, alt: string) => ({
   image: `/project-intros/voyage/${name}.svg`,
   alt,
@@ -9,13 +10,13 @@ const clip = (name: string, alt: string) => ({
 export const voyageTeaser: DecisionSceneConfig = {
   type: 'decision-scene',
   id: 'voyage-first-command',
-  version: '1.1.0',
+  version: '1.2.0',
   interaction: 'navigation',
   replayLabel: 'Replay my first command',
   kicker: 'Race Around the World · Captain to the chart table',
   headline: 'The shortcut looks brilliant. The wind has other plans.',
   invitation:
-    'Your crew is waiting for a course. The navigator has two routes. The cook has one question: “How many dinners should I plan?”',
+    'Your fictional crew is waiting for a course. The navigator has two routes. You choose your path and whom to trust; the events of history keep their documented outcomes.',
   sceneLabel: 'PRACTICE WATERS · A FICTIONAL CHART',
   sceneCaption:
     'Watch the ship meet changing weather. The direct passage is shorter, but its wind reports are old. The wider route has a recent wind report and a known supply harbor. Choose your first command.',
@@ -24,7 +25,7 @@ export const voyageTeaser: DecisionSceneConfig = {
       'departure',
       'An illustrated sailing ship leaves harbor as clouds gather over a fictional practice sea.',
     ),
-    video: '/project-intros/voyage/intro-launch-video.mp4',
+    video: hostedMediaUrl('project-intros/voyage/intro-launch-video.mp4'),
   },
   afterVideoMedia: {
     image: '/project-intros/voyage/practice-chart.svg',
@@ -115,16 +116,16 @@ export const voyageTeaser: DecisionSceneConfig = {
     },
   ],
   mission: {
-    title: 'Your route will leave a line. Your reasons will tell its story.',
+    title: 'Your path is yours. History keeps its course.',
     invitation:
-      'Start your expedition in Lisbon. Compare charts and sources, make consequential choices, and keep the explanations that turn a map into a captain’s account.',
-    image: '/journey-replay/world-atlas-v1.png',
+      'Lead a fictional crew from Lisbon in 1501. Choose your companions, loyalties, and route. Learn from what you witness and from sourced historical records. Your decisions affect your personal voyage; real expeditions, treaties, and later events keep their historical outcomes.',
+    image: '/journey-replay/world-atlas-v1.webp',
     imageAlt: 'An illustrated world atlas ready for an expedition route.',
     deliverable: 'Your voyage replay',
     steps: [
-      'Plan a course and explain the evidence.',
-      'Record choices, consequences, and changes of mind.',
-      'Replay the journey and consider whose lives it affected.',
+      'Choose whom to work with and a course you can defend.',
+      'Separate what you witness from what historical sources establish.',
+      'Replay your personal journey alongside the unchanged historical timeline.',
     ],
     finishButton: 'I’m ready for my first expedition',
   },

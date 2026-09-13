@@ -1,13 +1,25 @@
-import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Injector,
+  OnDestroy,
+  afterNextRender,
+  computed,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { SimulationDecisionRuntimeService } from '../../runtime/simulation-decision-runtime.service';
-import type { EventChoiceDefinition } from '../../domain/simulation-decision.models';
+import type { EventHistoryEntry } from '../../domain/simulation-decision.models';
 import { IllustratedWagonComponent } from '../art/illustrated-wagon.component';
+import { routeJourneyPresentation } from '../map/route-journey.presentation';
+import { ReviewDialogDirective } from '../review-dialog.directive';
 
 @Component({
   selector: 'app-simulation-event-decision',
-  imports: [FormsModule, IllustratedWagonComponent],
+  imports: [FormsModule, IllustratedWagonComponent, ReviewDialogDirective],
   templateUrl: './event-decision.component.html',
   styleUrl: './event-decision.component.scss',
 })
@@ -20,7 +32,12 @@ export class SimulationEventDecisionComponent implements OnDestroy {
   readonly reviewOpen = signal(false);
   readonly journeyPaused = signal(false);
   readonly speed = signal<1 | 2>(1);
-  readonly resolvingChoice = signal<EventChoiceDefinition | undefined>(undefined);
+  readonly resolvedFeedback = signal<EventHistoryEntry | undefined>(undefined);
+  readonly journey = computed(() =>
+    routeJourneyPresentation(this.runtime.config, this.runtime.state()),
+  );
+  readonly outcomePanel = viewChild<ElementRef<HTMLElement>>('outcomePanel');
+  private readonly injector = inject(Injector);
   readonly journeyMoving = signal(false);
   private resolutionTimer?: ReturnType<typeof setTimeout>;
   private journeyTimer?: ReturnType<typeof setTimeout>;
@@ -118,31 +135,31 @@ export class SimulationEventDecisionComponent implements OnDestroy {
 
   resolve(): void {
     const choice = this.selectedChoice();
-    if (choice === undefined || this.resolvingChoice() !== undefined) {
+    if (!this.reviewOpen() || choice === undefined || this.resolvedFeedback() !== undefined) {
       return;
     }
+    // Commit first. Rejected decisions never display a successful consequence.
+    if (!this.runtime.resolveEvent(this.selectedChoiceId(), this.reasoning(), this.mathAnswer()))
+      return;
     this.reviewOpen.set(false);
-    this.resolvingChoice.set(choice);
+    this.pinLastDecision();
+    if (this.runtime.saveState() !== 'save_failed') this.resolvedFeedback.set(this.lastDecision());
+    this.selectedChoiceId.set('');
+    this.reasoning.set('');
+    this.mathAnswer.set(undefined);
+    this.showHint.set(false);
+    afterNextRender(
+      () => {
+        this.outcomePanel()?.nativeElement.scrollIntoView?.({ block: 'nearest', behavior: 'auto' });
+        this.outcomePanel()?.nativeElement.focus({ preventScroll: true });
+      },
+      { injector: this.injector },
+    );
     const reducedMotion =
       typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.resolutionTimer = setTimeout(
-      () => {
-        const changed = this.runtime.resolveEvent(
-          this.selectedChoiceId(),
-          this.reasoning(),
-          this.mathAnswer(),
-        );
-        this.resolvingChoice.set(undefined);
-        if (changed) {
-          this.pinLastDecision();
-          this.reviewOpen.set(false);
-          this.selectedChoiceId.set('');
-          this.reasoning.set('');
-          this.mathAnswer.set(undefined);
-          this.showHint.set(false);
-        }
-      },
-      reducedMotion ? 150 : 1150,
+      () => this.resolvedFeedback.set(undefined),
+      reducedMotion ? 0 : 1600,
     );
   }
 

@@ -1,0 +1,136 @@
+/* One integrated project header. The atlas owns the controls projected into it. */
+:host-context(app-project-host) {
+  --trading-chrome-height: 0px;
+}
+.simulation-shell.map-mode {
+  border: 0;
+  height: 100dvh;
+}
+.simulation-shell.map-mode .simulation-main {
+  padding: 0;
+  overflow: hidden;
+}
+.unified-project-header.mission-bar {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 68px;
+  padding: 0.55rem 0.9rem;
+  border: 0;
+  border-bottom: 1px solid #a88648;
+  background: #172e29;
+  color: #fff2ce;
+  box-shadow: 0 3px 14px #0005;
+  z-index: 30;
+  flex-shrink: 0;
+}
+.project-identity {
+  display: grid;
+  gap: 0.2rem;
+  margin-right: auto;
+}
+.project-identity .trading-title {
+  color: #f6dfab;
+  font:
+    bold clamp(0.95rem, 1.2vw, 1.2rem) Georgia,
+    serif;
+}
+.project-identity small {
+  color: #c4cdb7;
+  font:
+    12px Arial,
+    sans-serif;
+}
+.unified-project-header .project-tools {
+  order: 0;
+  margin: 0;
+  gap: 0.35rem;
+}
+.unified-project-header button,
+.unified-project-header summary,
+.project-back {
+  min-height: 40px;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid #6e8167;
+  border-radius: 5px;
+  color: #fff0c7;
+  background: #273f32;
+  font:
+    bold 12px Arial,
+    sans-serif;
+  cursor: pointer;
+}
+.unified-project-header .project-tools button.active,
+.unified-project-header .next-action {
+  background: #e7bc6c;
+  border-color: #f1d39a;
+  color: #282917;
+}
+.unified-project-header .next-action {
+  max-width: 12rem;
+}
+.unified-project-header .header-menu > div {
+  background: #fff0cd;
+  color: #322c21;
+  padding: 0.5rem;
+  min-width: 12rem;
+}
+.unified-project-header .header-menu > div button,
+.unified-project-header .header-menu a {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin: 0.2rem 0;
+  color: #263c2c;
+  background: transparent;
+  border: 0;
+  text-decoration: none;
+  padding: 0.65rem;
+  box-sizing: border-box;
+}
+.unified-project-header .header-menu small {
+  display: block;
+  padding: 0.6rem;
+}
+.unified-project-header :is(button, summary, a):focus-visible {
+  outline: 3px solid #ffd77a;
+  outline-offset: 3px;
+}
+.project-back {
+  text-decoration: none;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+}
+.setup-project-links {
+  display: flex;
+  gap: 1rem;
+  padding: 0.5rem;
+}
+.setup-project-links a {
+  color: #fff0c7;
+}
+@media (max-width: 800px) {
+  .unified-project-header.mission-bar {
+    gap: 0.35rem;
+    padding: 0.45rem;
+    min-height: 0;
+  }
+  .project-identity {
+    width: calc(100% - 3.5rem);
+  }
+  .unified-project-header .project-tools {
+    flex-wrap: nowrap;
+  }
+  .unified-project-header button,
+  .unified-project-header summary {
+    padding: 0.5rem;
+    font-size: 11px;
+  }
+  .unified-project-header .next-action {
+    flex: 1;
+    max-width: none;
+  }
+}

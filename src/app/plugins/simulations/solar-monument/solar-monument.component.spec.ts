@@ -88,6 +88,38 @@ describe('solar monument demonstration bridge', () => {
     expect(batches[0]).toHaveLength(4);
     test.fixture.destroy();
   });
+  it('accepts only current walkthrough readings and saves only the requested validated review', () => {
+    const test = setup();
+    test.fixture.componentRef.setInput('presentation', false);
+    test.fixture.componentRef.setInput('walkthrough', {
+      latitude: 38.83,
+      longitude: -104.82,
+      year: 2026,
+      season: 'june',
+      rule: 'morning',
+      camera: 'target',
+    });
+    test.fixture.detectChanges();
+    const setupMessage = [...test.sent].reverse().find((m) => m['type'] === 'walkthrough-setup')!;
+    const readings = [{ label: 'Summer carving', value: 'shadow' }];
+    test.receive({ type: 'walkthrough-readings', id: 'stale', readings });
+    expect(test.component.walkthroughReady()).toBe(false);
+    test.receive(
+      { type: 'walkthrough-readings', id: setupMessage['id'], readings },
+      'https://foreign.example',
+    );
+    expect(test.component.walkthroughReady()).toBe(false);
+    test.receive({ type: 'walkthrough-readings', id: setupMessage['id'], readings });
+    expect(test.component.walkthroughReady()).toBe(true);
+    test.component.runWalkthroughAction({ label: 'Save', command: 'review-save' });
+    const request = test.latest();
+    test.receive(test.response({ ...request, id: 'stale' }));
+    expect(batches).toHaveLength(0);
+    test.receive(test.response(request));
+    expect(batches).toHaveLength(1);
+    expect(test.component.status()).toContain('Four measured tests saved');
+    test.fixture.destroy();
+  });
   it('invalidates old comparisons after design/location changes and ignores stale or foreign responses', () => {
     const test = setup();
     const old = test.latest();
@@ -271,6 +303,7 @@ describe('solar monument demonstration bridge', () => {
   });
   it('keeps the selected final date accurate when dynamic event options appear', async () => {
     const test = setup(true);
+    test.component.toolsOpen.set(true);
     test.receive(test.response(test.latest()));
     test.fixture.detectChanges();
     await test.fixture.whenStable();
@@ -286,6 +319,28 @@ describe('solar monument demonstration bridge', () => {
     await test.fixture.whenStable();
     expect(picker.value).toBe('nearby-before');
     expect(test.sent.at(-1)?.['type']).toBe('nearby');
+    test.fixture.destroy();
+  });
+  it('opens the day overlay and returns focus when it closes, including in read-only presentations', () => {
+    const test = setup(true);
+    test.component.toolsOpen.set(true);
+    test.fixture.detectChanges();
+    const button = Array.from(
+      test.fixture.nativeElement.querySelectorAll('button') as NodeListOf<HTMLButtonElement>,
+    ).find((item) => item.textContent?.includes('Sunrise & sunset'))!;
+    button.click();
+    expect(test.sent.at(-1)?.['action']).toBe('sunDayToggle');
+    test.receive({ type: 'toolbar-state', state: { ...test.component.ui(), sunDay: true } });
+    test.fixture.detectChanges();
+    expect(button.getAttribute('aria-expanded')).toBe('true');
+    test.receive({ type: 'toolbar-state', state: { ...test.component.ui(), sunDay: 'invalid' } });
+    expect(test.component.ui().sunDay).toBe(true);
+    test.receive({ type: 'toolbar-state', state: { ...test.component.ui(), sunDay: false } });
+    test.fixture.detectChanges();
+    expect(button.getAttribute('aria-expanded')).toBe('false');
+    expect(document.activeElement).toBe(button);
+    expect(designs).toHaveLength(0);
+    expect(captures).toHaveLength(0);
     test.fixture.destroy();
   });
   it('previews a measured sunstone, saves its observation, configures a seasonal test and supports undo', () => {
@@ -316,8 +371,8 @@ describe('solar monument demonstration bridge', () => {
     expect(designs).toHaveLength(1);
     const saved = designs[0] as BlockDesign;
     expect(saved.blocks).toEqual(calendarMonumentConfig.starterDesign.blocks);
-    expect(saved.targets[0].settings).toEqual(target.settings);
-    expect(saved.targets[0].label).toBe('My amber June stone');
+    expect(saved.targets.find((t) => t.id === target.id)?.settings).toEqual(target.settings);
+    expect(saved.targets.find((t) => t.id === target.id)?.label).toBe('My amber June stone');
     test.fixture.componentRef.setInput('design', saved);
     test.fixture.detectChanges();
     test.component.useMarkerForTest();
@@ -359,7 +414,7 @@ describe('solar monument demonstration bridge', () => {
     test.component.removeMarker();
     test.fixture.componentRef.setInput('design', designs.at(-1));
     test.fixture.detectChanges();
-    expect(test.component.design().targets).toHaveLength(0);
+    expect(test.component.design().targets).toEqual(calendarMonumentConfig.starterDesign.targets);
     test.component.undoMarker();
     expect((designs.at(-1) as BlockDesign).targets).toEqual(saved.targets);
     test.fixture.destroy();
@@ -412,6 +467,40 @@ describe('solar monument demonstration bridge', () => {
         expect.objectContaining({ type: 'visibility', active: true }),
       ]),
     );
+    test.fixture.destroy();
+  });
+  it('provides an accessible center sunrise preview without recording it as noon evidence', () => {
+    const test = setup();
+    test.receive(test.response(test.latest()));
+    test.fixture.detectChanges();
+    const button = [...test.fixture.nativeElement.querySelectorAll('button')].find(
+      (el) => el.textContent?.trim() === 'From center',
+    ) as HTMLButtonElement;
+    expect(button.disabled).toBe(false);
+    button.click();
+    expect(test.sent.at(-1)?.['action']).toBe('centerViewToggle');
+    test.receive({ type: 'toolbar-state', state: { ...test.component.ui(), centerView: true } });
+    test.fixture.detectChanges();
+    expect(button.getAttribute('aria-pressed')).toBe('true');
+    expect(test.component.canMark()).toBe(false);
+    const count = test.sent.length;
+    test.component.capture();
+    test.component.recordReview();
+    expect(test.sent).toHaveLength(count);
+    expect(captures).toHaveLength(0);
+    expect(batches).toHaveLength(0);
+    test.receive({
+      type: 'toolbar-state',
+      state: { ...test.component.ui(), centerView: 'invalid' },
+    });
+    expect(test.component.ui().centerView).toBe(true);
+    test.receive({ type: 'toolbar-state', state: { ...test.component.ui(), centerView: false } });
+    test.fixture.detectChanges();
+    expect(document.activeElement).toBe(button);
+    expect(designs).toHaveLength(0);
+    const { centerView: _center, ...legacy } = test.component.ui();
+    test.receive({ type: 'toolbar-state', state: legacy });
+    expect(test.component.ui().centerView).toBe(false);
     test.fixture.destroy();
   });
 });

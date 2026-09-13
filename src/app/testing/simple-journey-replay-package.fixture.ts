@@ -45,6 +45,7 @@ export const simpleJourneyReplayPackage = {
     steps: config.steps,
     evidence: config.evidence,
     resources: config.resources,
+    historicalFrame: config.historicalFrame,
   },
   'map.json': config.map,
   'replay.json': { ...config.replay, classVoyages: config.classVoyages },

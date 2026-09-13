@@ -1,4 +1,4 @@
-<main class="lab">
+<main class="lab" [class.visual-slice]="!!shownCourse().visualTheme" [class.tabletop]="shownCourse().visualTheme === 'tabletop'">
   <header class="masthead">
     <div class="project-identity">
       <h1>{{ runtime.config.title }}</h1>
@@ -92,7 +92,9 @@
               <summary>How the coding blocks work</summary>
               <p>
                 Blocks run from top to bottom. Fill the white slots with numbers, fractions, or
-                named values. Drag a block by its icon/name, or use its ••• options to move, copy,
+                named values. In a Move math block, the mission supplies the given number and
+                operation; enter your number in the white slot. The result controls how far the
+                robot moves. Drag a block by its icon/name, or use its ••• options to move, copy,
                 remove, or disable it. Speed is also in the options.
               </p>
               @for (type of runtime.challenge().allowedCommands; track type) {
@@ -173,6 +175,7 @@
           } @else {
             <button class="run" (click)="replay.playing() ? replay.pause() : replay.play()">
               {{ replay.playing() ? 'Ⅱ Pause' : '▶ Play replay' }}</button
+            ><button (click)="replay.stepBack()" [disabled]="replay.playing() || replay.timeMs() <= 0">Step back</button
             ><button (click)="replay.step()" [disabled]="replay.playing()">Step</button
             ><button (click)="replay.reset()">Reset replay</button>
             @if (!runtime.sample) {
@@ -196,9 +199,12 @@
           #courseView
           tabindex="-1"
           [course]="shownCourse()"
+          [robotRadiusCm]="replay.trial()?.version?.robot?.radiusCm ?? runtime.config.robot.radiusCm"
           [targetIndex]="shownTarget()"
           [sample]="replay.current()"
           [samples]="replay.trial()?.pathSamples ?? []"
+          [events]="replay.trial()?.events ?? []"
+          [result]="replay.trial()"
           [showTrace]="trace()"
         />
         <div class="telemetry">

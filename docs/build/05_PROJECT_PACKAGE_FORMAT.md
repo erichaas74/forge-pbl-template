@@ -935,3 +935,17 @@ The V1 authoring path is Designer Project Brief -> Curriculum LLM -> declarative
 package -> schema/reference/capability/logic validation -> preview -> designer
 revision -> publish. Human designers should not normally edit raw JSON. A
 readable generation report and migration/audit output accompany the package.
+
+## Heist gallery package extension · schema 1.2
+
+The Heist gallery's existing monolithic package supports an optional `encounters`
+array in schema 1.2. Each definition selects the installed `guided-scene` kind and
+declares setting/attribution, chamber references, view modes, narrated chapters,
+scripted questions and prerequisites, an object study, and a sourced insight
+assessment. Source references and local media paths are validated before launch.
+
+Schema 1.1 packages remain valid without encounters. Published content changes
+use a distinct project version and package location so existing exact-signature
+practice saves are not silently migrated. See the [extension contract and package
+compatibility notes](../heist/LIVING_SCENES_IMPLEMENTATION.md). This is an optional
+template-owned extension, not a change to the core Investigation package shape.

@@ -7,6 +7,8 @@ import type {
 } from '../../../core/packages/project-package-contracts';
 import type { ValidationIssue } from '../../../core/validation/validation-contracts';
 import type { JourneyMapConfig } from '../domain/journey-replay.models';
+import { validateJourneyAdventures } from './journey-adventure.validation';
+import { validateJourneyHistory } from './journey-history.validation';
 import type {
   JourneyPackageDefinition,
   JourneyReplayDefinitionGraph,
@@ -48,6 +50,8 @@ export class JourneyReplayProjectPackageAssembler implements ProjectPackageAssem
     }
     validateStableIds(journey, map, replay, issues);
     validateReferences(journey, map, replay, issues);
+    issues.push(...validateJourneyAdventures(journey.steps, journey.resources));
+    issues.push(...validateJourneyHistory(journey.historicalFrame));
     if (issues.some((issue) => issue.severity === 'error')) return { issues };
 
     return {

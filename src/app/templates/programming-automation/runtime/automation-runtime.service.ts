@@ -20,6 +20,7 @@ import {
 import { allCommands, compileProgram } from '../core/automation-compiler';
 import { evidenceIsCorrect, mathTools } from '../core/automation-math';
 import { executeRobot } from '../core/robot-execution';
+import { isMoveCommand, prepareMoveMathCommands } from '../core/move-math';
 @Injectable()
 export class AutomationRuntimeService implements OnDestroy {
   readonly config = inject(AUTOMATION_CONFIG);
@@ -180,6 +181,8 @@ export class AutomationRuntimeService implements OnDestroy {
       id: crypto.randomUUID(),
       type,
       value: type === 'repeat' ? '2' : '',
+      ...(isMoveCommand(type) && this.challenge().moveMath?.[type]
+        ? { moveMath: { ...this.challenge().moveMath![type]! } } : {}),
       direction: 'right',
       ...(type === 'repeat' ? { commands: [] } : {}),
       ...(type === 'pick-up' || type === 'drop-off'
@@ -447,7 +450,7 @@ export class AutomationRuntimeService implements OnDestroy {
         this.config.challenges.every((challenge) => {
           const draft = saved.drafts[challenge.id];
           return (
-            draft &&
+            !draft ||
             this.config.courses.find((c) => c.id === challenge.courseId)?.targets[draft.targetIndex]
           );
         })
@@ -455,7 +458,7 @@ export class AutomationRuntimeService implements OnDestroy {
         return {
           ...saved,
           drafts: Object.fromEntries(
-            Object.entries(saved.drafts).map(([id, draft]) => {
+            Object.entries({ ...initialAutomationState(this.config).drafts, ...saved.drafts }).map(([id, draft]) => {
               const starter = this.config.challenges.find((c) => c.id === id)?.discovery
                 ?.starterCommands;
               const untouched =
@@ -468,12 +471,10 @@ export class AutomationRuntimeService implements OnDestroy {
                 !draft.diagnosis &&
                 !Object.values(draft.prediction).some(Boolean) &&
                 !saved.trials.some((trial) => trial.challengeId === id);
-              return [
-                id,
-                starter && untouched
-                  ? { ...draft, program: { ...draft.program, commands: structuredClone(starter) } }
-                  : draft,
-              ];
+              const commands = starter && untouched ? structuredClone(starter) : draft.program.commands;
+              const prepared = this.sample || draft.completedAt || draft.lockedVersionId ? commands
+                : prepareMoveMathCommands(commands, this.config.challenges.find((c) => c.id === id)?.moveMath);
+              return [id, { ...draft, program: { ...draft.program, commands: prepared } }];
             }),
           ),
         };

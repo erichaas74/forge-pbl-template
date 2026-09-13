@@ -11,15 +11,15 @@ import type {
 } from './simulation-decision.models';
 
 describe('choice progression', () => {
-  it('starts with a focused set and unlocks the full network from one accurate starter manifest', () => {
+  it('opens the route network immediately and unlocks all goods from an accurate starter manifest', () => {
     let state = started();
     let view = choiceProgression(frontierTradingConfig, state);
 
     expect(view.currentStage.id).toBe('starter-outfitter');
     expect(view.currentStage.availableGoodIds).toHaveLength(3);
-    expect(view.currentStage.availableRouteIds).toHaveLength(2);
+    expect(view.currentStage.availableRouteIds).toHaveLength(24);
     expect(goodIsUnlocked(frontierTradingConfig, state, 'coffee')).toBe(false);
-    expect(routeIsUnlocked(frontierTradingConfig, state, 'route-miners')).toBe(false);
+    expect(routeIsUnlocked(frontierTradingConfig, state, 'route-miners')).toBe(true);
 
     const scene = frontierTradingConfig.world.locations.find(
       (item) => item.locationId === state.currentLocationId,
@@ -43,6 +43,14 @@ describe('choice progression', () => {
 
   it('rejects locked supplies and routes at the domain boundary', () => {
     const state = started();
+    const routeLockedConfig = {
+      ...frontierTradingConfig,
+      choiceProgression: {
+        stages: frontierTradingConfig.choiceProgression!.stages.map((stage, index) =>
+          index === 0 ? { ...stage, availableRouteIds: ['route-northern', 'route-river'] } : stage,
+        ),
+      },
+    };
 
     expect(
       previewTrade(frontierTradingConfig, state, [
@@ -50,7 +58,7 @@ describe('choice progression', () => {
       ]).errors,
     ).toContain('Coffee: finish the current trading mission to unlock this good.');
     expect(
-      reduceSimulationDecision(frontierTradingConfig, state, {
+      reduceSimulationDecision(routeLockedConfig, state, {
         type: 'route.committed',
         routeId: 'route-miners',
         rationale: 'This route has the strongest expected demand.',

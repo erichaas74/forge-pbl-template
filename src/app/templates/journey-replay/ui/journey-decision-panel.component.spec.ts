@@ -58,7 +58,7 @@ describe('Journey task steps', () => {
         .disabled,
     ).toBe(false);
     expect(fixture.nativeElement.querySelector('.planning-result')?.textContent).toContain(
-      'England offers shared funding',
+      'A fictional contact in England offers a personal commission',
     );
     panel.choose('mission-trade');
     expect(panel.workStep()).toBe(0);
@@ -90,6 +90,17 @@ describe('Journey task steps', () => {
     expect(panel.runtime.state().completedSteps).toHaveLength(1);
     expect(panel.workStep()).toBe(0);
     expect(panel.runtime.state().completedSteps[0].studentResponse.citations).toHaveLength(1);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.outcome-report')?.textContent).toContain(
+      'Decision recorded',
+    );
+    expect(fixture.nativeElement.querySelector('.outcome-report')?.textContent).toContain(
+      'Sponsor backing',
+    );
+    expect(fixture.nativeElement.querySelectorAll('.work-progress button')).toHaveLength(5);
+    expect(fixture.nativeElement.querySelector('.learning-brief')?.textContent).toContain(
+      'opportunity cost',
+    );
     fixture.destroy();
   });
 });

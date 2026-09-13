@@ -1,0 +1,1 @@
+import{n as A}from"./chunk-DC_vV9an.js";var t=new A(`INVESTIGATION_RUNTIME_FACADE`);export{t};

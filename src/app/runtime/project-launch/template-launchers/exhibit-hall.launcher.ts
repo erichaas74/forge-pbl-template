@@ -1,4 +1,5 @@
 import type { ExhibitProjectConfig } from '../../../templates/exhibit-hall/domain/exhibit-types';
+import { HttpMuseumPublicationAdapter } from '../../../infrastructure/exhibit-hall/http-museum-publication.adapter';
 import { BrowserExhibitPersistenceAdapter } from '../../../templates/exhibit-hall/persistence/exhibit-persistence';
 import { ExhibitHallRuntimeService } from '../../../templates/exhibit-hall/runtime/exhibit-hall-runtime.service';
 import {
@@ -6,6 +7,7 @@ import {
   EXHIBIT_HALL_PERSISTENCE,
   EXHIBIT_RENDERER_COMPONENTS,
   EXHIBIT_HALL_SESSION_CONTEXT,
+  MUSEUM_PUBLICATION,
 } from '../../../templates/exhibit-hall/runtime/exhibit-hall.tokens';
 import { MuseumBoardComponent } from '../../../templates/exhibit-hall/ui/museum-board.component';
 import { SciencePosterDemoComponent } from '../../../templates/exhibit-hall/ui/science-poster-demo.component';
@@ -17,8 +19,14 @@ export const exhibitHallLauncher: TemplateLauncher = {
     const definition = requireExhibitConfig(request.projectDefinition, request.project.id);
     const config: ExhibitProjectConfig = {
       ...definition,
+      ...(definition.museum && request.session.authorityMode === 'serverAuthoritative'
+        ? { seedBoards: [] }
+        : {}),
       courseSectionId: request.session.classId ?? definition.courseSectionId,
-      projectInstanceId: request.session.attemptId ?? definition.projectInstanceId,
+      // Private draft attempts must not split a class museum into separate collections.
+      projectInstanceId: definition.museum
+        ? definition.projectInstanceId
+        : (request.session.attemptId ?? definition.projectInstanceId),
       viewer: {
         ...definition.viewer,
         studentId: request.session.studentId ?? request.session.actorId,
@@ -32,6 +40,9 @@ export const exhibitHallLauncher: TemplateLauncher = {
       providers: [
         { provide: EXHIBIT_HALL_CONFIG, useValue: config },
         { provide: EXHIBIT_HALL_SESSION_CONTEXT, useValue: request.session },
+        ...(config.museum && request.session.authorityMode === 'serverAuthoritative'
+          ? [{ provide: MUSEUM_PUBLICATION, useFactory: () => new HttpMuseumPublicationAdapter() }]
+          : []),
         {
           provide: EXHIBIT_HALL_PERSISTENCE,
           useFactory: () => new BrowserExhibitPersistenceAdapter(undefined, request.session),

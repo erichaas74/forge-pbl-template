@@ -1,4 +1,5 @@
 import { ImmutableMap, ImmutableSet } from '../../../core/collections/immutable-collections';
+import { isTradeWorldShape } from '../domain/trade-world.validation';
 import type { BaseEntity } from '../../../core/models/base-entity';
 import type {
   ProjectPackageAssembler,
@@ -206,6 +207,7 @@ function assembleConfig(
     choiceProgression: simulation.choiceProgression,
     routeForecastChallenge: simulation.routeForecastChallenge,
     transactionMath: simulation.transactionMath,
+    tradeWorld: simulation.tradeWorld,
     emblems: simulation.emblems,
     transports: simulation.transports,
     goods: simulation.goods,
@@ -383,6 +385,7 @@ function simulationEntity(
         !isChoiceProgressionShape(result.choiceProgression)) ||
       (result.routeForecastChallenge !== undefined &&
         !isRouteForecastChallengeShape(result.routeForecastChallenge)) ||
+      (result.tradeWorld !== undefined && !isTradeWorldShape(result.tradeWorld)) ||
       (result.transactionMath !== undefined && !isTransactionMathShape(result.transactionMath)))
   ) {
     issues.push({
@@ -391,7 +394,7 @@ function simulationEntity(
       file,
       entityId: result.id,
       message:
-        'simulation.json must define emblems, transports, goods, locations, world locations, and valid optional progression, route forecast, and transaction math settings.',
+        'simulation.json must define emblems, transports, goods, locations, world locations, and valid optional progression, route forecast, transaction math, and trade world settings.',
     });
     return undefined;
   }

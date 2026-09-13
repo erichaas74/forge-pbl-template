@@ -1,5 +1,16 @@
 # Product Architecture Decisions
 
+## Content-only catalog previews
+
+The project catalog may set the optional `entryMode` to `preview` for an introduction
+and mock showcase whose actual activity is outside the LMS. The shared route host
+renders static `/projects/{validated-project-id}/launch.html` or `showcase.html`
+content for the opening and `final-demo` routes, respectively. It must not resolve
+a student session, load a runtime package, or write persistence for this mode.
+Other activity routes are explicitly unavailable. This additive catalog option
+does not register a runtime template or introduce a publishing capability.
+Existing `opening` and `activity` modes remain unchanged.
+
 ## Status
 
 Accepted. These decisions are architectural requirements for the PBL LMS and

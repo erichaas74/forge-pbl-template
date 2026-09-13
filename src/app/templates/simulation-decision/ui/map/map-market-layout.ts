@@ -1,4 +1,4 @@
-import type { MapView } from './map-viewport';
+import { mapPointToScreen, mapScreenScale, type MapView } from './map-viewport';
 
 export interface MarketAnchor {
   id: string;
@@ -25,11 +25,10 @@ export function layoutMarketLabels(
   obstacles: readonly { x: number; y: number; width: number; height: number }[] = [],
 ): readonly MarketLabelBox[] {
   const visible = anchors
-    .map((anchor) => ({
-      ...anchor,
-      anchorX: (((anchor.mapX - view.x) * view.zoom) / 100 + 0.5) * width,
-      anchorY: (((anchor.mapY - view.y) * view.zoom) / 80 + 0.5) * height,
-    }))
+    .map((anchor) => {
+      const point = mapPointToScreen({ x: anchor.mapX, y: anchor.mapY }, view, width, height);
+      return { ...anchor, anchorX: point.x, anchorY: point.y };
+    })
     .filter(
       (anchor) =>
         anchor.anchorX >= 0 &&
@@ -47,8 +46,9 @@ export function layoutMarketLabels(
   for (const anchor of visible) {
     const cardWidth = Math.min(width < 600 ? 152 : 200, Math.max(80, width - 12));
     const cardHeight = Math.min(76 + anchor.rows * 22, 260, Math.max(60, height - 12));
-    const dx = width * 0.048 * view.zoom + 10;
-    const dy = height * 0.065 * view.zoom + 10;
+    const scale = mapScreenScale(view, width, height);
+    const dx = 4.8 * scale + 10;
+    const dy = 5.2 * scale + 10;
     const candidates = [
       [anchor.anchorX + dx, anchor.anchorY - cardHeight / 2],
       [anchor.anchorX - dx - cardWidth, anchor.anchorY - cardHeight / 2],

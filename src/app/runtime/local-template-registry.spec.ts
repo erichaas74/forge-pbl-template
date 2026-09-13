@@ -114,6 +114,7 @@ describe('local template composition', () => {
       'debate-studio',
       'engineering-design',
       'exhibit-hall',
+      'heist',
       'history-live-broadcast',
       'investigation',
       'journey-replay',

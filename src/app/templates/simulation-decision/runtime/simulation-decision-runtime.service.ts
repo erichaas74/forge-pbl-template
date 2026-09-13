@@ -1,4 +1,4 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
 
 import {
   cargoCapacity,
@@ -13,6 +13,7 @@ import {
   seasonResults,
 } from '../domain/simulation-decision.engine';
 import { formatMoney } from '../domain/money';
+import { initialTradeWorld } from '../domain/trade-world.engine';
 import { SimulationPlanning } from './simulation-planning';
 import type {
   EvidenceReference,
@@ -35,14 +36,47 @@ export class SimulationDecisionRuntimeService {
   readonly config = inject(SIMULATION_DECISION_CONFIG);
   private readonly session = inject(SIMULATION_DECISION_SESSION_CONTEXT, { optional: true });
   private readonly persistence = inject(SIMULATION_DECISION_PERSISTENCE);
-  private readonly runtimeScope = this.session === null
-    ? undefined
-    : projectSessionRuntimeScope(this.session, 'student');
+  private readonly runtimeScope =
+    this.session === null ? undefined : projectSessionRuntimeScope(this.session, 'student');
   readonly state = signal(createSimulationState(this.config, 20_260_902, this.runtimeScope));
   readonly errors = signal<readonly string[]>([]);
   readonly saveState = signal<'saved' | 'saving' | 'offline_local' | 'save_failed'>('saved');
   readonly marketIntent = signal<{ goodId: string; direction: 'buy' | 'sell' } | undefined>(
     undefined,
+  );
+  private readonly worldHolds = signal<readonly string[]>([]);
+  readonly world = computed(() => this.state().tradeWorld);
+  readonly turnBasedWorld = this.config.tradeWorld?.timing === 'turn-based';
+  readonly worldStepName = this.turnBasedWorld ? 'Turn' : 'Pulse';
+  readonly worldRunning = computed(
+    () =>
+      !!this.config.tradeWorld &&
+      !this.turnBasedWorld &&
+      !this.world()?.paused &&
+      this.worldHolds().length === 0 &&
+      ['planning', 'active'].includes(this.state().status) &&
+      !this.state().pendingEventId &&
+      this.saveState() !== 'save_failed',
+  );
+  // A committed turn can animate while the automatic clock remains disabled.
+  readonly worldMotionAllowed = computed(() =>
+    this.turnBasedWorld
+      ? ['planning', 'active', 'event_pending'].includes(this.state().status) &&
+        this.saveState() !== 'save_failed'
+      : this.worldRunning(),
+  );
+  readonly worldStatus = computed(() =>
+    this.turnBasedWorld
+      ? this.state().pendingEventId
+        ? 'Prices held · resolve your checkpoint'
+        : 'Prices held until your next travel turn'
+      : this.world()?.paused
+        ? 'World paused'
+        : this.worldHolds().length
+          ? 'Prices held while you plan'
+          : this.worldRunning()
+            ? 'Trade world running'
+            : 'World waiting',
   );
 
   readonly cash = computed(() => cashOnHand(this.state()));
@@ -68,8 +102,30 @@ export class SimulationDecisionRuntimeService {
         ...saved,
         runtimeScope: this.runtimeScope ?? saved.runtimeScope,
         marketDiscoveries: saved.marketDiscoveries ?? {},
+        ...(this.config.tradeWorld
+          ? { tradeWorld: saved.tradeWorld ?? initialTradeWorld(this.config.tradeWorld) }
+          : {}),
       });
     }
+    if (this.config.tradeWorld && !this.turnBasedWorld && typeof document !== 'undefined') {
+      const timer = setInterval(() => {
+        if (!document.hidden && this.worldRunning()) this.pulseWorld();
+      }, this.config.tradeWorld.tickIntervalMs);
+      inject(DestroyRef).onDestroy(() => clearInterval(timer));
+    }
+  }
+
+  holdWorld(reason: string, hold: boolean): void {
+    this.worldHolds.update((reasons) =>
+      hold ? [...new Set([...reasons, reason])] : reasons.filter((item) => item !== reason),
+    );
+  }
+  pulseWorld(): boolean {
+    if (!this.worldRunning()) return false;
+    return this.apply({ type: 'world.pulsed', expectedTick: this.world()?.tick ?? 0 }, true);
+  }
+  toggleWorldPause(): void {
+    this.apply({ type: 'world.pauseToggled' });
   }
 
   navigate(view: SimulationView): void {
@@ -128,14 +184,18 @@ export class SimulationDecisionRuntimeService {
     return intent;
   }
 
-  advanceTravel(): boolean {
+  advanceTravel(returnView: 'events' | 'route' = 'events'): boolean {
     const changed = this.apply({ type: 'travel.advanced' });
     if (changed) {
       const state = this.state();
       this.navigate(
-        state.pendingEventId !== undefined || state.activeTravel !== undefined
+        state.pendingEventId !== undefined
           ? 'events'
-          : 'market',
+          : returnView === 'route'
+            ? 'route'
+            : state.activeTravel !== undefined
+              ? 'events'
+              : 'market',
       );
     }
     return changed;
@@ -233,13 +293,14 @@ export class SimulationDecisionRuntimeService {
     return formatMoney(cents, showPlus);
   }
 
-  private apply(action: SimulationDecisionAction): boolean {
-    this.errors.set([]);
+  private apply(action: SimulationDecisionAction, background = false): boolean {
+    if (!background) this.errors.set([]);
     const result = reduceSimulationDecision(this.config, this.state(), action);
     if (result.errors.length > 0) {
       this.errors.set(result.errors);
       return false;
     }
+    if (result.state === this.state()) return false;
     this.state.set(result.state);
     this.persist(result.state);
     return true;

@@ -1,23 +1,39 @@
 import {
   Component,
+  DestroyRef,
   ElementRef,
+  TemplateRef,
   afterRenderEffect,
   computed,
+  effect,
+  inject,
   input,
   output,
   signal,
   viewChild,
 } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { layoutMarketLabels } from './map-market-layout';
 import type { LocationDefinition, RouteDefinition } from '../../domain/simulation-decision.models';
 import {
   FULL_MAP,
   boundedMapView,
   fitMapBounds,
+  mapPointToScreen,
+  mapScreenScale,
   mapViewBox,
   routePredictionPosition,
+  zoomMapAt,
   type MapView,
 } from './map-viewport';
+import { PhaserRouteCanvasComponent } from './phaser-route-canvas.component';
+import {
+  pointOnTrail,
+  type RouteCanvasCue,
+  type RouteCanvasSnapshot,
+  type CanvasTradeWorld,
+  type RoutePoint,
+} from './route-canvas.models';
 
 export interface AtlasTrail {
   route: RouteDefinition;
@@ -34,6 +50,7 @@ export interface AtlasMarketPrice {
 
 @Component({
   selector: 'app-route-atlas',
+  imports: [PhaserRouteCanvasComponent, NgTemplateOutlet],
   templateUrl: './route-atlas.component.html',
   styleUrl: './route-atlas.component.scss',
 })
@@ -45,10 +62,15 @@ export class RouteAtlasComponent {
   readonly selectedRouteId = input('');
   readonly predictionRouteId = input('');
   readonly workspace = input(false);
+  readonly externalControls = input(false);
+  readonly controls = viewChild<TemplateRef<unknown>>('mapControls');
   readonly destinationPriceLabels = input<Readonly<Record<string, string>>>({});
   readonly destinationMarkets = input<Readonly<Record<string, readonly AtlasMarketPrice[]>>>({});
   readonly currentMarketPrices = input<readonly AtlasMarketPrice[]>([]);
   readonly travel = input<{ routeId: string; progress: number; icon: string }>();
+  readonly journeyCue = input<RouteCanvasCue>();
+  readonly world = input<CanvasTradeWorld>();
+  readonly motionAllowed = input(true);
   readonly visitedIds = input<readonly string[]>([]);
   readonly routeSelected = output<string>();
   readonly routeHighlighted = output<string>();
@@ -56,6 +78,66 @@ export class RouteAtlasComponent {
   readonly svg = viewChild<ElementRef<SVGSVGElement>>('mapCanvas');
   readonly mapWindow = viewChild<ElementRef<HTMLElement>>('mapWindow');
   readonly mapSize = signal({ width: 1000, height: 500 });
+  readonly canvasStatus = signal<'loading' | 'ready' | 'failed'>('loading');
+  readonly basicMap = signal(false);
+  readonly previewRouteId = signal('');
+  readonly reducedMotion = signal(false);
+  readonly routeSamples = signal<Readonly<Record<string, readonly RoutePoint[]>>>({});
+  readonly effectiveMotion = computed(
+    () => this.motion() && !this.reducedMotion() && this.motionAllowed(),
+  );
+  readonly canScout = computed(
+    () =>
+      this.canvasStatus() === 'ready' &&
+      !this.basicMap() &&
+      this.effectiveMotion() &&
+      !this.travel() &&
+      this.selectedTrail()?.state === 'available',
+  );
+  readonly previewTrail = computed(() =>
+    this.trails().find((t) => t.route.id === this.previewRouteId()),
+  );
+  readonly canvasViewport = computed(() => ({
+    view: this.view(),
+    ...this.mapSize(),
+    stretch: false,
+  }));
+  readonly canvasSnapshot = computed<RouteCanvasSnapshot>(() => {
+    const samples = this.routeSamples();
+    const travel = this.travel();
+    const location = this.locations().find((item) => item.id === this.currentLocationId());
+    return {
+      backgroundAsset: this.backgroundAsset(),
+      scenery: this.showTerrain(),
+      motion: this.effectiveMotion(),
+      selectedRouteId: this.selectedRouteId(),
+      previewRouteId: this.previewRouteId(),
+      currentLocationId: this.currentLocationId(),
+      towns: this.locations().map((location) => ({
+        id: location.id,
+        kind: location.kind,
+        x: location.mapX,
+        y: location.mapY,
+      })),
+      travel,
+      cue: this.journeyCue(),
+      world: this.world()
+        ? { ...this.world()!, conditions: this.showWeather() ? this.world()!.conditions : [] }
+        : undefined,
+      companyPosition:
+        travel && samples[travel.routeId]?.length
+          ? pointOnTrail(samples[travel.routeId]!, travel.progress)
+          : { x: location?.mapX ?? 50, y: location?.mapY ?? 40 },
+      trails: this.trails().map((trail) => ({
+        id: trail.route.id,
+        state: trail.state,
+        compared: trail.compared,
+        days: trail.route.estimatedDays,
+        toLocationId: trail.route.toLocationId,
+        points: samples[trail.route.id] ?? [],
+      })),
+    };
+  });
   readonly routeMidpoints = signal<Readonly<Record<string, { x: number; y: number }>>>({});
   readonly predictionPosition = computed(() => {
     const point = this.routeMidpoints()[this.predictionRouteId()];
@@ -87,12 +169,14 @@ export class RouteAtlasComponent {
           if (!point) return [];
           const view = this.view();
           const size = this.mapSize();
+          const scale = mapScreenScale(view, size.width, size.height);
+          const anchor = mapPointToScreen(point, view, size.width, size.height);
           return [
             {
-              x: (((point.x - 8 - view.x) * view.zoom) / 100 + 0.5) * size.width,
-              y: (((point.y - 2.5 - view.y) * view.zoom) / 80 + 0.5) * size.height,
-              width: ((16 * view.zoom) / 100) * size.width,
-              height: ((5 * view.zoom) / 80) * size.height,
+              x: anchor.x - 8 * scale,
+              y: anchor.y - 2.5 * scale,
+              width: 16 * scale,
+              height: 5 * scale,
             },
           ];
         }),
@@ -105,13 +189,19 @@ export class RouteAtlasComponent {
   );
   readonly view = signal<MapView>({ ...FULL_MAP });
   readonly viewBox = computed(() => mapViewBox(this.view()));
-  readonly zoomPercent = computed(() => Math.round(this.view().zoom * 100));
   readonly showTerrain = signal(true);
+  readonly showWeather = signal(true);
+  readonly showPrices = signal(false);
   readonly motion = signal(true);
   readonly dragging = signal(false);
   readonly selectedTrail = computed(() =>
     this.trails().find((t) => t.route.id === this.selectedRouteId()),
   );
+  // Runtime status/price changes do not change the immutable route geometry.
+  private readonly routeDefinitions = computed(() => this.trails().map((trail) => trail.route), {
+    equal: (before, after) =>
+      before.length === after.length && before.every((route, index) => route === after[index]),
+  });
   private drag?: {
     pointerId: number;
     x: number;
@@ -122,12 +212,42 @@ export class RouteAtlasComponent {
   };
 
   constructor() {
+    const preference =
+      typeof matchMedia === 'function' ? matchMedia('(prefers-reduced-motion: reduce)') : undefined;
+    this.reducedMotion.set(preference?.matches ?? false);
+    const preferenceChanged = () => this.reducedMotion.set(preference?.matches ?? false);
+    preference?.addEventListener?.('change', preferenceChanged);
+    inject(DestroyRef).onDestroy(() =>
+      preference?.removeEventListener?.('change', preferenceChanged),
+    );
+    effect(() => {
+      const id = this.previewRouteId();
+      if (id && (!this.canScout() || id !== this.selectedRouteId())) this.previewRouteId.set('');
+    });
     afterRenderEffect(() => {
-      const trails = this.trails();
+      const routes = this.routeDefinitions();
+      const samples: Record<string, readonly RoutePoint[]> = {};
       const points = Object.fromEntries(
-        trails.map((trail) => {
-          const path = this.routePath(trail.route.id);
-          const bounds = this.routeEndpointBounds(trail.route);
+        routes.map((route) => {
+          const path = this.routePath(route.id);
+          const bounds = this.routeEndpointBounds(route);
+          if (path && typeof path.getTotalLength === 'function') {
+            const length = path.getTotalLength();
+            samples[route.id] = Array.from({ length: 161 }, (_, index) => {
+              const point = path.getPointAtLength((length * index) / 160);
+              return { x: point.x, y: point.y };
+            });
+          } else {
+            const from = this.locations().find((item) => item.id === route.fromLocationId);
+            const to = this.locations().find((item) => item.id === route.toLocationId);
+            samples[route.id] =
+              from && to
+                ? [
+                    { x: from.mapX, y: from.mapY },
+                    { x: to.mapX, y: to.mapY },
+                  ]
+                : [];
+          }
           const point =
             path && typeof path.getTotalLength === 'function'
               ? path.getPointAtLength(path.getTotalLength() / 2)
@@ -135,10 +255,11 @@ export class RouteAtlasComponent {
                   x: (bounds?.x ?? 0) + (bounds?.width ?? 0) / 2,
                   y: (bounds?.y ?? 0) + (bounds?.height ?? 0) / 2,
                 };
-          return [trail.route.id, { x: point.x, y: point.y }];
+          return [route.id, { x: point.x, y: point.y }];
         }),
       );
       this.routeMidpoints.set(points);
+      this.routeSamples.set(samples);
     });
     afterRenderEffect((onCleanup) => {
       const element = this.mapWindow()?.nativeElement;
@@ -157,8 +278,43 @@ export class RouteAtlasComponent {
     });
   }
 
+  scoutTrail(): void {
+    if (this.previewRouteId()) this.previewRouteId.set('');
+    else if (this.canScout()) {
+      this.focusRoute();
+      this.previewRouteId.set(this.selectedRouteId());
+    }
+  }
+
+  toggleBasicMap(): void {
+    this.previewRouteId.set('');
+    this.basicMap.update((value) => !value);
+    if (!this.basicMap()) this.canvasStatus.set('loading');
+  }
+
   zoom(delta: number): void {
     this.view.update((view) => boundedMapView({ ...view, zoom: view.zoom + delta }));
+  }
+  wheelZoom(event: WheelEvent): void {
+    // Leave browser zoom shortcuts available.
+    if (event.ctrlKey || event.metaKey || !Number.isFinite(event.deltaY) || !event.deltaY) return;
+    const transform = this.svg()?.nativeElement.getScreenCTM?.();
+    if (!transform?.a || !transform.d) return;
+    const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? this.mapSize().height : 1;
+    const delta = Math.max(-100, Math.min(100, event.deltaY * unit));
+    const view = this.view();
+    const next = zoomMapAt(
+      view,
+      {
+        x: (event.clientX - transform.e) / transform.a,
+        y: (event.clientY - transform.f) / transform.d,
+      },
+      view.zoom * Math.exp(-delta * 0.002),
+    );
+    if (next.zoom === view.zoom) return;
+    event.preventDefault();
+    this.endPan();
+    this.view.set(next);
   }
   pan(dx: number, dy: number): void {
     this.view.update((view) =>
@@ -169,20 +325,12 @@ export class RouteAtlasComponent {
     this.view.set({ ...FULL_MAP });
   }
   centerOnCompany(): void {
-    const travel = this.travel();
-    const path = travel ? this.routePath(travel.routeId) : undefined;
-    const point = path?.getPointAtLength(
-      path.getTotalLength() * Math.min(1, Math.max(0, travel?.progress ?? 0)),
+    this.view.set(
+      boundedMapView({
+        ...this.canvasSnapshot().companyPosition,
+        zoom: Math.max(1.75, this.view().zoom),
+      }),
     );
-    const location = this.locations().find((location) => location.id === this.currentLocationId());
-    if (point || location)
-      this.view.set(
-        boundedMapView({
-          x: point?.x ?? location!.mapX,
-          y: point?.y ?? location!.mapY,
-          zoom: Math.max(1.75, this.view().zoom),
-        }),
-      );
   }
   focusRoute(): void {
     const route = this.selectedTrail()?.route;
@@ -219,8 +367,13 @@ export class RouteAtlasComponent {
     }
   }
   destinationTrail(id: string): AtlasTrail | undefined {
-    return this.trails().find(
+    const matches = this.trails().filter(
       (trail) => trail.route.toLocationId === id && trail.state !== 'inactive',
+    );
+    return (
+      matches.find((trail) => trail.state === 'traveling') ??
+      matches.find((trail) => trail.state !== 'completed') ??
+      matches[0]
     );
   }
   destinationIsInteractive(id: string): boolean {
@@ -232,6 +385,10 @@ export class RouteAtlasComponent {
       { length: Math.max(0, route.estimatedDays - 1) },
       (_, index) => (index + 1) / route.estimatedDays,
     );
+  }
+  trailPoint(routeId: string, progress: number): string {
+    const point = pointOnTrail(this.routeSamples()[routeId] ?? [], progress);
+    return `translate(${point.x} ${point.y})`;
   }
   label(location: LocationDefinition): string {
     if (this.travel() && location.id === this.currentLocationId()) return 'Departure';

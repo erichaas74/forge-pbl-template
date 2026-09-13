@@ -1,10 +1,35 @@
-<div class="arena">
+<div class="arena" [class.workshop]="course().visualTheme === 'workshop' && renderer() === 'game'" [class.tabletop]="course().visualTheme === 'tabletop' && renderer() === 'game'">
   <div class="arena-hud">
     <span class="arena-id"><i></i> DELIVERY ARENA</span
     ><span class="target-distance"
       >TARGET <strong>{{ targetDistance() }} cm</strong></span
     >
   </div>
+  <div class="view-controls" aria-label="Course view controls">
+    <button type="button" [attr.aria-pressed]="renderer() === 'game'" (click)="renderer.set('game')">Game view</button>
+    <button type="button" [attr.aria-pressed]="renderer() === 'map'" (click)="renderer.set('map')">Map view</button>
+    @if (renderer() === 'game') {
+      @if (course().visualTheme === 'workshop') {
+        <button type="button" [attr.aria-pressed]="!fullOverview() && !follow()" (click)="objectiveView()">Parking lane</button>
+      }
+      <button type="button" (click)="overview()">Overview</button>
+      <button type="button" [attr.aria-pressed]="follow()" (click)="followRobot()">Follow robot</button>
+      <button type="button" aria-label="Zoom out" [disabled]="zoom() <= 1" (click)="changeZoom(-0.25)">−</button>
+      <button type="button" aria-label="Zoom in" [disabled]="zoom() >= 3" (click)="changeZoom(0.25)">+</button>
+    }
+  </div>
+  @if (course().actors?.length) {
+    <p class="patrol-notice">{{ sample() ? 'Patrols follow the run timeline. Use WAIT to time your crossing.' : (renderer() === 'game' ? 'Patrol preview — every run resets the routes. Use WAIT to time your crossing.' : 'Patrols shown at their starting positions. Run a program to watch their movement.') }}</p>
+  }
+  @if (renderer() === 'game') {
+    @if (rendererStatus() === 'loading') { <p class="renderer-message" role="status">Preparing the course…</p> }
+    <div role="img" [attr.aria-label]="description()">
+      <app-phaser-robot-course [view]="gameView()" (status)="setRendererStatus($event)" />
+    </div>
+  } @else {
+  @if (rendererStatus() === 'failed') {
+    <p class="renderer-message" role="status">Game graphics are unavailable. The course map and replay controls are still available.</p>
+  }
   <svg
     [attr.viewBox]="'-30 -22 ' + (course().widthCm + 52) + ' ' + (course().heightCm + 50)"
     role="img"
@@ -405,6 +430,18 @@
         </g>
       }
     }
+    @for (state of actorStates(); track state.actor.id) {
+      <polyline [attr.points]="state.route" fill="none" stroke="#eaa574" stroke-width="1" stroke-dasharray="3 3" />
+      <g [attr.transform]="'translate(' + state.pose.xCm + ' ' + flip(state.pose.yCm) + ')'">
+        @if (state.actor.kind === 'robot') {
+          <circle [attr.r]="state.actor.radiusCm" fill="#c97453" stroke="#ffe0a3" stroke-width="1" />
+          <path d="M -4 3 L 0 -6 L 4 3 Z" fill="#2c3a36" [attr.transform]="'rotate(' + state.pose.headingDeg + ')'" />
+        } @else {
+          <rect [attr.x]="-state.actor.widthCm / 2" [attr.y]="-state.actor.heightCm / 2" [attr.width]="state.actor.widthCm" [attr.height]="state.actor.heightCm" [attr.fill]="paint('hazard')" stroke="#ffe0a3" />
+        }
+        <text y="-23" text-anchor="middle" fill="#ffe0a3" font-size="7">{{ state.actor.label }}</text>
+      </g>
+    }
     <g
       class="rover"
       [attr.transform]="
@@ -475,14 +512,41 @@
       </g>
     </g>
   </svg>
+  }
   <div class="arena-bottom">
-    <span><i class="robot-dot"></i>ROVER ONLINE</span
+    <span><i class="robot-dot"></i>{{ sample() ? 'RUN ' + ((sample()?.timeMs ?? 0) / 1000).toFixed(1) + ' s' : 'ROBOT READY' }}</span
     ><span
       >{{ sample()?.deliveredPackageIds?.length ?? 0 }} /
       {{ course().packages.length }} DELIVERIES</span
     >
   </div>
 </div>
+<details class="course-description">
+  <summary>Course coordinates & objects</summary>
+  <p>{{ description() }} Heading 0° points north; 90° points east.</p>
+  <ul>
+    @for (target of course().targets; track $index) {
+      <li>{{ target.label }}: ({{ target.xCm }}, {{ target.yCm }}) cm, heading {{ target.headingDeg }}°.</li>
+    }
+    @for (wall of course().obstacles; track wall.id) {
+      <li>{{ wall.label }}: obstacle from ({{ wall.xCm }}, {{ wall.yCm }}) cm, {{ wall.widthCm }} × {{ wall.heightCm }} cm.</li>
+    }
+    @for (pkg of course().packages; track pkg.id) {
+      <li>{{ pkg.label }}: pickup at ({{ pkg.xCm }}, {{ pkg.yCm }}) cm.</li>
+    }
+    @for (zone of course().deliveryZones; track zone.id) {
+      <li>{{ zone.label }}: delivery zone from ({{ zone.xCm }}, {{ zone.yCm }}) cm, {{ zone.widthCm }} × {{ zone.heightCm }} cm.</li>
+    }
+    @for (state of actorStates(); track state.actor.id) {
+      <li>{{ state.actor.label }}: {{ state.actor.speedCmPerSecond }} cm/s, {{ state.actor.patrol }} route, {{ state.actor.pauseSeconds ?? 0 }} second pause at each waypoint. Route:
+        @for (point of state.actor.path; track $index) { ({{ point.xCm }}, {{ point.yCm }}) cm{{ $last ? '.' : ' → ' }} }
+      </li>
+    }
+    @for (checkpoint of course().checkpoints; track checkpoint.id) {
+      <li>Checkpoint: ({{ checkpoint.xCm }}, {{ checkpoint.yCm }}) cm, radius {{ checkpoint.radiusCm }} cm.</li>
+    }
+  </ul>
+</details>
 <div class="legend">
   <span><i class="robot"></i>Robot</span><span><i class="target"></i>Parking target</span
   ><span><i class="trace"></i>Travelled path</span

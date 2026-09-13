@@ -29,6 +29,8 @@ export interface RobotCommand {
   id: string;
   type: CommandType;
   value: string;
+  /** With moveMath, value is the student's operand; otherwise it is the full legacy expression. */
+  moveMath?: MoveMathProblem;
   rate?: string;
   direction?: 'right' | 'left';
   packageId?: string;
@@ -37,6 +39,13 @@ export interface RobotCommand {
   disabled?: boolean;
   commands?: readonly RobotCommand[];
 }
+export type MoveCommandType = 'move-distance' | 'move-rotations';
+export type MoveMathOperation = 'add' | 'subtract' | 'multiply' | 'divide';
+export interface MoveMathProblem {
+  operation: MoveMathOperation;
+  given: number;
+}
+export type MoveMathProblems = Partial<Record<MoveCommandType, MoveMathProblem>>;
 export interface RobotVariable {
   id: string;
   name: string;
@@ -57,9 +66,22 @@ export interface Rect {
   widthCm: number;
   heightCm: number;
 }
+/** Deterministic waypoint controller; positions are centers and each run resets time. */
+export type CourseActor = {
+  id: string;
+  label: string;
+  path: readonly { xCm: number; yCm: number }[];
+  speedCmPerSecond: number;
+  patrol: 'ping-pong' | 'loop';
+  pauseSeconds?: number;
+  phaseSeconds?: number;
+} & ({ kind: 'robot'; radiusCm: number } | { kind: 'barrier'; widthCm: number; heightCm: number });
 export interface CourseDefinition {
   id: string;
   name: string;
+  /** Optional cosmetic theme. Never consumed by execution or scoring. */
+  visualTheme?: 'workshop' | 'tabletop';
+  actors?: readonly CourseActor[];
   widthCm: number;
   heightCm: number;
   gridSizeCm: number;
@@ -123,6 +145,8 @@ export interface RobotChallenge {
   mission: string;
   courseId: string;
   allowedCommands: readonly CommandType[];
+  /** Fixed first operand and operation supplied by this question/level. */
+  moveMath?: MoveMathProblems;
   requiredMath: readonly MathTool[];
   requiresVariable?: boolean;
   requiresLoop?: boolean;

@@ -1,0 +1,473 @@
+<main
+  class="expedition"
+  [class.in-puzzle]="runtime.phase() === 'puzzle'"
+  [class.in-balance]="!!balancePuzzle() || !!gearPuzzle()"
+  [class.in-opening]="runtime.phase() === 'opening'"
+>
+  <div class="game-content" [inert]="settings()">
+    @if (balancePuzzle(); as balance) {
+      <app-balance-lock
+        [definition]="balance.lock"
+        [title]="runtime.current().title"
+        [placements]="runtime.draft().placements ?? []"
+        [completed]="runtime.phase() === 'celebrate'"
+        [paused]="runtime.paused()"
+        [reducedMotion]="runtime.reducedMotion()"
+        [saveWarning]="runtime.progress.warning() || runtime.message()"
+        (moved)="runtime.input({ type: 'balance-place', index: $event.index, side: $event.side })"
+        (sound)="audio.cue($event)"
+        (pauseRequested)="openSettings()"
+        (solved)="submit()"
+        (leave)="runtime.phase() === 'celebrate' ? next() : closePuzzle()"
+        (continued)="next()"
+      />
+    }
+    @if (gearPuzzle(); as gear) {
+      <app-gear-lock
+        [definition]="gear.lock"
+        [answer]="runtime.draft().placements ?? []"
+        [completed]="runtime.phase() === 'celebrate'"
+        [paused]="runtime.paused()"
+        [reducedMotion]="runtime.reducedMotion()"
+        [saveWarning]="runtime.progress.warning() || runtime.message()"
+        (changed)="runtime.input({ type: 'gear-change', answer: $event })"
+        (solved)="submit()"
+        (sound)="audio.cue($event)"
+        (pauseRequested)="openSettings()"
+        (leave)="runtime.phase() === 'celebrate' ? next() : closePuzzle()"
+      />
+    }
+    <div #worldHost class="world-host"></div>
+    <div class="vignette" aria-hidden="true"></div>
+    <header class="game-bar">
+      <a routerLink="/" aria-label="Back to all projects">← <span>Projects</span></a>
+      <div class="game-brand">
+        <span aria-hidden="true">☾</span>
+        <div>{{ mission.title }}<small>SOLO EXPEDITION</small></div>
+      </div>
+      @if (runtime.phase() !== 'opening') {
+        <div class="rescue-counter" aria-live="polite">
+          <strong
+            >{{ runtime.engine().rescued }}<span> / {{ runtime.totalAnimals }}</span></strong
+          ><small>{{ runtime.engine().complete ? 'HOME SAFE' : 'ANIMALS FREED' }}</small>
+        </div>
+        <div class="header-actions">
+          <button
+            (click)="runtime.openJournal()"
+            [disabled]="settings()"
+            aria-label="Open rescue journal"
+          >
+            Journal</button
+          ><button (click)="toggleSound()" [attr.aria-pressed]="runtime.audioEnabled()">
+            {{ runtime.audioEnabled() ? 'Sound on' : 'Sound off' }}</button
+          ><button (click)="openSettings()">Pause</button>
+        </div>
+      } @else {
+        <span class="chapter-tag">CHAPTER 01 · THE CASTLE</span>
+      }
+    </header>
+
+    @if (!ready() || error()) {
+      <section class="loading-screen" role="status">
+        <span class="moon" aria-hidden="true">☾</span>
+        <h1>{{ error() ? 'The castle is out of reach' : 'Lighting the lanterns…' }}</h1>
+        <p>{{ error() || 'Preparing your rescue adventure' }}</p>
+        @if (error()) {
+          <button class="gold-button" (click)="reload()">Reload the game</button>
+        }
+      </section>
+    } @else if (runtime.phase() === 'opening') {
+      <section class="opening">
+        <p class="eyebrow"><span></span> A RESCUE ADVENTURE POWERED BY MATH</p>
+        <h1>{{ mission.title }}</h1>
+        <p class="opening-subtitle">{{ mission.subtitle }}</p>
+        <p class="briefing">{{ mission.briefing }}</p>
+        <div class="opening-facts">
+          <span
+            ><b>{{ runtime.totalAnimals }}</b> animals to save</span
+          ><span
+            ><b>{{ mission.steps.length }}</b> mechanisms to master</span
+          >
+        </div>
+        @if (runtime.progress.warning()) {
+          <p class="warning" role="alert">{{ runtime.progress.warning() }}</p>
+        }
+        @if (runtime.progress.restoreBlocked()) {
+          <button class="gold-button" (click)="restart()">Start a fresh rescue →</button>
+        } @else {
+          <button class="gold-button begin" (click)="start()">
+            {{ runtime.engine().started ? 'Continue your rescue' : 'Enter the castle' }}
+            <span>→</span>
+          </button>
+        }
+        <div class="opening-controls">
+          <span><kbd>W A S D</kbd> or arrow keys to walk</span
+          ><span><kbd>E</kbd> inspect a mechanism</span><span>Click or tap to move</span>
+        </div>
+        <p class="thinking-note">Take time to think. The adventure waits while you solve.</p>
+      </section>
+    } @else {
+      @if (runtime.phase() === 'explore') {
+        <section class="objective-hud" aria-label="Current rescue objective">
+          <div class="objective-number">
+            {{ runtime.engine().index + 1 }}<small>/ {{ mission.steps.length }}</small>
+          </div>
+          <div>
+            <p class="eyebrow">{{ runtime.current().place }}</p>
+            <h1>{{ runtime.current().title }}</h1>
+            <p>
+              {{
+                runtime.nearby()
+                  ? 'You are close enough. Inspect the mechanism.'
+                  : 'Follow the golden beacon through the castle.'
+              }}
+            </p>
+          </div>
+          <button class="gold-button" (click)="runtime.inspect()">
+            {{
+              ['balance-lock', 'gear-lock'].includes(runtime.current().puzzle.type)
+                ? 'Solve lock'
+                : runtime.nearby()
+                  ? 'Inspect [E]'
+                  : 'Walk to clue'
+            }}
+            <span>→</span>
+          </button>
+        </section>
+        <div class="exploration-help">
+          <kbd>W A S D</kbd><span>Move</span><kbd>E</kbd><span>Inspect</span
+          ><button (click)="toggleMap()">
+            {{ overview() ? 'Follow my rescuer' : 'View the castle map' }}
+          </button>
+        </div>
+        <p class="world-message" aria-live="polite">{{ runtime.message() }}</p>
+        <div class="animal-hud" aria-label="Animals in your rescue team">
+          @for (a of mission.animals; track a.id) {
+            <div [class.rescued]="runtime.engine().released.has(a.id)">
+              <svg class="animal-sprite" [attr.viewBox]="spriteViewBox(a.id)" aria-hidden="true">
+                <svg
+                  [attr.width]="spriteFrame(a.id)[2]"
+                  [attr.height]="spriteFrame(a.id)[3]"
+                  overflow="hidden"
+                >
+                  <image
+                    [attr.href]="runtime.definition.animalAtlas"
+                    [attr.x]="-spriteFrame(a.id)[0]"
+                    [attr.y]="-spriteFrame(a.id)[1]"
+                    width="1"
+                    height="1"
+                  />
+                </svg></svg
+              ><span
+                >{{ a.name
+                }}<small>{{
+                  runtime.engine().released.has(a.id) ? 'Following you' : 'Still in a pen'
+                }}</small></span
+              >
+            </div>
+          }
+        </div>
+      }
+
+      @if (runtime.phase() === 'puzzle' && !balancePuzzle() && !gearPuzzle()) {
+        <section
+          #panel
+          class="mechanism-panel"
+          tabindex="-1"
+          aria-label="Operate the math mechanism"
+        >
+          <div class="panel-topline">
+            <span class="eyebrow"
+              >MECHANISM {{ runtime.engine().index + 1 }} / {{ mission.steps.length }}</span
+            ><button
+              class="close-button"
+              (click)="closePuzzle()"
+              aria-label="Close mechanism and return to the castle"
+            >
+              ×
+            </button>
+          </div>
+          <p class="skill-label">{{ runtime.current().puzzle.skill }}</p>
+          <h2>{{ runtime.current().title }}</h2>
+          <p class="story">{{ runtime.current().story }}</p>
+          <div class="clue-strip">
+            @for (clue of runtime.current().clues; track clue.label) {
+              <div>
+                <span>{{ clue.label }}</span
+                ><strong>{{ clue.value }}</strong>
+              </div>
+            }
+          </div>
+          @if (runtime.current().puzzle; as p) {
+            <form (ngSubmit)="submit()">
+              @if (p.type === 'code' && p.countAnimals) {
+                <div class="counting-list" aria-label="Count the animals">
+                  @for (a of mission.animals; track a.id) {
+                    <div>
+                      <span>{{ a.name }}</span>
+                      <div>
+                        @for (n of sequence(a.count); track n) {
+                          <button
+                            type="button"
+                            (click)="input({ type: 'count', id: a.id + '-' + n })"
+                            [attr.aria-label]="a.name + ' animal ' + (n + 1) + ': mark counted'"
+                            [attr.aria-pressed]="runtime.draft().counted.includes(a.id + '-' + n)"
+                          >
+                            <svg
+                              class="animal-sprite"
+                              [attr.viewBox]="spriteViewBox(a.id)"
+                              aria-hidden="true"
+                            >
+                              <svg
+                                [attr.width]="spriteFrame(a.id)[2]"
+                                [attr.height]="spriteFrame(a.id)[3]"
+                                overflow="hidden"
+                              >
+                                <image
+                                  [attr.href]="runtime.definition.animalAtlas"
+                                  [attr.x]="-spriteFrame(a.id)[0]"
+                                  [attr.y]="-spriteFrame(a.id)[1]"
+                                  width="1"
+                                  height="1"
+                                />
+                              </svg>
+                            </svg>
+                            @if (runtime.draft().counted.includes(a.id + '-' + n)) {
+                              <b>✓</b>
+                            }
+                          </button>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+              <p class="question">{{ p.prompt }}</p>
+              @switch (p.type) {
+                @case ('code') {
+                  <div class="dial-controls" role="group" aria-label="Combination dials">
+                    @for (label of p.labels; track $index; let i = $index) {
+                      <div>
+                        <label>{{ label }}</label
+                        ><button
+                          type="button"
+                          (click)="input({ type: 'dial', index: i, change: 1 })"
+                          [attr.aria-label]="'Increase ' + label + ' digit'"
+                        >
+                          ⌃</button
+                        ><output aria-live="polite" [attr.aria-label]="label + ' digit'">{{
+                          runtime.draft().digits[i]
+                        }}</output
+                        ><button
+                          type="button"
+                          (click)="input({ type: 'dial', index: i, change: -1 })"
+                          [attr.aria-label]="'Decrease ' + label + ' digit'"
+                        >
+                          ⌄
+                        </button>
+                      </div>
+                    }
+                  </div>
+                }
+                @case ('timing') {
+                  <div class="clock-values">
+                    <div>
+                      <span>DEPART</span
+                      ><strong>{{ runtime.draft().departure }}<small> s</small></strong>
+                    </div>
+                    <span>→</span>
+                    <div>
+                      <span>ARRIVE</span
+                      ><strong
+                        >{{ runtime.draft().departure + p.crossing }}<small> s</small></strong
+                      >
+                    </div>
+                  </div>
+                  <label for="patrol-time">Set the departure second</label
+                  ><input
+                    id="patrol-time"
+                    name="departure"
+                    type="range"
+                    min="0"
+                    [max]="p.cycle - 1"
+                    step="1"
+                    [ngModel]="runtime.draft().departure"
+                    (ngModelChange)="runtime.setDeparture(+$event)"
+                  />
+                  <p class="control-note">Green on the clock: lookout faces away.</p>
+                }
+                @case ('balance') {
+                  <div class="weight-controls" role="group" aria-label="Counterweights">
+                    @for (weight of p.weights; track $index; let i = $index) {
+                      <button
+                        type="button"
+                        (click)="input({ type: 'weight', index: i })"
+                        [attr.aria-pressed]="runtime.draft().weights.includes(i)"
+                      >
+                        <strong>{{ weight }}<small> kg</small></strong
+                        ><span>{{
+                          runtime.draft().weights.includes(i) ? 'On lift ✓' : 'Add weight'
+                        }}</span>
+                      </button>
+                    }
+                  </div>
+                  <p class="control-note" aria-live="polite">
+                    {{ weightTotal() }} kg on the counterweight. Tap again to remove.
+                  </p>
+                }
+                @case ('number') {
+                  <label for="mechanism-number">Your answer in {{ p.unit }}</label>
+                  <div class="number-control">
+                    <button type="button" (click)="adjustQuantity(-1)" aria-label="Decrease answer">
+                      −</button
+                    ><input
+                      id="mechanism-number"
+                      type="number"
+                      name="answer"
+                      min="0"
+                      [max]="p.max"
+                      step="any"
+                      inputmode="decimal"
+                      autocomplete="off"
+                      placeholder="?"
+                      [ngModel]="runtime.draft().quantity"
+                      (ngModelChange)="setQuantity($event)"
+                    /><button
+                      type="button"
+                      (click)="adjustQuantity(1)"
+                      aria-label="Increase answer"
+                    >
+                      +</button
+                    ><span>{{ p.unit }}</span>
+                  </div>
+                }
+              }
+              <p class="answer-feedback" aria-live="polite">{{ runtime.message() }}</p>
+              <div class="mechanism-actions">
+                <button type="submit" class="gold-button">
+                  {{ runtime.current().action }} <span>→</span></button
+                ><button
+                  class="hint-button"
+                  type="button"
+                  (click)="runtime.hint.set(!runtime.hint())"
+                  [attr.aria-expanded]="runtime.hint()"
+                >
+                  {{ runtime.hint() ? 'Hide hint' : 'Need a clue?' }}
+                </button>
+                @if (runtime.hint()) {
+                  <p class="hint">{{ p.hint }}</p>
+                }
+              </div>
+            </form>
+          }
+        </section>
+      }
+      @if (runtime.phase() === 'celebrate' && !balancePuzzle() && !gearPuzzle()) {
+        <section #panel class="result-panel" tabindex="-1" aria-label="Mechanism unlocked">
+          <div class="result-seal" aria-hidden="true">✓</div>
+          <p class="eyebrow">MECHANISM UNLOCKED</p>
+          <h2>{{ runtime.current().success }}</h2>
+          <p>{{ runtime.current().explanation }}</p>
+          <div class="result-math">
+            <span>{{ runtime.current().puzzle.skill }}</span
+            ><strong>✓ Solved</strong>
+          </div>
+          <button class="gold-button" (click)="next()">
+            {{
+              runtime.engine().index === mission.steps.length - 1
+                ? 'Bring everyone home'
+                : 'Continue the rescue'
+            }}
+            <span>→</span>
+          </button>
+        </section>
+      }
+      @if (runtime.phase() === 'journal') {
+        <section #panel class="journal-panel" tabindex="-1" aria-label="Rescue journal">
+          <div class="panel-topline">
+            <p class="eyebrow">YOUR RESCUE JOURNAL</p>
+            <button
+              class="close-button"
+              (click)="runtime.closeJournal()"
+              aria-label="Close journal"
+            >
+              ×
+            </button>
+          </div>
+          <h2>The math behind the escape</h2>
+          <p>Every opened mechanism leaves a clue about your thinking.</p>
+          <div class="journal-steps">
+            @for (step of mission.steps; track step.id; let i = $index) {
+              <article [class.solved]="runtime.engine().solved.has(step.id)">
+                <span>{{ runtime.engine().solved.has(step.id) ? '✓' : i + 1 }}</span>
+                <div>
+                  <h3>{{ step.title }}</h3>
+                  <p>
+                    {{
+                      runtime.engine().solved.has(step.id)
+                        ? step.explanation
+                        : 'This mechanism is still waiting for you.'
+                    }}
+                  </p>
+                </div>
+              </article>
+            }
+          </div>
+        </section>
+      }
+      @if (runtime.phase() === 'complete') {
+        <section #panel class="ending" tabindex="-1" aria-label="Rescue complete">
+          <p class="eyebrow">THE SANCTUARY IS WAITING</p>
+          <h1>Every animal.<br /><em>Home.</em></h1>
+          <div class="ending-count">
+            <strong>{{ runtime.totalAnimals }} / {{ runtime.totalAnimals }}</strong
+            ><span>ANIMALS RESCUED</span>
+          </div>
+          <p>{{ mission.finale }}</p>
+          <div class="ending-actions">
+            <button class="gold-button" (click)="runtime.openJournal()">
+              Read your rescue journal →</button
+            ><button (click)="openSettings(); restartQuestion.set(true)">Play again</button>
+          </div>
+        </section>
+      }
+      @if (runtime.progress.warning()) {
+        <p class="save-warning" role="alert">{{ runtime.progress.warning() }}</p>
+      }
+    }
+  </div>
+  @if (settings()) {
+    <div class="pause-backdrop">
+      <section
+        #settingsPanel
+        tabindex="-1"
+        class="pause-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Game paused"
+      >
+        <p class="eyebrow">THE RESCUE CAN WAIT</p>
+        <h2>{{ restartQuestion() ? 'Begin a new rescue?' : 'Take a breath.' }}</h2>
+        @if (restartQuestion()) {
+          <p>This replaces this rescue’s saved progress.</p>
+          <button class="gold-button" (click)="restart()">Start a new rescue →</button
+          ><button class="secondary-button" (click)="restartQuestion.set(false)">
+            Keep this rescue
+          </button>
+        } @else {
+          <p>The animals and your progress are safe.</p>
+          <button class="gold-button" (click)="closeSettings()">Back to the castle →</button
+          ><button class="secondary-button" (click)="toggleSound()">
+            {{ runtime.audioEnabled() ? 'Turn sound off' : 'Turn sound on' }}</button
+          ><button
+            class="secondary-button"
+            (click)="runtime.reducedMotion.set(!runtime.reducedMotion())"
+            [attr.aria-pressed]="runtime.reducedMotion()"
+          >
+            Reduced motion: {{ runtime.reducedMotion() ? 'on' : 'off' }}</button
+          ><button class="text-button" (click)="restartQuestion.set(true)">Start over</button>
+        }
+      </section>
+    </div>
+  }
+</main>

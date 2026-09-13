@@ -6,6 +6,8 @@ const gate = (id: string, x: number, z: number, rotation = 0): DesignBlock[] => 
   return [
     ...[-1, 1].map((side) => ({
       id: `${id}-post-${side < 0 ? 'left' : 'right'}`,
+      assemblyId: id,
+      label: `${id.replaceAll('-', ' ')} · ${side < 0 ? 'left' : 'right'} pillar`,
       x: x + side * 0.36 * Math.cos(angle),
       y: 0,
       z: z - side * 0.36 * Math.sin(angle),
@@ -14,7 +16,18 @@ const gate = (id: string, x: number, z: number, rotation = 0): DesignBlock[] => 
       depth: 0.3,
       rotation,
     })),
-    { id: `${id}-lintel`, x, y: 1, z, width: 0.96, height: 0.08, depth: 0.5, rotation },
+    {
+      id: `${id}-lintel`,
+      assemblyId: id,
+      label: `${id.replaceAll('-', ' ')} · lintel`,
+      x,
+      y: 1,
+      z,
+      width: 0.96,
+      height: 0.08,
+      depth: 0.5,
+      rotation,
+    },
   ];
 };
 

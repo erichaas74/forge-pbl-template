@@ -15,10 +15,17 @@ export interface BroadcastConfig {
   camera: { moveMs: number; revealMs: number; fieldOfView: number };
   materials: { floorRoughness: number; podiumMetalness: number };
 }
-export interface StudioTeam { id: string; name: string; score: number; seed: number; color: string; emblem?: string; }
+export type TeamVerdict = 'correct' | 'miss' | null;
+export interface StudioTeam {
+  id: string; name: string; score: number; seed: number; color: string; emblem?: string; answered: boolean;
+  /** Points won or lost this round, revealed only. Never the answer text. */
+  award: number | null; verdict: TeamVerdict;
+}
 export interface StudioView {
   title: string; phase: string; roundTitle: string; prompt: string; seconds: number;
   teams: StudioTeam[]; winnerId: string | null; firstBuzzId: string | null;
+  /** The scores have landed: the stage switches from the prompt to the verdict card. */
+  awarding: boolean;
   shot: BroadcastShot; teamId: string | null; cue: BroadcastCue | null; step: CueStep;
 }
 export interface CameraPose { position: [number, number, number]; target: [number, number, number]; fov: number; }

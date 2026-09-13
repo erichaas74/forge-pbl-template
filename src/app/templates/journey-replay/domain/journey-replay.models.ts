@@ -100,7 +100,21 @@ export interface JourneyChoiceDefinition {
   readonly routeId?: string;
   readonly evidenceIds: readonly string[];
   readonly resourceChanges?: Readonly<Record<string, number>>;
+  /** Additive consequences of a recorded earlier choice; never rerolled on reload. */
+  readonly consequenceModifiers?: readonly {
+    readonly afterChoiceId: string;
+    readonly resourceChanges: Readonly<Record<string, number>>;
+    readonly narrative: string;
+  }[];
   readonly planning?: JourneyChoicePlanningDefinition;
+}
+
+export interface JourneyAdventureDefinition {
+  readonly title: string;
+  readonly narrative: string;
+  readonly atmosphere: 'harbor' | 'ocean' | 'storm' | 'landfall';
+  readonly learningGoals: readonly string[];
+  readonly stakes: string;
 }
 
 export interface JourneyStepDefinition {
@@ -115,6 +129,7 @@ export interface JourneyStepDefinition {
   readonly masteryTags: readonly string[];
   readonly sceneType: JourneySceneType;
   readonly choices: readonly JourneyChoiceDefinition[];
+  readonly adventure?: JourneyAdventureDefinition;
 }
 
 export interface JourneyResourceDefinition {
@@ -186,6 +201,8 @@ export interface ClassVoyageRecord {
 }
 
 export interface JourneyProjectConfig {
+  /** Published historical context. Player commands cannot rewrite these events. */
+  readonly historicalFrame?: JourneyHistoricalFrame;
   readonly schemaVersion: '1.0';
   readonly template: { readonly id: 'journey-replay'; readonly version: '1.0' };
   readonly projectId: string;
@@ -212,6 +229,21 @@ export interface JourneyProjectConfig {
     readonly requirePrediction?: boolean;
     readonly criteria: readonly JourneyReasoningCriterion[];
   };
+}
+
+export interface JourneyHistoricalFrame {
+  readonly setting: string;
+  readonly agency: string;
+  readonly witnessGuidance: string;
+  readonly events: readonly {
+    readonly id: string;
+    readonly date: string;
+    readonly title: string;
+    readonly summary: string;
+    readonly sourceLabel: string;
+    readonly sourceUrl: string;
+    readonly period: 'before-voyage' | 'epilogue';
+  }[];
 }
 
 export interface JourneyEnrollment {

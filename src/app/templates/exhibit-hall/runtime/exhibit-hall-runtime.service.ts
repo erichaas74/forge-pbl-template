@@ -35,6 +35,7 @@ import {
 } from './exhibit-hall.tokens';
 import { projectSessionRuntimeScope } from '../../../core/context/project-session-context';
 import type { RuntimeScope } from '../../../core/state/runtime-state-contracts';
+import { emptyMuseumRoom, placeMuseumObject, validateMuseumRoom } from '../rooms/museum-room';
 
 @Injectable()
 export class ExhibitHallRuntimeService implements OnDestroy {
@@ -77,7 +78,134 @@ export class ExhibitHallRuntimeService implements OnDestroy {
   readonly state = signal(this.loadOrCreateState());
   readonly composerDraft = signal(this.initialComposerDraft());
   readonly draftVersion = signal(0);
-  readonly usingStarter = computed(() => !this.state().composerDraft && this.draftVersion() === 0);
+  readonly roomPublishingLock = signal(false);
+  private readonly sharedRoomSubmitted = signal(false);
+  readonly usingStarter = computed(
+    () => !this.config.museum && !this.state().composerDraft && this.draftVersion() === 0,
+  );
+  readonly assignedRoom = computed(() => {
+    const team = this.config.teams.find((item) => item.id === this.config.viewer.teamId);
+    return this.config.museum?.rooms.find((room) => room.roomId === team?.locationId);
+  });
+  readonly roomSubmitted = computed(() =>
+    this.session?.authorityMode === 'serverAuthoritative'
+      ? this.sharedRoomSubmitted()
+      : this.state().artifacts.some(
+          (artifact) =>
+            artifact.ownerId === this.config.viewer.teamId &&
+            artifact.currentSnapshotId !== undefined,
+        ),
+  );
+  readonly canEditRoom = computed(
+    () =>
+      !!this.assignedRoom() &&
+      !this.roomSubmitted() &&
+      !this.roomPublishingLock() &&
+      !this.state().hall.controls.submissionLocked &&
+      this.actor().role === 'student',
+  );
+  readonly roomValidation = computed(() => {
+    const base = this.composerValidation();
+    const assignment = this.assignedRoom();
+    const errors = [
+      ...base.errors,
+      ...(assignment
+        ? validateMuseumRoom(this.composerDraft(), assignment)
+        : [{ fieldId: 'museum-room', message: 'Your teacher has not assigned a room yet.' }]),
+    ];
+    return {
+      ...base,
+      valid: errors.length === 0,
+      errors: errors.filter(
+        (error, index, all) => all.findIndex((item) => item.message === error.message) === index,
+      ),
+    };
+  });
+
+  placeRoomObject(slotId: string, objectId?: string): void {
+    if (!this.canEditRoom()) return;
+    const assignment = this.assignedRoom(),
+      catalog = this.config.museum?.catalog;
+    if (!assignment || !catalog) return;
+    const next = placeMuseumObject(this.composerDraft(), assignment, catalog, slotId, objectId);
+    if (!next) {
+      this.error.set('Choose an available artifact and a display spot in your assigned room.');
+      return;
+    }
+    if (next !== this.composerDraft()) this.updateComposer(next);
+  }
+
+  saveRoomDraft(): void {
+    this.persist(this.state());
+  }
+
+  /** Called only after the publication adapter returns a validated server receipt. */
+  acceptSharedMuseumRoom(board: MuseumBoardSnapshotData): void {
+    const assignment = this.assignedRoom();
+    if (!assignment || validateMuseumRoom(board, assignment).length) return;
+    clearTimeout(this.persistTimer);
+    this.composerDraft.set(structuredClone(board));
+    this.sharedRoomSubmitted.set(true);
+    this.state.update((state) => ({ ...state, composerDraft: structuredClone(board) }));
+    // A local cache failure cannot revoke an already-confirmed server submission.
+    this.persist(this.state());
+  }
+
+  /** Local prototype publication is committed to storage before announcing success. */
+  submitMuseumRoom(): boolean {
+    if (this.session?.authorityMode === 'serverAuthoritative') {
+      this.error.set(
+        'Room submission needs the school’s publishing connection. Your draft is still available.',
+      );
+      return false;
+    }
+    if (!this.canEditRoom()) return false;
+    const assignment = this.assignedRoom();
+    if (!assignment) return false;
+    const data = structuredClone(this.composerDraft());
+    const result = this.snapshots.publish(this.state(), this.config.template, {
+      actor: this.actor(),
+      artifactId: `artifact-${this.config.viewer.teamId}`,
+      locationId: assignment.roomId,
+      rendererVersion: 1,
+      visitorSafeData: data,
+      accessibleData: new MuseumBoardRenderer().renderAccessible(data),
+      validation: this.roomValidation(),
+      operationKey: `room-submit:${assignment.roomId}:${this.state().revision}:${this.draftVersion()}`,
+      now: this.now(),
+    });
+    if (!result.ok || !result.entityId) {
+      this.error.set(result.error ?? 'The room could not be submitted.');
+      return false;
+    }
+    const recorded = this.lms.record(result.state, {
+      type: 'team_artifact_submitted',
+      idempotencyKey: `lms:publish:${result.entityId}`,
+      projectInstanceId: this.config.projectInstanceId,
+      teamId: this.config.viewer.teamId,
+      snapshotId: result.entityId,
+      occurredAt: this.now(),
+    });
+    if (!recorded.ok) {
+      this.error.set(recorded.error ?? 'The submission could not be recorded.');
+      return false;
+    }
+    try {
+      this.persistence.save(this.config.projectId, this.config.projectVersion, recorded.state);
+    } catch {
+      this.saveState.set('save_failed');
+      this.error.set(
+        'This device could not save your submission. Your room is still a draft. Please try again.',
+      );
+      return false;
+    }
+    clearTimeout(this.persistTimer);
+    this.state.set(recorded.state);
+    this.saveState.set('saved');
+    this.error.set(undefined);
+    this.notification.set('Your room is submitted to this preview museum.');
+    return true;
+  }
   startOwnDraft(): void {
     if (!this.usingStarter()) return;
     const starter = this.composerDraft();
@@ -349,6 +477,7 @@ export class ExhibitHallRuntimeService implements OnDestroy {
   }
 
   publishBoard(): boolean {
+    if (this.config.museum) return this.submitMuseumRoom();
     const renderer = this.rendererRegistry.resolve(this.config.template.rendererType);
     if (!renderer.ok) {
       this.error.set(renderer.message);
@@ -593,7 +722,7 @@ export class ExhibitHallRuntimeService implements OnDestroy {
 
   resetDemo(): void {
     this.persistence.clear(this.config.projectId, this.config.projectVersion);
-    const state = createInitialHallState(this.config, new MuseumBoardRenderer());
+    const state = createInitialHallState(this.studentRoomConfig(), new MuseumBoardRenderer());
     this.state.set(state);
     this.composerDraft.set(this.initialComposerDraft());
     this.draftVersion.set(0);
@@ -605,6 +734,7 @@ export class ExhibitHallRuntimeService implements OnDestroy {
   }
 
   private updateComposer(value: MuseumBoardSnapshotData): void {
+    if (this.config.museum && !this.canEditRoom()) return;
     this.composerDraft.set(value);
     this.draftVersion.update((version) => version + 1);
     this.state.update((state) => ({ ...state, composerDraft: value }));
@@ -651,12 +781,39 @@ export class ExhibitHallRuntimeService implements OnDestroy {
   private loadOrCreateState(): ExhibitHallState {
     const saved = this.persistence.load(this.config.projectId, this.config.projectVersion);
     return saved === undefined
-      ? createInitialHallState(this.config, new MuseumBoardRenderer(), this.runtimeScope)
+      ? createInitialHallState(
+          this.studentRoomConfig(),
+          new MuseumBoardRenderer(),
+          this.runtimeScope,
+        )
       : { ...saved, runtimeScope: this.runtimeScope ?? saved.runtimeScope };
   }
 
   private initialComposerDraft(): MuseumBoardSnapshotData {
-    if (this.state().composerDraft) return structuredClone(this.state().composerDraft!);
+    const savedDraft = this.state().composerDraft;
+    if (this.config.museum) {
+      const team = this.config.teams.find((item) => item.id === this.config.viewer.teamId);
+      const room = this.config.museum.rooms.find((item) => item.roomId === team?.locationId);
+      if (
+        room &&
+        savedDraft?.museumRoom?.roomId === room.roomId &&
+        savedDraft.museumRoom.layoutId === room.layoutId
+      )
+        return structuredClone(savedDraft);
+      if (room && team)
+        return emptyMuseumRoom(room, {
+          displayName: team.displayName,
+          memberDisplayNames: team.memberDisplayNames,
+        });
+      return {
+        title: '',
+        centralClaim: '',
+        objects: [],
+        sources: [],
+        teamCredit: { displayName: 'Unassigned curator' },
+      };
+    }
+    if (savedDraft) return structuredClone(savedDraft);
     const board = this.config.seedBoards.find((item) => item.teamId === this.config.viewer.teamId);
     if (board === undefined) {
       return {
@@ -674,6 +831,17 @@ export class ExhibitHallRuntimeService implements OnDestroy {
     return String(
       this.state().snapshots.find((snapshot) => snapshot.id === snapshotId)?.version ?? 1,
     );
+  }
+
+  private studentRoomConfig(): typeof this.config {
+    return this.config.museum
+      ? {
+          ...this.config,
+          seedBoards: this.config.seedBoards.map((seed) =>
+            seed.teamId === this.config.viewer.teamId ? { ...seed, published: false } : seed,
+          ),
+        }
+      : this.config;
   }
 
   private now(): string {

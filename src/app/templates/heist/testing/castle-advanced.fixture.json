@@ -1,0 +1,415 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "castle-archive-rescue",
+  "projectVersion": "1.0.0",
+  "template": {
+    "id": "heist",
+    "version": "1.0"
+  },
+  "title": "The Archive Rescue",
+  "briefing": "The roads close at dusk. Recover the treaty and archive ledger, then bring the crate to the river landing. Scout the castle, measure a route, and make every second count.",
+  "history": "Historical context: castles combined defensive walls, gates, domestic rooms, and storage. Written records helped people preserve agreements and administer estates. This castle, treaty, patrol timetable, and rescue are fictional classroom scenario data, not a reconstruction of a real event.",
+  "map": {
+    "image": "/projects/castle-archive-rescue/castle-map.svg",
+    "width": 1000,
+    "height": 680,
+    "pixelsPerCm": 20,
+    "metersPerCm": 10
+  },
+  "entry": "entry",
+  "extraction": "river",
+  "speed": 2,
+  "deadline": 420,
+  "detectionGrace": 2,
+  "target": {
+    "location": "archive",
+    "name": "Treaty and archive ledger",
+    "mass": 68,
+    "capacity": 90,
+    "pickupSeconds": 12,
+    "loadedSpeed": 1.5
+  },
+  "locations": [
+    {
+      "id": "entry",
+      "name": "South entry",
+      "x": 100,
+      "y": 520,
+      "description": "Your recovery team begins here. Empty-cart speed: 2 m/s. Study the patrols before entering the courtyard."
+    },
+    {
+      "id": "market",
+      "name": "Market court",
+      "x": 280,
+      "y": 520,
+      "description": "A sheltered staging point. Add a wait here to synchronize with the gate or courtyard patrol."
+    },
+    {
+      "id": "gate",
+      "name": "West gate",
+      "x": 280,
+      "y": 340,
+      "description": "Fictional gate schedule: opens at 0, 60, 120 seconds and so on. Open for 45 seconds, then closed for 15 seconds. Arrival during closure fails the operation."
+    },
+    {
+      "id": "tower",
+      "name": "North tower",
+      "x": 280,
+      "y": 160,
+      "description": "The long approach offers another route into the archive hall. Compare distance and patrol timing."
+    },
+    {
+      "id": "hall",
+      "name": "Inner hall",
+      "x": 520,
+      "y": 340,
+      "description": "This open corridor connects the gate to the archive. The hall patrol repeats its visible route; use the timeline to predict its position."
+    },
+    {
+      "id": "archive",
+      "name": "Archive room",
+      "x": 700,
+      "y": 340,
+      "description": "Secure the 68 kg crate here. Pickup takes 12 seconds. The cart can carry 90 kg and travels at 1.5 m/s while loaded. Include pickup in your plan."
+    },
+    {
+      "id": "bridge",
+      "name": "River bridge",
+      "x": 700,
+      "y": 520,
+      "description": "The final crossing leads to the river landing. Your loaded route and any crisis delay must fit the 420-second deadline."
+    },
+    {
+      "id": "river",
+      "name": "River extraction",
+      "x": 920,
+      "y": 520,
+      "description": "Bring the archive crate here before 07:00. Extraction without the target does not complete the mission."
+    }
+  ],
+  "routes": [
+    {
+      "from": "entry",
+      "to": "market"
+    },
+    {
+      "from": "market",
+      "to": "gate"
+    },
+    {
+      "from": "gate",
+      "to": "tower"
+    },
+    {
+      "from": "tower",
+      "to": "hall"
+    },
+    {
+      "from": "gate",
+      "to": "hall"
+    },
+    {
+      "from": "hall",
+      "to": "archive"
+    },
+    {
+      "from": "archive",
+      "to": "bridge"
+    },
+    {
+      "from": "bridge",
+      "to": "river"
+    },
+    {
+      "from": "market",
+      "to": "bridge",
+      "blocked": true
+    }
+  ],
+  "walls": [
+    {
+      "x": 345,
+      "y": 390,
+      "width": 270,
+      "height": 175
+    },
+    {
+      "x": 570,
+      "y": 170,
+      "width": 200,
+      "height": 105
+    },
+    {
+      "x": 120,
+      "y": 225,
+      "width": 105,
+      "height": 170
+    }
+  ],
+  "guards": [
+    {
+      "id": "court",
+      "name": "Courtyard watch",
+      "speed": 24,
+      "range": 45,
+      "angle": 65,
+      "points": [
+        {
+          "x": 340,
+          "y": 580,
+          "wait": 3
+        },
+        {
+          "x": 220,
+          "y": 580,
+          "wait": 2
+        },
+        {
+          "x": 220,
+          "y": 440,
+          "wait": 2
+        },
+        {
+          "x": 340,
+          "y": 440,
+          "wait": 3
+        }
+      ]
+    },
+    {
+      "id": "gate",
+      "name": "Gate watch",
+      "speed": 22,
+      "range": 48,
+      "angle": 65,
+      "points": [
+        {
+          "x": 230,
+          "y": 280,
+          "wait": 3
+        },
+        {
+          "x": 340,
+          "y": 280,
+          "wait": 3
+        },
+        {
+          "x": 340,
+          "y": 370,
+          "wait": 2
+        },
+        {
+          "x": 230,
+          "y": 370,
+          "wait": 2
+        }
+      ]
+    },
+    {
+      "id": "hall",
+      "name": "Archive watch",
+      "speed": 20,
+      "range": 42,
+      "angle": 60,
+      "points": [
+        {
+          "x": 550,
+          "y": 295,
+          "wait": 4
+        },
+        {
+          "x": 760,
+          "y": 295,
+          "wait": 3
+        },
+        {
+          "x": 760,
+          "y": 380,
+          "wait": 2
+        },
+        {
+          "x": 550,
+          "y": 380,
+          "wait": 3
+        }
+      ]
+    }
+  ],
+  "gate": {
+    "location": "gate",
+    "cycle": 60,
+    "openSeconds": 45
+  },
+  "math": {
+    "distanceTolerance": 0.5,
+    "timeTolerance": 0.5,
+    "required": [
+      {
+        "id": "capacity",
+        "type": "CAPACITY",
+        "title": "Cart capacity",
+        "prompt": "The cart supports 90 kg. The archive crate weighs 68 kg. How much capacity remains?",
+        "answer": 22,
+        "tolerance": 0,
+        "unit": "kg",
+        "hint": "Subtract the crate mass from the cart capacity."
+      },
+      {
+        "id": "gate-window",
+        "type": "ELAPSED_TIME",
+        "title": "Understand the gate cycle",
+        "prompt": "The gate opens every 60 seconds for 45 seconds. If you arrive at 50 seconds, how many seconds until the next opening? Use the timeline to check your own arrival too.",
+        "answer": 10,
+        "tolerance": 0,
+        "unit": "s",
+        "hint": "The next cycle starts at 60 seconds. Subtract the arrival time."
+      }
+    ]
+  },
+  "crisis": {
+    "title": "A cracked cart axle",
+    "description": "The crate is secure, but the axle cracks. The cart loses 30% of its 90 kg capacity. Calculate its new limit, then choose a response that can carry 68 kg. The operation clock is paused while you decide.",
+    "challenge": {
+      "id": "crisis-capacity",
+      "type": "PERCENT_CHANGE",
+      "title": "Recalculate carrying capacity",
+      "prompt": "90 kg capacity decreases by 30%. What is the new capacity?",
+      "answer": 63,
+      "tolerance": 0.1,
+      "unit": "kg",
+      "hint": "Find 70% of the original capacity: 90 × 0.70."
+    },
+    "choices": [
+      {
+        "id": "cart",
+        "label": "Keep the damaged cart · 63 kg limit",
+        "capacity": 63,
+        "speedMultiplier": 1,
+        "delay": 0
+      },
+      {
+        "id": "team",
+        "label": "Team carry · 80 kg limit · 15 s transfer · 25% slower",
+        "capacity": 80,
+        "speedMultiplier": 0.75,
+        "delay": 15
+      },
+      {
+        "id": "repair",
+        "label": "Repair the cart · 90 kg limit · 55 s repair",
+        "capacity": 90,
+        "speedMultiplier": 1,
+        "delay": 55
+      }
+    ]
+  },
+  "presentation": {
+    "ground": "/projects/castle-archive-rescue/art/ground.webp",
+    "buildings": "/projects/castle-archive-rescue/art/buildings.webp",
+    "characters": "/projects/castle-archive-rescue/art/characters.webp",
+    "props": "/projects/castle-archive-rescue/art/props.webp",
+    "wallFrames": [
+      0,
+      1,
+      2
+    ],
+    "responseStyles": {
+      "team": "carry",
+      "repair": "repair",
+      "cart": "cart"
+    },
+    "buildingFrames": [
+      {
+        "x": 10,
+        "y": 90,
+        "width": 612,
+        "height": 425
+      },
+      {
+        "x": 646,
+        "y": 147,
+        "width": 590,
+        "height": 340
+      },
+      {
+        "x": 160,
+        "y": 563,
+        "width": 380,
+        "height": 620
+      },
+      {
+        "x": 725,
+        "y": 620,
+        "width": 440,
+        "height": 570
+      }
+    ],
+    "groundSlices": [
+      {
+        "source": [
+          0,
+          0,
+          1050,
+          1035
+        ],
+        "destination": [
+          0,
+          0,
+          805,
+          680
+        ]
+      },
+      {
+        "source": [
+          1050,
+          0,
+          470,
+          615
+        ],
+        "destination": [
+          805,
+          0,
+          195,
+          480
+        ]
+      },
+      {
+        "source": [
+          1050,
+          615,
+          470,
+          135
+        ],
+        "destination": [
+          805,
+          480,
+          195,
+          80
+        ]
+      },
+      {
+        "source": [
+          1050,
+          750,
+          470,
+          285
+        ],
+        "destination": [
+          805,
+          560,
+          195,
+          120
+        ]
+      }
+    ],
+    "landmarks": [
+      {
+        "frame": 3,
+        "x": 240,
+        "y": 52,
+        "width": 80,
+        "height": 95
+      }
+    ]
+  }
+}

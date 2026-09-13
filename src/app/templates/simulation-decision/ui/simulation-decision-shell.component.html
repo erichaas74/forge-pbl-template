@@ -1,5 +1,11 @@
 @if (runtime.state().status === 'not_started') {
   <div class="setup-shell">
+    <nav class="setup-project-links" aria-label="Project navigation">
+      <a href="/projects">← Projects</a>
+      @if (projectRoute) {
+        <a [href]="projectRoute">Opening</a>
+      }
+    </nav>
     <app-simulation-company-setup />
   </div>
 } @else {
@@ -10,69 +16,77 @@
     [class.cargo-mode]="runtime.state().lastView === 'cargo'"
     [class.journey-mode]="runtime.state().lastView === 'events'"
   >
-    <header class="mission-bar compact-project-header">
-      <strong class="trading-title">{{
-        runtime.state().companyName || runtime.config.title
-      }}</strong>
-      <nav class="project-tools" aria-label="Trading workspaces">
+    <header
+      class="mission-bar compact-project-header unified-project-header"
+      aria-label="Project controls"
+      (click)="headerClick($event)"
+    >
+      <a class="project-back" href="/projects" aria-label="Back to projects">←</a>
+      <div class="project-identity">
+        <strong class="trading-title">{{ runtime.config.title }}</strong
+        ><small
+          >{{ runtime.state().companyName }} · {{ runtime.currentLocation()?.shortName }} · Day
+          {{ runtime.state().currentDay }}</small
+        >
+      </div>
+      <nav class="project-tools" aria-label="Game pages">
         @for (item of expeditionNavigation; track item.view) {
           <button
             type="button"
             [class.active]="runtime.state().lastView === item.view"
+            [attr.aria-current]="runtime.state().lastView === item.view ? 'page' : null"
             [disabled]="locked(item.view)"
             (click)="navigate(item.view)"
           >
             {{ item.icon }} {{ item.label }}
           </button>
         }
-        <button
-          type="button"
-          [class.active]="currentSpace() === 'travel'"
-          (click)="navigateSpace('travel')"
-        >
-          ⌁ Travel
-        </button>
         <details class="header-menu">
-          <summary>My record</summary>
+          <summary>Project</summary>
           <div>
+            @if (projectRoute) {
+              <a [href]="projectRoute">Opening</a>
+            }
+            @if (finalExampleRoute) {
+              <a [href]="finalExampleRoute">Final example</a>
+            }
+            <button type="button" (click)="navigate('cargo')">My wagon</button>
+            <button type="button" (click)="navigate('events')">My trip</button>
             @for (item of journalNavigation; track item.view) {
               <button type="button" [disabled]="locked(item.view)" (click)="navigate(item.view)">
                 {{ item.label }}
               </button>
             }
-            <button type="button" (click)="teacherTools()">Teacher tools</button>
+            <button type="button" (click)="helpOpen.set(true)">Help and rules</button>
+            <button type="button" (click)="teacherTools()">Teacher controls</button>
+            <small>{{ saveLabel() }}</small>
           </div>
         </details>
       </nav>
-      <app-task-guide title="Trading guide"
-        ><h3>{{ nextMission().title }}</h3>
-        <p>{{ nextMission().description }}</p>
-        <p>{{ runtime.config.mission }}</p>
-        <p>
-          Buy goods, compare route costs, predict your profit, then travel. Your money record keeps
-          the calculations you complete.
-        </p>
-        <p>Profit = sales − all costs.</p>
-        <app-choice-progression-panel
-          [progression]="progression()"
-          choiceLabel="supplies open"
-          [availableCount]="progression().currentStage.availableGoodIds.length"
-          [totalCount]="runtime.config.goods.length"
-      /></app-task-guide>
-      <div class="trade-status" aria-label="Company status">
-        <span
-          >{{ runtime.currentLocation()?.shortName }} · Day {{ runtime.state().currentDay }}</span
-        ><span>◉ {{ runtime.money(runtime.cash()) }}</span
-        ><span>▣ {{ runtime.usedCargo() }} / {{ runtime.capacity() }}</span
-        ><small>{{ saveLabel() }}</small>
-      </div>
+      @if (routePage()?.atlas()?.controls(); as mapControls) {
+        <ng-container [ngTemplateOutlet]="mapControls" />
+      }
+      <app-trade-world-panel />
+      @if (runtime.state().lastView !== 'teacher') {
+        <button
+          class="next-action"
+          type="button"
+          [title]="nextMission().description"
+          [attr.aria-label]="'Next: ' + nextMission().title + '. ' + nextMission().actionLabel"
+          (click)="runNextMission()"
+          [disabled]="
+            runtime.state().status === 'paused_by_teacher' || runtime.saveState() === 'save_failed'
+          "
+        >
+          {{ nextMission().actionLabel }} →
+        </button>
+      }
     </header>
     <main class="simulation-main">
       @if (runtime.state().status === 'paused_by_teacher') {
         <section class="paused-banner" role="status">
-          <strong>Simulation paused by teacher controls.</strong
-          ><span>Student actions are temporarily read-only.</span
-          ><button type="button" (click)="teacherTools()">Open teacher tools</button>
+          <strong>Your teacher paused the game.</strong
+          ><span>You can look around. Wait for your teacher before taking your next turn.</span>
         </section>
       }
       @if (runtime.errors().length > 0) {
@@ -131,7 +145,6 @@
         }
       </div>
     </main>
-
     @if (resourceFeedback(); as feedback) {
       <aside class="resource-feedback {{ feedback.direction }}" role="status" aria-live="polite">
         <span aria-hidden="true">{{ feedback.icon }}</span>
@@ -143,23 +156,19 @@
         </div>
       </aside>
     }
-
-    @if (sceneTransition(); as scene) {
-      <div class="scene-transition" role="status" aria-live="polite">
-        <div>
-          <span aria-hidden="true">{{ scene.icon }}</span>
-          <small>{{ scene.eyebrow }}</small>
-          <strong>{{ scene.title }}</strong>
-          <p>{{ scene.subtitle }}</p>
-        </div>
-      </div>
-    }
   </div>
 }
 
 @if (helpOpen()) {
   <div class="drawer-backdrop" (click)="helpOpen.set(false)"></div>
-  <aside class="help-drawer" role="dialog" aria-modal="true" aria-labelledby="help-title">
+  <aside
+    class="help-drawer"
+    appReviewDialog
+    (dismissReview)="helpOpen.set(false)"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="help-title"
+  >
     <header>
       <div>
         <span class="eyebrow">Simulation guide</span>
@@ -212,7 +221,13 @@
 
 @if (teacherConfirmOpen()) {
   <div class="teacher-gate">
-    <section role="alertdialog" aria-modal="true" aria-labelledby="teacher-gate-title">
+    <section
+      appReviewDialog
+      (dismissReview)="teacherConfirmOpen.set(false)"
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="teacher-gate-title"
+    >
       <span class="eyebrow">Adult controls</span>
       <h2 id="teacher-gate-title">Open local teacher tools?</h2>
       <p>

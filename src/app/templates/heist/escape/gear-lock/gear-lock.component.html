@@ -1,0 +1,159 @@
+<section class="workshop" aria-label="Gear restoration workshop">
+  <header>
+    <button (click)="leave.emit()" [disabled]="running() || paused()">
+      &#8592; {{ completed() ? 'Return to rescue' : 'Back to map' }}
+    </button>
+    <div class="heading">
+      <span>CLOCKWORK RESCUE / GEAR RESTORATION</span>
+      <h1 #heading tabindex="-1">{{ definition().title }}</h1>
+    </div>
+    <button (click)="pauseRequested.emit()">Pause</button>
+  </header>
+  <div class="calibrations" aria-label="Machine calibration clues">
+    <div>
+      <b>A</b>
+      <p>
+        First missing cog<strong
+          >{{ fraction(definition().firstMultiplier) }} &#215;
+          {{ definition().driverTeeth }} teeth</strong
+        >
+      </p>
+    </div>
+    <div>
+      <b>B</b>
+      <p>
+        Second missing cog<strong
+          >{{ fraction(definition().secondMultiplier) }} &#215;
+          {{ definition().pinionTeeth }} teeth</strong
+        >
+      </p>
+    </div>
+    <div>
+      <b>&#8635;</b>
+      <p>
+        Release drum target<strong
+          >{{ fraction(definition().outputTurns) }} full turn{{
+            definition().outputTurns.numerator > definition().outputTurns.denominator ? 's' : ''
+          }}</strong
+        >
+      </p>
+    </div>
+  </div>
+  <div class="stage-shell">
+    <div
+      #stage
+      class="stage"
+      aria-label="Interactive compound gear train. Drag cogs to A and B, or use the buttons below."
+    ></div>
+    @if (!ready() && !error()) {
+      <p class="loading" role="status">Lighting the clockwork workshop...</p>
+    }
+    @if (error()) {
+      <p class="loading" role="status">
+        The animated workshop could not load. The cog controls below operate the same lock.
+      </p>
+    }
+    @if (running()) {
+      <div class="run-caption" role="status">
+        <span>{{ passed() ? 'RELEASE RUN' : 'CALIBRATION TEST' }}</span
+        >{{
+          passed()
+            ? captions[module()]
+            : 'The gears turn at the speed set by their tooth counts...'
+        }}<button (click)="finish()" [disabled]="paused()">
+          {{ passed() ? 'Skip animation' : 'Finish test' }}
+        </button>
+      </div>
+    }
+  </div>
+  <footer>
+    <div class="operation">
+      <div class="crank">
+        <span>CRANK TURNS</span>
+        <div>
+          <button
+            (click)="crank(-1)"
+            [disabled]="locked() || positions()[2] === 1"
+            aria-label="Fewer crank turns"
+          >
+            &#8722;</button
+          ><output aria-live="polite">{{ positions()[2] }}</output
+          ><button
+            (click)="crank(1)"
+            [disabled]="locked() || positions()[2] === definition().maxCrank"
+            aria-label="More crank turns"
+          >
+            +
+          </button>
+        </div>
+      </div>
+      <div class="status">
+        <p class="instruction">{{ definition().instruction }}</p>
+        <p aria-live="polite">{{ completed() ? definition().success : notice() }}</p>
+      </div>
+      @if (completed()) {
+        <button class="primary" (click)="leave.emit()" [disabled]="running() || paused()">
+          Return to rescue &#8594;
+        </button>
+      } @else {
+        <button class="primary" (click)="test()" [disabled]="locked()">
+          Wind &amp; test machine &#8594;
+        </button>
+      }
+    </div>
+    <div class="toolbar">
+      <button (click)="controls.set(!controls())" [attr.aria-expanded]="controls()">
+        {{ controls() ? 'Hide' : 'Show' }} cog controls
+      </button>
+      <button (click)="help.set(!help())" [attr.aria-expanded]="help()">How gears work</button>
+      @if (completed()) {
+        <button (click)="replay()" [disabled]="running() || paused()">Replay release run</button>
+      } @else {
+        <button (click)="reset()" [disabled]="locked()">Reset workbench</button>
+      }
+    </div>
+    @if (help()) {
+      <aside>
+        <strong>Same teeth passing. Different turns.</strong> A 12-tooth gear turns twice while a
+        24-tooth gear turns once. Meshing gears turn in opposite directions. Cog A and the small
+        {{ definition().pinionTeeth }}-tooth pinion share an axle, so they make the same number of
+        turns. Work through both pairs to find the crank turns. The rails slide to fit each cog;
+        fitting alone does not mean its calibration is right.
+      </aside>
+    }
+    @if (controls()) {
+      <div class="accessible-controls" aria-label="Cog controls">
+        <div class="inventory">
+          @for (g of definition().gears; track g.id; let i = $index) {
+            <button
+              [disabled]="locked()"
+              [attr.aria-pressed]="selected() === i"
+              (click)="select(i)"
+            >
+              <strong>{{ g.teeth }}</strong> teeth<small>{{
+                positions()[0] === i ? 'On axle A' : positions()[1] === i ? 'On axle B' : 'In tray'
+              }}</small>
+            </button>
+          }
+        </div>
+        <div class="destinations">
+          <button (click)="placeSelected(0)" [disabled]="locked() || selected() === null">
+            Place on A</button
+          ><button (click)="placeSelected(1)" [disabled]="locked() || selected() === null">
+            Place on B</button
+          ><button (click)="placeSelected(-1)" [disabled]="locked() || selected() === null">
+            Return to tray
+          </button>
+        </div>
+      </div>
+    }
+    @if (saveWarning()) {
+      <p class="save-warning" role="alert">
+        {{ saveWarning() }}
+        <button (click)="retrySave()" [disabled]="paused() || running()">
+          Retry saving release
+        </button>
+      </p>
+    }
+  </footer>
+</section>

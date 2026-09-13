@@ -1,0 +1,58 @@
+<section class="lock-shell" [attr.data-lock-type]="lock().type">
+  <div class="lock-heading"><span>{{ lock().domain === 'math' ? 'CALCULATE · MANIPULATE · UNLOCK' : 'USE THE EVIDENCE · OPERATE THE LOCK' }}</span><small>{{ lock().standard }}</small></div>
+  <h3>{{ lock().title }}</h3><p>{{ lock().prompt }}</p>
+  @if (['rotation', 'combo', 'measurement', 'cargo'].includes(lock().type)) {
+    <label class="calculation">1. {{ lock().type === 'cargo' ? 'Calculate the new capacity' : 'Determine the result' }}
+      <span><input type="number" [ngModel]="calculation()" (ngModelChange)="calculation.set($event)" [attr.aria-label]="lock().title + ' calculation'"><b>{{ lock().unit ?? 'kg' }}</b></span>
+    </label>
+  }
+  @switch (lock().type) {
+    @case ('rotation') {
+      <div class="compass-wrap">
+        <svg class="compass" viewBox="0 0 240 240" (pointerdown)="turn($event)" aria-hidden="true">
+          <circle cx="120" cy="120" r="108" class="ring"/><circle cx="120" cy="120" r="87" class="inner"/>
+          @for (degree of [0,30,60,90,120,150,180,210,240,270,300,330]; track degree) { <path d="M120 20V31" [attr.transform]="'rotate(' + degree + ' 120 120)'" class="tick"/> }
+          <text x="120" y="53">N</text><text x="190" y="125">E</text><text x="120" y="196">S</text><text x="49" y="125">W</text>
+          <g [attr.transform]="'rotate(' + setting() + ' 120 120)'"><path d="M120 42L132 128L120 117L108 128Z" class="needle"/><path d="M120 195L130 119L120 125L110 119Z" class="tail"/></g><circle cx="120" cy="120" r="9" class="hub"/>
+        </svg><output>{{ setting() }}°</output>
+      </div>
+      <label>2. Rotate the mechanism <input type="range" [min]="lock().min!" [max]="lock().max!" [step]="lock().step!" [ngModel]="setting()" (ngModelChange)="setting.set(+$event)" aria-label="Mechanism angle"></label>
+      <small>Drag the compass or use the slider arrow keys. North is 0°; clockwise is positive.</small>
+    }
+    @case ('combo') {
+      <p class="instruction">2. Set the date cylinders</p><div class="cylinders">
+        @for (digitValue of digits(); track $index; let i = $index) {
+          <div><button (click)="digit(i, 1)" [attr.aria-label]="'Increase digit ' + (i + 1)">+</button><output>{{ digitValue }}</output><button (click)="digit(i, -1)" [attr.aria-label]="'Decrease digit ' + (i + 1)">−</button></div>
+        }
+      </div>
+    }
+    @case ('measurement') {
+      <div class="blueprint"><svg viewBox="0 0 320 150" aria-hidden="true"><path d="M25 120H295V25" class="grid-line"/><path [attr.d]="'M25 120H' + (25 + 270 * setting() / lock().max!)" class="measure-line"/><circle [attr.cx]="25 + 270 * setting() / lock().max!" cy="120" r="7" class="needle"/><text x="160" y="65">{{ setting() }} {{ lock().unit }}</text></svg></div>
+      <label>2. Extend the route to the distance you calculated<input type="range" [min]="lock().min!" [max]="lock().max!" [step]="lock().step!" [ngModel]="setting()" (ngModelChange)="setting.set(+$event)" aria-label="Route distance"></label>
+    }
+    @case ('lever') {
+      <div class="levers">@for (item of lock().items; track item.id) { <button [class.pulled]="selected().includes(item.id)" [attr.aria-pressed]="selected().includes(item.id)" (click)="selected.set([item.id])"><i><b></b></i><span>{{ item.label }}</span></button> }</div>
+    }
+    @case ('timeline') {
+      <p class="instruction">Move the plaques from earliest to latest.</p><ol class="timeline-tiles">@for (id of order(); track id; let i = $index) { <li><b>{{ i + 1 }}</b><span>{{ label(id) }}</span><button [disabled]="i === 0" (click)="move(i, -1)" [attr.aria-label]="'Move ' + label(id) + ' earlier'">↑</button><button [disabled]="i === order().length - 1" (click)="move(i, 1)" [attr.aria-label]="'Move ' + label(id) + ' later'">↓</button></li> }</ol>
+    }
+    @case ('map-route') {
+      <p class="instruction">Place the route pins in travel order.</p><div class="route-map"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M7 12L25 8L29 27L42 40L35 65L20 86L15 47Z M55 7L73 10L70 24L82 35L74 49L67 77L57 64L54 38Z M75 12L94 8L96 35L81 42"/><polyline [attr.points]="routePoints()"/></svg>
+      @for (item of lock().items; track item.id) { <button [style.left.%]="item.x" [style.top.%]="item.y" [class.placed]="order().includes(item.id)" (click)="plot(item.id)">{{ order().includes(item.id) ? order().indexOf(item.id) + 1 : '＋' }}<span>{{ item.label }}</span></button> }</div>
+      <p class="route-order">@for (id of order(); track id) { <span>{{ label(id) }} → </span> }</p><button class="secondary" (click)="order.set([])">Clear route</button>
+    }
+    @case ('cargo') {
+      <div class="cargo-scale"><span>{{ mass() }} kg loaded</span><meter min="0" [max]="lock().items!.length * 100" [value]="mass()" [high]="calculation() ?? 0" [optimum]="0"></meter><small>Your capacity prediction: {{ calculation() ?? '—' }} kg</small></div>
+      <div class="cargo-items">@for (item of lock().items; track item.id) { <button [class.loaded]="selected().includes(item.id)" [attr.aria-pressed]="selected().includes(item.id)" (click)="toggle(item.id)"><span>{{ selected().includes(item.id) ? '▣' : '□' }}</span>{{ item.label }}<b>{{ item.mass }} kg</b></button> }</div>
+    }
+    @default {
+      <p class="instruction" id="sorting-instructions">Place all {{ lock().items!.length }} objects. Select an object below, then select its destination. Selection order does not matter.</p>
+      <div class="sort-items">@for (item of lock().items; track item.id) { <button [class.held]="held() === item.id" [class.assigned]="!!placements()[item.id]" [attr.aria-pressed]="held() === item.id" aria-describedby="sorting-instructions" (click)="held.set(item.id)"><strong>{{ item.label }}</strong><small>{{ destination(item.id) }}</small></button> }</div>
+      <p class="placement-status" id="placement-status" role="status"><b>{{ lock().items!.length - unplaced().length }} of {{ lock().items!.length }} placed</b><span>{{ held() ? 'Now choose a destination for ' + label(held()) + '.' : unplaced().length ? 'Select an object to place it.' : 'All objects placed. Operate the mechanism to check your sorting.' }}</span></p>
+      <div class="sort-zones">@for (zone of lock().zones; track zone.id) { <button class="crate" (click)="place(zone.id)" [disabled]="!held()"><b>{{ zone.label }}</b>@for (item of lock().items; track item.id) { @if (placements()[item.id] === zone.id) { <span>{{ item.label }}</span> } }<small>{{ held() ? 'Place ' + label(held()) + ' here' : 'Select an object above' }}</small></button> }</div>
+      <p class="instruction">To move an object, select it again and choose another destination.</p>
+    }
+  }
+  <div class="lock-actions"><button class="operate" [disabled]="!canOperate()" [attr.aria-describedby]="matching() ? 'placement-status' : null" (click)="submit()">Operate mechanism <span>→</span></button><button class="secondary" (click)="hint.set(!hint())" [attr.aria-expanded]="hint()">{{ hint() ? 'Close hint' : 'Need a hint?' }}</button></div>
+  @if (hint()) { <p class="hint" role="status">{{ lock().hint }}</p> }
+</section>

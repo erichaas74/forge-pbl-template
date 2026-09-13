@@ -1,0 +1,434 @@
+<main class="escape-shell" [class.finished]="engine().complete">
+  <header class="topbar">
+    <a routerLink="/" class="back-link"><span aria-hidden="true">←</span> All projects</a>
+    <span class="brand"><span aria-hidden="true">☾</span> THE RESCUE CLUB</span>
+    <span class="practice">Math escape · Grade 5</span>
+  </header>
+
+  <div class="mission-heading">
+    <div>
+      <p class="eyebrow">A woodland rescue adventure</p>
+      <h1>{{ mission.title }}</h1>
+      <p>{{ mission.subtitle }}</p>
+    </div>
+    <div class="rescue-meter" aria-live="polite">
+      <span class="paw" aria-hidden="true">♧</span>
+      <div>
+        <strong
+          >{{ engine().rescued }} <span>/ {{ total }}</span></strong
+        ><small>{{ engine().complete ? 'animals home safe' : 'animals freed' }}</small>
+      </div>
+    </div>
+  </div>
+
+  @if (runtime.warning()) {
+    <div class="save-warning" role="alert">
+      {{ runtime.warning() }}
+      @if (runtime.restoreBlocked()) {
+        <button (click)="restart()">Start a new rescue</button>
+      }
+    </div>
+  }
+
+  <div class="game-layout">
+    <section class="world-column" aria-label="Castle and rescue progress">
+      <div class="castle-scene" [class.dawn]="engine().complete">
+        <img
+          class="castle-art"
+          [src]="mission.environment"
+          alt="An illustrated moonlit castle, animal courtyards, watchtowers, a moat bridge, and a boat landing beside the forest."
+        />
+        <div class="map-caption">
+          <span class="eyebrow">YOUR FIELD MAP</span>
+          <h2>{{ engine().complete ? 'A new day. An empty castle.' : mission.mapTitle }}</h2>
+        </div>
+        <span class="moon-label">{{ engine().complete ? '☀ Sunrise' : '☾ After midnight' }}</span>
+        @for (pen of pens; track pen.id) {
+          <div
+            class="map-pen"
+            [class.open]="engine().solved.has(pen.id)"
+            [style.left.%]="pen.x"
+            [style.top.%]="pen.y"
+            aria-hidden="true"
+          >
+            @for (animal of pen.animals; track animal.id) {
+              @if (!engine().released.has(animal.id)) {
+                @for (n of sequence(animal.count); track n) {
+                  <img [src]="animal.image" alt="" />
+                }
+              }
+            }
+            @if (engine().solved.has(pen.id)) {
+              <span>FREE</span>
+            }
+          </div>
+        }
+        @for (s of mission.steps; track s.id; let i = $index) {
+          <button
+            class="map-pin"
+            [class.current]="engine().started && i === engine().index"
+            [class.done]="engine().solved.has(s.id)"
+            [style.left.%]="s.x"
+            [style.top.%]="s.y"
+            [disabled]="!engine().started || i > engine().index"
+            (click)="inspect(i)"
+            [attr.aria-label]="
+              s.place +
+              (engine().solved.has(s.id)
+                ? ': solved, review clue'
+                : i === engine().index
+                  ? ': current puzzle'
+                  : ': locked')
+            "
+            [attr.aria-current]="i === engine().index && engine().started ? 'step' : null"
+          >
+            {{ engine().solved.has(s.id) ? '✓' : i + 1 }}
+          </button>
+        }
+        <div class="map-note">
+          <span class="note-dot"></span
+          >{{
+            engine().complete
+              ? 'Every animal made it home.'
+              : !engine().started
+                ? 'Your way in is the secret gate.'
+                : 'Next stop: ' + engine().current.place
+          }}
+          <span class="following-animals" aria-hidden="true">
+            @for (a of mission.animals; track a.id) {
+              @if (engine().released.has(a.id)) {
+                <img [src]="a.image" alt="" />
+              }
+            }
+          </span>
+        </div>
+      </div>
+      <div class="animal-roster">
+        @for (animal of mission.animals; track animal.id) {
+          <div class="animal-card" [class.free]="engine().released.has(animal.id)">
+            <div class="portrait">
+              <img [src]="animal.image" alt="" />
+              @if (!engine().released.has(animal.id)) {
+                <span class="pen-bars" aria-hidden="true"></span>
+              }
+            </div>
+            <div>
+              <strong>
+                @if (engine().solved.size > 0) {
+                  {{ animal.count }}
+                }
+                {{ animal.name.toLowerCase() }}</strong
+              ><span>{{
+                engine().released.has(animal.id)
+                  ? engine().complete
+                    ? 'Home safe'
+                    : 'Following you!'
+                  : 'Waiting for rescue'
+              }}</span>
+            </div>
+            @if (engine().released.has(animal.id)) {
+              <span class="free-check" aria-label="Freed">✓</span>
+            }
+          </div>
+        }
+      </div>
+      <div class="field-note">
+        <span aria-hidden="true">✧</span>
+        <p>
+          <strong>Think like a rescuer.</strong> Look closely. Try an idea. Every lock has a
+          mathematical clue.
+        </p>
+        <span class="thinking-time">Thinking time is unlimited</span>
+      </div>
+    </section>
+
+    <section #panel class="puzzle-panel" tabindex="-1" aria-label="Current escape puzzle">
+      @if (showRestart()) {
+        <p class="eyebrow">A fresh start</p>
+        <h2>Start a fresh rescue?</h2>
+        <p class="story">This replaces the progress saved for this game. You can also keep your current rescue.</p>
+        <button class="primary" (click)="dismissRestart()">Keep playing <span>→</span></button>
+        <button class="text-button" (click)="restart()">Start fresh</button>
+      } @else if (runtime.restoreBlocked()) {
+        <p class="eyebrow">Saved game needs attention</p>
+        <h2>Your rescue is waiting</h2>
+        <p>{{ runtime.warning() }}</p>
+        <button class="primary" (click)="restart()">Start a new rescue <span>→</span></button>
+      } @else if (!engine().started) {
+        <div class="briefing-stamp" aria-hidden="true">☾</div>
+        <p class="eyebrow">YOUR MISSION · {{ mission.steps.length }} MATH CHALLENGES</p>
+        <h2>{{ mission.introductionTitle }}</h2>
+        <p class="story">{{ mission.briefing }}</p>
+        <div class="mission-rules">
+          <p><span>01</span> Inspect clues and operate the locks.</p>
+          <p><span>02</span> Free every animal, one pen at a time.</p>
+          <p><span>03</span> Get everyone to the sanctuary boat.</p>
+        </div>
+        <button class="primary" (click)="start()">Enter the secret gate <span>→</span></button>
+        <p class="gentle-note">
+          Take your time. Hints are always here, and you can retry any puzzle.
+        </p>
+      } @else if (engine().complete && review() === null) {
+        <div class="briefing-stamp success-stamp" aria-hidden="true">✓</div>
+        <p class="eyebrow">RESCUE COMPLETE · {{ total }} / {{ total }} SAFE</p>
+        <h2>Home before<br />the sunrise.</h2>
+        <p class="story">{{ mission.finale }}</p>
+        <div class="home-animals">
+          @for (a of mission.animals; track a.id) {
+            @for (n of sequence(a.count); track n) {
+              <img [src]="a.image" [alt]="a.name + ' rescued'" />
+            }
+          }
+        </div>
+        <p class="completion-note">{{ mission.steps.length }} mechanisms opened with your math.</p>
+        <button class="primary" (click)="inspect(0)">
+          Look through your rescue trail <span>→</span>
+        </button>
+        <button class="text-button" (click)="requestRestart()">Play again</button>
+      } @else {
+        <div class="puzzle-kicker">
+          <span class="eyebrow"
+            >{{ review() !== null ? 'RESCUE JOURNAL' : 'ESCAPE STEP' }}
+            {{ (review() ?? engine().index) + 1 }} / {{ mission.steps.length }}</span
+          ><span class="skill">{{ puzzle().skill }}</span>
+        </div>
+        <h2>{{ step().title }}</h2>
+        <p class="story">{{ step().story }}</p>
+        @if (solved()) {
+          <div class="unlock-result" role="status">
+            <span class="result-icon" aria-hidden="true">✓</span>
+            <h3>{{ step().success }}</h3>
+            <p>{{ step().explanation }}</p>
+            @for (a of mission.animals; track a.id) {
+              @if (step().release.includes(a.id)) {
+                <div class="released-animals">
+                  @for (n of sequence(a.count); track n) {
+                    <img [src]="a.image" [alt]="a.name + ' freed'" />
+                  }
+                </div>
+              }
+            }
+          </div>
+          @if (review() !== null) {
+            <button class="primary" (click)="resume()">
+              {{ engine().complete ? 'Back to the sanctuary' : 'Back to the rescue' }}
+              <span>→</span>
+            </button>
+          } @else {
+            <button class="primary" (click)="next()">
+              {{
+                engine().index === mission.steps.length - 1
+                  ? 'Bring everyone home'
+                  : 'Continue to ' + mission.steps[engine().index + 1].place
+              }}
+              <span>→</span>
+            </button>
+          }
+        } @else {
+          <div class="clue-board">
+            <span class="clue-label">FOUND AT THE SCENE</span>
+            @for (clue of step().clues; track clue.label) {
+              <div>
+                <span>{{ clue.label }}</span
+                ><strong>{{ clue.value }}</strong>
+              </div>
+            }
+          </div>
+          @if (countAnimals()) {
+            <div class="census" aria-label="Count the animals inside the pens">
+              @for (a of mission.animals; track a.id) {
+                <div class="census-row">
+                  <span>{{ a.name }}</span>
+                  <div>
+                    @for (n of sequence(a.count); track n) {
+                      <button
+                        type="button"
+                        (click)="mark(a.id + n)"
+                        [attr.aria-pressed]="marked().has(a.id + n)"
+                        [attr.aria-label]="a.name + ' animal ' + (n + 1) + ': mark as counted'"
+                        [class.counted]="marked().has(a.id + n)"
+                      >
+                        <img [src]="a.image" alt="" />
+                        @if (marked().has(a.id + n)) {
+                          <span aria-hidden="true">✓</span>
+                        }
+                      </button>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+          <form (ngSubmit)="submit()">
+            <p class="puzzle-prompt">{{ puzzle().prompt }}</p>
+            @if (puzzle(); as p) {
+              @switch (p.type) {
+                @case ('code') {
+                  <div class="combination-lock" role="group" aria-label="Combination lock">
+                    <span class="lock-bolt" aria-hidden="true"></span>
+                    @for (label of p.labels; track $index; let i = $index) {
+                      <div class="dial">
+                        <span>{{ label }}</span
+                        ><button
+                          type="button"
+                          (click)="turn(i, 1)"
+                          [attr.aria-label]="'Increase ' + label + ' digit'"
+                        >
+                          ⌃</button
+                        ><output [attr.aria-label]="label + ' digit'" aria-live="polite">{{
+                          digits()[i]
+                        }}</output
+                        ><button
+                          type="button"
+                          (click)="turn(i, -1)"
+                          [attr.aria-label]="'Decrease ' + label + ' digit'"
+                        >
+                          ⌄
+                        </button>
+                      </div>
+                    }
+                  </div>
+                }
+                @case ('timing') {
+                  <div class="timing-mechanism">
+                    <div
+                      class="clock-face"
+                      aria-hidden="true"
+                      [style.background]="
+                        'conic-gradient(#e2ddc6 0deg ' +
+                        (p.safeStart / p.cycle) * 360 +
+                        'deg, #a8c48b ' +
+                        (p.safeStart / p.cycle) * 360 +
+                        'deg ' +
+                        (p.safeEnd / p.cycle) * 360 +
+                        'deg, #e2ddc6 ' +
+                        (p.safeEnd / p.cycle) * 360 +
+                        'deg 360deg)'
+                      "
+                    >
+                      <span class="clock-top">0</span
+                      ><span class="clock-right">{{ p.cycle / 4 }}</span
+                      ><span class="clock-bottom">{{ p.cycle / 2 }}</span
+                      ><span class="clock-left">{{ (p.cycle * 3) / 4 }}</span>
+                      <div
+                        class="clock-hand"
+                        [style.transform]="'rotate(' + (departure() / p.cycle) * 360 + 'deg)'"
+                      ></div>
+                      <i></i>
+                    </div>
+                    <div class="clock-readout">
+                      <span>DEPARTURE</span><strong>{{ departure() }}<small> sec</small></strong>
+                      <p>Arrive at second {{ departure() + p.crossing }}</p>
+                    </div>
+                  </div>
+                  <label class="range-label" for="departure">Set the departure second</label
+                  ><input
+                    id="departure"
+                    type="range"
+                    min="0"
+                    [max]="p.cycle - 1"
+                    step="1"
+                    [ngModel]="departure()"
+                    (ngModelChange)="departure.set(+$event); feedback.set('')"
+                    name="departure"
+                  />
+                  <div class="patrol-track" aria-hidden="true">
+                    <div
+                      [style.left.%]="(p.safeStart / p.cycle) * 100"
+                      [style.width.%]="((p.safeEnd - p.safeStart) / p.cycle) * 100"
+                    ></div>
+                    <span [style.left.%]="(departure() / p.cycle) * 100"></span>
+                  </div>
+                  <p class="track-caption">
+                    Green = lookout facing away · {{ p.safeStart }}–{{ p.safeEnd }} seconds
+                  </p>
+                }
+                @case ('balance') {
+                  <div class="balance-machine" aria-label="Selected counterweight">
+                    <div
+                      class="balance-beam"
+                      [class.level]="balanceTotal() === p.target"
+                      [class.heavy]="balanceTotal() > p.target"
+                    >
+                      <span>Basket<br />+ owls</span><span>{{ balanceTotal() }} kg</span>
+                    </div>
+                    <div class="fulcrum"></div>
+                  </div>
+                  <div class="weight-options" role="group" aria-label="Choose counterweights">
+                    @for (weight of p.weights; track $index; let i = $index) {
+                      <button
+                        type="button"
+                        [attr.aria-pressed]="weights().includes(i)"
+                        [class.selected]="weights().includes(i)"
+                        (click)="toggleWeight(i)"
+                      >
+                        {{ weight }} <small>kg</small
+                        ><span>{{ weights().includes(i) ? 'On lift ✓' : 'Add weight' }}</span>
+                      </button>
+                    }
+                  </div>
+                  <p class="track-caption" aria-live="polite">
+                    Counterweight: {{ balanceTotal() }} kg · Tap again to remove a weight.
+                  </p>
+                }
+                @case ('number') {
+                  <label class="answer-label" for="quantity">Your answer in {{ p.unit }}</label>
+                  <div class="quantity-control">
+                    <button type="button" aria-label="Decrease answer" (click)="adjust(-1)">
+                      −</button
+                    ><input
+                      id="quantity"
+                      type="number"
+                      name="answer"
+                      min="0"
+                      [max]="p.max"
+                      step="any"
+                      inputmode="decimal"
+                      [(ngModel)]="answer"
+                      placeholder="?"
+                      autocomplete="off"
+                    /><button type="button" aria-label="Increase answer" (click)="adjust(1)">
+                      +</button
+                    ><span>{{ p.unit }}</span>
+                  </div>
+                }
+              }
+            }
+            <div class="feedback" aria-live="polite">{{ feedback() }}</div>
+            <button class="primary" type="submit">{{ step().action }} <span>→</span></button>
+            <button
+              class="hint-button"
+              type="button"
+              (click)="hint.set(!hint())"
+              [attr.aria-expanded]="hint()"
+            >
+              ✧ {{ hint() ? 'Hide hint' : 'I need a hint' }}
+            </button>
+            @if (hint()) {
+              <p class="hint-text">{{ puzzle().hint }}</p>
+            }
+          </form>
+        }
+      }
+    </section>
+  </div>
+
+  <nav class="escape-trail" aria-label="Your eight-step escape trail">
+    @for (s of mission.steps; track s.id; let i = $index) {
+      <button
+        [disabled]="!engine().started || i > engine().index"
+        [class.active]="i === (review() ?? engine().index)"
+        [class.done]="engine().solved.has(s.id)"
+        (click)="inspect(i)"
+        [attr.aria-current]="i === engine().index && engine().started ? 'step' : null"
+      >
+        <span>{{ engine().solved.has(s.id) ? '✓' : s.icon }}</span
+        >{{ s.place }}
+      </button>
+    }
+  </nav>
+  <footer>
+    <span>{{ mission.setting }}</span
+    ><button class="text-button" (click)="requestRestart()">Start over</button>
+  </footer>
+</main>

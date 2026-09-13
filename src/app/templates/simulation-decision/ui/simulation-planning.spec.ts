@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+vi.mock('phaser', () => ({}));
 import { frontierTradingConfig as frontierTradingProjectConfig } from '../../../projects/frontier-trading/frontier-trading.config';
 import { SimulationDecisionRuntimeService } from '../runtime/simulation-decision-runtime.service';
 import { MemorySimulationDecisionPersistenceAdapter } from '../runtime/simulation-decision.persistence';
@@ -206,13 +207,16 @@ describe('market and route planning regressions', () => {
     expect(runtime.planning.at(config.startingLocationId).draft()).toEqual([]);
   });
 
-  it('keeps projected selling prices visible for every route and previews one without committing it', () => {
+  it('shows projected selling prices on request and previews a route without committing it', () => {
     const fixture = TestBed.createComponent(SimulationRouteMapComponent);
     fixture.detectChanges();
     const route = fixture.componentInstance;
     const element = fixture.nativeElement as HTMLElement;
 
-    expect(route.routeOptions()).toHaveLength(config.routes.length);
+    expect(element.querySelector('[data-market-kind="sell"]')).toBeNull();
+    route.atlas()!.showPrices.set(true);
+    fixture.detectChanges();
+    expect(route.routeOptions()).toEqual(config.routes.filter((item) => item.fromLocationId === runtime.state().currentLocationId));
     expect(element.querySelectorAll('[data-market-kind="sell"]')).toHaveLength(
       Object.keys(route.destinationMarkets()).length,
     );

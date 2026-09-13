@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { NgComponentOutlet } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Title } from '@angular/platform-browser';
+import { DomSanitizer, Title, type SafeResourceUrl } from '@angular/platform-browser';
 import type { Subscription } from 'rxjs';
 
 import { localProjectSession } from './local-project-session';
@@ -44,6 +44,7 @@ export class ProjectHostComponent implements OnDestroy {
   private readonly route = inject(ActivatedRoute);
   private readonly parentInjector = inject(EnvironmentInjector);
   private readonly documentTitle = inject(Title);
+  private readonly sanitizer = inject(DomSanitizer);
   private readonly catalog = inject(ProjectCatalogService);
   private readonly sessionResolver = inject(PROJECT_SESSION_RESOLVER, { optional: true });
   private readonly source = new LocalProjectDefinitionSource();
@@ -56,6 +57,7 @@ export class ProjectHostComponent implements OnDestroy {
   readonly component = signal<Type<unknown> | null>(null);
   readonly projectInjector = signal<EnvironmentInjector | undefined>(undefined);
   readonly loading = signal(true);
+  readonly previewUrl = signal<SafeResourceUrl | null>(null);
   readonly error = signal<string | undefined>(undefined);
   readonly isActivity = signal(false);
   readonly hasIntro = signal(false);
@@ -87,6 +89,7 @@ export class ProjectHostComponent implements OnDestroy {
   private async load(): Promise<void> {
     const generation = ++this.generation;
     this.loading.set(true);
+    this.previewUrl.set(null);
     this.integratedHeader.set(false);
     this.error.set(undefined);
     this.component.set(null);
@@ -106,6 +109,18 @@ export class ProjectHostComponent implements OnDestroy {
     this.documentTitle.setTitle(`${project.title} | Forge PBL`);
 
     try {
+      // Content-only previews never resolve a student session or load a runtime package.
+      if (project.entryMode === 'preview') {
+        const view = this.route.snapshot.paramMap.get('view');
+        if (!/^[a-z0-9][a-z0-9-]*$/.test(project.id) || (view !== null && view !== 'final-demo')) {
+          throw new Error('This project offers an introduction and a mock showcase only.');
+        }
+        const page = view === 'final-demo' ? 'showcase' : 'launch';
+        this.previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(
+          `/projects/${project.id}/${page}.html`,
+        ));
+        return;
+      }
       const intro = projectIntroRegistry.find(project.id);
       const directEntry = project.entryMode === 'activity';
       this.hasIntro.set(!directEntry);

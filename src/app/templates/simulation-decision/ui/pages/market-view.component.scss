@@ -951,7 +951,7 @@ dd {
   background: #4b311e;
 }
 
-.market-board .merchant-rumor {
+.market-board .merchant-tip {
   position: absolute;
   z-index: 7;
   top: 4.8rem;
@@ -999,6 +999,7 @@ dd {
   backdrop-filter: blur(5px);
 }
 
+.market-board .merchant-tip summary,
 .market-board .route-clue summary {
   padding: 0.48rem 0.6rem;
   font-size: 0.7rem;
@@ -1297,7 +1298,7 @@ dd {
     min-height: 38rem;
   }
 
-  .market-board .merchant-rumor,
+  .market-board .merchant-tip,
   .market-board .route-clue {
     width: calc(50% - 1rem);
   }
@@ -1327,7 +1328,7 @@ dd {
     inset: 0.45rem;
   }
 
-  .market-board .merchant-rumor {
+  .market-board .merchant-tip {
     top: 6.6rem;
   }
 
@@ -1358,7 +1359,7 @@ dd {
     width: 100%;
   }
 
-  .market-board .merchant-rumor {
+  .market-board .merchant-tip {
     width: calc(100% - 1.5rem);
   }
 }

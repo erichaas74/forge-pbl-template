@@ -1,4 +1,6 @@
 import { TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
+vi.mock('phaser', () => ({}));
 import { frontierTradingConfig } from '../../../projects/frontier-trading/frontier-trading.config';
 import { SimulationDecisionRuntimeService } from '../runtime/simulation-decision-runtime.service';
 import { MemorySimulationDecisionPersistenceAdapter } from '../runtime/simulation-decision.persistence';
@@ -28,24 +30,26 @@ describe('choice progression UI', () => {
     runtime.startCompany('Rank Testers', 'compass', 'mule-train');
   });
 
-  it('shows the current rank and renders future routes as locked', () => {
+  it('shows five departure choices while goods retain their learning progression', () => {
     const fixture = TestBed.createComponent(SimulationRouteMapComponent);
     fixture.detectChanges();
     const component = fixture.componentInstance;
+    component.atlas()!.showPrices.set(true);
+    fixture.detectChanges();
     const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
 
-    expect(component.reachableRoutes()).toHaveLength(2);
-    expect(component.atlasTrails().filter((trail) => trail.state === 'locked')).toHaveLength(3);
-    expect(fixture.nativeElement.querySelectorAll('[data-market-kind="sell"]')).toHaveLength(2);
+    expect(component.reachableRoutes()).toHaveLength(5);
+    expect(component.atlasTrails().filter((trail) => trail.state === 'locked')).toHaveLength(0);
+    expect(fixture.nativeElement.querySelectorAll('[data-market-kind="sell"]')).toHaveLength(5);
     expect(
       fixture.nativeElement.querySelectorAll('[data-market-kind="buy"] dl > div'),
     ).toHaveLength(3);
     expect(component.currentMarketPrices().map((price) => price.goodId)).toEqual(
       component.progression().currentStage.availableGoodIds,
     );
-    expect(fixture.nativeElement.querySelectorAll('.route-cost')).toHaveLength(2);
+    expect(fixture.nativeElement.querySelectorAll('.route-cost')).toHaveLength(5);
     expect(text).toContain('Starter Trader');
-    expect(text).toContain('2 / 5 routes open');
+    expect(text).toContain('5 / 5 routes open');
     expect(text).toContain('Explore market stalls · 0 / 2');
   });
 

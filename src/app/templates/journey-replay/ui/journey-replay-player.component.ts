@@ -16,11 +16,12 @@ import { routeForScene } from '../core/journey-replay.engine';
 import type { ReplayScene } from '../domain/journey-replay.models';
 import { JourneyReplayRuntimeService } from '../runtime/journey-replay-runtime.service';
 import { LivingJourneyMapComponent } from './map/living-journey-map.component';
+import { JourneyHistoryContextComponent } from './journey-history-context.component';
 
 @Component({
   selector: 'app-journey-replay-player',
   host: { '[class.embedded]': 'readOnly() || embedded()' },
-  imports: [LivingJourneyMapComponent],
+  imports: [LivingJourneyMapComponent, JourneyHistoryContextComponent],
   templateUrl: './journey-replay-player.component.html',
   styleUrl: './journey-replay-player.component.scss',
 })

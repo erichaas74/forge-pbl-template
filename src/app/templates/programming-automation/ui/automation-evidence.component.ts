@@ -3,6 +3,7 @@ import { AutomationRuntimeService } from '../runtime/automation-runtime.service'
 import type { RobotTrial } from '../domain/automation.models';
 import { allCommands } from '../core/automation-compiler';
 import { commandLabels } from './command-editor.component';
+import { commandExpression } from '../core/move-math';
 @Component({
   selector: 'app-automation-evidence',
   template: `
@@ -159,7 +160,7 @@ import { commandLabels } from './command-editor.component';
             <ol>
               @for (command of flatProgram(); track command.id) {
                 <li>
-                  {{ labels[command.type] }} {{ command.value }} {{ command.packageId ?? '' }}
+                  {{ labels[command.type] }} {{ expression(command) }} {{ command.packageId ?? '' }}
                   {{ command.disabled ? '(disabled)' : '' }}
                 </li>
               }
@@ -205,6 +206,7 @@ export class AutomationEvidenceComponent {
   readonly view = signal<'trials' | 'portfolio'>('trials');
   readonly selected = signal<string[]>([]);
   readonly labels = commandLabels;
+  readonly expression = commandExpression;
   readonly flatProgram = computed(() => allCommands(this.runtime.draft().program.commands));
   readonly comparison = computed(() => {
     const all = this.runtime.currentTrials();

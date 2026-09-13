@@ -59,6 +59,9 @@
     }
   }
 }
+<p class="addition-status" role="status" aria-live="polite">{{ addedMessage() }}</p>
+<div class="editor-layout">
+<div class="program-column">
 <div class="script-canvas">
   <div class="start-block">
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 4v16l12-8z" /></svg>
@@ -66,26 +69,33 @@
   </div>
   <ng-container *ngTemplateOutlet="list; context: { $implicit: program().commands }" />
   @if (!readOnly()) {
-    <label class="add"
-      >+ Add block
-      <select aria-label="Add command" value="" (change)="add($any($event.target))">
-        <option value="">Choose a command…</option>
-        @for (type of runtime.challenge().allowedCommands; track type) {
-          <option [value]="type">{{ labels[type] }}</option>
-        }
-      </select>
-    </label>
+    <button type="button" class="add" (click)="focusPalette()">+ Add block <span>Choose from the block library →</span></button>
   }
 </div>
 @if (!readOnly() && !runtime.challenge().requiresVariable) {
   <button class="secondary" (click)="addVariable()">+ Named variable</button>
 }
+</div>
+  <div #paletteHost class="palette-host" tabindex="-1" aria-label="Choose a code block">
+    <app-command-palette
+      [allowed]="runtime.challenge().allowedCommands"
+      [moveMath]="runtime.challenge().moveMath"
+      [readOnly]="readOnly()"
+      [destination]="insertionLabel()"
+      [inLoop]="!!insertionParent()"
+      (addBlock)="addBlock($event)"
+      (programEnd)="insertion.set(undefined)"
+    />
+  </div>
+</div>
 <ng-template #list let-commands>
   <ol class="commands">
     @for (command of commands; track command.id; let i = $index) {
       <li
         class="command"
         [attr.data-command-type]="command.type"
+        [attr.data-command-id]="command.id"
+        [class.insertion-target]="insertionParent()?.id === command.id"
         [class.selected]="runtime.selectedCommandId() === command.id"
         [class.active]="activeId() === command.id"
         [class.disabled]="command.disabled"
@@ -135,6 +145,23 @@
                 </option>
               }
             </select>
+          } @else if (command.moveMath; as problem) {
+            <span class="move-equation" role="group" aria-label="Move math problem">
+              <span class="given-number">
+                <small>Given</small>
+                <strong [attr.aria-label]="'Given number: ' + problem.given">{{ problem.given }}</strong>
+              </span>
+              <span class="math-operation" [attr.aria-label]="mathOperation(problem.operation).label">{{ mathOperation(problem.operation).symbol }}</span>
+              <label class="student-number">
+                <small>Your number</small>
+                <input class="block-input" inputmode="decimal" autocomplete="off"
+                  [attr.aria-label]="label(command.type) + ' your number'" placeholder="?"
+                  [style.width.ch]="valueWidth(command.value)" [value]="command.value" [disabled]="readOnly()"
+                  (focus)="runtime.selectCommand(command.id)"
+                  (input)="edit(command.id, { value: $any($event.target).value, mathEvidenceId: undefined })" />
+              </label>
+              <span class="math-unit">{{ command.type === 'move-distance' ? 'cm' : 'rotations' }}</span>
+            </span>
           } @else {
             <span class="value-slot">
               <input
@@ -278,19 +305,7 @@
                 "
               />
               @if (!readOnly()) {
-                <label class="add loop-add"
-                  >+ Add inside loop
-                  <select
-                    aria-label="Add command inside loop"
-                    value=""
-                    (change)="add($any($event.target), command.id)"
-                  >
-                    <option value="">Choose a command…</option>
-                    @for (type of runtime.challenge().allowedCommands; track type) {
-                      <option [value]="type">{{ labels[type] }}</option>
-                    }
-                  </select>
-                </label>
+                <button type="button" class="add loop-add" aria-label="Add command inside loop" (click)="focusPalette(command.id)">+ Add inside loop <span>Choose from the block library →</span></button>
               }
             </div>
           }
@@ -298,7 +313,7 @@
         }
       </li>
     } @empty {
-      <li class="empty">Add a block below to build your route.</li>
+      <li class="empty">Your route starts here. Click a block in the library to add it.</li>
     }
   </ol>
 </ng-template>

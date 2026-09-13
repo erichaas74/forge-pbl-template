@@ -9,6 +9,8 @@ import {
   type JourneyRecordShape,
 } from './journey-policy';
 import projectPolicies from './config/journey-project-policies.json';
+import { handleMuseumRequest } from './museum/museum-api';
+import { museumProjectPolicies } from './config/museum-project-policies';
 
 interface D1Result<T = unknown> {
   readonly success: boolean;
@@ -40,6 +42,7 @@ interface R2Bucket {
 }
 
 interface WorkerEnv {
+  readonly MUSEUM_AUTH_MODE?: 'trusted-ingress';
   readonly DB: D1Database;
   readonly MEDIA: R2Bucket;
   readonly ASSETS: { fetch(request: Request): Promise<Response> };
@@ -131,6 +134,13 @@ class HttpError extends Error {
 export default {
   async fetch(request: Request, env: WorkerEnv): Promise<Response> {
     const url = new URL(request.url);
+    if (url.pathname === '/api/museum' || url.pathname.startsWith('/api/museum/')) {
+      if (env.MUSEUM_AUTH_MODE !== 'trusted-ingress') return json({ error: 'MUSEUM_AUTH_NOT_CONFIGURED' }, 503);
+      // This worker runs behind the same authenticated ingress as the Journey API.
+      // Museum membership is provisioned separately; clients cannot self-enroll.
+      return handleMuseumRequest(request, { db: env.DB, policies: museumProjectPolicies,
+        authenticate: () => { try { return authenticatedActor(request).id; } catch { return ''; } } });
+    }
     if (!url.pathname.startsWith('/api/journey')) return serveApplication(request, env);
     if (request.method === 'OPTIONS') return new Response(null, { status: 204 });
 

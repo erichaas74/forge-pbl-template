@@ -1,0 +1,165 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.adventure-scene {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(140px, 28%) 1fr;
+  color: #f0e6ca;
+  background: #102c30;
+  border-top: 1px solid #8c865f;
+}
+.scene-art {
+  position: relative;
+  overflow: hidden;
+  min-height: 165px;
+  background: linear-gradient(#214652, #a28765);
+}
+svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+.storm .scene-art {
+  background: linear-gradient(#101d32, #405665);
+}
+.storm .sun {
+  opacity: 0.08;
+}
+.location-stamp {
+  position: absolute;
+  left: 10px;
+  bottom: 9px;
+  border: 1px solid #c4bd8780;
+  padding: 4px 8px;
+  border-radius: 3px;
+  background: #09262be6;
+  font: 700 11px/1.4 system-ui;
+}
+.dispatch {
+  align-self: center;
+  padding: 17px 40px 17px 22px;
+}
+.dispatch > span {
+  font: 800 10px/1.5 system-ui;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #d3b87b;
+}
+h2 {
+  margin: 5px 0 7px;
+  font:
+    700 clamp(18px, 1.7vw, 25px)/1.15 Georgia,
+    serif;
+}
+p {
+  margin: 0;
+  color: #ccdcd5;
+  font: 13px/1.65 system-ui;
+}
+.motion-toggle {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #668381;
+  border-radius: 50%;
+  color: #efdfb8;
+  background: #15393d;
+  cursor: pointer;
+}
+button:focus-visible {
+  outline: 3px solid #9ce0dd;
+  outline-offset: 2px;
+}
+.ship {
+  transform-origin: 230px 166px;
+  animation: rock 5s ease-in-out infinite;
+}
+.storm .ship {
+  animation-duration: 2.5s;
+}
+.waves {
+  animation: drift 6s ease-in-out infinite alternate;
+}
+.rain {
+  animation: rain 1.3s linear infinite;
+}
+.lightning {
+  animation: flash 8s ease-in-out infinite;
+}
+.paused * {
+  animation-play-state: paused !important;
+}
+@keyframes rock {
+  0%,
+  100% {
+    transform: rotate(-3deg) translateY(2px);
+  }
+  50% {
+    transform: rotate(3deg) translateY(-3px);
+  }
+}
+@keyframes drift {
+  to {
+    transform: translateX(28px);
+  }
+}
+@keyframes rain {
+  to {
+    transform: translate(-20px, 45px);
+  }
+}
+@keyframes flash {
+  0%,
+  78%,
+  100% {
+    opacity: 0.04;
+  }
+  82%,
+  88% {
+    opacity: 0.75;
+  }
+}
+@media (max-width: 1100px) {
+  .adventure-scene {
+    grid-template-columns: 140px 1fr;
+  }
+  .dispatch {
+    padding: 12px 34px 12px 14px;
+  }
+  p {
+    font-size: 12px;
+  }
+}
+@media (max-width: 760px) {
+  .adventure-scene {
+    grid-template-columns: 90px 1fr;
+  }
+  .scene-art {
+    min-height: 90px;
+  }
+  .dispatch {
+    padding: 8px 36px 8px 10px;
+  }
+  h2 {
+    font-size: 16px;
+  }
+  p {
+    display: none;
+  }
+  .location-stamp {
+    font-size: 9px;
+    left: 3px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+  }
+  .motion-toggle {
+    display: none;
+  }
+}

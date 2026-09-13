@@ -755,3 +755,11 @@ Before production backend selection, also verify:
    delivered,
 6. operational logs minimize student content and include tenant-safe metadata,
 7. retention/export/deletion can be governed by school policy.
+
+## Assigned museum publication implementation
+
+The optional `sharedMuseumPublication` capability implements the final-publication boundary through a template-owned `MuseumPublicationAdapter` and an infrastructure HTTP adapter. Editable drafts remain locally scoped; published rooms use the class-wide tuple of tenant, class, project, version, and museum instance. Student attempt IDs must not partition the class collection.
+
+Publication stores each immutable room separately. One SQL statement rechecks membership, room ownership, role, and lock while inserting the room, operation ID, content hash, server time, and receipt. This provides persisted retry protection without a separate operation-claim window. Collection reads are bounded and contain submitted snapshots only; they run on entry/refresh of the final museum, not per artifact or during room editing.
+
+The Worker integration requires explicitly configured trusted identity ingress and pre-provisioned enrollment. It fails closed by default and does not create membership from request data. See [Shared museum publication](../exhibit-hall/SHARED_PUBLICATION.md) for contracts, migration, deployment prerequisites, tests, and the remaining school-host integration boundary.

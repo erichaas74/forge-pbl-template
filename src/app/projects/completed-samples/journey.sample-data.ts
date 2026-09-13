@@ -26,6 +26,8 @@ const drafts: readonly { choiceId: string; draft: JourneyResponseDraft }[] = [
   {
     choiceId: 'mission-trade',
     draft: {
+      planningTargetId: 'trade-west-africa',
+      planningSubmitted: true,
       responseMode: 'text',
       transcript: '',
       text: 'We chose trade because ledger-1 shows a hoped-for selling price above the purchase price. That is a motive, not a guaranteed profit: ledger-2 says food, repairs, wages, and losses must be paid. Mapping could help later voyages, but our sponsor wants an exchange we can explain with costs as well as revenue.',
@@ -181,7 +183,7 @@ export function createJourneySample(): StudentJourneyRecord {
 export const journeySampleGuide: SampleGuide = {
   title: 'Our Class Race Around the World',
   subtitle:
-    'Explore a simulated class showcase: follow one crew through its journey snapshots, then compare its decisions, route, outcome, and revisions with every other voyage.',
+    'Follow fictional crews through their personal voyages in 1501. Compare their loyalties, routes, experiences, and revised claims within a historical record that stays the same.',
   audience: 'Whole-class historical inquiry · Grade 6',
   duration: 'Two presentation modes · Explore at your pace',
   trail: [
@@ -199,8 +201,8 @@ export const journeySampleGuide: SampleGuide = {
     },
     {
       label: 'Big reveal',
-      title: 'One class reaches multiple endings.',
-      text: 'The comparison keeps one crew in focus while the other routes show that success can mean distance, safety, impact, or discovery.',
+      title: 'Different paths. One historical record.',
+      text: 'Each crew returns with different experiences, costs, and observations. Their choices change their own journey; documented historical events and outcomes continue unchanged.',
       evidence: 'Mode 2 → Class comparison places the featured route against every voyage.',
     },
     {
@@ -214,7 +216,7 @@ export const journeySampleGuide: SampleGuide = {
     strength:
       'The final presentation makes both individual reasoning and class-wide patterns visible without collapsing the voyages into one average path.',
     question:
-      'Where did crews facing the same evidence make different choices, and what did each choice protect or sacrifice?',
+      'What did each crew protect or sacrifice, and which claims describe its fictional experience rather than the historical record?',
     revision:
       'Earlier claims remain visible through the class revision count, so the showcase presents learning as a change in reasoning.',
     assessment:

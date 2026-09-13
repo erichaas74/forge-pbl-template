@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 
 import { assertResponse, hasResponse } from '../core/journey-replay.engine';
+import { resolveJourneyOutcome } from '../core/journey-consequences';
 import { JourneyReplayRuntimeService } from '../runtime/journey-replay-runtime.service';
 import type { JourneyPlanningTargetDefinition } from '../domain/journey-replay.models';
 
@@ -28,6 +29,26 @@ export class JourneyDecisionPanelComponent implements OnDestroy {
   });
   readonly recording = this.runtime.recording;
   readonly workStep = signal(0);
+  readonly outcomePreview = computed(() => {
+    const choice = this.runtime.choice();
+    return choice
+      ? resolveJourneyOutcome(this.runtime.config, this.runtime.state(), choice)
+      : undefined;
+  });
+  readonly lastOutcome = computed(() => this.runtime.state().completedSteps.at(-1));
+  readonly dismissedOutcome = signal<string | undefined>(undefined);
+  readonly showOutcome = computed(
+    () => this.lastOutcome() && this.dismissedOutcome() !== this.lastOutcome()?.stepId,
+  );
+  readonly outcomeChanges = computed(() => {
+    const outcome = this.lastOutcome();
+    if (!outcome?.resourceBefore || !outcome.resourceAfter) return [];
+    return this.runtime.config.resources.flatMap((resource) => {
+      const before = outcome.resourceBefore![resource.id];
+      const after = outcome.resourceAfter![resource.id];
+      return before === after ? [] : [{ ...resource, before, after }];
+    });
+  });
   readonly completionHint = computed(() => {
     if (!this.runtime.ready()) return 'Wait for the journey to finish connecting before recording.';
     if (this.runtime.mediaBusy()) return 'Stop the recording and wait for audio to save.';
@@ -60,6 +81,7 @@ export class JourneyDecisionPanelComponent implements OnDestroy {
         const panel = this.element.nativeElement.querySelector<HTMLElement>('.step-body');
         if (panel) {
           panel.scrollTop = 0;
+          panel.scrollIntoView?.({ block: 'nearest', behavior: 'instant' });
           panel.focus({ preventScroll: true });
         }
       },
@@ -67,8 +89,17 @@ export class JourneyDecisionPanelComponent implements OnDestroy {
     );
   }
   async recordChapter(): Promise<void> {
-    await this.runtime.completeCurrentStep();
-    if (!this.runtime.choice()) this.goToWorkStep(0);
+    const completed = await this.runtime.completeCurrentStep();
+    if (!completed) return;
+    this.workStep.set(0);
+    afterNextRender(
+      () => {
+        const report = this.element.nativeElement.querySelector<HTMLElement>('.outcome-report');
+        report?.scrollIntoView?.({ block: 'start', behavior: 'instant' });
+        report?.focus({ preventScroll: true });
+      },
+      { injector: this.injector },
+    );
   }
   readonly routeOptions = computed(
     () =>

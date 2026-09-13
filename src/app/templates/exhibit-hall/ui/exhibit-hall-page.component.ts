@@ -11,10 +11,12 @@ import { ExhibitRenderHostComponent } from './exhibit-render-host.component';
 import { HallCorridorComponent } from './hall-corridor.component';
 import { PeerResponseRailComponent } from './peer-response-rail.component';
 import { TeacherHallDeskComponent } from './teacher-hall-desk.component';
+import { StudentRoomWorkspaceComponent } from '../rooms/student-room-workspace.component';
 
 @Component({
   selector: 'app-exhibit-hall-page',
   imports: [
+    StudentRoomWorkspaceComponent,
     ObjectModelViewerComponent,
     TaskGuideComponent,
     AccessibleGalleryListComponent,

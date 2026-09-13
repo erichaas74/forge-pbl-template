@@ -91,7 +91,7 @@ describe('completed curriculum samples', () => {
   it('preserves a broadcast claim-source chain and the producer-requested revision', () => {
     const state = createBroadcastSample();
     expect(state.schedule[0].recordingPoster?.src).toBe(
-      '/history-live/final-broadcast-video-stand-in.png',
+      '/history-live/final-broadcast-video-stand-in.webp',
     );
     expect(state.packageStatus).toBe('approved');
     expect(state.visualSequence).toHaveLength(3);

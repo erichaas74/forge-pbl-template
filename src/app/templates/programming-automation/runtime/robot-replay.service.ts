@@ -1,5 +1,6 @@
 import { computed, Injectable, OnDestroy, signal } from '@angular/core';
 import type { RobotTrial } from '../domain/automation.models';
+import { sampleRobotReplay } from '../core/robot-replay';
 @Injectable()
 export class RobotReplayService implements OnDestroy {
   readonly trial = signal<RobotTrial | undefined>(undefined);
@@ -8,18 +9,7 @@ export class RobotReplayService implements OnDestroy {
   readonly speed = signal(1);
   private frame?: number;
   private last = 0;
-  readonly current = computed(() => {
-    const samples = this.trial()?.pathSamples;
-    if (!samples?.length) return undefined;
-    let low = 0,
-      high = samples.length - 1;
-    while (low < high) {
-      const middle = Math.ceil((low + high) / 2);
-      if (samples[middle].timeMs <= this.timeMs()) low = middle;
-      else high = middle - 1;
-    }
-    return samples[low];
-  });
+  readonly current = computed(() => sampleRobotReplay(this.trial()?.pathSamples ?? [], this.timeMs()));
   readonly duration = computed(() => this.trial()?.pathSamples.at(-1)?.timeMs ?? 0);
   load(trial: RobotTrial, autoplay = false): void {
     this.pause();
@@ -48,13 +38,24 @@ export class RobotReplayService implements OnDestroy {
   }
   step(): void {
     this.pause();
-    const current = this.current();
-    const next = this.trial()?.pathSamples.find(
-      (sample) =>
-        sample.timeMs > this.timeMs() && sample.activeCommandId !== current?.activeCommandId,
-    );
-    this.timeMs.set(next?.timeMs ?? this.duration());
+    const next = this.commandBoundaries().find((time) => time > this.timeMs());
+    this.timeMs.set(next ?? this.duration());
   }
+  stepBack(): void {
+    this.pause();
+    const previous = [...this.commandBoundaries()].reverse().find((time) => time < this.timeMs());
+    this.timeMs.set(previous ?? 0);
+  }
+  // Completion events preserve boundaries even when a loop repeats the same command ID.
+  private readonly commandBoundaries = computed(() => {
+    const trial = this.trial();
+    const completions = trial?.events.filter((event) => event.message.includes(' complete · (')) ?? [];
+    const samples = trial?.pathSamples ?? [];
+    const times = completions.length ? completions.map((event) => event.timeMs)
+      : samples.filter((sample, index) => index === 0 || sample.activeCommandId !== samples[index - 1].activeCommandId)
+        .map((sample) => sample.timeMs);
+    return [0, ...times];
+  });
   ngOnDestroy(): void {
     this.pause();
   }

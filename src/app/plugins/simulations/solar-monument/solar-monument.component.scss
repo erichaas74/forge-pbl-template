@@ -3,6 +3,76 @@
   min-width: 0;
   color: #3b3e32;
 }
+.season-pictures {
+  position: fixed;
+  inset: 12px;
+  z-index: 200;
+  padding: 18px;
+  overflow: auto;
+  background: #fffaf0;
+  color: #264b4e;
+  border: 1px solid #b8b49c;
+  border-radius: 12px;
+  box-shadow: 0 0 0 100vmax #153840b0;
+}
+.season-pictures header {
+  position: sticky;
+  top: -18px;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  background: #fffaf0;
+  padding: 10px 0;
+}
+.season-pictures small {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+.season-pictures h2 {
+  margin: 4px 0;
+  font:
+    28px Georgia,
+    serif;
+}
+.season-pictures header button {
+  min-width: 44px;
+  font-size: 26px;
+}
+.picture-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.picture-grid figure {
+  min-width: 0;
+  margin: 0;
+}
+.picture-grid img {
+  width: 100%;
+  display: block;
+  border-radius: 8px;
+}
+.picture-grid figcaption,
+.season-pictures p {
+  margin: 8px 0;
+  font:
+    12px/1.5 system-ui,
+    sans-serif;
+}
+@media (max-width: 650px) {
+  .season-pictures {
+    inset: 8px;
+    padding: 12px;
+  }
+  .season-pictures header {
+    top: -12px;
+  }
+  .picture-grid {
+    grid-template-columns: 1fr;
+  }
+}
 .lab-toolbar {
   display: flex;
   justify-content: space-between;

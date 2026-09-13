@@ -7,6 +7,7 @@ import type {
   JourneyResourceDefinition,
   JourneyStepDefinition,
   JourneyTeamIdentity,
+  JourneyHistoricalFrame,
 } from '../domain/journey-replay.models';
 
 export interface JourneyReplayProjectManifest extends BaseEntity {
@@ -21,6 +22,7 @@ export interface JourneyReplayProjectManifest extends BaseEntity {
 }
 
 export interface JourneyPackageDefinition extends BaseEntity {
+  readonly historicalFrame?: JourneyHistoricalFrame;
   readonly subtitle: string;
   readonly gradeBand: string;
   readonly subject: string;

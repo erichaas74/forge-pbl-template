@@ -16,6 +16,7 @@ import {
 } from '../../shared/project-intro/project-intro.runtime';
 import { ProjectIntroComponent } from './project-intro.component';
 import { ProjectFinalExampleComponent } from './project-final-example.component';
+import { hostedMediaUrl } from '../../shared/media/hosted-media';
 
 describe('ProjectIntroComponent', () => {
   beforeEach(() => {
@@ -119,7 +120,9 @@ describe('ProjectIntroComponent', () => {
     const element = fixture.nativeElement as HTMLElement;
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     const video = element.querySelector('video')!;
-    expect(video.getAttribute('src')).toBe('/project-intros/frontier/trading-town-launch.mp4');
+    expect(video.getAttribute('src')).toBe(
+      hostedMediaUrl('project-intros/frontier/trading-town-launch.mp4'),
+    );
     expect(video.controls).toBe(true);
     expect(video.muted).toBe(false);
     expect(video.autoplay).toBe(false);

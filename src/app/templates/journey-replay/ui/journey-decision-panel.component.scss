@@ -1,5 +1,6 @@
 :host {
   display: block;
+  min-width: 0;
 }
 * {
   box-sizing: border-box;
@@ -757,4 +758,146 @@ audio {
   .visual-choices .choice-icon {
     grid-row: 1 / span 2;
   }
+}
+
+/* A narrow decision rail keeps choices, reasoning, and consequences in one place. */
+.decision-panel {
+  overflow-wrap: anywhere;
+}
+.work-progress {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 3px;
+  margin: 12px 0;
+}
+.work-progress button {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  min-height: 50px;
+  padding: 6px 2px;
+  border: 1px solid #b4a17a;
+  border-radius: 4px;
+  color: #574a34;
+  background: #ede0bf;
+  font: 700 10px/1.2 system-ui;
+  cursor: pointer;
+}
+.work-progress button span {
+  font-size: 13px;
+}
+.work-progress button[aria-current] {
+  background: #245a55;
+  color: #fff4d6;
+  border-color: #245a55;
+}
+.work-progress button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.decision-stakes {
+  margin: 10px 0 16px;
+  padding-left: 12px;
+  border-left: 3px solid #a37537;
+  color: #554633;
+  font: 13px/1.6 system-ui;
+}
+.visual-choices {
+  grid-template-columns: minmax(0, 1fr);
+}
+.visual-choices button {
+  grid-template-columns: 36px 1fr;
+  justify-items: start;
+  text-align: left;
+  gap: 5px 10px;
+  padding: 12px;
+}
+.visual-choices .choice-icon {
+  grid-row: 1 / span 2;
+  font-size: 26px;
+}
+.visual-choices small {
+  font-size: 12px;
+}
+.planning-targets,
+.route-comparison > div {
+  grid-template-columns: minmax(0, 1fr);
+}
+.question {
+  font-size: 19px !important;
+}
+.step-body {
+  overflow: visible;
+}
+.consequence-preview,
+.outcome-report {
+  margin: 14px 0;
+  padding: 14px;
+  border: 1px solid #91a292;
+  border-radius: 6px;
+  background: #e4ecdc;
+}
+.consequence-preview h3,
+.outcome-report h3 {
+  font-size: 19px;
+}
+.consequence-preview p,
+.outcome-report p {
+  margin-top: 7px;
+  font: 12px/1.65 system-ui;
+}
+.consequence-preview dl,
+.outcome-report dl {
+  margin: 10px 0;
+  display: grid;
+  gap: 5px;
+}
+.consequence-preview dl > div,
+.outcome-report dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  border-bottom: 1px solid #b8c6ad;
+  padding: 5px 0;
+  font-size: 12px;
+}
+.consequence-preview dd,
+.outcome-report dd {
+  margin: 0;
+}
+.carried-forward {
+  border-left: 3px solid #417065;
+  padding-left: 8px;
+}
+.outcome-report {
+  margin-top: 0;
+  background: #143e3f;
+  color: #f2e6c5;
+  border-color: #a29a63;
+}
+.outcome-report > span {
+  color: #ecd18b;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+}
+.outcome-report h3 {
+  margin-top: 6px;
+}
+.outcome-report button {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 12px;
+  border: 1px solid #d2b76f;
+  border-radius: 4px;
+  color: #203e36;
+  background: #e5ca82;
+  font-weight: 800;
+  cursor: pointer;
+}
+.outcome-reflection {
+  color: #c3d9c8;
+}
+.citation-fields {
+  grid-template-columns: 1fr;
 }

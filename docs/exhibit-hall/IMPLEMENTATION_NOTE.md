@@ -1,5 +1,7 @@
 # Class Exhibit Hall implementation note
 
+**Current student experience:** The live project uses native assigned museum rooms in version 2.3.0. See [Assigned student museum rooms](STUDENT_ROOMS.md) for its scope, contracts, and verification. The MetaSteps/video discussion below describes the retained legacy version 2.2.0.
+
 ## Integration map
 
 The reusable Exhibit Hall template is integrated with the existing Forge PBL architecture rather than creating a second application.

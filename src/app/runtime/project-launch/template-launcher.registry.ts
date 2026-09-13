@@ -43,6 +43,7 @@ export class TemplateLauncherRegistry {
 
 export function createLocalTemplateLauncherRegistry(): TemplateLauncherRegistry {
   const registry = new TemplateLauncherRegistry();
+  registry.registerLazy('heist', () => import('./template-launchers/heist.launcher').then(module => module.heistLauncher));
   registry.registerLazy('competition-show', () =>
     import('./template-launchers/competition-show.launcher').then(module => module.competitionShowLauncher),
   );

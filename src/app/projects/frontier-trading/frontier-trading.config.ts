@@ -7,6 +7,8 @@ import type {
   SimulationDecisionConfig,
   SimulationEventDefinition,
 } from '../../templates/simulation-decision/domain/simulation-decision.models';
+import { frontierNetworkRoutes } from './frontier-trade-network';
+import { frontierTradeWorld } from './frontier-trade-world';
 
 const goods = [
   good(
@@ -542,18 +544,19 @@ const events: readonly SimulationEventDefinition[] = [
 ];
 
 export const frontierTradingConfig: SimulationDecisionConfig = {
-  schemaVersion: '1.9',
-  template: { id: 'simulation-decision', version: '1.4' },
+  schemaVersion: '1.11',
+  template: { id: 'simulation-decision', version: '1.6' },
   projectId: 'frontier-trading-company',
-  projectVersion: '1.13.0',
+  projectVersion: '1.15.0',
+  tradeWorld: frontierTradeWorld,
   visualTheme: {
     vehicleImageUrl: '/frontier-trading/vehicle-scenes/trade-wagon-realistic.webp',
     vehicleImageAlt: 'A frontier trade wagon carrying the company cargo.',
     cargoPackageAssets: {
-      sack: '/frontier-trading/cargo-scenes/provisions-sack.png',
-      crate: '/frontier-trading/cargo-scenes/trade-crate.png',
-      bale: '/frontier-trading/cargo-scenes/wrapped-bale.png',
-      coil: '/frontier-trading/cargo-scenes/rope-coil.png',
+      sack: '/frontier-trading/cargo-scenes/provisions-sack.webp',
+      crate: '/frontier-trading/cargo-scenes/trade-crate.webp',
+      bale: '/frontier-trading/cargo-scenes/wrapped-bale.webp',
+      coil: '/frontier-trading/cargo-scenes/rope-coil.webp',
     },
   },
   title: 'Frontier Trading Company',
@@ -579,16 +582,23 @@ export const frontierTradingConfig: SimulationDecisionConfig = {
   reserveTargetCents: 5_000,
   profitTargetCents: 5_000,
   startingLocationId: 'independence-post',
-  maxSeasonDays: 12,
+  maxSeasonDays: 30,
   choiceProgression: {
     stages: [
       {
         id: 'starter-outfitter',
         title: 'Starter Trader',
         description:
-          'Begin with three useful goods and two clear routes. Visit the shops to learn more.',
+          'Explore five destinations, then follow connecting roads and return trips. Visit the shops to learn more.',
         availableGoodIds: ['flour', 'salt', 'dried-beans'],
-        availableRouteIds: ['route-northern', 'route-river'],
+        availableRouteIds: [
+          'route-northern',
+          'route-river',
+          'route-south-pass',
+          'route-laramie',
+          'route-miners',
+          ...frontierNetworkRoutes.map((route) => route.id),
+        ],
       },
       {
         id: 'regional-outfitter',
@@ -605,7 +615,14 @@ export const frontierTradingConfig: SimulationDecisionConfig = {
           'lantern-oil',
           'fur-pelts',
         ],
-        availableRouteIds: ['route-northern', 'route-river', 'route-south-pass', 'route-laramie'],
+        availableRouteIds: [
+          'route-northern',
+          'route-river',
+          'route-south-pass',
+          'route-laramie',
+          'route-miners',
+          ...frontierNetworkRoutes.map((route) => route.id),
+        ],
       },
       {
         id: 'master-outfitter',
@@ -619,6 +636,7 @@ export const frontierTradingConfig: SimulationDecisionConfig = {
           'route-south-pass',
           'route-laramie',
           'route-miners',
+          ...frontierNetworkRoutes.map((route) => route.id),
         ],
       },
     ],
@@ -949,6 +967,7 @@ export const frontierTradingConfig: SimulationDecisionConfig = {
       demandClue: 'Scarce supplies can bring high prices at the mining camp.',
       path: 'M14 62 C37 24 65 16 89 25',
     },
+    ...frontierNetworkRoutes,
   ],
   events,
   reportSections: [

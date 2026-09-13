@@ -1,7 +1,7 @@
 import type { ProjectIntroConfig } from '../../shared/project-intro/project-intro.models';
-const image = '/simulations/solar-monument/jewel-circle-cover.png';
+const image = '/simulations/solar-monument/solstice-gates-cover.svg';
 const alt =
-  'Illustration of a jeweled stone circle, pierced standing stones and a bronze crystal on a carved turquoise-and-gold calendar court.';
+  'Diagram of horizontal holes directing summer and winter sunlight onto a marked central pillar.';
 const practiceImage = '/simulations/solar-monument/monument.svg';
 const practiceAlt = 'A block tower with three seasonal shadow markers and Sun paths above it.';
 export const calendarMonumentIntro: ProjectIntroConfig = {
@@ -129,9 +129,9 @@ export const calendarMonumentIntro: ProjectIntroConfig = {
   finalExample: {
     button: 'Explore a solar calendar',
     format: 'Interactive 3D seasonal demonstration',
-    title: 'The Jewel Circle Solar Calendar',
+    title: 'Solstice Windows',
     introduction:
-      'Explore a carved stone circle with a bronze crystal, pierced standing stones and five colored jewels. Amber, blue and ruby roof openings light three seasonal sunstones. Test all four special dates on the same monument.',
+      'Aim two horizontal holes so summer and winter morning sunlight reaches the matching marks on a central pillar. Start with three stones and one simple challenge: move a window until its light patch meets a fixed carving.',
     chapters: [
       {
         label: '01 · Research',
@@ -145,7 +145,7 @@ export const calendarMonumentIntro: ProjectIntroConfig = {
         label: '02 · Design',
         title: 'Build matching models',
         studentWork:
-          'Eight gates surround a bronze crystal on a stepped base. Four outer standing stones have round windows; emerald and violet jewels fill two. Three roof jewels align with seasonal sunstones. Our measured base points to true north.',
+          'Two upright window stones send light through empty horizontal holes to a central receiving pillar. Its summer and winter carvings stay fixed while we align the windows. The plan gives all three stones and target heights.',
         evidence: 'Block list, coordinates, orientation, and target positions.',
         teacherNote: 'Check whether another team could reproduce the model.',
       },

@@ -50,6 +50,6 @@ describe('town market label layout', () => {
     expect(zoomed.map((label) => label.id)).toEqual(['north']);
     expect(zoomed[0]!.anchorX).toBe(500);
     expect(zoomed[0]!.anchorY).toBe(250);
-    expect(full[0]!.anchorX).toBe(380);
+    expect(full[0]!.anchorX).toBe(425);
   });
 });
