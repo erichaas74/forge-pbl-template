@@ -1,16 +1,21 @@
 import { evaluateEscapePuzzle } from './escape-puzzles';
+import { stepForGrade } from './escape.models';
+import { validMachineAnswer } from '../locks/machine.rules';
+import type { MachineAnswer, MathGrade } from '../locks/machine.models';
 import type { EscapeAttempt, EscapeEnvelope, EscapeMission } from './escape.models';
 
 /** Deterministic local-practice progression; the UI cannot release animals or skip locks. */
 export class EscapeEngine {
   started = false;
   index = 0;
+  grade: MathGrade = 5;
+  readonly checkpoints = new Map<string, MachineAnswer>();
   readonly solved = new Set<string>();
   readonly attempts: EscapeAttempt[] = [];
   private readonly processed = new Set<string>();
   constructor(readonly mission: EscapeMission) {}
   get current() {
-    return this.mission.steps[this.index];
+    return stepForGrade(this.mission.steps[this.index], this.grade);
   }
   get complete(): boolean {
     return this.index === this.mission.steps.length;
@@ -39,13 +44,42 @@ export class EscapeEngine {
     if (this.processed.has(value.id)) return true;
     const c = value.command;
     if (!c || typeof c !== 'object' || !('type' in c)) return false;
-    if (c.type === 'start') {
+    if (c.type === 'select-grade') {
+      if (
+        this.started ||
+        !('grade' in c) ||
+        !this.mission.mathGrades?.includes(c.grade as MathGrade)
+      )
+        return false;
+      this.grade = c.grade as MathGrade;
+    } else if (c.type === 'start') {
       if (this.started) return false;
       this.started = true;
     } else {
       if (!this.started || this.complete || !('stepId' in c) || c.stepId !== this.current.id)
         return false;
-      if (c.type === 'continue') {
+      if (c.type === 'checkpoint') {
+        const p = this.current.puzzle;
+        if (
+          p.type !== 'machine-lock' ||
+          this.solved.has(this.current.id) ||
+          !('answer' in c) ||
+          !validMachineAnswer(p.lock, c.answer)
+        )
+          return false;
+        const previous = this.checkpoints.get(this.current.id);
+        if (
+          previous &&
+          (c.answer.seals.length < previous.seals.length ||
+            previous.seals.some(
+              (_, i) =>
+                JSON.stringify(previous.stages[i]) !==
+                JSON.stringify((c.answer as MachineAnswer).stages[i]),
+            ))
+        )
+          return false;
+        this.checkpoints.set(this.current.id, structuredClone(c.answer));
+      } else if (c.type === 'continue') {
         if (!this.solved.has(this.current.id)) return false;
         this.index++;
       } else if (c.type === 'submit') {
@@ -53,6 +87,8 @@ export class EscapeEngine {
           return false;
         const a = c.answer;
         if (!(
+          (this.current.puzzle.type === 'machine-lock' &&
+            validMachineAnswer(this.current.puzzle.lock, a)) ||
           (typeof a === 'number' && Number.isFinite(a)) ||
           (typeof a === 'string' && /^\d{1,6}$/.test(a)) ||
           (Array.isArray(a) &&

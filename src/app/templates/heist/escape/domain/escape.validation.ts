@@ -1,4 +1,5 @@
 import { validateGearLock } from '../gear-lock/gear-lock.domain';
+import { validateMachine } from '../locks/machine.validation';
 import { validateBalanceLock } from '../balance-lock/balance-lock.domain';
 import { escapePuzzleEvaluators } from './escape-puzzles';
 import { validateExpeditionWorld } from './expedition.validation';
@@ -33,7 +34,7 @@ export function requireEscapeMission(value: unknown): EscapeMission {
   const m = obj(value, 'mission'),
     template = obj(m['template'], 'template');
   if (
-    m['schemaVersion'] !== '1.2' ||
+    !['1.2', '1.3'].includes(String(m['schemaVersion'])) ||
     m['experience'] !== 'escape' ||
     template['id'] !== 'heist' ||
     template['version'] !== '1.0'
@@ -79,6 +80,10 @@ export function requireEscapeMission(value: unknown): EscapeMission {
     if (!Object.hasOwn(escapePuzzleEvaluators, type))
       throw new Error(`CAPABILITY_NOT_INSTALLED: heist.escape.${type}`);
     for (const key of ['prompt', 'hint', 'skill']) str(p[key], `puzzle.${key}`);
+    if (type === 'machine-lock') {
+      if (m['world'] === undefined) fail('machine-lock requires expedition presentation');
+      validateMachine(p['lock']);
+    }
     if (type === 'gear-lock') {
       if (m['world'] === undefined) fail('gear-lock requires expedition presentation');
       validateGearLock(p['lock']);
@@ -127,5 +132,30 @@ export function requireEscapeMission(value: unknown): EscapeMission {
   }
   if (released.size !== animalIds.size) fail('all animals must have a reachable release step');
   if (m['world'] !== undefined) validateExpeditionWorld(m['world'], value as EscapeMission);
+  if (m['mathGrades'] !== undefined) {
+    const grades = list(m['mathGrades'], 'mathGrades', 1, 4).map((g) => integer(g, 'grade', 5, 8));
+    if (new Set(grades).size !== grades.length || !grades.includes(5)) fail('mathGrades');
+    const steps = rows(m['steps'], 'steps');
+    for (const step of steps)
+      if (step['gradePuzzles'] !== undefined) {
+        const variants = obj(step['gradePuzzles'], 'gradePuzzles');
+        if (Object.keys(variants).some((k) => !/^[5-8]$/.test(k) || !grades.includes(Number(k))))
+          fail('gradePuzzles grade');
+      }
+    for (const grade of grades)
+      requireEscapeMission({
+        ...m,
+        mathGrades: undefined,
+        steps: steps.map((step) => {
+          const variants = step['gradePuzzles'] as Row | undefined;
+          return {
+            ...step,
+            gradePuzzles: undefined,
+            puzzle: variants?.[String(grade)] ?? step['puzzle'],
+          };
+        }),
+      });
+  } else if (rows(m['steps'], 'steps').some((s) => s['gradePuzzles'] !== undefined))
+    fail('gradePuzzles requires mathGrades');
   return structuredClone(value) as EscapeMission;
 }

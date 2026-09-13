@@ -1,0 +1,1034 @@
+{
+  "schemaVersion": "1.2",
+  "experience": "escape",
+  "projectId": "castle-archive-rescue",
+  "projectVersion": "3.3.0",
+  "template": {
+    "id": "heist",
+    "version": "1.0"
+  },
+  "title": "The Midnight Menagerie",
+  "subtitle": "A moonlit castle. Twelve stolen animals. Your math is their way home.",
+  "briefing": "Baron Bramble has stolen twelve animals from the woodland sanctuary. Slip inside his moonlit castle, explore the courtyards, and outsmart the mechanisms that keep them penned up. Every animal you free will follow you. Get the whole rescue team to the river boat.",
+  "setting": "A make-believe castle. A very real need for your math skills.",
+  "environment": "/projects/castle-archive-rescue/art/v3/castle-world.webp",
+  "finale": "The last boat slips into the reeds just as the sun rises. All 12 animals are back at the woodland sanctuary. Baron Bramble finds empty pens, open locks, and one small note: Animals belong at home.",
+  "animals": [
+    {
+      "id": "rabbits",
+      "name": "Rabbits",
+      "count": 6,
+      "image": "/projects/castle-archive-rescue/rabbit.svg",
+      "pen": "Carrot courtyard"
+    },
+    {
+      "id": "foxes",
+      "name": "Foxes",
+      "count": 4,
+      "image": "/projects/castle-archive-rescue/fox.svg",
+      "pen": "Bramble den"
+    },
+    {
+      "id": "owls",
+      "name": "Owls",
+      "count": 2,
+      "image": "/projects/castle-archive-rescue/owl.svg",
+      "pen": "Moon tower"
+    }
+  ],
+  "steps": [
+    {
+      "id": "census",
+      "title": "The balance vault",
+      "place": "Outer gate",
+      "story": "Bramble has sealed the outer gate with three connected balance mechanisms. Step into the gate workshop. Rebuild each fixed load with the loose weights to align all three release pins.",
+      "action": "Solve lock",
+      "success": "Three seals released. The castle gate is open!",
+      "explanation": "Equivalent masses opened the gate: 3/4 = 1/2 + 1/4; 1.5 = 0.75 + 0.5 + 0.25; 2 1/2 = 1 3/4 + 3/4. Your own equal combinations work too.",
+      "x": 13.997395833333334,
+      "y": 86.42578125,
+      "icon": "01",
+      "clues": [
+        {
+          "label": "Three connected seals",
+          "value": "Fractions, decimals, and mixed numbers"
+        },
+        {
+          "label": "The balance rule",
+          "value": "Both pans must have exactly the same mass."
+        }
+      ],
+      "puzzle": {
+        "type": "balance-lock",
+        "prompt": "Balance all three seals to open the outer gate.",
+        "hint": "The lower pan is heavier. Combine blocks on the lighter side. Compare fractions with a common denominator.",
+        "skill": "Equivalent fractions, decimals & mixed numbers",
+        "lock": {
+          "backdrop": "/projects/castle-archive-rescue/art/v3/balance-chamber.png",
+          "skin": "brass",
+          "tolerance": {
+            "numerator": 0,
+            "denominator": 1
+          },
+          "scales": [
+            {
+              "id": "fractions",
+              "title": "The fraction seal",
+              "instruction": "Build the same mass as 3/4. Some blocks are decoys.",
+              "unit": "mass units",
+              "left": [
+                {
+                  "id": "fixed-fractions",
+                  "value": {
+                    "numerator": 3,
+                    "denominator": 4
+                  },
+                  "notation": "fraction"
+                }
+              ],
+              "right": [],
+              "pieces": [
+                {
+                  "id": "piece-0",
+                  "value": {
+                    "numerator": 1,
+                    "denominator": 2
+                  },
+                  "notation": "fraction"
+                },
+                {
+                  "id": "piece-1",
+                  "value": {
+                    "numerator": 1,
+                    "denominator": 4
+                  },
+                  "notation": "fraction"
+                },
+                {
+                  "id": "piece-2",
+                  "value": {
+                    "numerator": 1,
+                    "denominator": 3
+                  },
+                  "notation": "fraction"
+                },
+                {
+                  "id": "piece-3",
+                  "value": {
+                    "numerator": 1,
+                    "denominator": 8
+                  },
+                  "notation": "fraction"
+                },
+                {
+                  "id": "piece-4",
+                  "value": {
+                    "numerator": 1,
+                    "denominator": 8
+                  },
+                  "notation": "fraction"
+                }
+              ]
+            },
+            {
+              "id": "decimals",
+              "title": "The decimal seal",
+              "instruction": "Make 1.5 using decimal masses. Each block can be used once.",
+              "unit": "mass units",
+              "left": [
+                {
+                  "id": "fixed-decimals",
+                  "value": {
+                    "numerator": 15,
+                    "denominator": 10
+                  },
+                  "notation": "decimal"
+                }
+              ],
+              "right": [],
+              "pieces": [
+                {
+                  "id": "piece-0",
+                  "value": {
+                    "numerator": 75,
+                    "denominator": 100
+                  },
+                  "notation": "decimal"
+                },
+                {
+                  "id": "piece-1",
+                  "value": {
+                    "numerator": 5,
+                    "denominator": 10
+                  },
+                  "notation": "decimal"
+                },
+                {
+                  "id": "piece-2",
+                  "value": {
+                    "numerator": 25,
+                    "denominator": 100
+                  },
+                  "notation": "decimal"
+                },
+                {
+                  "id": "piece-3",
+                  "value": {
+                    "numerator": 4,
+                    "denominator": 10
+                  },
+                  "notation": "decimal"
+                },
+                {
+                  "id": "piece-4",
+                  "value": {
+                    "numerator": 2,
+                    "denominator": 10
+                  },
+                  "notation": "decimal"
+                }
+              ]
+            },
+            {
+              "id": "mixed",
+              "title": "The mixed-number seal",
+              "instruction": "Match 2 1/2 with mixed numbers and fractions.",
+              "unit": "mass units",
+              "left": [
+                {
+                  "id": "fixed-mixed",
+                  "value": {
+                    "numerator": 5,
+                    "denominator": 2
+                  },
+                  "notation": "mixed"
+                }
+              ],
+              "right": [],
+              "pieces": [
+                {
+                  "id": "piece-0",
+                  "value": {
+                    "numerator": 7,
+                    "denominator": 4
+                  },
+                  "notation": "mixed"
+                },
+                {
+                  "id": "piece-1",
+                  "value": {
+                    "numerator": 3,
+                    "denominator": 4
+                  },
+                  "notation": "fraction"
+                },
+                {
+                  "id": "piece-2",
+                  "value": {
+                    "numerator": 1,
+                    "denominator": 3
+                  },
+                  "notation": "fraction"
+                },
+                {
+                  "id": "piece-3",
+                  "value": {
+                    "numerator": 1,
+                    "denominator": 2
+                  },
+                  "notation": "fraction"
+                },
+                {
+                  "id": "piece-4",
+                  "value": {
+                    "numerator": 1,
+                    "denominator": 8
+                  },
+                  "notation": "fraction"
+                }
+              ]
+            }
+          ],
+          "blockAtlas": "/projects/castle-archive-rescue/art/v3/balance-blocks.png"
+        }
+      },
+      "release": []
+    },
+    {
+      "id": "lookout",
+      "title": "A gap in the patrol",
+      "place": "Watchtower passage",
+      "story": "The lookout turns away during part of each minute. Your team needs 10 seconds to cross. Set a delayed start so everyone clears the passage before the lookout turns back.",
+      "action": "Test the crossing",
+      "success": "You slip past the lookout!",
+      "explanation": "The lookout turns back at 35 seconds. Subtract the 10-second crossing: 35 − 10 = 25. Leaving at second 25 gets everyone across exactly at second 35.",
+      "x": 23.4375,
+      "y": 44.921875,
+      "icon": "02",
+      "clues": [
+        {
+          "label": "Lookout faces away",
+          "value": "Seconds 20 to 35"
+        },
+        {
+          "label": "Crossing time",
+          "value": "10 seconds"
+        },
+        {
+          "label": "Patrol repeats",
+          "value": "Every 60 seconds"
+        }
+      ],
+      "puzzle": {
+        "type": "timing",
+        "prompt": "What is the LATEST second you can start? Finishing exactly at second 35 is safe.",
+        "hint": "Work backward from second 35. Subtract the 10 seconds you need to cross.",
+        "skill": "Elapsed time & subtraction",
+        "cycle": 60,
+        "safeStart": 20,
+        "safeEnd": 35,
+        "crossing": 10
+      },
+      "release": []
+    },
+    {
+      "id": "rabbits",
+      "title": "The carrot catch",
+      "place": "Carrot courtyard",
+      "story": "Six rabbits twitch their noses behind a food-powered latch. Each rabbit needs 2 carrots. Load just enough carrots into the feeder and the pen door will pop open.",
+      "action": "Fill the feeder",
+      "success": "Six rabbits hop to freedom!",
+      "explanation": "6 rabbits × 2 carrots each = 12 carrots. Equal groups opened the first pen.",
+      "x": 32.87760416666667,
+      "y": 37.3046875,
+      "icon": "03",
+      "clues": [
+        {
+          "label": "Hungry rabbits",
+          "value": "6"
+        },
+        {
+          "label": "Each rabbit needs",
+          "value": "2 carrots"
+        }
+      ],
+      "puzzle": {
+        "type": "number",
+        "prompt": "How many carrots do you need altogether?",
+        "hint": "Add 2 six times, or multiply 6 by 2.",
+        "skill": "Equal groups & multiplication",
+        "answer": 12,
+        "unit": "carrots",
+        "max": 50,
+        "visual": {
+          "kind": "groups",
+          "count": 6,
+          "amount": 2
+        }
+      },
+      "release": [
+        "rabbits"
+      ]
+    },
+    {
+      "id": "foxes",
+      "title": "The clockwork fox rescue",
+      "place": "Bramble den",
+      "story": "The thief has removed two cogs from the den release. Repair the compound gear train, then wind it just far enough to start the rescue machine.",
+      "action": "Solve lock",
+      "success": "The clockwork gate rises. Four foxes are free!",
+      "explanation": "Cog A: 3/2 x 24 = 36 teeth. Cog B: 2 x 12 = 24 teeth. Three crank turns make A turn 2 times; its 12-tooth pinion makes B turn once. The release drum completes one full turn.",
+      "x": 55.338541666666664,
+      "y": 34.1796875,
+      "icon": "04",
+      "clues": [
+        {
+          "label": "Cog A",
+          "value": "3/2 of the 24-tooth drive"
+        },
+        {
+          "label": "Cog B",
+          "value": "Twice the 12-tooth pinion"
+        },
+        {
+          "label": "Release",
+          "value": "One full output turn"
+        }
+      ],
+      "puzzle": {
+        "type": "gear-lock",
+        "prompt": "Repair both cogs using the fractional tooth-count clues, then choose the crank turns that give the release drum exactly one full turn.",
+        "hint": "First find each missing tooth count. Three turns of a 24-tooth drive move 72 teeth past the first cog. Follow the motion through the shared axle and the second pair.",
+        "skill": "Fraction multiplication & proportional reasoning",
+        "lock": {
+          "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+          "title": "The clockwork fox rescue",
+          "instruction": "Use both tooth-count clues. Wind the crank to give the release drum exactly one full turn.",
+          "success": "The gate is open. Four foxes can finally escape!",
+          "driverTeeth": 24,
+          "pinionTeeth": 12,
+          "firstMultiplier": {
+            "numerator": 3,
+            "denominator": 2
+          },
+          "secondMultiplier": {
+            "numerator": 2,
+            "denominator": 1
+          },
+          "outputTurns": {
+            "numerator": 1,
+            "denominator": 1
+          },
+          "maxCrank": 8,
+          "gears": [
+            {
+              "id": "cog-18",
+              "teeth": 18
+            },
+            {
+              "id": "cog-24",
+              "teeth": 24
+            },
+            {
+              "id": "cog-36",
+              "teeth": 36
+            },
+            {
+              "id": "cog-48",
+              "teeth": 48
+            },
+            {
+              "id": "cog-12",
+              "teeth": 12
+            },
+            {
+              "id": "cog-30",
+              "teeth": 30
+            }
+          ],
+          "release": [
+            "drive",
+            "ball",
+            "hammer",
+            "weight",
+            "domino",
+            "gate"
+          ]
+        }
+      },
+      "release": [
+        "foxes"
+      ]
+    },
+    {
+      "id": "owls",
+      "title": "The moon tower balance",
+      "place": "Moon tower",
+      "story": "The owl basket is held by a stone counterweight lock. The fixed tablet is 5/6 of a mass unit. Build an equal load to release the two owls safely.",
+      "action": "Solve lock",
+      "success": "Two owls flutter down. Every pen is empty!",
+      "explanation": "5/6 = 1/2 + 1/3. Equal mass levels the beam and lets the basket lower gently.",
+      "x": 74.54427083333334,
+      "y": 37.59765625,
+      "icon": "05",
+      "clues": [
+        {
+          "label": "Fixed tablet",
+          "value": "5/6 of a mass unit"
+        },
+        {
+          "label": "Release condition",
+          "value": "An exactly equal counterweight"
+        }
+      ],
+      "puzzle": {
+        "type": "balance-lock",
+        "prompt": "Balance the stone tablet to lower the owl basket.",
+        "hint": "Use sixths to compare the half and third blocks.",
+        "skill": "Adding fractions with unlike denominators",
+        "lock": {
+          "backdrop": "/projects/castle-archive-rescue/art/v3/balance-chamber.png",
+          "skin": "stone",
+          "tolerance": {
+            "numerator": 0,
+            "denominator": 1
+          },
+          "scales": [
+            {
+              "id": "owls",
+              "title": "The owl seal",
+              "instruction": "Match 5/6 using the carved stone masses.",
+              "unit": "mass units",
+              "left": [
+                {
+                  "id": "fixed-owls",
+                  "value": {
+                    "numerator": 5,
+                    "denominator": 6
+                  },
+                  "notation": "fraction"
+                }
+              ],
+              "right": [],
+              "pieces": [
+                {
+                  "id": "piece-0",
+                  "value": {
+                    "numerator": 1,
+                    "denominator": 2
+                  },
+                  "notation": "fraction"
+                },
+                {
+                  "id": "piece-1",
+                  "value": {
+                    "numerator": 1,
+                    "denominator": 3
+                  },
+                  "notation": "fraction"
+                },
+                {
+                  "id": "piece-2",
+                  "value": {
+                    "numerator": 1,
+                    "denominator": 4
+                  },
+                  "notation": "fraction"
+                },
+                {
+                  "id": "piece-3",
+                  "value": {
+                    "numerator": 1,
+                    "denominator": 6
+                  },
+                  "notation": "fraction"
+                },
+                {
+                  "id": "piece-4",
+                  "value": {
+                    "numerator": 1,
+                    "denominator": 8
+                  },
+                  "notation": "fraction"
+                }
+              ]
+            }
+          ],
+          "blockAtlas": "/projects/castle-archive-rescue/art/v3/balance-blocks.png"
+        }
+      },
+      "release": [
+        "owls"
+      ]
+    },
+    {
+      "id": "bridge",
+      "title": "The missing bridge",
+      "place": "Moonlit moat",
+      "story": "The animals follow you to a gap in the bridge. A winch needs the gap length in meters to lower a rescue plank. Six half-meter markings span the gap.",
+      "action": "Lower the rescue plank",
+      "success": "The plank fits. Everyone crosses safely.",
+      "explanation": "6 sections × 50 cm = 300 cm. Since 100 cm = 1 m, the gap is 3 meters long.",
+      "x": 80.078125,
+      "y": 58.10546875,
+      "icon": "06",
+      "clues": [
+        {
+          "label": "Measured sections",
+          "value": "6 × 50 cm"
+        },
+        {
+          "label": "Conversion clue",
+          "value": "100 cm = 1 m"
+        }
+      ],
+      "puzzle": {
+        "type": "number",
+        "prompt": "How many meters long must the rescue plank be?",
+        "hint": "Multiply 6 by 50 to get centimeters. Divide that total by 100 to get meters.",
+        "skill": "Measurement & unit conversion",
+        "answer": 3,
+        "unit": "meters",
+        "max": 20,
+        "visual": {
+          "kind": "length",
+          "count": 6,
+          "amount": 50
+        }
+      },
+      "release": []
+    },
+    {
+      "id": "water",
+      "title": "A tiny pit stop",
+      "place": "Reed hideout",
+      "story": "You count all 12 rescued animals in the reeds. One quarter of them need a drink before the last part of the escape. Put out one water bowl for each thirsty animal.",
+      "action": "Set out the water",
+      "success": "Refreshed and ready for the river.",
+      "explanation": "One quarter means 1 of 4 equal groups. 12 ÷ 4 = 3, so you need 3 water bowls.",
+      "x": 75.52083333333334,
+      "y": 76.171875,
+      "icon": "07",
+      "clues": [
+        {
+          "label": "Animals together",
+          "value": "6 + 4 + 2 = 12"
+        },
+        {
+          "label": "Thirsty animals",
+          "value": "¼ of the group"
+        }
+      ],
+      "puzzle": {
+        "type": "number",
+        "prompt": "How many water bowls do you need?",
+        "hint": "Split 12 animals into 4 equal groups. How many are in one group?",
+        "skill": "Fractions of a set",
+        "answer": 3,
+        "unit": "bowls",
+        "max": 20,
+        "visual": {
+          "kind": "fraction",
+          "count": 12,
+          "amount": 4
+        }
+      },
+      "release": []
+    },
+    {
+      "id": "boat",
+      "title": "The last boat home",
+      "place": "Sanctuary landing",
+      "story": "Your sanctuary guide has a boat with space for 5 animals per trip. The guide handles the return journeys. Plan enough trips from the castle bank to take all 12 animals home.",
+      "action": "Launch the rescue",
+      "success": "All aboard. Next stop: home!",
+      "explanation": "Two trips carry only 10 animals. You need 3 trips: 5 + 5 + 2 = 12. The last trip does not have to be full.",
+      "x": 94.9,
+      "y": 83.49609375,
+      "icon": "08",
+      "clues": [
+        {
+          "label": "Animals to carry",
+          "value": "12"
+        },
+        {
+          "label": "Animal spaces per trip",
+          "value": "5"
+        },
+        {
+          "label": "Count these trips",
+          "value": "Castle → sanctuary only"
+        }
+      ],
+      "puzzle": {
+        "type": "number",
+        "prompt": "What is the FEWEST number of trips that can carry every animal home?",
+        "hint": "Count by fives until there is room for all 12. Remember the animals left after two trips.",
+        "skill": "Division & remainders",
+        "answer": 3,
+        "unit": "trips",
+        "max": 12,
+        "visual": {
+          "kind": "capacity",
+          "count": 12,
+          "amount": 5
+        }
+      },
+      "release": []
+    }
+  ],
+  "introductionTitle": "Twelve animals. One secret way out.",
+  "mapTitle": "Bramble Castle",
+  "world": {
+    "width": 1536,
+    "height": 1024,
+    "speed": 175,
+    "spawn": {
+      "x": 155,
+      "y": 945
+    },
+    "pathRadius": 44,
+    "interactionRadius": 64,
+    "nodes": [
+      {
+        "id": "entry",
+        "x": 155,
+        "y": 945
+      },
+      {
+        "id": "gate",
+        "x": 215,
+        "y": 885
+      },
+      {
+        "id": "west",
+        "x": 450,
+        "y": 650
+      },
+      {
+        "id": "west-north",
+        "x": 430,
+        "y": 460
+      },
+      {
+        "id": "lookout",
+        "x": 360,
+        "y": 460
+      },
+      {
+        "id": "rabbits",
+        "x": 505,
+        "y": 382
+      },
+      {
+        "id": "north-path",
+        "x": 600,
+        "y": 435
+      },
+      {
+        "id": "north",
+        "x": 790,
+        "y": 380
+      },
+      {
+        "id": "foxes",
+        "x": 850,
+        "y": 350
+      },
+      {
+        "id": "east-north",
+        "x": 1010,
+        "y": 425
+      },
+      {
+        "id": "owls",
+        "x": 1145,
+        "y": 385
+      },
+      {
+        "id": "east",
+        "x": 1100,
+        "y": 600
+      },
+      {
+        "id": "bridge-start",
+        "x": 1230,
+        "y": 595
+      },
+      {
+        "id": "bridge-end",
+        "x": 1445,
+        "y": 595
+      },
+      {
+        "id": "bank",
+        "x": 1475,
+        "y": 730
+      },
+      {
+        "id": "boat",
+        "x": 1457,
+        "y": 855
+      },
+      {
+        "id": "south-east",
+        "x": 1155,
+        "y": 770
+      },
+      {
+        "id": "water",
+        "x": 1160,
+        "y": 780
+      },
+      {
+        "id": "south",
+        "x": 930,
+        "y": 760
+      },
+      {
+        "id": "south-west",
+        "x": 680,
+        "y": 760
+      },
+      {
+        "id": "inner-gate",
+        "x": 410,
+        "y": 790
+      }
+    ],
+    "paths": [
+      [
+        "entry",
+        "gate"
+      ],
+      [
+        "gate",
+        "inner-gate"
+      ],
+      [
+        "inner-gate",
+        "west"
+      ],
+      [
+        "inner-gate",
+        "south-west"
+      ],
+      [
+        "west",
+        "west-north"
+      ],
+      [
+        "west-north",
+        "lookout"
+      ],
+      [
+        "west-north",
+        "rabbits"
+      ],
+      [
+        "west-north",
+        "north-path"
+      ],
+      [
+        "north-path",
+        "north"
+      ],
+      [
+        "north",
+        "foxes"
+      ],
+      [
+        "north",
+        "east-north"
+      ],
+      [
+        "east-north",
+        "owls"
+      ],
+      [
+        "east-north",
+        "east"
+      ],
+      [
+        "east",
+        "bridge-start"
+      ],
+      [
+        "bridge-start",
+        "bridge-end"
+      ],
+      [
+        "bridge-end",
+        "bank"
+      ],
+      [
+        "bank",
+        "boat"
+      ],
+      [
+        "east",
+        "south-east"
+      ],
+      [
+        "south-east",
+        "water"
+      ],
+      [
+        "south-east",
+        "south"
+      ],
+      [
+        "south",
+        "south-west"
+      ],
+      [
+        "south-west",
+        "west"
+      ]
+    ],
+    "characters": "/projects/castle-archive-rescue/art/characters.webp",
+    "animalAtlas": "/projects/castle-archive-rescue/art/v3/animals.webp",
+    "mechanismAtlas": "/projects/castle-archive-rescue/art/v3/mechanisms.webp",
+    "animalRows": {
+      "rabbits": 0,
+      "foxes": 1,
+      "owls": 2
+    },
+    "lanterns": [
+      {
+        "x": 145,
+        "y": 816
+      },
+      {
+        "x": 280,
+        "y": 816
+      },
+      {
+        "x": 473,
+        "y": 822
+      },
+      {
+        "x": 442,
+        "y": 346
+      },
+      {
+        "x": 565,
+        "y": 345
+      },
+      {
+        "x": 793,
+        "y": 198
+      },
+      {
+        "x": 964,
+        "y": 220
+      },
+      {
+        "x": 1070,
+        "y": 337
+      },
+      {
+        "x": 1225,
+        "y": 241
+      },
+      {
+        "x": 1269,
+        "y": 561
+      },
+      {
+        "x": 1453,
+        "y": 579
+      },
+      {
+        "x": 1501,
+        "y": 829
+      }
+    ],
+    "water": [
+      {
+        "x": 770,
+        "y": 543
+      },
+      {
+        "x": 1385,
+        "y": 319
+      },
+      {
+        "x": 1370,
+        "y": 436
+      },
+      {
+        "x": 1357,
+        "y": 727
+      },
+      {
+        "x": 1326,
+        "y": 801
+      }
+    ],
+    "patrol": [
+      {
+        "x": 310,
+        "y": 432
+      },
+      {
+        "x": 425,
+        "y": 565
+      },
+      {
+        "x": 466,
+        "y": 684
+      },
+      {
+        "x": 377,
+        "y": 562
+      }
+    ],
+    "animalFrames": [
+      [
+        0.03189792663476874,
+        0.05980861244019139,
+        0.22328548644338117,
+        0.23923444976076555
+      ],
+      [
+        0.2711323763955343,
+        0.07974481658692185,
+        0.2567783094098884,
+        0.20095693779904306
+      ],
+      [
+        0.5677830940988836,
+        0.07655502392344497,
+        0.14752791068580542,
+        0.22169059011164274
+      ],
+      [
+        0.8070175438596491,
+        0.045454545454545456,
+        0.1467304625199362,
+        0.26953748006379585
+      ],
+      [
+        0.017543859649122806,
+        0.3803827751196172,
+        0.24800637958532695,
+        0.22727272727272727
+      ],
+      [
+        0.2679425837320574,
+        0.39314194577352474,
+        0.2894736842105263,
+        0.22009569377990432
+      ],
+      [
+        0.5861244019138756,
+        0.3365231259968102,
+        0.1419457735247209,
+        0.2807017543859649
+      ],
+      [
+        0.8125996810207337,
+        0.3309409888357257,
+        0.14513556618819776,
+        0.3181818181818182
+      ],
+      [
+        0.01036682615629984,
+        0.6977671451355661,
+        0.21929824561403508,
+        0.21850079744816586
+      ],
+      [
+        0.2543859649122807,
+        0.6331738437001595,
+        0.2767145135566188,
+        0.2878787878787879
+      ],
+      [
+        0.5542264752791068,
+        0.722488038277512,
+        0.14433811802232854,
+        0.19298245614035087
+      ],
+      [
+        0.7017543859649122,
+        0.6794258373205742,
+        0.2982456140350877,
+        0.24242424242424243
+      ]
+    ],
+    "boat": "/projects/castle-archive-rescue/art/v3/boat.webp",
+    "pathLocks": [
+      {
+        "stepId": "census",
+        "paths": [
+          [
+            "gate",
+            "inner-gate"
+          ]
+        ]
+      }
+    ]
+  }
+}

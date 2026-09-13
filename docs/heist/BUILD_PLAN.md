@@ -1,8 +1,10 @@
-Current release: **3.3.0**. Independent gear restoration workshop: [GEAR_LOCK_PLAN.md](GEAR_LOCK_PLAN.md).
+Current castle release: **4.0.0**. Nine physical math machines at eight rescue locations, with selectable grades 5-8. See [MATH_WORKSHOPS_HANDOFF.md](MATH_WORKSHOPS_HANDOFF.md) for implementation, curriculum, state and verification.
+
+The original proposal is preserved in [MATH_LOCK_EXPANSION_PLAN.md](MATH_LOCK_EXPANSION_PLAN.md). Its deferred capabilities are now implemented under the expanded user request.
 
 # Heist project type: implementation plan and handoff
 
-Current Castle package: **3.2.0**, **The Midnight Menagerie**, an eight-step
+Original Phaser Castle package: **3.2.0**, **The Midnight Menagerie**, an eight-step
 Phaser expedition with painted artwork, walking rescuers, following animals, and math at every mechanism. Single-player now, designed for future multiplayer. See `PHASER_EXPEDITION_HANDOFF.md`
 for gameplay, schema, saves, and verification. `BALANCE_LOCK_PLAN.md` documents the reusable full-screen scale workshop. `GRADE_5_HANDOFF.md` records the
 preserved 1.1.0 guided fixture. The original 1.0.0 plan below remains the record

@@ -1,14 +1,14 @@
 {
-  "schemaVersion": "1.2",
+  "schemaVersion": "1.3",
   "experience": "escape",
   "projectId": "castle-archive-rescue",
-  "projectVersion": "3.3.0",
+  "projectVersion": "4.0.0",
   "template": {
     "id": "heist",
     "version": "1.0"
   },
   "title": "The Midnight Menagerie",
-  "subtitle": "A moonlit castle. Twelve stolen animals. Your math is their way home.",
+  "subtitle": "Twelve stolen animals. Nine working machines. Choose your math level: grades 5-8.",
   "briefing": "Baron Bramble has stolen twelve animals from the woodland sanctuary. Slip inside his moonlit castle, explore the courtyards, and outsmart the mechanisms that keep them penned up. Every animal you free will follow you. Get the whole rescue team to the river boat.",
   "setting": "A make-believe castle. A very real need for your math skills.",
   "environment": "/projects/castle-archive-rescue/art/v3/castle-world.webp",
@@ -44,7 +44,7 @@
       "story": "Bramble has sealed the outer gate with three connected balance mechanisms. Step into the gate workshop. Rebuild each fixed load with the loose weights to align all three release pins.",
       "action": "Solve lock",
       "success": "Three seals released. The castle gate is open!",
-      "explanation": "Equivalent masses opened the gate: 3/4 = 1/2 + 1/4; 1.5 = 0.75 + 0.5 + 0.25; 2 1/2 = 1 3/4 + 3/4. Your own equal combinations work too.",
+      "explanation": "Equivalent loads aligned all three balance pins. Fractions, decimals and mixed numbers describe the same physical mass.",
       "x": 13.997395833333334,
       "y": 86.42578125,
       "icon": "01",
@@ -252,83 +252,981 @@
           "blockAtlas": "/projects/castle-archive-rescue/art/v3/balance-blocks.png"
         }
       },
-      "release": []
+      "release": [],
+      "gradePuzzles": {
+        "6": {
+          "type": "balance-lock",
+          "prompt": "Balance all three seals to open the outer gate.",
+          "hint": "The lower pan is heavier. Combine blocks on the lighter side. Compare fractions with a common denominator.",
+          "skill": "Rational-number operations and equivalent quantities",
+          "lock": {
+            "backdrop": "/projects/castle-archive-rescue/art/v3/balance-chamber.png",
+            "skin": "brass",
+            "tolerance": {
+              "numerator": 0,
+              "denominator": 1
+            },
+            "scales": [
+              {
+                "id": "fractions",
+                "title": "The fraction seal",
+                "instruction": "Reconstruct the fixed load with the finite loose weights. Combine equivalent quantities; some weights are decoys.",
+                "unit": "mass units",
+                "left": [
+                  {
+                    "id": "fixed-fractions",
+                    "value": {
+                      "numerator": 6,
+                      "denominator": 4
+                    },
+                    "notation": "fraction"
+                  }
+                ],
+                "right": [],
+                "pieces": [
+                  {
+                    "id": "piece-0",
+                    "value": {
+                      "numerator": 2,
+                      "denominator": 2
+                    },
+                    "notation": "fraction"
+                  },
+                  {
+                    "id": "piece-1",
+                    "value": {
+                      "numerator": 2,
+                      "denominator": 4
+                    },
+                    "notation": "fraction"
+                  },
+                  {
+                    "id": "piece-2",
+                    "value": {
+                      "numerator": 2,
+                      "denominator": 3
+                    },
+                    "notation": "fraction"
+                  },
+                  {
+                    "id": "piece-3",
+                    "value": {
+                      "numerator": 2,
+                      "denominator": 8
+                    },
+                    "notation": "fraction"
+                  },
+                  {
+                    "id": "piece-4",
+                    "value": {
+                      "numerator": 2,
+                      "denominator": 8
+                    },
+                    "notation": "fraction"
+                  }
+                ]
+              },
+              {
+                "id": "decimals",
+                "title": "The decimal seal",
+                "instruction": "Reconstruct the fixed load with the finite loose weights. Combine equivalent quantities; some weights are decoys.",
+                "unit": "mass units",
+                "left": [
+                  {
+                    "id": "fixed-decimals",
+                    "value": {
+                      "numerator": 30,
+                      "denominator": 10
+                    },
+                    "notation": "decimal"
+                  }
+                ],
+                "right": [],
+                "pieces": [
+                  {
+                    "id": "piece-0",
+                    "value": {
+                      "numerator": 150,
+                      "denominator": 100
+                    },
+                    "notation": "decimal"
+                  },
+                  {
+                    "id": "piece-1",
+                    "value": {
+                      "numerator": 10,
+                      "denominator": 10
+                    },
+                    "notation": "decimal"
+                  },
+                  {
+                    "id": "piece-2",
+                    "value": {
+                      "numerator": 50,
+                      "denominator": 100
+                    },
+                    "notation": "decimal"
+                  },
+                  {
+                    "id": "piece-3",
+                    "value": {
+                      "numerator": 8,
+                      "denominator": 10
+                    },
+                    "notation": "decimal"
+                  },
+                  {
+                    "id": "piece-4",
+                    "value": {
+                      "numerator": 4,
+                      "denominator": 10
+                    },
+                    "notation": "decimal"
+                  }
+                ]
+              },
+              {
+                "id": "mixed",
+                "title": "The mixed-number seal",
+                "instruction": "Reconstruct the fixed load with the finite loose weights. Combine equivalent quantities; some weights are decoys.",
+                "unit": "mass units",
+                "left": [
+                  {
+                    "id": "fixed-mixed",
+                    "value": {
+                      "numerator": 10,
+                      "denominator": 2
+                    },
+                    "notation": "mixed"
+                  }
+                ],
+                "right": [],
+                "pieces": [
+                  {
+                    "id": "piece-0",
+                    "value": {
+                      "numerator": 14,
+                      "denominator": 4
+                    },
+                    "notation": "mixed"
+                  },
+                  {
+                    "id": "piece-1",
+                    "value": {
+                      "numerator": 6,
+                      "denominator": 4
+                    },
+                    "notation": "fraction"
+                  },
+                  {
+                    "id": "piece-2",
+                    "value": {
+                      "numerator": 2,
+                      "denominator": 3
+                    },
+                    "notation": "fraction"
+                  },
+                  {
+                    "id": "piece-3",
+                    "value": {
+                      "numerator": 2,
+                      "denominator": 2
+                    },
+                    "notation": "fraction"
+                  },
+                  {
+                    "id": "piece-4",
+                    "value": {
+                      "numerator": 2,
+                      "denominator": 8
+                    },
+                    "notation": "fraction"
+                  }
+                ]
+              }
+            ],
+            "blockAtlas": "/projects/castle-archive-rescue/art/v3/balance-blocks.png"
+          }
+        },
+        "7": {
+          "type": "balance-lock",
+          "prompt": "Balance all three seals to open the outer gate.",
+          "hint": "The lower pan is heavier. Combine blocks on the lighter side. Compare fractions with a common denominator.",
+          "skill": "Rational-number operations and equivalent quantities",
+          "lock": {
+            "backdrop": "/projects/castle-archive-rescue/art/v3/balance-chamber.png",
+            "skin": "brass",
+            "tolerance": {
+              "numerator": 0,
+              "denominator": 1
+            },
+            "scales": [
+              {
+                "id": "fractions",
+                "title": "The fraction seal",
+                "instruction": "Reconstruct the fixed load with the finite loose weights. Combine equivalent quantities; some weights are decoys.",
+                "unit": "mass units",
+                "left": [
+                  {
+                    "id": "fixed-fractions",
+                    "value": {
+                      "numerator": 9,
+                      "denominator": 4
+                    },
+                    "notation": "fraction"
+                  }
+                ],
+                "right": [],
+                "pieces": [
+                  {
+                    "id": "piece-0",
+                    "value": {
+                      "numerator": 3,
+                      "denominator": 2
+                    },
+                    "notation": "fraction"
+                  },
+                  {
+                    "id": "piece-1",
+                    "value": {
+                      "numerator": 3,
+                      "denominator": 4
+                    },
+                    "notation": "fraction"
+                  },
+                  {
+                    "id": "piece-2",
+                    "value": {
+                      "numerator": 3,
+                      "denominator": 3
+                    },
+                    "notation": "fraction"
+                  },
+                  {
+                    "id": "piece-3",
+                    "value": {
+                      "numerator": 3,
+                      "denominator": 8
+                    },
+                    "notation": "fraction"
+                  },
+                  {
+                    "id": "piece-4",
+                    "value": {
+                      "numerator": 3,
+                      "denominator": 8
+                    },
+                    "notation": "fraction"
+                  }
+                ]
+              },
+              {
+                "id": "decimals",
+                "title": "The decimal seal",
+                "instruction": "Reconstruct the fixed load with the finite loose weights. Combine equivalent quantities; some weights are decoys.",
+                "unit": "mass units",
+                "left": [
+                  {
+                    "id": "fixed-decimals",
+                    "value": {
+                      "numerator": 45,
+                      "denominator": 10
+                    },
+                    "notation": "decimal"
+                  }
+                ],
+                "right": [],
+                "pieces": [
+                  {
+                    "id": "piece-0",
+                    "value": {
+                      "numerator": 225,
+                      "denominator": 100
+                    },
+                    "notation": "decimal"
+                  },
+                  {
+                    "id": "piece-1",
+                    "value": {
+                      "numerator": 15,
+                      "denominator": 10
+                    },
+                    "notation": "decimal"
+                  },
+                  {
+                    "id": "piece-2",
+                    "value": {
+                      "numerator": 75,
+                      "denominator": 100
+                    },
+                    "notation": "decimal"
+                  },
+                  {
+                    "id": "piece-3",
+                    "value": {
+                      "numerator": 12,
+                      "denominator": 10
+                    },
+                    "notation": "decimal"
+                  },
+                  {
+                    "id": "piece-4",
+                    "value": {
+                      "numerator": 6,
+                      "denominator": 10
+                    },
+                    "notation": "decimal"
+                  }
+                ]
+              },
+              {
+                "id": "mixed",
+                "title": "The mixed-number seal",
+                "instruction": "Reconstruct the fixed load with the finite loose weights. Combine equivalent quantities; some weights are decoys.",
+                "unit": "mass units",
+                "left": [
+                  {
+                    "id": "fixed-mixed",
+                    "value": {
+                      "numerator": 15,
+                      "denominator": 2
+                    },
+                    "notation": "mixed"
+                  }
+                ],
+                "right": [],
+                "pieces": [
+                  {
+                    "id": "piece-0",
+                    "value": {
+                      "numerator": 21,
+                      "denominator": 4
+                    },
+                    "notation": "mixed"
+                  },
+                  {
+                    "id": "piece-1",
+                    "value": {
+                      "numerator": 9,
+                      "denominator": 4
+                    },
+                    "notation": "fraction"
+                  },
+                  {
+                    "id": "piece-2",
+                    "value": {
+                      "numerator": 3,
+                      "denominator": 3
+                    },
+                    "notation": "fraction"
+                  },
+                  {
+                    "id": "piece-3",
+                    "value": {
+                      "numerator": 3,
+                      "denominator": 2
+                    },
+                    "notation": "fraction"
+                  },
+                  {
+                    "id": "piece-4",
+                    "value": {
+                      "numerator": 3,
+                      "denominator": 8
+                    },
+                    "notation": "fraction"
+                  }
+                ]
+              }
+            ],
+            "blockAtlas": "/projects/castle-archive-rescue/art/v3/balance-blocks.png"
+          }
+        },
+        "8": {
+          "type": "balance-lock",
+          "prompt": "Balance all three seals to open the outer gate.",
+          "hint": "The lower pan is heavier. Combine blocks on the lighter side. Compare fractions with a common denominator.",
+          "skill": "Rational-number operations and equivalent quantities",
+          "lock": {
+            "backdrop": "/projects/castle-archive-rescue/art/v3/balance-chamber.png",
+            "skin": "brass",
+            "tolerance": {
+              "numerator": 0,
+              "denominator": 1
+            },
+            "scales": [
+              {
+                "id": "fractions",
+                "title": "The fraction seal",
+                "instruction": "Reconstruct the fixed load with the finite loose weights. Combine equivalent quantities; some weights are decoys.",
+                "unit": "mass units",
+                "left": [
+                  {
+                    "id": "fixed-fractions",
+                    "value": {
+                      "numerator": 15,
+                      "denominator": 4
+                    },
+                    "notation": "fraction"
+                  }
+                ],
+                "right": [],
+                "pieces": [
+                  {
+                    "id": "piece-0",
+                    "value": {
+                      "numerator": 5,
+                      "denominator": 2
+                    },
+                    "notation": "fraction"
+                  },
+                  {
+                    "id": "piece-1",
+                    "value": {
+                      "numerator": 5,
+                      "denominator": 4
+                    },
+                    "notation": "fraction"
+                  },
+                  {
+                    "id": "piece-2",
+                    "value": {
+                      "numerator": 5,
+                      "denominator": 3
+                    },
+                    "notation": "fraction"
+                  },
+                  {
+                    "id": "piece-3",
+                    "value": {
+                      "numerator": 5,
+                      "denominator": 8
+                    },
+                    "notation": "fraction"
+                  },
+                  {
+                    "id": "piece-4",
+                    "value": {
+                      "numerator": 5,
+                      "denominator": 8
+                    },
+                    "notation": "fraction"
+                  }
+                ]
+              },
+              {
+                "id": "decimals",
+                "title": "The decimal seal",
+                "instruction": "Reconstruct the fixed load with the finite loose weights. Combine equivalent quantities; some weights are decoys.",
+                "unit": "mass units",
+                "left": [
+                  {
+                    "id": "fixed-decimals",
+                    "value": {
+                      "numerator": 75,
+                      "denominator": 10
+                    },
+                    "notation": "decimal"
+                  }
+                ],
+                "right": [],
+                "pieces": [
+                  {
+                    "id": "piece-0",
+                    "value": {
+                      "numerator": 375,
+                      "denominator": 100
+                    },
+                    "notation": "decimal"
+                  },
+                  {
+                    "id": "piece-1",
+                    "value": {
+                      "numerator": 25,
+                      "denominator": 10
+                    },
+                    "notation": "decimal"
+                  },
+                  {
+                    "id": "piece-2",
+                    "value": {
+                      "numerator": 125,
+                      "denominator": 100
+                    },
+                    "notation": "decimal"
+                  },
+                  {
+                    "id": "piece-3",
+                    "value": {
+                      "numerator": 20,
+                      "denominator": 10
+                    },
+                    "notation": "decimal"
+                  },
+                  {
+                    "id": "piece-4",
+                    "value": {
+                      "numerator": 10,
+                      "denominator": 10
+                    },
+                    "notation": "decimal"
+                  }
+                ]
+              },
+              {
+                "id": "mixed",
+                "title": "The mixed-number seal",
+                "instruction": "Reconstruct the fixed load with the finite loose weights. Combine equivalent quantities; some weights are decoys.",
+                "unit": "mass units",
+                "left": [
+                  {
+                    "id": "fixed-mixed",
+                    "value": {
+                      "numerator": 25,
+                      "denominator": 2
+                    },
+                    "notation": "mixed"
+                  }
+                ],
+                "right": [],
+                "pieces": [
+                  {
+                    "id": "piece-0",
+                    "value": {
+                      "numerator": 35,
+                      "denominator": 4
+                    },
+                    "notation": "mixed"
+                  },
+                  {
+                    "id": "piece-1",
+                    "value": {
+                      "numerator": 15,
+                      "denominator": 4
+                    },
+                    "notation": "fraction"
+                  },
+                  {
+                    "id": "piece-2",
+                    "value": {
+                      "numerator": 5,
+                      "denominator": 3
+                    },
+                    "notation": "fraction"
+                  },
+                  {
+                    "id": "piece-3",
+                    "value": {
+                      "numerator": 5,
+                      "denominator": 2
+                    },
+                    "notation": "fraction"
+                  },
+                  {
+                    "id": "piece-4",
+                    "value": {
+                      "numerator": 5,
+                      "denominator": 8
+                    },
+                    "notation": "fraction"
+                  }
+                ]
+              }
+            ],
+            "blockAtlas": "/projects/castle-archive-rescue/art/v3/balance-blocks.png"
+          }
+        }
+      }
     },
     {
       "id": "lookout",
-      "title": "A gap in the patrol",
+      "title": "Patrol synchronizer",
       "place": "Watchtower passage",
-      "story": "The lookout turns away during part of each minute. Your team needs 10 seconds to cross. Set a delayed start so everyone clears the passage before the lookout turns back.",
-      "action": "Test the crossing",
-      "success": "You slip past the lookout!",
-      "explanation": "The lookout turns back at 35 seconds. Subtract the 10-second crossing: 35 − 10 = 25. Leaving at second 25 gets everyone across exactly at second 35.",
+      "story": "Find the FIRST positive tick when every wheel hole returns to its release line. The wheels turn once every 4, 6 ticks. Zero does not count.",
+      "action": "Solve lock",
+      "success": "All the holes align at the first possible moment. The lookout shutter closes!",
+      "explanation": "Your measured settings made the real mechanism line up: common multiples and wheel phases.",
       "x": 23.4375,
       "y": 44.921875,
       "icon": "02",
       "clues": [
         {
-          "label": "Lookout faces away",
-          "value": "Seconds 20 to 35"
+          "label": "Workshop",
+          "value": "Common multiples and wheel phases"
         },
         {
-          "label": "Crossing time",
-          "value": "10 seconds"
-        },
-        {
-          "label": "Patrol repeats",
-          "value": "Every 60 seconds"
+          "label": "Take your time",
+          "value": "The rescue waits while you reason. Every control has a keyboard alternative."
         }
       ],
       "puzzle": {
-        "type": "timing",
-        "prompt": "What is the LATEST second you can start? Finishing exactly at second 35 is safe.",
-        "hint": "Work backward from second 35. Subtract the 10 seconds you need to cross.",
-        "skill": "Elapsed time & subtraction",
-        "cycle": 60,
-        "safeStart": 20,
-        "safeEnd": 35,
-        "crossing": 10
+        "type": "machine-lock",
+        "prompt": "Find the FIRST positive tick when every wheel hole returns to its release line. The wheels turn once every 4, 6 ticks. Zero does not count.",
+        "hint": "List common arrival times. A wheel with an offset aligns when (time + offset) is a multiple of its period.",
+        "skill": "Common multiples and wheel phases",
+        "lock": {
+          "title": "Patrol synchronizer",
+          "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+          "stages": [
+            {
+              "id": "timing-wheels",
+              "kind": "timing-wheels",
+              "title": "The patrol synchronizer",
+              "instruction": "Find the FIRST positive tick when every wheel hole returns to its release line. The wheels turn once every 4, 6 ticks. Zero does not count.",
+              "hint": "List common arrival times. A wheel with an offset aligns when (time + offset) is a multiple of its period.",
+              "success": "All the holes align at the first possible moment. The lookout shutter closes!",
+              "periods": [
+                4,
+                6
+              ],
+              "phases": [
+                0,
+                0
+              ],
+              "maxSteps": 72,
+              "firstAlignment": true
+            }
+          ]
+        }
       },
-      "release": []
+      "release": [],
+      "gradePuzzles": {
+        "6": {
+          "type": "machine-lock",
+          "prompt": "Find the FIRST positive tick when every wheel hole returns to its release line. The wheels turn once every 6, 8 ticks. Zero does not count.",
+          "hint": "List common arrival times. A wheel with an offset aligns when (time + offset) is a multiple of its period.",
+          "skill": "Common multiples and wheel phases",
+          "lock": {
+            "title": "Patrol synchronizer",
+            "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+            "stages": [
+              {
+                "id": "timing-wheels",
+                "kind": "timing-wheels",
+                "title": "The patrol synchronizer",
+                "instruction": "Find the FIRST positive tick when every wheel hole returns to its release line. The wheels turn once every 6, 8 ticks. Zero does not count.",
+                "hint": "List common arrival times. A wheel with an offset aligns when (time + offset) is a multiple of its period.",
+                "success": "All the holes align at the first possible moment. The lookout shutter closes!",
+                "periods": [
+                  6,
+                  8
+                ],
+                "phases": [
+                  0,
+                  0
+                ],
+                "maxSteps": 72,
+                "firstAlignment": true
+              }
+            ]
+          }
+        },
+        "7": {
+          "type": "machine-lock",
+          "prompt": "Find the FIRST positive tick when every wheel hole returns to its release line. The wheels turn once every 4, 6, 9 ticks. Zero does not count.",
+          "hint": "List common arrival times. A wheel with an offset aligns when (time + offset) is a multiple of its period.",
+          "skill": "Common multiples and wheel phases",
+          "lock": {
+            "title": "Patrol synchronizer",
+            "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+            "stages": [
+              {
+                "id": "timing-wheels",
+                "kind": "timing-wheels",
+                "title": "The patrol synchronizer",
+                "instruction": "Find the FIRST positive tick when every wheel hole returns to its release line. The wheels turn once every 4, 6, 9 ticks. Zero does not count.",
+                "hint": "List common arrival times. A wheel with an offset aligns when (time + offset) is a multiple of its period.",
+                "success": "All the holes align at the first possible moment. The lookout shutter closes!",
+                "periods": [
+                  4,
+                  6,
+                  9
+                ],
+                "phases": [
+                  0,
+                  0,
+                  0
+                ],
+                "maxSteps": 120,
+                "firstAlignment": true
+              }
+            ]
+          }
+        },
+        "8": {
+          "type": "machine-lock",
+          "prompt": "Find the FIRST positive tick when every wheel hole returns to its release line. Both wheels begin one tick past zero. Account for that offset.",
+          "hint": "List common arrival times. A wheel with an offset aligns when (time + offset) is a multiple of its period.",
+          "skill": "Common multiples and wheel phases",
+          "lock": {
+            "title": "Patrol synchronizer",
+            "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+            "stages": [
+              {
+                "id": "timing-wheels",
+                "kind": "timing-wheels",
+                "title": "The patrol synchronizer",
+                "instruction": "Find the FIRST positive tick when every wheel hole returns to its release line. Both wheels begin one tick past zero. Account for that offset.",
+                "hint": "List common arrival times. A wheel with an offset aligns when (time + offset) is a multiple of its period.",
+                "success": "All the holes align at the first possible moment. The lookout shutter closes!",
+                "periods": [
+                  6,
+                  8
+                ],
+                "phases": [
+                  1,
+                  1
+                ],
+                "maxSteps": 72,
+                "firstAlignment": true
+              }
+            ]
+          }
+        }
+      }
     },
     {
       "id": "rabbits",
-      "title": "The carrot catch",
+      "title": "Rabbit courtyard workshop",
       "place": "Carrot courtyard",
-      "story": "Six rabbits twitch their noses behind a food-powered latch. Each rabbit needs 2 carrots. Load just enough carrots into the feeder and the pen door will pop open.",
-      "action": "Fill the feeder",
-      "success": "Six rabbits hop to freedom!",
-      "explanation": "6 rabbits × 2 carrots each = 12 carrots. Equal groups opened the first pen.",
+      "story": "Drag a selection of brass sectors onto the axle. Build exactly ONE full circle with no gaps or overlaps. Click a piece to select it; use the controls to rotate by one notch.",
+      "action": "Solve lock",
+      "success": "A complete circle! The teeth mesh and six rabbits can hop free.",
+      "explanation": "Your measured settings made the real mechanism line up: fraction equivalence and circle coverage.",
       "x": 32.87760416666667,
       "y": 37.3046875,
       "icon": "03",
       "clues": [
         {
-          "label": "Hungry rabbits",
-          "value": "6"
+          "label": "Workshop",
+          "value": "Fraction equivalence and circle coverage"
         },
         {
-          "label": "Each rabbit needs",
-          "value": "2 carrots"
+          "label": "Take your time",
+          "value": "The rescue waits while you reason. Every control has a keyboard alternative."
         }
       ],
       "puzzle": {
-        "type": "number",
-        "prompt": "How many carrots do you need altogether?",
-        "hint": "Add 2 six times, or multiply 6 by 2.",
-        "skill": "Equal groups & multiplication",
-        "answer": 12,
-        "unit": "carrots",
-        "max": 50,
-        "visual": {
-          "kind": "groups",
-          "count": 6,
-          "amount": 2
+        "type": "machine-lock",
+        "prompt": "Drag a selection of brass sectors onto the axle. Build exactly ONE full circle with no gaps or overlaps. Click a piece to select it; use the controls to rotate by one notch.",
+        "hint": "Each notch is 1/24 of a turn. Convert the fractions to twenty-fourths, then arrange your chosen sectors edge to edge.",
+        "skill": "Fraction equivalence and circle coverage",
+        "lock": {
+          "title": "Rabbit courtyard workshop",
+          "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+          "stages": [
+            {
+              "id": "fraction-gear",
+              "kind": "fraction-gear",
+              "title": "The broken moon cog",
+              "instruction": "Drag a selection of brass sectors onto the axle. Build exactly ONE full circle with no gaps or overlaps. Click a piece to select it; use the controls to rotate by one notch.",
+              "hint": "Each notch is 1/24 of a turn. Convert the fractions to twenty-fourths, then arrange your chosen sectors edge to edge.",
+              "success": "A complete circle! The teeth mesh and six rabbits can hop free.",
+              "slots": 24,
+              "teeth": 48,
+              "pieces": [
+                {
+                  "id": "sector-0",
+                  "numerator": 1,
+                  "denominator": 2
+                },
+                {
+                  "id": "sector-1",
+                  "numerator": 1,
+                  "denominator": 3
+                },
+                {
+                  "id": "sector-2",
+                  "numerator": 1,
+                  "denominator": 4
+                },
+                {
+                  "id": "sector-3",
+                  "numerator": 1,
+                  "denominator": 4
+                },
+                {
+                  "id": "sector-4",
+                  "numerator": 1,
+                  "denominator": 6
+                },
+                {
+                  "id": "sector-5",
+                  "numerator": 1,
+                  "denominator": 8
+                }
+              ]
+            }
+          ]
         }
       },
       "release": [
         "rabbits"
-      ]
+      ],
+      "gradePuzzles": {
+        "6": {
+          "type": "machine-lock",
+          "prompt": "Drag a selection of brass sectors onto the axle. Build exactly ONE full circle with no gaps or overlaps. Click a piece to select it; use the controls to rotate by one notch.",
+          "hint": "Each notch is 1/24 of a turn. Convert the fractions to twenty-fourths, then arrange your chosen sectors edge to edge.",
+          "skill": "Fraction equivalence and circle coverage",
+          "lock": {
+            "title": "Rabbit courtyard workshop",
+            "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+            "stages": [
+              {
+                "id": "fraction-gear",
+                "kind": "fraction-gear",
+                "title": "The broken moon cog",
+                "instruction": "Drag a selection of brass sectors onto the axle. Build exactly ONE full circle with no gaps or overlaps. Click a piece to select it; use the controls to rotate by one notch.",
+                "hint": "Each notch is 1/24 of a turn. Convert the fractions to twenty-fourths, then arrange your chosen sectors edge to edge.",
+                "success": "A complete circle! The teeth mesh and six rabbits can hop free.",
+                "slots": 24,
+                "teeth": 48,
+                "pieces": [
+                  {
+                    "id": "sector-0",
+                    "numerator": 1,
+                    "denominator": 3
+                  },
+                  {
+                    "id": "sector-1",
+                    "numerator": 1,
+                    "denominator": 4
+                  },
+                  {
+                    "id": "sector-2",
+                    "numerator": 1,
+                    "denominator": 6
+                  },
+                  {
+                    "id": "sector-3",
+                    "numerator": 1,
+                    "denominator": 12
+                  },
+                  {
+                    "id": "sector-4",
+                    "numerator": 1,
+                    "denominator": 2
+                  },
+                  {
+                    "id": "sector-5",
+                    "numerator": 1,
+                    "denominator": 8
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "7": {
+          "type": "machine-lock",
+          "prompt": "Drag a selection of brass sectors onto the axle. Build exactly ONE full circle with no gaps or overlaps. Click a piece to select it; use the controls to rotate by one notch.",
+          "hint": "Each notch is 1/24 of a turn. Convert the fractions to twenty-fourths, then arrange your chosen sectors edge to edge.",
+          "skill": "Fraction equivalence and circle coverage",
+          "lock": {
+            "title": "Rabbit courtyard workshop",
+            "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+            "stages": [
+              {
+                "id": "fraction-gear",
+                "kind": "fraction-gear",
+                "title": "The broken moon cog",
+                "instruction": "Drag a selection of brass sectors onto the axle. Build exactly ONE full circle with no gaps or overlaps. Click a piece to select it; use the controls to rotate by one notch.",
+                "hint": "Each notch is 1/24 of a turn. Convert the fractions to twenty-fourths, then arrange your chosen sectors edge to edge.",
+                "success": "A complete circle! The teeth mesh and six rabbits can hop free.",
+                "slots": 24,
+                "teeth": 48,
+                "pieces": [
+                  {
+                    "id": "sector-0",
+                    "numerator": 5,
+                    "denominator": 12
+                  },
+                  {
+                    "id": "sector-1",
+                    "numerator": 1,
+                    "denominator": 3
+                  },
+                  {
+                    "id": "sector-2",
+                    "numerator": 1,
+                    "denominator": 4
+                  },
+                  {
+                    "id": "sector-3",
+                    "numerator": 1,
+                    "denominator": 6
+                  },
+                  {
+                    "id": "sector-4",
+                    "numerator": 1,
+                    "denominator": 8
+                  },
+                  {
+                    "id": "sector-5",
+                    "numerator": 1,
+                    "denominator": 12
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "8": {
+          "type": "machine-lock",
+          "prompt": "Drag a selection of brass sectors onto the axle. Build exactly ONE full circle with no gaps or overlaps. Click a piece to select it; use the controls to rotate by one notch.",
+          "hint": "Each notch is 1/24 of a turn. Convert the fractions to twenty-fourths, then arrange your chosen sectors edge to edge.",
+          "skill": "Fraction equivalence and circle coverage",
+          "lock": {
+            "title": "Rabbit courtyard workshop",
+            "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+            "stages": [
+              {
+                "id": "fraction-gear",
+                "kind": "fraction-gear",
+                "title": "The broken moon cog",
+                "instruction": "Drag a selection of brass sectors onto the axle. Build exactly ONE full circle with no gaps or overlaps. Click a piece to select it; use the controls to rotate by one notch.",
+                "hint": "Each notch is 1/24 of a turn. Convert the fractions to twenty-fourths, then arrange your chosen sectors edge to edge.",
+                "success": "A complete circle! The teeth mesh and six rabbits can hop free.",
+                "slots": 24,
+                "teeth": 48,
+                "pieces": [
+                  {
+                    "id": "sector-0",
+                    "numerator": 7,
+                    "denominator": 24
+                  },
+                  {
+                    "id": "sector-1",
+                    "numerator": 5,
+                    "denominator": 12
+                  },
+                  {
+                    "id": "sector-2",
+                    "numerator": 1,
+                    "denominator": 8
+                  },
+                  {
+                    "id": "sector-3",
+                    "numerator": 1,
+                    "denominator": 6
+                  },
+                  {
+                    "id": "sector-4",
+                    "numerator": 1,
+                    "denominator": 3
+                  },
+                  {
+                    "id": "sector-5",
+                    "numerator": 1,
+                    "denominator": 8
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
     },
     {
       "id": "foxes",
@@ -337,7 +1235,7 @@
       "story": "The thief has removed two cogs from the den release. Repair the compound gear train, then wind it just far enough to start the rescue machine.",
       "action": "Solve lock",
       "success": "The clockwork gate rises. Four foxes are free!",
-      "explanation": "Cog A: 3/2 x 24 = 36 teeth. Cog B: 2 x 12 = 24 teeth. Three crank turns make A turn 2 times; its 12-tooth pinion makes B turn once. The release drum completes one full turn.",
+      "explanation": "Tooth ratios transferred motion through both axles. The chosen crank turns brought the release drum to its exact target.",
       "x": 55.338541666666664,
       "y": 34.1796875,
       "icon": "04",
@@ -418,223 +1316,1317 @@
       },
       "release": [
         "foxes"
-      ]
+      ],
+      "gradePuzzles": {
+        "6": {
+          "type": "gear-lock",
+          "prompt": "Use the two tooth-count multipliers, then calculate the crank turns needed for exactly TWO output revolutions.",
+          "hint": "For each meshed pair, turns multiply by driver teeth divided by driven teeth. The shared axle turns together.",
+          "skill": "Fraction multiplication & proportional reasoning",
+          "lock": {
+            "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+            "title": "The clockwork fox rescue",
+            "instruction": "Use the two tooth-count multipliers, then calculate the crank turns needed for exactly TWO output revolutions.",
+            "success": "The gate is open. Four foxes can finally escape!",
+            "driverTeeth": 24,
+            "pinionTeeth": 12,
+            "firstMultiplier": {
+              "numerator": 3,
+              "denominator": 2
+            },
+            "secondMultiplier": {
+              "numerator": 2,
+              "denominator": 1
+            },
+            "outputTurns": {
+              "numerator": 2,
+              "denominator": 1
+            },
+            "maxCrank": 12,
+            "gears": [
+              {
+                "id": "cog-18",
+                "teeth": 18
+              },
+              {
+                "id": "cog-24",
+                "teeth": 24
+              },
+              {
+                "id": "cog-36",
+                "teeth": 36
+              },
+              {
+                "id": "cog-48",
+                "teeth": 48
+              },
+              {
+                "id": "cog-12",
+                "teeth": 12
+              },
+              {
+                "id": "cog-30",
+                "teeth": 30
+              }
+            ],
+            "release": [
+              "drive",
+              "ball",
+              "hammer",
+              "weight",
+              "domino",
+              "gate"
+            ]
+          }
+        },
+        "7": {
+          "type": "gear-lock",
+          "prompt": "Use the two tooth-count multipliers, then calculate the crank turns needed for exactly TWO output revolutions.",
+          "hint": "For each meshed pair, turns multiply by driver teeth divided by driven teeth. The shared axle turns together.",
+          "skill": "Fraction multiplication & proportional reasoning",
+          "lock": {
+            "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+            "title": "The clockwork fox rescue",
+            "instruction": "Use the two tooth-count multipliers, then calculate the crank turns needed for exactly TWO output revolutions.",
+            "success": "The gate is open. Four foxes can finally escape!",
+            "driverTeeth": 18,
+            "pinionTeeth": 12,
+            "firstMultiplier": {
+              "numerator": 3,
+              "denominator": 2
+            },
+            "secondMultiplier": {
+              "numerator": 2,
+              "denominator": 1
+            },
+            "outputTurns": {
+              "numerator": 2,
+              "denominator": 1
+            },
+            "maxCrank": 12,
+            "gears": [
+              {
+                "id": "cog-18",
+                "teeth": 18
+              },
+              {
+                "id": "cog-24",
+                "teeth": 24
+              },
+              {
+                "id": "cog-27",
+                "teeth": 27
+              },
+              {
+                "id": "cog-36",
+                "teeth": 36
+              },
+              {
+                "id": "cog-12",
+                "teeth": 12
+              },
+              {
+                "id": "cog-30",
+                "teeth": 30
+              }
+            ],
+            "release": [
+              "drive",
+              "ball",
+              "hammer",
+              "weight",
+              "domino",
+              "gate"
+            ]
+          }
+        },
+        "8": {
+          "type": "gear-lock",
+          "prompt": "Use the two tooth-count multipliers, then calculate the crank turns needed for exactly TWO output revolutions.",
+          "hint": "For each meshed pair, turns multiply by driver teeth divided by driven teeth. The shared axle turns together.",
+          "skill": "Fraction multiplication & proportional reasoning",
+          "lock": {
+            "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+            "title": "The clockwork fox rescue",
+            "instruction": "Use the two tooth-count multipliers, then calculate the crank turns needed for exactly TWO output revolutions.",
+            "success": "The gate is open. Four foxes can finally escape!",
+            "driverTeeth": 16,
+            "pinionTeeth": 12,
+            "firstMultiplier": {
+              "numerator": 3,
+              "denominator": 2
+            },
+            "secondMultiplier": {
+              "numerator": 3,
+              "denominator": 1
+            },
+            "outputTurns": {
+              "numerator": 2,
+              "denominator": 1
+            },
+            "maxCrank": 12,
+            "gears": [
+              {
+                "id": "cog-16",
+                "teeth": 16
+              },
+              {
+                "id": "cog-24",
+                "teeth": 24
+              },
+              {
+                "id": "cog-36",
+                "teeth": 36
+              },
+              {
+                "id": "cog-48",
+                "teeth": 48
+              },
+              {
+                "id": "cog-12",
+                "teeth": 12
+              },
+              {
+                "id": "cog-30",
+                "teeth": 30
+              }
+            ],
+            "release": [
+              "drive",
+              "ball",
+              "hammer",
+              "weight",
+              "domino",
+              "gate"
+            ]
+          }
+        }
+      }
     },
     {
       "id": "owls",
-      "title": "The moon tower balance",
+      "title": "Moon-tower optics",
       "place": "Moon tower",
-      "story": "The owl basket is held by a stone counterweight lock. The fixed tablet is 5/6 of a mass unit. Build an equal load to release the two owls safely.",
+      "story": "Turn the mirrors to guide the moonbeam into the green receiver. Use two reflections to turn the beam around the corner. Mirror angles are measured clockwise from horizontal; the angle of incidence equals the angle of reflection.",
       "action": "Solve lock",
-      "success": "Two owls flutter down. Every pen is empty!",
-      "explanation": "5/6 = 1/2 + 1/3. Equal mass levels the beam and lets the basket lower gently.",
+      "success": "The receiver charges. The moon-tower grille rises and the owls are free.",
+      "explanation": "Your measured settings made the real mechanism line up: angles and geometric reflection.",
       "x": 74.54427083333334,
       "y": 37.59765625,
       "icon": "05",
       "clues": [
         {
-          "label": "Fixed tablet",
-          "value": "5/6 of a mass unit"
+          "label": "Workshop",
+          "value": "Angles and geometric reflection"
         },
         {
-          "label": "Release condition",
-          "value": "An exactly equal counterweight"
+          "label": "Take your time",
+          "value": "The rescue waits while you reason. Every control has a keyboard alternative."
         }
       ],
       "puzzle": {
-        "type": "balance-lock",
-        "prompt": "Balance the stone tablet to lower the owl basket.",
-        "hint": "Use sixths to compare the half and third blocks.",
-        "skill": "Adding fractions with unlike denominators",
+        "type": "machine-lock",
+        "prompt": "Turn the mirrors to guide the moonbeam into the green receiver. Use two reflections to turn the beam around the corner. Mirror angles are measured clockwise from horizontal; the angle of incidence equals the angle of reflection.",
+        "hint": "A 45-degree mirror turns a horizontal ray vertically. Trace each bounce before turning the next mirror.",
+        "skill": "Angles and geometric reflection",
         "lock": {
-          "backdrop": "/projects/castle-archive-rescue/art/v3/balance-chamber.png",
-          "skin": "stone",
-          "tolerance": {
-            "numerator": 0,
-            "denominator": 1
-          },
-          "scales": [
+          "title": "Moon-tower optics",
+          "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+          "stages": [
             {
-              "id": "owls",
-              "title": "The owl seal",
-              "instruction": "Match 5/6 using the carved stone masses.",
-              "unit": "mass units",
-              "left": [
+              "id": "reflection",
+              "kind": "reflection",
+              "title": "The moonbeam relay",
+              "instruction": "Turn the mirrors to guide the moonbeam into the green receiver. Use two reflections to turn the beam around the corner. Mirror angles are measured clockwise from horizontal; the angle of incidence equals the angle of reflection.",
+              "hint": "A 45-degree mirror turns a horizontal ray vertically. Trace each bounce before turning the next mirror.",
+              "success": "The receiver charges. The moon-tower grille rises and the owls are free.",
+              "emitter": {
+                "x": 1,
+                "y": 4
+              },
+              "direction": 0,
+              "mirrors": [
                 {
-                  "id": "fixed-owls",
-                  "value": {
-                    "numerator": 5,
-                    "denominator": 6
+                  "id": "mirror-0",
+                  "center": {
+                    "x": 4,
+                    "y": 4
                   },
-                  "notation": "fraction"
+                  "length": 1.6,
+                  "start": 0,
+                  "step": 45
+                },
+                {
+                  "id": "mirror-1",
+                  "center": {
+                    "x": 4,
+                    "y": 1
+                  },
+                  "length": 1.6,
+                  "start": 90,
+                  "step": 45
                 }
               ],
-              "right": [],
-              "pieces": [
-                {
-                  "id": "piece-0",
-                  "value": {
-                    "numerator": 1,
-                    "denominator": 2
-                  },
-                  "notation": "fraction"
-                },
-                {
-                  "id": "piece-1",
-                  "value": {
-                    "numerator": 1,
-                    "denominator": 3
-                  },
-                  "notation": "fraction"
-                },
-                {
-                  "id": "piece-2",
-                  "value": {
-                    "numerator": 1,
-                    "denominator": 4
-                  },
-                  "notation": "fraction"
-                },
-                {
-                  "id": "piece-3",
-                  "value": {
-                    "numerator": 1,
-                    "denominator": 6
-                  },
-                  "notation": "fraction"
-                },
-                {
-                  "id": "piece-4",
-                  "value": {
-                    "numerator": 1,
-                    "denominator": 8
-                  },
-                  "notation": "fraction"
-                }
-              ]
+              "receiver": {
+                "x": 9,
+                "y": 1
+              },
+              "radius": 0.22,
+              "obstacles": [],
+              "bounceLimit": 6
             }
-          ],
-          "blockAtlas": "/projects/castle-archive-rescue/art/v3/balance-blocks.png"
+          ]
         }
       },
       "release": [
         "owls"
-      ]
+      ],
+      "gradePuzzles": {
+        "6": {
+          "type": "machine-lock",
+          "prompt": "Turn the mirrors to guide the moonbeam into the green receiver. Use two reflections to turn the beam around the corner. Mirror angles are measured clockwise from horizontal; the angle of incidence equals the angle of reflection.",
+          "hint": "A 45-degree mirror turns a horizontal ray vertically. Trace each bounce before turning the next mirror.",
+          "skill": "Angles and geometric reflection",
+          "lock": {
+            "title": "Moon-tower optics",
+            "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+            "stages": [
+              {
+                "id": "reflection",
+                "kind": "reflection",
+                "title": "The moonbeam relay",
+                "instruction": "Turn the mirrors to guide the moonbeam into the green receiver. Use two reflections to turn the beam around the corner. Mirror angles are measured clockwise from horizontal; the angle of incidence equals the angle of reflection.",
+                "hint": "A 45-degree mirror turns a horizontal ray vertically. Trace each bounce before turning the next mirror.",
+                "success": "The receiver charges. The moon-tower grille rises and the owls are free.",
+                "emitter": {
+                  "x": 1,
+                  "y": 4
+                },
+                "direction": 0,
+                "mirrors": [
+                  {
+                    "id": "mirror-0",
+                    "center": {
+                      "x": 4,
+                      "y": 4
+                    },
+                    "length": 1.6,
+                    "start": 0,
+                    "step": 15
+                  },
+                  {
+                    "id": "mirror-1",
+                    "center": {
+                      "x": 4,
+                      "y": 1
+                    },
+                    "length": 1.6,
+                    "start": 90,
+                    "step": 15
+                  }
+                ],
+                "receiver": {
+                  "x": 9,
+                  "y": 1
+                },
+                "radius": 0.22,
+                "obstacles": [],
+                "bounceLimit": 6
+              }
+            ]
+          }
+        },
+        "7": {
+          "type": "machine-lock",
+          "prompt": "Turn the mirrors to guide the moonbeam into the green receiver. Use a three-reflection path around the stone baffle. Mirror angles are measured clockwise from horizontal; the angle of incidence equals the angle of reflection.",
+          "hint": "A 45-degree mirror turns a horizontal ray vertically. Trace each bounce before turning the next mirror.",
+          "skill": "Angles and geometric reflection",
+          "lock": {
+            "title": "Moon-tower optics",
+            "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+            "stages": [
+              {
+                "id": "reflection",
+                "kind": "reflection",
+                "title": "The moonbeam relay",
+                "instruction": "Turn the mirrors to guide the moonbeam into the green receiver. Use a three-reflection path around the stone baffle. Mirror angles are measured clockwise from horizontal; the angle of incidence equals the angle of reflection.",
+                "hint": "A 45-degree mirror turns a horizontal ray vertically. Trace each bounce before turning the next mirror.",
+                "success": "The receiver charges. The moon-tower grille rises and the owls are free.",
+                "emitter": {
+                  "x": 1,
+                  "y": 6
+                },
+                "direction": 0,
+                "mirrors": [
+                  {
+                    "id": "mirror-0",
+                    "center": {
+                      "x": 4,
+                      "y": 6
+                    },
+                    "length": 1.6,
+                    "start": 0,
+                    "step": 15
+                  },
+                  {
+                    "id": "mirror-1",
+                    "center": {
+                      "x": 4,
+                      "y": 2
+                    },
+                    "length": 1.6,
+                    "start": 90,
+                    "step": 15
+                  },
+                  {
+                    "id": "mirror-2",
+                    "center": {
+                      "x": 8,
+                      "y": 2
+                    },
+                    "length": 1.6,
+                    "start": 0,
+                    "step": 15
+                  }
+                ],
+                "receiver": {
+                  "x": 8,
+                  "y": 7
+                },
+                "radius": 0.22,
+                "obstacles": [
+                  {
+                    "a": {
+                      "x": 5.5,
+                      "y": 3
+                    },
+                    "b": {
+                      "x": 5.5,
+                      "y": 7
+                    }
+                  }
+                ],
+                "bounceLimit": 6
+              }
+            ]
+          }
+        },
+        "8": {
+          "type": "machine-lock",
+          "prompt": "Turn the mirrors to guide the moonbeam into the green receiver. Use a three-reflection path around the stone baffle. Mirror angles are measured clockwise from horizontal; the angle of incidence equals the angle of reflection.",
+          "hint": "A 45-degree mirror turns a horizontal ray vertically. Trace each bounce before turning the next mirror.",
+          "skill": "Angles and geometric reflection",
+          "lock": {
+            "title": "Moon-tower optics",
+            "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+            "stages": [
+              {
+                "id": "reflection",
+                "kind": "reflection",
+                "title": "The moonbeam relay",
+                "instruction": "Turn the mirrors to guide the moonbeam into the green receiver. Use a three-reflection path around the stone baffle. Mirror angles are measured clockwise from horizontal; the angle of incidence equals the angle of reflection.",
+                "hint": "A 45-degree mirror turns a horizontal ray vertically. Trace each bounce before turning the next mirror.",
+                "success": "The receiver charges. The moon-tower grille rises and the owls are free.",
+                "emitter": {
+                  "x": 1,
+                  "y": 6
+                },
+                "direction": 0,
+                "mirrors": [
+                  {
+                    "id": "mirror-0",
+                    "center": {
+                      "x": 4,
+                      "y": 6
+                    },
+                    "length": 1.6,
+                    "start": 0,
+                    "step": 15
+                  },
+                  {
+                    "id": "mirror-1",
+                    "center": {
+                      "x": 4,
+                      "y": 2
+                    },
+                    "length": 1.6,
+                    "start": 90,
+                    "step": 15
+                  },
+                  {
+                    "id": "mirror-2",
+                    "center": {
+                      "x": 8,
+                      "y": 2
+                    },
+                    "length": 1.6,
+                    "start": 0,
+                    "step": 15
+                  }
+                ],
+                "receiver": {
+                  "x": 8,
+                  "y": 7
+                },
+                "radius": 0.22,
+                "obstacles": [
+                  {
+                    "a": {
+                      "x": 5.5,
+                      "y": 3
+                    },
+                    "b": {
+                      "x": 5.5,
+                      "y": 7
+                    }
+                  }
+                ],
+                "bounceLimit": 6
+              }
+            ]
+          }
+        }
+      }
     },
     {
       "id": "bridge",
-      "title": "The missing bridge",
+      "title": "Bridge engineering workshop",
       "place": "Moonlit moat",
-      "story": "The animals follow you to a gap in the bridge. A winch needs the gap length in meters to lower a rescue plank. Six half-meter markings span the gap.",
-      "action": "Lower the rescue plank",
-      "success": "The plank fits. Everyone crosses safely.",
-      "explanation": "6 sections × 50 cm = 300 cm. Since 100 cm = 1 m, the gap is 3 meters long.",
+      "story": "Start at (2, 1). Move 4 units right and 3 units up. Set the X and Y rails to the destination.",
+      "action": "Solve lock",
+      "success": "The cable is taut. The spring seats its pin and the bridge lowers.",
+      "explanation": "Your measured settings made the real mechanism line up: coordinates, transformations and length.",
       "x": 80.078125,
       "y": 58.10546875,
       "icon": "06",
       "clues": [
         {
-          "label": "Measured sections",
-          "value": "6 × 50 cm"
+          "label": "Workshop",
+          "value": "Coordinates, transformations and length"
         },
         {
-          "label": "Conversion clue",
-          "value": "100 cm = 1 m"
+          "label": "Take your time",
+          "value": "The rescue waits while you reason. Every control has a keyboard alternative."
         }
       ],
       "puzzle": {
-        "type": "number",
-        "prompt": "How many meters long must the rescue plank be?",
-        "hint": "Multiply 6 by 50 to get centimeters. Divide that total by 100 to get meters.",
-        "skill": "Measurement & unit conversion",
-        "answer": 3,
-        "unit": "meters",
-        "max": 20,
-        "visual": {
-          "kind": "length",
-          "count": 6,
-          "amount": 50
+        "type": "machine-lock",
+        "prompt": "Start at (2, 1). Move 4 units right and 3 units up. Set the X and Y rails to the destination.",
+        "hint": "Horizontal position is x; vertical position is y. For the intersection, equate the two expressions for y.",
+        "skill": "Coordinates, transformations and length",
+        "lock": {
+          "title": "Bridge engineering workshop",
+          "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+          "stages": [
+            {
+              "id": "coordinate",
+              "kind": "coordinate",
+              "title": "The bridge positioning engine",
+              "instruction": "Start at (2, 1). Move 4 units right and 3 units up. Set the X and Y rails to the destination.",
+              "hint": "Horizontal position is x; vertical position is y. For the intersection, equate the two expressions for y.",
+              "success": "Both rails meet the hidden release socket. Now rig the bridge cable.",
+              "min": 0,
+              "max": 8,
+              "goal": {
+                "mode": "transform",
+                "start": {
+                  "x": 2,
+                  "y": 1
+                },
+                "scale": 1,
+                "shift": {
+                  "x": 4,
+                  "y": 3
+                }
+              }
+            },
+            {
+              "id": "cable",
+              "kind": "cable",
+              "title": "The tension carriage",
+              "instruction": "Two straight spans measure 2.5 m and 3.5 m. Hook on one cable that reaches exactly, without slack.",
+              "hint": "Follow the actual cable route. Add straight spans; for a diagonal use length squared = horizontal squared + vertical squared.",
+              "success": "The cable is taut. The spring seats its pin and the bridge lowers.",
+              "route": [
+                {
+                  "x": 0,
+                  "y": 0
+                },
+                {
+                  "x": 2.5,
+                  "y": 0
+                },
+                {
+                  "x": 6,
+                  "y": 0
+                }
+              ],
+              "mode": "route",
+              "unit": "m",
+              "scale": 1,
+              "cables": [
+                {
+                  "id": "cable-0",
+                  "label": "4 m",
+                  "length": 4
+                },
+                {
+                  "id": "cable-1",
+                  "label": "5 m",
+                  "length": 5
+                },
+                {
+                  "id": "cable-2",
+                  "label": "6 m",
+                  "length": 6
+                },
+                {
+                  "id": "cable-3",
+                  "label": "7 m",
+                  "length": 7
+                },
+                {
+                  "id": "cable-4",
+                  "label": "8 m",
+                  "length": 8
+                }
+              ]
+            }
+          ]
         }
       },
-      "release": []
+      "release": [],
+      "gradePuzzles": {
+        "6": {
+          "type": "machine-lock",
+          "prompt": "Start at (-5, 2). Translate 7 units right and 5 units down. Locate the new ordered pair.",
+          "hint": "Horizontal position is x; vertical position is y. For the intersection, equate the two expressions for y.",
+          "skill": "Coordinates, transformations and length",
+          "lock": {
+            "title": "Bridge engineering workshop",
+            "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+            "stages": [
+              {
+                "id": "coordinate",
+                "kind": "coordinate",
+                "title": "The bridge positioning engine",
+                "instruction": "Start at (-5, 2). Translate 7 units right and 5 units down. Locate the new ordered pair.",
+                "hint": "Horizontal position is x; vertical position is y. For the intersection, equate the two expressions for y.",
+                "success": "Both rails meet the hidden release socket. Now rig the bridge cable.",
+                "min": -8,
+                "max": 8,
+                "goal": {
+                  "mode": "transform",
+                  "start": {
+                    "x": -5,
+                    "y": 2
+                  },
+                  "scale": 1,
+                  "shift": {
+                    "x": 7,
+                    "y": -5
+                  }
+                }
+              },
+              {
+                "id": "cable",
+                "kind": "cable",
+                "title": "The tension carriage",
+                "instruction": "The drawing measures 4 units. Its scale is 2 metres per drawing unit. Choose the actual cable length.",
+                "hint": "Follow the actual cable route. Add straight spans; for a diagonal use length squared = horizontal squared + vertical squared.",
+                "success": "The cable is taut. The spring seats its pin and the bridge lowers.",
+                "route": [
+                  {
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "x": 4,
+                    "y": 0
+                  }
+                ],
+                "mode": "route",
+                "unit": "m",
+                "scale": 2,
+                "cables": [
+                  {
+                    "id": "cable-0",
+                    "label": "6 m",
+                    "length": 6
+                  },
+                  {
+                    "id": "cable-1",
+                    "label": "7 m",
+                    "length": 7
+                  },
+                  {
+                    "id": "cable-2",
+                    "label": "8 m",
+                    "length": 8
+                  },
+                  {
+                    "id": "cable-3",
+                    "label": "9 m",
+                    "length": 9
+                  },
+                  {
+                    "id": "cable-4",
+                    "label": "10 m",
+                    "length": 10
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "7": {
+          "type": "machine-lock",
+          "prompt": "Transform (-2, 1) using (x, y) -> (-2x - 1, -2y + 4). Position the head at the image point.",
+          "hint": "Horizontal position is x; vertical position is y. For the intersection, equate the two expressions for y.",
+          "skill": "Coordinates, transformations and length",
+          "lock": {
+            "title": "Bridge engineering workshop",
+            "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+            "stages": [
+              {
+                "id": "coordinate",
+                "kind": "coordinate",
+                "title": "The bridge positioning engine",
+                "instruction": "Transform (-2, 1) using (x, y) -> (-2x - 1, -2y + 4). Position the head at the image point.",
+                "hint": "Horizontal position is x; vertical position is y. For the intersection, equate the two expressions for y.",
+                "success": "Both rails meet the hidden release socket. Now rig the bridge cable.",
+                "min": -4,
+                "max": 8,
+                "goal": {
+                  "mode": "transform",
+                  "start": {
+                    "x": -2,
+                    "y": 1
+                  },
+                  "scale": -2,
+                  "shift": {
+                    "x": -1,
+                    "y": 4
+                  }
+                }
+              },
+              {
+                "id": "cable",
+                "kind": "cable",
+                "title": "The tension carriage",
+                "instruction": "A scale drawing shows a pulley route 6 units across and 4 units up. Each unit represents 0.75 m. Calculate the actual cable length.",
+                "hint": "Follow the actual cable route. Add straight spans; for a diagonal use length squared = horizontal squared + vertical squared.",
+                "success": "The cable is taut. The spring seats its pin and the bridge lowers.",
+                "route": [
+                  {
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "x": 6,
+                    "y": 0
+                  },
+                  {
+                    "x": 6,
+                    "y": 4
+                  }
+                ],
+                "mode": "route",
+                "unit": "m",
+                "scale": 0.75,
+                "cables": [
+                  {
+                    "id": "cable-0",
+                    "label": "5.5 m",
+                    "length": 5.5
+                  },
+                  {
+                    "id": "cable-1",
+                    "label": "6.5 m",
+                    "length": 6.5
+                  },
+                  {
+                    "id": "cable-2",
+                    "label": "7.5 m",
+                    "length": 7.5
+                  },
+                  {
+                    "id": "cable-3",
+                    "label": "8.5 m",
+                    "length": 8.5
+                  },
+                  {
+                    "id": "cable-4",
+                    "label": "9.5 m",
+                    "length": 9.5
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "8": {
+          "type": "machine-lock",
+          "prompt": "Locate the shared release socket: y = 2x + 1 and y = -x + 7. Set the head at the intersection.",
+          "hint": "Horizontal position is x; vertical position is y. For the intersection, equate the two expressions for y.",
+          "skill": "Coordinates, transformations and length",
+          "lock": {
+            "title": "Bridge engineering workshop",
+            "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+            "stages": [
+              {
+                "id": "coordinate",
+                "kind": "coordinate",
+                "title": "The bridge positioning engine",
+                "instruction": "Locate the shared release socket: y = 2x + 1 and y = -x + 7. Set the head at the intersection.",
+                "hint": "Horizontal position is x; vertical position is y. For the intersection, equate the two expressions for y.",
+                "success": "Both rails meet the hidden release socket. Now rig the bridge cable.",
+                "min": -4,
+                "max": 8,
+                "goal": {
+                  "mode": "intersection",
+                  "lines": [
+                    {
+                      "a": 2,
+                      "b": -1,
+                      "c": -1
+                    },
+                    {
+                      "a": 1,
+                      "b": 1,
+                      "c": 7
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "cable",
+                "kind": "cable",
+                "title": "The tension carriage",
+                "instruction": "The anchors are 6 m apart horizontally and 8 m apart vertically. Use the Pythagorean theorem to find the diagonal cable length.",
+                "hint": "Follow the actual cable route. Add straight spans; for a diagonal use length squared = horizontal squared + vertical squared.",
+                "success": "The cable is taut. The spring seats its pin and the bridge lowers.",
+                "route": [
+                  {
+                    "x": 0,
+                    "y": 0
+                  },
+                  {
+                    "x": 6,
+                    "y": 8
+                  }
+                ],
+                "mode": "diagonal",
+                "unit": "m",
+                "scale": 1,
+                "cables": [
+                  {
+                    "id": "cable-0",
+                    "label": "8 m",
+                    "length": 8
+                  },
+                  {
+                    "id": "cable-1",
+                    "label": "9 m",
+                    "length": 9
+                  },
+                  {
+                    "id": "cable-2",
+                    "label": "10 m",
+                    "length": 10
+                  },
+                  {
+                    "id": "cable-3",
+                    "label": "11 m",
+                    "length": 11
+                  },
+                  {
+                    "id": "cable-4",
+                    "label": "12 m",
+                    "length": 12
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
     },
     {
       "id": "water",
-      "title": "A tiny pit stop",
+      "title": "Sluice workshop",
       "place": "Reed hideout",
-      "story": "You count all 12 rescued animals in the reeds. One quarter of them need a drink before the last part of the escape. Put out one water bowl for each thirsty animal.",
-      "action": "Set out the water",
-      "success": "Refreshed and ready for the river.",
-      "explanation": "One quarter means 1 of 4 equal groups. 12 ÷ 4 = 3, so you need 3 water bowls.",
+      "story": "Pour exactly 2.5 L into the chamber. Choose among the measured vessels; each can be poured once. 1000 mL = 1 L.",
+      "action": "Solve lock",
+      "success": "The float pin meets its slot. Water flows to the escape channel.",
+      "explanation": "Your measured settings made the real mechanism line up: volume, unit conversion and rational numbers.",
       "x": 75.52083333333334,
       "y": 76.171875,
       "icon": "07",
       "clues": [
         {
-          "label": "Animals together",
-          "value": "6 + 4 + 2 = 12"
+          "label": "Workshop",
+          "value": "Volume, unit conversion and rational numbers"
         },
         {
-          "label": "Thirsty animals",
-          "value": "¼ of the group"
+          "label": "Take your time",
+          "value": "The rescue waits while you reason. Every control has a keyboard alternative."
         }
       ],
       "puzzle": {
-        "type": "number",
-        "prompt": "How many water bowls do you need?",
-        "hint": "Split 12 animals into 4 equal groups. How many are in one group?",
-        "skill": "Fractions of a set",
-        "answer": 3,
-        "unit": "bowls",
-        "max": 20,
-        "visual": {
-          "kind": "fraction",
-          "count": 12,
-          "amount": 4
+        "type": "machine-lock",
+        "prompt": "Pour exactly 2.5 L into the chamber. Choose among the measured vessels; each can be poured once. 1000 mL = 1 L.",
+        "hint": "Convert to a common unit before combining vessels. If the float passes its slot, remove a measured pour.",
+        "skill": "Volume, unit conversion and rational numbers",
+        "lock": {
+          "title": "Sluice workshop",
+          "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+          "stages": [
+            {
+              "id": "volume",
+              "kind": "volume",
+              "title": "The floating sluice pin",
+              "instruction": "Pour exactly 2.5 L into the chamber. Choose among the measured vessels; each can be poured once. 1000 mL = 1 L.",
+              "hint": "Convert to a common unit before combining vessels. If the float passes its slot, remove a measured pour.",
+              "success": "The float pin meets its slot. Water flows to the escape channel.",
+              "capacity": 3000,
+              "target": 2500,
+              "unitTicks": 1000,
+              "unit": "L",
+              "vessels": [
+                {
+                  "id": "vessel-0",
+                  "label": "1 L",
+                  "amount": 1000,
+                  "uses": 1
+                },
+                {
+                  "id": "vessel-1",
+                  "label": "750 mL",
+                  "amount": 750,
+                  "uses": 1
+                },
+                {
+                  "id": "vessel-2",
+                  "label": "0.5 L",
+                  "amount": 500,
+                  "uses": 1
+                },
+                {
+                  "id": "vessel-3",
+                  "label": "250 mL",
+                  "amount": 250,
+                  "uses": 1
+                },
+                {
+                  "id": "vessel-4",
+                  "label": "0.375 L",
+                  "amount": 375,
+                  "uses": 1
+                },
+                {
+                  "id": "vessel-5",
+                  "label": "200 mL",
+                  "amount": 200,
+                  "uses": 1
+                }
+              ]
+            }
+          ]
         }
       },
-      "release": []
+      "release": [],
+      "gradePuzzles": {
+        "6": {
+          "type": "machine-lock",
+          "prompt": "The float needs 2750 mL. Labels mix litres and millilitres. Choose a combination with exactly that volume.",
+          "hint": "Convert to a common unit before combining vessels. If the float passes its slot, remove a measured pour.",
+          "skill": "Volume, unit conversion and rational numbers",
+          "lock": {
+            "title": "Sluice workshop",
+            "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+            "stages": [
+              {
+                "id": "volume",
+                "kind": "volume",
+                "title": "The floating sluice pin",
+                "instruction": "The float needs 2750 mL. Labels mix litres and millilitres. Choose a combination with exactly that volume.",
+                "hint": "Convert to a common unit before combining vessels. If the float passes its slot, remove a measured pour.",
+                "success": "The float pin meets its slot. Water flows to the escape channel.",
+                "capacity": 3000,
+                "target": 2750,
+                "unitTicks": 1000,
+                "unit": "L",
+                "vessels": [
+                  {
+                    "id": "vessel-0",
+                    "label": "1.5 L",
+                    "amount": 1500,
+                    "uses": 1
+                  },
+                  {
+                    "id": "vessel-1",
+                    "label": "750 mL",
+                    "amount": 750,
+                    "uses": 1
+                  },
+                  {
+                    "id": "vessel-2",
+                    "label": "0.5 L",
+                    "amount": 500,
+                    "uses": 1
+                  },
+                  {
+                    "id": "vessel-3",
+                    "label": "250 mL",
+                    "amount": 250,
+                    "uses": 1
+                  },
+                  {
+                    "id": "vessel-4",
+                    "label": "0.4 L",
+                    "amount": 400,
+                    "uses": 1
+                  },
+                  {
+                    "id": "vessel-5",
+                    "label": "600 mL",
+                    "amount": 600,
+                    "uses": 1
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "7": {
+          "type": "machine-lock",
+          "prompt": "Fill 62.5% of this 4 L chamber. Calculate the target, then combine measured pours to lift the pin to that height.",
+          "hint": "Convert to a common unit before combining vessels. If the float passes its slot, remove a measured pour.",
+          "skill": "Volume, unit conversion and rational numbers",
+          "lock": {
+            "title": "Sluice workshop",
+            "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+            "stages": [
+              {
+                "id": "volume",
+                "kind": "volume",
+                "title": "The floating sluice pin",
+                "instruction": "Fill 62.5% of this 4 L chamber. Calculate the target, then combine measured pours to lift the pin to that height.",
+                "hint": "Convert to a common unit before combining vessels. If the float passes its slot, remove a measured pour.",
+                "success": "The float pin meets its slot. Water flows to the escape channel.",
+                "capacity": 4000,
+                "target": 2500,
+                "unitTicks": 1000,
+                "unit": "L",
+                "vessels": [
+                  {
+                    "id": "vessel-0",
+                    "label": "1.2 L",
+                    "amount": 1200,
+                    "uses": 1
+                  },
+                  {
+                    "id": "vessel-1",
+                    "label": "800 mL",
+                    "amount": 800,
+                    "uses": 1
+                  },
+                  {
+                    "id": "vessel-2",
+                    "label": "0.5 L",
+                    "amount": 500,
+                    "uses": 1
+                  },
+                  {
+                    "id": "vessel-3",
+                    "label": "300 mL",
+                    "amount": 300,
+                    "uses": 1
+                  },
+                  {
+                    "id": "vessel-4",
+                    "label": "0.75 L",
+                    "amount": 750,
+                    "uses": 1
+                  },
+                  {
+                    "id": "vessel-5",
+                    "label": "250 mL",
+                    "amount": 250,
+                    "uses": 1
+                  }
+                ],
+                "targetLabel": "62.5% CAPACITY"
+              }
+            ]
+          }
+        },
+        "8": {
+          "type": "machine-lock",
+          "prompt": "A 4 L chamber must be five-eighths full. Express that fraction as a decimal volume and choose the measured pours.",
+          "hint": "Convert to a common unit before combining vessels. If the float passes its slot, remove a measured pour.",
+          "skill": "Volume, unit conversion and rational numbers",
+          "lock": {
+            "title": "Sluice workshop",
+            "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+            "stages": [
+              {
+                "id": "volume",
+                "kind": "volume",
+                "title": "The floating sluice pin",
+                "instruction": "A 4 L chamber must be five-eighths full. Express that fraction as a decimal volume and choose the measured pours.",
+                "hint": "Convert to a common unit before combining vessels. If the float passes its slot, remove a measured pour.",
+                "success": "The float pin meets its slot. Water flows to the escape channel.",
+                "capacity": 4000,
+                "target": 2500,
+                "unitTicks": 1000,
+                "unit": "L",
+                "vessels": [
+                  {
+                    "id": "vessel-0",
+                    "label": "1.25 L",
+                    "amount": 1250,
+                    "uses": 1
+                  },
+                  {
+                    "id": "vessel-1",
+                    "label": "750 mL",
+                    "amount": 750,
+                    "uses": 1
+                  },
+                  {
+                    "id": "vessel-2",
+                    "label": "0.5 L",
+                    "amount": 500,
+                    "uses": 1
+                  },
+                  {
+                    "id": "vessel-3",
+                    "label": "250 mL",
+                    "amount": 250,
+                    "uses": 1
+                  },
+                  {
+                    "id": "vessel-4",
+                    "label": "0.6 L",
+                    "amount": 600,
+                    "uses": 1
+                  },
+                  {
+                    "id": "vessel-5",
+                    "label": "400 mL",
+                    "amount": 400,
+                    "uses": 1
+                  }
+                ],
+                "targetLabel": "5/8 CAPACITY"
+              }
+            ]
+          }
+        }
+      }
     },
     {
       "id": "boat",
-      "title": "The last boat home",
+      "title": "Riverboat workshop",
       "place": "Sanctuary landing",
-      "story": "Your sanctuary guide has a boat with space for 5 animals per trip. The guide handles the return journeys. Plan enough trips from the castle bank to take all 12 animals home.",
-      "action": "Launch the rescue",
-      "success": "All aboard. Next stop: home!",
-      "explanation": "Two trips carry only 10 animals. You need 3 trips: 5 + 5 + 2 = 12. The last trip does not have to be full.",
+      "story": "Make 2.5 L of lantern fuel: 2/5 blue extract and 3/5 amber extract. Each pump delivers 0.25 L.",
+      "action": "Solve lock",
+      "success": "The mixture and total are both exact. The riverboat is ready to carry everyone home.",
+      "explanation": "Your measured settings made the real mechanism line up: fractions, ratios and proportional quantities.",
       "x": 94.9,
       "y": 83.49609375,
       "icon": "08",
       "clues": [
         {
-          "label": "Animals to carry",
-          "value": "12"
+          "label": "Workshop",
+          "value": "Fractions, ratios and proportional quantities"
         },
         {
-          "label": "Animal spaces per trip",
-          "value": "5"
-        },
-        {
-          "label": "Count these trips",
-          "value": "Castle → sanctuary only"
+          "label": "Take your time",
+          "value": "The rescue waits while you reason. Every control has a keyboard alternative."
         }
       ],
       "puzzle": {
-        "type": "number",
-        "prompt": "What is the FEWEST number of trips that can carry every animal home?",
-        "hint": "Count by fives until there is room for all 12. Remember the animals left after two trips.",
-        "skill": "Division & remainders",
-        "answer": 3,
-        "unit": "trips",
-        "max": 12,
-        "visual": {
-          "kind": "capacity",
-          "count": 12,
-          "amount": 5
+        "type": "machine-lock",
+        "prompt": "Make 2.5 L of lantern fuel: 2/5 blue extract and 3/5 amber extract. Each pump delivers 0.25 L.",
+        "hint": "Add the ratio parts. Divide the required total by that sum to find one part, then scale each ingredient.",
+        "skill": "Fractions, ratios and proportional quantities",
+        "lock": {
+          "title": "Riverboat workshop",
+          "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+          "stages": [
+            {
+              "id": "mixing",
+              "kind": "mixing",
+              "title": "The riverboat fuel mixer",
+              "instruction": "Make 2.5 L of lantern fuel: 2/5 blue extract and 3/5 amber extract. Each pump delivers 0.25 L.",
+              "hint": "Add the ratio parts. Divide the required total by that sum to find one part, then scale each ingredient.",
+              "success": "The mixture and total are both exact. The riverboat is ready to carry everyone home.",
+              "capacity": 5000,
+              "total": 2500,
+              "unitTicks": 1000,
+              "unit": "L",
+              "ingredients": [
+                {
+                  "id": "extract-0",
+                  "label": "Blue",
+                  "color": "#4ebddd",
+                  "parts": 2,
+                  "measure": 250,
+                  "supply": 4000
+                },
+                {
+                  "id": "extract-1",
+                  "label": "Amber",
+                  "color": "#eab34f",
+                  "parts": 3,
+                  "measure": 250,
+                  "supply": 4000
+                }
+              ]
+            }
+          ]
         }
       },
-      "release": []
+      "release": [],
+      "gradePuzzles": {
+        "6": {
+          "type": "machine-lock",
+          "prompt": "Make exactly 4 L in the ratio blue : amber = 3 : 5. Each pump delivers 0.25 L.",
+          "hint": "Add the ratio parts. Divide the required total by that sum to find one part, then scale each ingredient.",
+          "skill": "Fractions, ratios and proportional quantities",
+          "lock": {
+            "title": "Riverboat workshop",
+            "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+            "stages": [
+              {
+                "id": "mixing",
+                "kind": "mixing",
+                "title": "The riverboat fuel mixer",
+                "instruction": "Make exactly 4 L in the ratio blue : amber = 3 : 5. Each pump delivers 0.25 L.",
+                "hint": "Add the ratio parts. Divide the required total by that sum to find one part, then scale each ingredient.",
+                "success": "The mixture and total are both exact. The riverboat is ready to carry everyone home.",
+                "capacity": 5000,
+                "total": 4000,
+                "unitTicks": 1000,
+                "unit": "L",
+                "ingredients": [
+                  {
+                    "id": "extract-0",
+                    "label": "Blue",
+                    "color": "#4ebddd",
+                    "parts": 3,
+                    "measure": 250,
+                    "supply": 4000
+                  },
+                  {
+                    "id": "extract-1",
+                    "label": "Amber",
+                    "color": "#eab34f",
+                    "parts": 5,
+                    "measure": 250,
+                    "supply": 4000
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "7": {
+          "type": "machine-lock",
+          "prompt": "Make 4.5 L. For every 2 parts blue, use 7 parts amber. Find each amount; each pump delivers 0.25 L.",
+          "hint": "Add the ratio parts. Divide the required total by that sum to find one part, then scale each ingredient.",
+          "skill": "Fractions, ratios and proportional quantities",
+          "lock": {
+            "title": "Riverboat workshop",
+            "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+            "stages": [
+              {
+                "id": "mixing",
+                "kind": "mixing",
+                "title": "The riverboat fuel mixer",
+                "instruction": "Make 4.5 L. For every 2 parts blue, use 7 parts amber. Find each amount; each pump delivers 0.25 L.",
+                "hint": "Add the ratio parts. Divide the required total by that sum to find one part, then scale each ingredient.",
+                "success": "The mixture and total are both exact. The riverboat is ready to carry everyone home.",
+                "capacity": 5000,
+                "total": 4500,
+                "unitTicks": 1000,
+                "unit": "L",
+                "ingredients": [
+                  {
+                    "id": "extract-0",
+                    "label": "Blue",
+                    "color": "#4ebddd",
+                    "parts": 2,
+                    "measure": 250,
+                    "supply": 4000
+                  },
+                  {
+                    "id": "extract-1",
+                    "label": "Amber",
+                    "color": "#eab34f",
+                    "parts": 7,
+                    "measure": 250,
+                    "supply": 4000
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        "8": {
+          "type": "machine-lock",
+          "prompt": "Make 3 L in the ratio blue : amber : rose = 2 : 3 : 1. Each pump delivers 0.25 L. All three amounts and the total must agree.",
+          "hint": "Add the ratio parts. Divide the required total by that sum to find one part, then scale each ingredient.",
+          "skill": "Fractions, ratios and proportional quantities",
+          "lock": {
+            "title": "Riverboat workshop",
+            "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+            "stages": [
+              {
+                "id": "mixing",
+                "kind": "mixing",
+                "title": "The riverboat fuel mixer",
+                "instruction": "Make 3 L in the ratio blue : amber : rose = 2 : 3 : 1. Each pump delivers 0.25 L. All three amounts and the total must agree.",
+                "hint": "Add the ratio parts. Divide the required total by that sum to find one part, then scale each ingredient.",
+                "success": "The mixture and total are both exact. The riverboat is ready to carry everyone home.",
+                "capacity": 5000,
+                "total": 3000,
+                "unitTicks": 1000,
+                "unit": "L",
+                "ingredients": [
+                  {
+                    "id": "extract-0",
+                    "label": "Blue",
+                    "color": "#4ebddd",
+                    "parts": 2,
+                    "measure": 250,
+                    "supply": 4000
+                  },
+                  {
+                    "id": "extract-1",
+                    "label": "Amber",
+                    "color": "#eab34f",
+                    "parts": 3,
+                    "measure": 250,
+                    "supply": 4000
+                  },
+                  {
+                    "id": "extract-2",
+                    "label": "Rose",
+                    "color": "#d96992",
+                    "parts": 1,
+                    "measure": 250,
+                    "supply": 4000
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
     }
   ],
   "introductionTitle": "Twelve animals. One secret way out.",
@@ -1030,5 +3022,11 @@
         ]
       }
     ]
-  }
+  },
+  "mathGrades": [
+    5,
+    6,
+    7,
+    8
+  ]
 }

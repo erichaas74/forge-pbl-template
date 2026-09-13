@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import data from '../../../../../../public/projects/castle-archive-rescue/project.json';
+import data from '../../testing/castle-escape-v3.3.fixture.json';
 import { requireEscapeMission } from '../domain/escape.validation';
 import { worldDistance } from '../domain/expedition.navigation';
 import type { EscapeAnswer, EscapeEnvelope } from '../domain/escape.models';
@@ -31,8 +31,8 @@ function answer(r: ExpeditionRuntime, value: EscapeAnswer): void {
   else if (typeof value === 'number') {
     if (r.current().puzzle.type === 'timing') r.setDeparture(value);
     else r.setNumber(value);
-  } else if (r.current().puzzle.type === 'gear-lock')
-    r.input({ type: 'gear-change', answer: value });
+  } else if (!Array.isArray(value)) return;
+  else if (r.current().puzzle.type === 'gear-lock') r.input({ type: 'gear-change', answer: value });
   else if (r.current().puzzle.type === 'balance-lock')
     value.forEach((side, index) =>
       r.input({ type: 'balance-place', index, side: side as 0 | 1 | 2 }),

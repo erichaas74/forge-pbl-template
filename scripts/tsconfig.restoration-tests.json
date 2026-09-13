@@ -1,0 +1,10 @@
+{
+  "extends": "../tsconfig.spec.json",
+  "include": [
+    "../src/**/*.d.ts",
+    "../src/app/shared/restoration/**/*.spec.ts",
+    "../src/app/shared/encounters/**/*.spec.ts",
+    "../src/app/templates/heist/restoration/**/*.spec.ts",
+    "../src/app/templates/heist/gallery/**/*.spec.ts"
+  ]
+}

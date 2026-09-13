@@ -1,0 +1,223 @@
+@use 'time-repair-controls';
+.scene-plane .hotspot .object-art {
+  position: absolute;
+  width: 130px;
+  height: 112px;
+  max-width: none;
+  left: 50%;
+  bottom: 15px;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 7px 8px #071c2499);
+  pointer-events: none;
+  z-index: -1;
+}
+.scene-plane .hotspot .restored-object {
+  animation: object-restored 0.6s ease both;
+}
+@keyframes object-restored {
+  from {
+    opacity: 0.15;
+    filter: drop-shadow(0 0 28px #afffc9);
+  }
+  to {
+    opacity: 1;
+    filter: drop-shadow(0 7px 8px #071c2499);
+  }
+}
+.scene-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.3rem 1.6rem;
+  border-bottom: 1px solid #30434e;
+}
+.scene-header h2 {
+  margin: 0;
+}
+.charge-counter {
+  color: #f4cc91;
+  font:
+    0.75rem 'Consolas',
+    monospace;
+}
+.scene-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(300px, 1fr);
+}
+.field {
+  min-width: 0;
+  background: #0a1922;
+}
+.camera-tabs {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.8rem 1rem;
+}
+.camera-tabs button {
+  font-size: 0.73rem;
+  padding: 0.4rem 0.8rem;
+}
+.camera-tabs button.active {
+  background: #26443f;
+  border-color: #8eb9a8;
+}
+.viewport {
+  aspect-ratio: 16/10;
+  overflow: hidden;
+  position: relative;
+  isolation: isolate;
+}
+.scene-plane {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.8s ease;
+}
+.scene-plane.close-up {
+  transform: scale(1.55);
+}
+.scene-plane img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hotspot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0;
+  color: white;
+  min-width: 44px;
+  text-shadow: 0 1px 5px #000;
+}
+.hotspot span {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid #fde1ac;
+  background: #11262fe6;
+  box-shadow: 0 0 0 5px #fff2d333;
+  font:
+    0.9rem 'Consolas',
+    monospace;
+  flex-shrink: 0;
+}
+.hotspot strong {
+  display: none;
+  font-size: 0.65rem;
+  background: #11262feb;
+  padding: 0.4rem;
+  border-radius: 4px;
+}
+.hotspot.selected strong,
+.hotspot:focus-visible strong {
+  display: block;
+}
+.hotspot.inspected span {
+  background: #195b4c;
+  border-color: #c6ffe1;
+}
+.hotspot:hover:not(:disabled) {
+  background: transparent;
+}
+.field-overlay {
+  position: absolute;
+  bottom: 1rem;
+  left: 1rem;
+  background: #14222ee8;
+  padding: 0.65rem 1rem;
+  border: 1px solid #c59265;
+  color: #f6d1ab;
+  border-radius: 5px;
+  font-size: 0.76rem;
+}
+.field-overlay.repaired {
+  border-color: #9fd4b7;
+  color: #b5f1ce;
+}
+.object-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.8rem;
+}
+.object-list button {
+  font-size: 0.68rem;
+  flex: 1 1 130px;
+}
+.object-list button[aria-pressed='true'] {
+  border-color: #b1dac8;
+}
+.scene-caption {
+  font-size: 0.68rem;
+  color: #93aab8;
+  padding: 0 1rem;
+}
+.inspector {
+  padding: 1.7rem;
+  border-left: 1px solid #31434c;
+}
+.inspector > p {
+  color: #b9cbd4;
+  font-size: 0.88rem;
+}
+.inspector form {
+  margin-top: 1.8rem;
+}
+.inspector .radio {
+  font-size: 0.78rem;
+  padding: 0.8rem;
+}
+.radio strong,
+.radio small {
+  display: block;
+}
+.radio small {
+  color: #a4bac5;
+  margin-top: 0.4rem;
+  line-height: 1.6;
+}
+.radio strong {
+  font-weight: 550;
+}
+.field-tip {
+  margin-top: 2rem;
+  border-left: 2px solid #adcdbc;
+  padding: 1rem;
+  font:
+    1.1rem/1.8 Georgia,
+    serif;
+  color: #b8cccf;
+}
+.repair-complete {
+  margin-top: 2rem;
+  border-top: 1px solid #42625d;
+  padding-top: 1.5rem;
+}
+.repair-complete p {
+  font-size: 0.86rem;
+}
+.exhausted {
+  color: #ffd2a6;
+  font-size: 0.82rem;
+  padding: 1rem;
+  border: 1px solid #866244;
+}
+@media (max-width: 850px) {
+  .scene-layout {
+    grid-template-columns: 1fr;
+  }
+  .inspector {
+    border-left: 0;
+    border-top: 1px solid #31434c;
+  }
+  .viewport {
+    aspect-ratio: 16/10;
+  }
+}

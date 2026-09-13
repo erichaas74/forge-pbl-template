@@ -1,0 +1,384 @@
+<div class="time-room">
+  <header class="agency-header">
+    <a routerLink="/projects" class="back-link" aria-label="Back to projects"
+      >← <span>Projects</span></a
+    >
+    <div class="agency-brand">
+      <span class="agency-mark" aria-hidden="true">⌁</span
+      ><span>TIME REPAIR AGENCY<small>Department of temporal integrity</small></span>
+    </div>
+    <span class="pilot-label">LOCAL PILOT · 01</span>
+    <button class="log-button" (click)="showReport()">
+      Repair log <span>{{ verifiedCount() }}/{{ config.missions.length }}</span>
+    </button>
+  </header>
+
+  <main>
+    <section class="room-heading" aria-labelledby="room-title">
+      <div>
+        <span class="eyebrow"
+          >{{ config.subject === 'history' ? 'Historical' : 'Literary' }} investigation /
+          {{ config.subtitle }}</span
+        >
+        <h1 id="room-title">
+          Timeline Control Room<span class="live-dot" aria-hidden="true"></span>
+        </h1>
+        <p>Every change has a consequence. Make yours count.</p>
+      </div>
+      <div class="stability-meter">
+        <div class="stability-ring" [style.--stability]="runtime.stability() + '%'">
+          <strong>{{ runtime.stability() }}<small>%</small></strong>
+        </div>
+        <div>
+          <span class="eyebrow">Timeline stability</span
+          ><strong>{{
+            runtime.completed()
+              ? 'Repair verified'
+              : progress().repaired
+                ? 'Awaiting verification'
+                : 'Breach detected'
+          }}</strong
+          ><small
+            >{{ runtime.charges() }} of {{ config.settings.repairCharges }} charges remaining</small
+          >
+        </div>
+      </div>
+    </section>
+
+    <section class="timeline" aria-label="Interactive timeline">
+      <div class="timeline-heading">
+        <span class="eyebrow">Temporal scan / select a moment</span>
+        <div class="legend"><span>● Stable</span><span>◇ Ripple</span><span>◉ Anomaly</span></div>
+      </div>
+      <div class="timeline-scroll">
+        <div class="timeline-track">
+          <div class="timeline-line" aria-hidden="true"></div>
+          @for (node of nodes; track node.id) {
+            <button
+              class="timeline-node"
+              [class.selected]="selectedNodeId() === node.id"
+              [attr.data-status]="status(node.id)"
+              [attr.aria-pressed]="selectedNodeId() === node.id"
+              [attr.aria-label]="node.dateLabel + ': ' + node.title + ', ' + status(node.id)"
+              (click)="selectNode(node.id)"
+            >
+              <span class="node-date">{{ node.dateLabel }}</span
+              ><span class="node-orb" aria-hidden="true">{{
+                status(node.id) === 'anomaly'
+                  ? '!'
+                  : status(node.id) === 'ripple'
+                    ? '◇'
+                    : status(node.id) === 'missing'
+                      ? '?'
+                      : '•'
+              }}</span
+              ><strong>{{ node.title }}</strong
+              ><small>{{ status(node.id) }}</small>
+            </button>
+          }
+        </div>
+      </div>
+    </section>
+
+    <div class="workspace-bar">
+      <div class="spaces" aria-label="Mission spaces">
+        <button
+          [class.active]="space() === 'control'"
+          [attr.aria-pressed]="space() === 'control'"
+          (click)="openSpace('control')"
+        >
+          Control room</button
+        ><button
+          [class.active]="space() === 'archive'"
+          [attr.aria-pressed]="space() === 'archive'"
+          (click)="openSpace('archive')"
+        >
+          Evidence archive <small>{{ runtime.state().collectedIds.length }}</small></button
+        ><button
+          [class.active]="space() === 'scene'"
+          [attr.aria-pressed]="space() === 'scene'"
+          [disabled]="!progress().authorized || progress().repaired"
+          (click)="jump()"
+        >
+          {{ progress().authorized ? 'Time jump ↗' : 'Time jump · locked' }}
+        </button>
+      </div>
+      <span class="workspace-phase">01 / DETECT THE BREACH</span>
+    </div>
+    <p
+      class="runtime-message"
+      role="status"
+      aria-live="polite"
+      [class.has-message]="runtime.message()"
+    >
+      {{ runtime.message() }}
+    </p>
+    <section #workspace tabindex="-1" class="workspace" aria-label="Selected timeline workspace">
+      @if (space() === 'control') {
+        <div class="mission-overview">
+          <div
+            class="portal"
+            [class.restored]="progress().repaired"
+            [class.record-portal]="!selectedMission()"
+          >
+            @if (selectedMission()) {
+              <img [src]="scene().image" [alt]="scene().imageAlt" />
+            } @else {
+              <span class="record-date" aria-hidden="true">{{ selectedNode().dateLabel }}</span>
+            }
+            <div class="portal-shade"></div>
+            <div class="portal-coordinates">
+              <span>ARCHIVE WINDOW</span><span>{{ selectedNode().dateLabel }}</span>
+            </div>
+            @if (selectedMission()) {
+              <div class="target-reticle" aria-hidden="true"><span></span></div>
+            }
+            <div class="portal-caption">
+              <span class="eyebrow">{{
+                selectedMission()
+                  ? 'Priority signal / investigation required'
+                  : 'Timeline record / ' + status(selectedNodeId())
+              }}</span>
+              <h2>{{ selectedNode().title }}</h2>
+              <p>
+                {{
+                  selectedMission() && !progress().repaired
+                    ? mission().signal
+                    : selectedNode().summary
+                }}
+              </p>
+            </div>
+          </div>
+          <aside class="mission-panel">
+            @if (selectedMission()) {
+              <span class="eyebrow" [class.success]="progress().repaired">{{
+                progress().verification
+                  ? 'Timeline restored'
+                  : progress().repaired
+                    ? 'Repair applied / ripple pending'
+                    : 'Anomaly detected / ' + selectedNode().dateLabel
+              }}</span>
+              <h2>
+                {{
+                  progress().verification
+                    ? 'You restored the sequence.'
+                    : progress().repaired
+                      ? 'A change is only the beginning.'
+                      : 'What does the evidence say?'
+                }}
+              </h2>
+              <p>{{ progress().repaired ? mission().canonicalSummary : config.briefing }}</p>
+              <ol class="mission-steps">
+                <li [class.done]="progress().links.length >= mission().evidenceRequired.length">
+                  <span>01</span>Connect evidence to the anomaly
+                </li>
+                <li [class.done]="progress().authorized">
+                  <span>02</span>Defend your claim to unlock a jump
+                </li>
+                <li [class.done]="progress().repaired">
+                  <span>03</span>Repair the moment & follow its ripple
+                </li>
+              </ol>
+              @if (progress().verification) {
+                <button class="primary" (click)="showReport()">
+                  Open restored timeline case file →</button
+                ><button class="text-button" (click)="openSpace('ripple')">
+                  Replay the ripple
+                </button>
+              } @else if (progress().repaired) {
+                <button class="primary" (click)="openSpace('ripple')">
+                  Follow the ripple & verify →
+                </button>
+              } @else if (progress().authorized) {
+                <button class="primary" (click)="jump()">Time jump available →</button>
+              } @else {
+                <button class="primary" (click)="openSpace('archive')">
+                  Investigate the anomaly →
+                </button>
+              }
+              <p class="mission-footnote">
+                Evidence unlocks time travel. Understanding repairs the timeline.
+              </p>
+            } @else {
+              <span class="eyebrow">{{ status(selectedNodeId()) }} / archive record</span>
+              <h2>{{ selectedNode().title }}</h2>
+              <p>{{ selectedNode().summary }}</p>
+              @if (status(selectedNodeId()) === 'ripple') {
+                <p class="ripple-note">
+                  This branch is affected by an earlier anomaly. Investigate the source of the
+                  change before intervening downstream.
+                </p>
+                <button class="primary" (click)="selectNode(mission().nodeId)">
+                  Trace the originating anomaly →
+                </button>
+              } @else {
+                <p class="muted">
+                  This pilot does not call for a repair here. A stable moment helps establish the
+                  baseline.
+                </p>
+                <button (click)="selectNode(config.missions[0].nodeId)">
+                  Return to the repair mission →
+                </button>
+              }
+            }
+          </aside>
+        </div>
+      }
+      @for (currentMission of [mission()]; track currentMission.id) {
+        <section [hidden]="space() !== 'archive'" aria-label="Evidence investigation">
+          <app-time-repair-investigation [mission]="currentMission" (jumpRequested)="jump()" />
+        </section>
+      }
+      @if (space() === 'scene') {
+        <app-time-repair-scene [mission]="mission()" (rippleRequested)="openSpace('ripple')" />
+      }
+      @if (space() === 'ripple' && progress().repaired) {
+        <div class="ripple-workspace">
+          <span class="eyebrow success">Ripple check / cause → consequence</span>
+          <h2>One repair. A sequence reconnected.</h2>
+          <p class="ripple-intro">
+            These branches model how the damaged record could distort our interpretation. They are
+            not predictions of an alternate history.
+          </p>
+          <div class="ripple-origin">
+            <span>REPAIRED MOMENT</span><strong>{{ mission().canonicalSummary }}</strong>
+          </div>
+          <div class="ripple-chain">
+            @for (ripple of mission().ripples; track ripple.nodeId; let i = $index) {
+              <article class="ripple-card" [style.animation-delay.ms]="i * 180">
+                <span class="eyebrow">0{{ i + 1 }} / {{ nodeTitle(ripple.nodeId) }}</span>
+                <div class="before">
+                  <small>Corrupted branch</small>
+                  <p>{{ ripple.before }}</p>
+                </div>
+                <span class="ripple-arrow" aria-hidden="true">↓</span>
+                <div class="after">
+                  <small>Restored sequence</small>
+                  <p>{{ ripple.after }}</p>
+                </div>
+              </article>
+            }
+          </div>
+          @if (!progress().verification) {
+            <form class="verification-form" (ngSubmit)="verify()">
+              <div>
+                <h3>Verify the ripple.</h3>
+                <p>{{ mission().verificationPrompt }}</p>
+                <label
+                  >Source to cite<select
+                    name="verificationSource"
+                    [(ngModel)]="verificationEvidenceId"
+                    required
+                  >
+                    <option value="" disabled>Select a connected source</option>
+                    @for (link of progress().links; track link.evidenceId) {
+                      <option [value]="link.evidenceId">{{ sourceTitle(link.evidenceId) }}</option>
+                    }
+                  </select></label
+                >
+              </div>
+              <div>
+                <label
+                  >Your explanation<textarea
+                    name="verificationExplanation"
+                    [(ngModel)]="verificationExplanation"
+                    rows="5"
+                    maxlength="4000"
+                    [minlength]="config.settings.minReasoningLength"
+                    required
+                    placeholder="Before → repair → later interpretation. What does the source support, and what remains uncertain?"
+                  ></textarea></label
+                ><button class="primary" type="submit">Record verification →</button>
+              </div>
+            </form>
+          } @else {
+            <div class="verified-banner">
+              <div>
+                <span class="eyebrow success">Verification recorded</span>
+                <p>{{ progress().verification?.explanation }}</p>
+                <small>Source: {{ sourceTitle(progress().verification!.evidenceId) }}</small>
+              </div>
+              <button class="primary" (click)="showReport()">View your case file →</button>
+            </div>
+          }
+        </div>
+      }
+    </section>
+    <footer class="room-footer">
+      <span>{{ runtime.storageNotice() }}</span
+      ><span>One playable repair · local exercise · no official grade</span>
+    </footer>
+    <details class="project-roadmap">
+      <summary>Where this fits in the three-week mission</summary>
+      <div>
+        @for (stage of config.stages; track stage.title; let i = $index) {
+          <article>
+            <span class="eyebrow"
+              >Week 0{{ i + 1 }} {{ i > 0 ? '/ content roadmap' : '/ pilot' }}</span
+            >
+            <h3>{{ stage.title }}</h3>
+            <p>{{ stage.description }}</p>
+          </article>
+        }
+      </div>
+    </details>
+  </main>
+</div>
+<dialog #report aria-labelledby="repair-log-title" class="report-dialog">
+  <div class="report-header">
+    <div>
+      <span class="eyebrow">Timeline repair agency / local case file</span>
+      <h2 id="repair-log-title">
+        {{ runtime.completed() ? 'Restored Timeline Case File' : 'Investigation & Repair Log' }}
+      </h2>
+    </div>
+    <button autofocus (click)="closeReport()" aria-label="Close repair log">✕</button>
+  </div>
+  <p class="muted">
+    {{ verifiedCount() }} of {{ config.missions.length }} repairs verified ·
+    {{ runtime.stability() }}% stability · {{ runtime.charges() }} charges left. Written reasoning
+    is recorded for review, not automatically graded.
+  </p>
+  @for (m of config.missions; track m.id) {
+    @let p = runtime.state().missions[m.id];
+    <article class="report-mission">
+      <h3>{{ nodeTitle(m.nodeId) }}</h3>
+      <p>{{ m.signal }}</p>
+      <h4>Evidence connections</h4>
+      @for (link of p.links; track link.evidenceId) {
+        <p>
+          <strong>{{ sourceTitle(link.evidenceId) }} · {{ link.relationship }}</strong
+          ><br />{{ link.note }}
+        </p>
+      } @empty {
+        <p>No evidence connected.</p>
+      }
+      @for (defense of p.defenses; track $index) {
+        <details>
+          <summary>
+            Defense {{ $index + 1 }} ·
+            {{ defense.accepted ? 'checkpoint passed' : 'revision requested' }}
+          </summary>
+          <p><strong>Claim:</strong> {{ defense.claim }}</p>
+          <p><strong>Consequence:</strong> {{ defense.consequence }}</p>
+          <p><strong>Source defense:</strong> {{ defense.explanation }}</p>
+        </details>
+      }
+      <h4>Repair attempts</h4>
+      @for (attempt of p.attempts; track $index) {
+        <p>
+          {{ $index + 1 }} · {{ attempt.optionId }} ·
+          {{ attempt.correct ? 'applied' : 'destabilized the timeline' }}
+        </p>
+      } @empty {
+        <p>No interventions yet.</p>
+      }
+      @if (p.verification) {
+        <h4>Verification</h4>
+        <p>{{ p.verification.explanation }}</p>
+        <p class="muted">{{ sourceTitle(p.verification.evidenceId) }}</p>
+      }
+    </article>
+  }
+  <button class="primary" (click)="exportReport()">Export case file · JSON</button>
+</dialog>

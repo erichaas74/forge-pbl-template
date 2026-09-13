@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.app.json",
+  "include": ["scripts/time-repair-preview.ts"],
+  "exclude": ["src/**/*.spec.ts"]
+}

@@ -12,6 +12,7 @@ export class EncounterComponent {
   readonly state = input.required<EncounterState>();
   readonly sources = input.required<readonly EncounterSource[]>();
   readonly reducedMotion = input(false);
+  readonly returnLabel = input('Return to gallery');
   readonly action = output<EncounterAction>();
   readonly leave = output<void>();
   readonly view = computed(() => this.definition().views.find(v => v.id === this.state().viewId)!);

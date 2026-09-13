@@ -3,7 +3,7 @@ const path = require('node:path');
 const { createServer } = require('node:http');
 
 async function serveGalleryBuild(port = 4300) {
-  const root = path.resolve(__dirname, '../../output/heist-review-build/browser');
+  const root = process.env.HEIST_PREVIEW_ROOT ? path.resolve(process.env.HEIST_PREVIEW_ROOT) : path.resolve(__dirname, '../../output/heist-review-build/browser');
   if (!fs.existsSync(path.join(root, 'index.html'))) throw new Error('Build first: npm run build -- --output-path=../output/heist-review-build');
   const mime = { '.html': 'text/html', '.js': 'application/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.woff2': 'font/woff2', '.m4a': 'audio/mp4' };
   const server = createServer((req, res) => {

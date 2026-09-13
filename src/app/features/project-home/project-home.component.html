@@ -2,25 +2,31 @@
   <header class="library-header">
     <strong>FORGE PBL</strong
     ><app-task-guide title="Project guide">
-      @for (project of projects(); track project.id) {
-        <h3>{{ project.title }}</h3>
+      @for (project of cards(); track project.id) {
+        <h3>{{ project.projectType }}</h3>
         <p>{{ project.description }}</p>
-        <p>{{ project.learningGoals.join(' · ') }}</p>
-        @if (project.builderRoute) {
-          <a [routerLink]="project.builderRoute">Builder information</a>
-        }
       }
     </app-task-guide>
   </header>
   <section class="project-section" aria-labelledby="available-projects-title">
     <h1 id="available-projects-title">What will you create?</h1>
+    <p class="library-introduction">
+      Explore project types and how students demonstrate learning. Each demo’s name and image show
+      one way to bring the project to life.
+    </p>
     <div class="project-grid">
-      @for (project of projects(); track project.id) {
-        <article class="project-card" [class]="'project-card ' + project.theme">
+      @for (project of cards(); track project.id) {
+        <article class="project-card" [attr.data-project-id]="project.id">
           <a
             class="project-choice"
             [routerLink]="project.route"
-            [attr.aria-label]="'Open ' + project.title"
+            [attr.role]="project.route ? null : 'link'"
+            [attr.aria-disabled]="project.route ? null : 'true'"
+            [attr.aria-label]="
+              project.route
+                ? 'Open demo: ' + project.demoTitle
+                : project.projectType + ' — Not built yet'
+            "
           >
             <div class="project-art">
               @if (project.coverImage) {
@@ -28,15 +34,19 @@
               } @else {
                 <span aria-hidden="true">{{ project.symbol }}</span>
               }
-              <strong>{{ project.studentInvitation || project.projectType }}</strong>
+              @if (project.demoTitle) {
+                <strong><span class="demo-label">Demo project</span>{{ project.demoTitle }}</strong>
+              }
             </div>
             <div class="project-content">
-              <h2>{{ project.title }}</h2>
-              <p>{{ project.grade }} · {{ project.subject }}</p>
+              <h2>{{ project.projectType }}</h2>
+              <p>{{ project.description }}</p>
               <span class="project-status" [attr.data-release-status]="project.status">{{
                 project.status
-              }}</span
-              ><span class="open-mark" aria-hidden="true">→</span>
+              }}</span>
+              @if (project.route) {
+                <span class="open-mark" aria-hidden="true">→</span>
+              }
             </div>
           </a>
         </article>

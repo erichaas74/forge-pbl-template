@@ -1,10 +1,12 @@
 import { evaluateGearLock } from '../gear-lock/gear-lock.domain';
+import { evaluateMachine } from '../locks/machine.rules';
 import { evaluateBalanceLock } from '../balance-lock/balance-lock.domain';
 import type { EscapeAnswer, EscapePuzzle } from './escape.models';
 
 type Evaluator = (puzzle: EscapePuzzle, answer: EscapeAnswer) => boolean;
 /** Installed math mechanisms. Project packages supply content, never executable evaluators. */
 export const escapePuzzleEvaluators: Readonly<Record<EscapePuzzle['type'], Evaluator>> = {
+  'machine-lock': (p, a) => p.type === 'machine-lock' && evaluateMachine(p.lock, a),
   'gear-lock': (p, a) => p.type === 'gear-lock' && Array.isArray(a) && evaluateGearLock(p.lock, a),
   'balance-lock': (p, a) =>
     p.type === 'balance-lock' && Array.isArray(a) && evaluateBalanceLock(p.lock, a),

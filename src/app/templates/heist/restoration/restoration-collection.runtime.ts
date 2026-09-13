@@ -29,6 +29,7 @@ export class RestorationCollectionRuntime {
   }
   send(command: CollectionCommand): boolean {
     if (this.blocked()) return false;
+    if (this.history.length >= 2400) { this.warning.set('This local practice has reached its saved-action limit. Download your ledger and exhibition before starting another practice.'); return false; }
     const e = { id: crypto.randomUUID(), elapsed: Math.max(this.history.at(-1)?.elapsed ?? 0, (Date.now() - this.epoch) / 1000), command };
     if (!this.engine.dispatch(e)) return false; this.history.push(e); this.revision.update(n => n + 1); this.retrySave(); return true;
   }

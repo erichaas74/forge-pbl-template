@@ -86,6 +86,9 @@ export class EscapeRuntime {
     this.revision.update((n) => n + 1);
     this.save();
   }
+  retrySave(): void {
+    this.save();
+  }
   private save(): void {
     try {
       this.persistence.save(this.history);

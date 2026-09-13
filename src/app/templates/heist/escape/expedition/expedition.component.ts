@@ -1,3 +1,4 @@
+import { MachineWorkshopComponent } from '../locks/machine-workshop.component';
 import { GearLockComponent } from '../gear-lock/gear-lock.component';
 import { BalanceLockComponent } from '../balance-lock/balance-lock.component';
 import {
@@ -28,7 +29,13 @@ export const EXPEDITION_SCENE_LOADER = new InjectionToken<
 });
 @Component({
   selector: 'app-heist-expedition',
-  imports: [FormsModule, RouterLink, BalanceLockComponent, GearLockComponent],
+  imports: [
+    FormsModule,
+    RouterLink,
+    BalanceLockComponent,
+    GearLockComponent,
+    MachineWorkshopComponent,
+  ],
   templateUrl: './expedition.component.html',
   styleUrl: './expedition.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -45,6 +52,12 @@ export class ExpeditionComponent implements AfterViewInit {
   readonly gearPuzzle = computed(() => {
     const p = this.runtime.current().puzzle;
     return p.type === 'gear-lock' && ['puzzle', 'celebrate'].includes(this.runtime.phase())
+      ? p
+      : null;
+  });
+  readonly machinePuzzle = computed(() => {
+    const p = this.runtime.current().puzzle;
+    return p.type === 'machine-lock' && ['puzzle', 'celebrate'].includes(this.runtime.phase())
       ? p
       : null;
   });

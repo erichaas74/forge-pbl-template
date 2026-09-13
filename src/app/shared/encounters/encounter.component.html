@@ -1,6 +1,6 @@
 <div class="encounter" [class.still]="reducedMotion()">
   <header class="encounter-header">
-    <button class="return-button" (click)="pause(); leave.emit()">← Return to gallery</button>
+    <button class="return-button" (click)="pause(); leave.emit()">← {{ returnLabel() }}</button>
     <div class="place-heading"><span>THROUGH THE FRAME</span><strong>{{ definition().title }}</strong></div>
     <span class="account-badge">Historical reconstruction</span>
   </header>

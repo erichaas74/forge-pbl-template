@@ -122,6 +122,7 @@ describe('local template composition', () => {
       'narrative-studio',
       'programming-automation',
       'simulation-decision',
+      'time-repair',
     ]);
   });
 });

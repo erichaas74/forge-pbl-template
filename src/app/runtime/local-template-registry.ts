@@ -16,6 +16,7 @@ import { journeyReplayProjectPackageDescriptor } from '../templates/journey-repl
 import { LocalJourneyReplayRuntime } from './local-journey-replay-runtime';
 import { LocalEngineeringDesignRuntime } from './local-engineering-design-runtime';
 import { LocalCrisisOperationsRuntime } from './local-crisis-operations-runtime';
+import { LocalTimeRepairRuntime } from './local-time-repair-runtime';
 import {
   LocalProjectConfigRuntime,
   singleProjectConfigPackageDescriptor,
@@ -176,6 +177,12 @@ export function createLocalTemplateRegistry(
   clock: Clock = new SystemClock(),
 ): TemplateRegistry {
   const registry = new TemplateRegistry();
+  const timeRepairResult = registry.register({
+    id: 'time-repair', version: '1.0.0', compatibleTemplateMajorVersions: [1],
+    projectTypes: ['time-repair'], packageDescriptor: { requiredFiles: ['project.json'], optionalFiles: [] },
+    createRuntime: () => new LocalTimeRepairRuntime(source),
+  });
+  if (!timeRepairResult.ok) throw new Error(timeRepairResult.error.message);
   const heistResult = registry.register({
     id: 'heist', version: '1.0.0', compatibleTemplateMajorVersions: [1],
     projectTypes: ['heist'], packageDescriptor: singleProjectConfigPackageDescriptor,

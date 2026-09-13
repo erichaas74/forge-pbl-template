@@ -1,7 +1,7 @@
 <main
   class="expedition"
   [class.in-puzzle]="runtime.phase() === 'puzzle'"
-  [class.in-balance]="!!balancePuzzle() || !!gearPuzzle()"
+  [class.in-balance]="!!balancePuzzle() || !!gearPuzzle() || !!machinePuzzle()"
   [class.in-opening]="runtime.phase() === 'opening'"
 >
   <div class="game-content" [inert]="settings()">
@@ -34,6 +34,23 @@
         (solved)="submit()"
         (sound)="audio.cue($event)"
         (pauseRequested)="openSettings()"
+        (leave)="runtime.phase() === 'celebrate' ? next() : closePuzzle()"
+      />
+    }
+    @if (machinePuzzle(); as machine) {
+      <app-machine-workshop
+        [definition]="machine.lock"
+        [answer]="runtime.draft().machine ?? null"
+        [grade]="runtime.engine().grade"
+        [completed]="runtime.phase() === 'celebrate'"
+        [paused]="runtime.paused()"
+        [reducedMotion]="runtime.reducedMotion()"
+        [saveWarning]="runtime.progress.warning()"
+        (changed)="runtime.input({ type: 'machine-change', answer: $event })"
+        (solved)="submit()"
+        (sound)="audio.cue($event)"
+        (pauseRequested)="openSettings()"
+        (retrySave)="runtime.progress.retrySave()"
         (leave)="runtime.phase() === 'celebrate' ? next() : closePuzzle()"
       />
     }
@@ -82,6 +99,19 @@
         <h1>{{ mission.title }}</h1>
         <p class="opening-subtitle">{{ mission.subtitle }}</p>
         <p class="briefing">{{ mission.briefing }}</p>
+        @if (mission.mathGrades; as grades) {
+          <fieldset class="grade-picker" [disabled]="runtime.engine().started">
+            <legend>Choose your math level</legend>
+            @for (grade of grades; track grade) {
+              <button
+                (click)="runtime.setGrade(grade)"
+                [attr.aria-pressed]="runtime.engine().grade === grade"
+              >
+                Grade {{ grade }}
+              </button>
+            }
+          </fieldset>
+        }
         <div class="opening-facts">
           <span
             ><b>{{ runtime.totalAnimals }}</b> animals to save</span
@@ -125,7 +155,7 @@
           </div>
           <button class="gold-button" (click)="runtime.inspect()">
             {{
-              ['balance-lock', 'gear-lock'].includes(runtime.current().puzzle.type)
+              ['balance-lock', 'gear-lock', 'machine-lock'].includes(runtime.current().puzzle.type)
                 ? 'Solve lock'
                 : runtime.nearby()
                   ? 'Inspect [E]'
@@ -169,7 +199,7 @@
         </div>
       }
 
-      @if (runtime.phase() === 'puzzle' && !balancePuzzle() && !gearPuzzle()) {
+      @if (runtime.phase() === 'puzzle' && !balancePuzzle() && !gearPuzzle() && !machinePuzzle()) {
         <section
           #panel
           class="mechanism-panel"
@@ -362,7 +392,9 @@
           }
         </section>
       }
-      @if (runtime.phase() === 'celebrate' && !balancePuzzle() && !gearPuzzle()) {
+      @if (
+        runtime.phase() === 'celebrate' && !balancePuzzle() && !gearPuzzle() && !machinePuzzle()
+      ) {
         <section #panel class="result-panel" tabindex="-1" aria-label="Mechanism unlocked">
           <div class="result-seal" aria-hidden="true">✓</div>
           <p class="eyebrow">MECHANISM UNLOCKED</p>

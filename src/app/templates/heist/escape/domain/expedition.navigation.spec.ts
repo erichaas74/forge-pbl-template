@@ -1,4 +1,5 @@
 import data from '../../../../../../public/projects/castle-archive-rescue/project.json';
+import previous from '../../testing/castle-escape-v3.3.fixture.json';
 import old from '../../testing/castle-escape-v2.fixture.json';
 import { requireEscapeMission } from './escape.validation';
 import { ExpeditionNavigation, worldDistance } from './expedition.navigation';
@@ -63,12 +64,12 @@ describe('Expedition world and navigation', () => {
       expect(() => requireEscapeMission({ ...data, world: value })).toThrow(
         'INVALID_HEIST_EXPEDITION',
       );
-    const steps = data.steps.map((s, i) =>
+    const steps = previous.steps.map((s, i) =>
       i === 2
         ? { ...s, puzzle: { ...s.puzzle, visual: { kind: 'groups', count: 100000, amount: 2 } } }
         : s,
     );
-    expect(() => requireEscapeMission({ ...data, steps })).toThrow();
+    expect(() => requireEscapeMission({ ...previous, steps })).toThrow();
     expect(requireEscapeMission(old).world).toBeUndefined();
   });
 });

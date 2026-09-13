@@ -1,4 +1,5 @@
 import type { EscapeAnswer } from './escape.models';
+import type { MachineAnswer } from '../locks/machine.models';
 
 export interface WorldPoint {
   readonly x: number;
@@ -48,8 +49,10 @@ export interface ExpeditionDraft {
   readonly weights: readonly number[];
   readonly counted: readonly string[];
   readonly placements?: readonly number[];
+  readonly machine?: MachineAnswer;
 }
 export type ExpeditionInput =
+  | { readonly type: 'machine-change'; readonly answer: MachineAnswer }
   | { readonly type: 'gear-change'; readonly answer: readonly number[] }
   | { readonly type: 'balance-place'; readonly index: number; readonly side: 0 | 1 | 2 }
   | { readonly type: 'walk'; readonly destination: WorldPoint }

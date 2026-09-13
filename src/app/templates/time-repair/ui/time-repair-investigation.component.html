@@ -1,0 +1,213 @@
+<div class="archive-header">
+  <div>
+    <span class="eyebrow">Archive / {{ mission().nodeId }}</span>
+    <h2>Follow the evidence.</h2>
+  </div>
+  <div class="segmented" aria-label="Investigation workspace">
+    <button
+      type="button"
+      [class.active]="mode() === 'sources'"
+      [attr.aria-pressed]="mode() === 'sources'"
+      (click)="openSources()"
+    >
+      01 · Read & connect
+    </button>
+    <button
+      type="button"
+      [class.active]="mode() === 'defense'"
+      [attr.aria-pressed]="mode() === 'defense'"
+      (click)="openBoard()"
+    >
+      02 · Defend the repair
+    </button>
+  </div>
+</div>
+@if (mode() === 'sources') {
+  <div class="archive-layout">
+    <nav class="source-list" aria-label="Evidence archive">
+      <p class="muted">
+        {{ runtime.state().collectedIds.length }} / {{ runtime.config.evidence.length }} cards
+        collected
+      </p>
+      @for (evidence of runtime.config.evidence; track evidence.id; let i = $index) {
+        <button
+          type="button"
+          [class.selected]="source().id === evidence.id"
+          [attr.aria-pressed]="source().id === evidence.id"
+          (click)="selectSource(evidence.id)"
+        >
+          <span class="source-number">0{{ i + 1 }}</span
+          ><span
+            ><small>{{ evidence.kind }}</small
+            ><strong>{{ evidence.title }}</strong>
+            <small>{{
+              runtime.state().collectedIds.includes(evidence.id) ? '✓ Collected' : 'Open source'
+            }}</small></span
+          >
+        </button>
+      }
+      <div class="archive-note">
+        Connect sources that establish the baseline and test the reported sequence. One detail
+        rarely tells the whole story.
+      </div>
+    </nav>
+    <article class="source-detail">
+      <span class="eyebrow">Evidence card · {{ source().kind }}</span>
+      <h3 #sourceTitle tabindex="-1">{{ source().title }}</h3>
+      <p class="excerpt">{{ source().content }}</p>
+      <p class="citation">
+        {{ source().citation }}
+        @if (source().url) {
+          <a [href]="source().url" target="_blank" rel="noopener noreferrer">Read original ↗</a>
+        }
+      </p>
+      <p class="perspective">
+        <strong>Read the source critically</strong>{{ source().perspective }}
+      </p>
+      @if (!collected()) {
+        <button type="button" class="primary" (click)="collect()">+ Collect evidence card</button>
+      } @else if (!progress().authorized) {
+        <form (ngSubmit)="connect()" class="connection-form">
+          <div class="form-pair">
+            <label
+              >This source…<select name="relationship" [(ngModel)]="relationship">
+                <option value="contradicts">Contradicts the reported anomaly</option>
+                <option value="supports">Supports the reported anomaly</option>
+                <option value="uncertain">Leaves the anomaly uncertain</option>
+              </select></label
+            >
+            <label
+              >My confidence<select name="confidence" [(ngModel)]="confidence">
+                <option value="developing">Still developing</option>
+                <option value="confident">Confident</option>
+              </select></label
+            >
+          </div>
+          <label
+            >What does it prove?<textarea
+              name="note"
+              [(ngModel)]="note"
+              rows="2"
+              maxlength="4000"
+              placeholder="Connect a specific detail to the reported cargo and date."
+              required
+              minlength="20"
+            ></textarea>
+          </label>
+          <div class="actions">
+            <button class="primary" type="submit">Save evidence connection</button
+            ><span class="muted">{{ progress().links.length }} connected</span>
+          </div>
+        </form>
+      } @else {
+        <p class="success">✓ Evidence preserved with your authorized defense.</p>
+      }
+    </article>
+  </div>
+} @else {
+  <div class="defense-layout">
+    <aside class="evidence-board">
+      <span class="eyebrow">Your evidence board</span>
+      <h3 #boardTitle tabindex="-1">Evidence → claim → consequence</h3>
+      <p class="reported">{{ mission().signal }}</p>
+      @for (link of progress().links; track link.evidenceId) {
+        <article class="linked-card">
+          <small>{{ link.relationship }} · {{ link.confidence }}</small
+          ><strong>{{ title(link.evidenceId) }}</strong>
+          <p>{{ link.note }}</p>
+        </article>
+      } @empty {
+        <p>No evidence connected yet. Read the archive and save what each source proves.</p>
+        <button (click)="openSources()">Open archive</button>
+      }
+      <p class="muted">
+        {{ progress().defenses.length }} defense
+        {{ progress().defenses.length === 1 ? 'attempt' : 'attempts' }} retained in the repair log.
+      </p>
+    </aside>
+    <form class="defense-form" (ngSubmit)="defend()">
+      @if (progress().authorized) {
+        <span class="eyebrow success">Authorization granted</span>
+        <h3>Your evidence has opened a path.</h3>
+        <p>
+          The system checked your evidence connections, classification, and source conclusion. Your
+          written defense is saved for teacher review.
+        </p>
+        @if (!progress().repaired) {
+          <button type="button" class="primary" (click)="jumpRequested.emit()">
+            Enter time-jump scene →
+          </button>
+        } @else {
+          <p class="success">
+            Repair already applied. Return to the control room to verify its ripple.
+          </p>
+        }
+      } @else {
+        <span class="eyebrow">Repair authorization / system checkpoint</span>
+        <h3>Prove it before you change it.</h3>
+        <label
+          >Classify the anomaly<select name="category" [(ngModel)]="defense.category" required>
+            <option value="" disabled>Select a category</option>
+            @for (category of mission().categories; track category) {
+              <option [value]="category">{{ category }}</option>
+            }
+          </select></label
+        >
+        <div class="form-pair">
+          <label
+            >Your claim<textarea
+              name="claim"
+              [(ngModel)]="defense.claim"
+              rows="3"
+              maxlength="4000"
+              [minlength]="runtime.config.settings.minReasoningLength"
+              required
+              placeholder="What is wrong, and what does the evidence support instead?"
+            ></textarea>
+          </label>
+          <label
+            >Cause → consequence<textarea
+              name="consequence"
+              [(ngModel)]="defense.consequence"
+              rows="3"
+              maxlength="4000"
+              [minlength]="runtime.config.settings.minReasoningLength"
+              required
+              placeholder="How could this error distort a later event or interpretation?"
+            ></textarea>
+          </label>
+        </div>
+        <fieldset>
+          <legend>{{ mission().defense.prompt }}</legend>
+          @for (option of mission().defense.options; track option.id) {
+            <label class="radio"
+              ><input
+                type="radio"
+                name="defenseAnswer"
+                [(ngModel)]="defense.answerId"
+                [value]="option.id"
+                required
+              /><span>{{ option.label }}</span></label
+            >
+          }
+        </fieldset>
+        <label
+          >Defend your source conclusion<textarea
+            name="explanation"
+            [(ngModel)]="defense.explanation"
+            rows="2"
+            maxlength="4000"
+            [minlength]="runtime.config.settings.minReasoningLength"
+            required
+            placeholder="Use a detail from each connected source. What remains uncertain?"
+          ></textarea>
+        </label>
+        <p class="muted">
+          At least {{ runtime.config.settings.minReasoningLength }} characters in each explanation.
+          This checkpoint checks structure and source conclusions; it does not grade your writing.
+        </p>
+        <button class="primary" type="submit">Request repair authorization →</button>
+      }
+    </form>
+  </div>
+}

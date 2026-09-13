@@ -1,4 +1,7 @@
 import { emptyGears, validGearDraft } from '../gear-lock/gear-lock.domain';
+import { initialMachine, validMachineAnswer } from '../locks/machine.rules';
+import type { MathGrade } from '../locks/machine.models';
+import { stepForGrade } from '../domain/escape.models';
 import { allBalancePieces, emptyBalance } from '../balance-lock/balance-lock.domain';
 import { Injectable, InjectionToken, computed, inject, signal } from '@angular/core';
 import type { EscapeAnswer, EscapeStep } from '../domain/escape.models';
@@ -41,8 +44,11 @@ export class ExpeditionRuntime {
     },
     { equal: () => false },
   );
-  readonly current = computed(
-    () => this.mission.steps[Math.min(this.engine().index, this.mission.steps.length - 1)],
+  readonly current = computed(() =>
+    stepForGrade(
+      this.mission.steps[Math.min(this.engine().index, this.mission.steps.length - 1)],
+      this.engine().grade,
+    ),
   );
   readonly phase = signal<ExpeditionPhase>('opening');
   readonly draft = signal<ExpeditionDraft>(blankDraft());
@@ -75,6 +81,12 @@ export class ExpeditionRuntime {
     if (this.engine().started) {
       this.navigation.position = this.point(this.current());
       this.nearby.set(true);
+    }
+    const puzzle = this.current().puzzle;
+    if (puzzle.type === 'machine-lock') {
+      const checkpoint = restored?.answer ?? this.engine().checkpoints.get(this.current().id);
+      if (validMachineAnswer(puzzle.lock, checkpoint))
+        this.draft.update((d) => ({ ...d, machine: checkpoint }));
     }
   }
   get players(): readonly ExpeditionPlayer[] {
@@ -118,6 +130,10 @@ export class ExpeditionRuntime {
     );
     this.message.set('Follow the gold beacon. Click to walk, or use WASD / arrow keys.');
     return true;
+  }
+  setGrade(grade: number): void {
+    if (this.phase() === 'opening' && !this.engine().started && [5, 6, 7, 8].includes(grade))
+      this.progress.send({ type: 'select-grade', grade: grade as MathGrade });
   }
   point(step: EscapeStep): WorldPoint {
     return {
@@ -172,6 +188,17 @@ export class ExpeditionRuntime {
     }
     if (this.phase() !== 'puzzle') return;
     const p = this.current().puzzle;
+    if (
+      input.type === 'machine-change' &&
+      p.type === 'machine-lock' &&
+      validMachineAnswer(p.lock, input.answer)
+    ) {
+      if (
+        this.progress.send({ type: 'checkpoint', stepId: this.current().id, answer: input.answer })
+      )
+        this.draft.update((d) => ({ ...d, machine: structuredClone(input.answer) }));
+      this.message.set('');
+    }
     if (
       input.type === 'gear-change' &&
       p.type === 'gear-lock' &&
@@ -267,6 +294,7 @@ export class ExpeditionRuntime {
     if (p.type === 'code') answer = p.labels.map((_, i) => d.digits[i]).join('');
     else if (p.type === 'timing') answer = d.departure;
     else if (p.type === 'balance') answer = d.weights;
+    else if (p.type === 'machine-lock') answer = d.machine ?? initialMachine(p.lock);
     else if (p.type === 'gear-lock') answer = d.placements ?? emptyGears();
     else if (p.type === 'balance-lock') answer = d.placements ?? emptyBalance(p.lock);
     else {

@@ -1,3 +1,4 @@
+import previous from '../../testing/castle-escape-v3.3.fixture.json';
 import data from '../../../../../../public/projects/castle-archive-rescue/project.json';
 import {
   balanceReading,
@@ -99,6 +100,6 @@ describe('Exact reusable balance lock', () => {
     for (const value of invalid)
       expect(() => validateBalanceLock(value)).toThrow('INVALID_BALANCE_LOCK');
     expect(formatPiece(lock.scales[2].left[0])).toBe('2 1/2');
-    expect(() => validateBalanceLock(data.steps[4].puzzle.lock)).not.toThrow();
+    expect(() => validateBalanceLock(previous.steps[4].puzzle.lock)).not.toThrow();
   });
 });

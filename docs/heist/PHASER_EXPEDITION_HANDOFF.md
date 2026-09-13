@@ -1,3 +1,5 @@
+Current release: **4.0.0**. See [MATH_WORKSHOPS_HANDOFF.md](MATH_WORKSHOPS_HANDOFF.md) for the new grade 5-8 machines. The version 3 record below describes the previous curriculum.
+
 # The Midnight Menagerie — Phaser expedition, version 3
 
 `/projects/castle-archive-rescue` now launches a playable Phaser 4.2.1 animal-rescue

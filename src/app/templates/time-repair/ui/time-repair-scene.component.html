@@ -1,0 +1,138 @@
+<div class="scene-header">
+  <div>
+    <span class="eyebrow"
+      >Field operation / jump {{ progress().jumped ? 'confirmed' : 'locked' }}</span
+    >
+    <h2>{{ scene().title }}</h2>
+  </div>
+  <span class="charge-counter">{{ runtime.charges() }} repair charges</span>
+</div>
+@if (progress().jumped) {
+  <div class="scene-layout">
+    <div class="field">
+      <div class="camera-tabs" aria-label="Camera viewpoints">
+        @for (camera of scene().views; track camera.id; let i = $index) {
+          <button
+            [attr.aria-pressed]="viewIndex() === i"
+            [class.active]="viewIndex() === i"
+            (click)="viewIndex.set(i)"
+          >
+            {{ camera.label }}
+          </button>
+        }
+      </div>
+      <div class="viewport">
+        <div
+          class="scene-plane"
+          [class.close-up]="viewIndex() > 0"
+          [style.transform-origin]="view().position"
+        >
+          <img [src]="scene().image" [alt]="scene().imageAlt" />
+          @for (hotspot of scene().hotspots; track hotspot.id; let i = $index) {
+            <button
+              class="hotspot"
+              [class.inspected]="progress().inspectedIds.includes(hotspot.id)"
+              [class.selected]="selected() === hotspot.id"
+              [style.left.%]="hotspot.x"
+              [style.top.%]="hotspot.y"
+              [attr.aria-label]="'Inspect ' + hotspot.label"
+              (click)="inspect(hotspot.id)"
+            >
+              @if (hotspot.objectImage) {
+                <img
+                  class="object-art"
+                  [class.restored-object]="
+                    progress().repaired && hotspot.id === mission().repair.targetHotspotId
+                  "
+                  [src]="
+                    progress().repaired && hotspot.id === mission().repair.targetHotspotId
+                      ? (hotspot.restoredObjectImage ?? hotspot.objectImage)
+                      : hotspot.objectImage
+                  "
+                  alt=""
+                  aria-hidden="true"
+                />
+              }
+              <span>{{ i + 1 }}</span
+              ><strong>{{ hotspot.label }}</strong>
+            </button>
+          }
+        </div>
+        <span class="field-overlay" [class.repaired]="progress().repaired"
+          >{{ progress().repaired ? '✓' : '◇' }} {{ objectLabel() }}</span
+        >
+      </div>
+      <div class="object-list" aria-label="Scene objects">
+        @for (hotspot of scene().hotspots; track hotspot.id; let i = $index) {
+          <button [attr.aria-pressed]="selected() === hotspot.id" (click)="inspect(hotspot.id)">
+            {{ i + 1 }} · {{ hotspot.label }}
+            {{ progress().inspectedIds.includes(hotspot.id) ? '✓' : '' }}
+          </button>
+        }
+      </div>
+      <p class="scene-caption">
+        Reconstructed teaching scene · illustration and dialogue are not historical sources. Use
+        your archive evidence to make decisions.
+      </p>
+    </div>
+    <aside class="inspector">
+      @if (inspected(); as object) {
+        <span class="eyebrow">Object inspection</span>
+        <h3 #inspectorTitle tabindex="-1">{{ object.label }}</h3>
+        <p>{{ object.description }}</p>
+        @if (object.id === mission().repair.targetHotspotId && !progress().repaired) {
+          <form (ngSubmit)="repair()">
+            <fieldset>
+              <legend>Choose an intervention</legend>
+              @for (option of mission().repair.options; track option.id) {
+                <label class="radio"
+                  ><input
+                    type="radio"
+                    name="repairOption"
+                    [(ngModel)]="optionId"
+                    [value]="option.id"
+                    required
+                  /><span
+                    ><strong>{{ option.label }}</strong
+                    ><small>{{ option.description }}</small></span
+                  ></label
+                >
+              }
+            </fieldset>
+            <p class="muted">
+              An intervention costs one charge. A wrong repair reduces stability by
+              {{ runtime.config.settings.wrongRepairPenalty }} points.
+            </p>
+            <button class="primary" type="submit" [disabled]="!optionId || runtime.charges() === 0">
+              Apply repair · 1 charge
+            </button>
+          </form>
+        }
+      } @else {
+        <span class="eyebrow">Inspect before intervening</span>
+        <h3>A moment out of place.</h3>
+        <p>
+          Select a numbered object in the scene. Compare what you find with the evidence you
+          brought.
+        </p>
+        <div class="field-tip">
+          Your defense earned the jump.<br />Your judgment determines the repair.
+        </div>
+      }
+      @if (progress().repaired) {
+        <div class="repair-complete">
+          <span class="eyebrow success">Repair applied</span>
+          <p>{{ mission().canonicalSummary }}</p>
+          <button class="primary" (click)="rippleRequested.emit()">Follow the ripple →</button>
+        </div>
+      } @else if (runtime.charges() === 0) {
+        <p class="exhausted">
+          Charges exhausted. Your attempts are saved. Open the repair log to export the evidence and
+          discuss a new strategy.
+        </p>
+      }
+    </aside>
+  </div>
+} @else {
+  <p>Complete the evidence defense to unlock this time jump.</p>
+}

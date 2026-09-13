@@ -2,12 +2,13 @@ import { projectCatalog } from './project-catalog';
 
 describe('project catalog', () => {
   it('exposes the configured projects with unique IDs and routes', () => {
-    expect(projectCatalog).toHaveLength(15);
+    expect(projectCatalog).toHaveLength(16);
     expect(new Set(projectCatalog.map((project) => project.id)).size).toBe(projectCatalog.length);
     expect(new Set(projectCatalog.map((project) => project.route)).size).toBe(
       projectCatalog.length,
     );
     expect(projectCatalog.map((project) => project.route)).toEqual([
+      '/projects/exploration-time-repair',
       '/projects/community-story-network',
       '/projects/shadow-gallery',
       '/projects/castle-archive-rescue',

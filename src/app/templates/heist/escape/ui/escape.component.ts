@@ -107,7 +107,7 @@ export class EscapeComponent {
     if (p.type === 'code') answer = p.labels.map((_, i) => this.digits()[i] ?? 0).join('');
     else if (p.type === 'timing') answer = this.departure();
     else if (p.type === 'balance') answer = this.weights();
-    else if (p.type === 'balance-lock' || p.type === 'gear-lock') return; // Validated packages require the expedition renderer.
+    else if (p.type === 'balance-lock' || p.type === 'gear-lock' || p.type === 'machine-lock') return; // Validated packages require the expedition renderer.
     else {
       if (
         this.answer === null ||

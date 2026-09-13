@@ -24,7 +24,7 @@ export class ExpeditionMechanisms {
     this.live = scene.add.graphics().setScrollFactor(0).setDepth(5001);
   }
   update(s: ExpeditionSceneSnapshot): void {
-    const visible = s.phase === 'puzzle' && !['balance-lock', 'gear-lock'].includes(this.mission.steps[s.currentIndex].puzzle.type) && this.scene.scale.width >= 900;
+    const visible = s.phase === 'puzzle' && !['balance-lock', 'gear-lock', 'machine-lock'].includes(this.mission.steps[s.currentIndex].puzzle.type) && this.scene.scale.width >= 900;
     this.root.setVisible(visible);
     this.live.setVisible(visible);
     if (!visible) return;

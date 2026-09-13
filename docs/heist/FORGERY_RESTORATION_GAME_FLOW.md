@@ -1,6 +1,6 @@
 # Restore the collection: student forgery-restoration activity
 
-Current proposed design direction. This replaces passage selection as the primary learning goal. The existing game has not yet been changed into a painting editor. The [story portal ideas](STORY_PORTAL_FLOW_IDEAS.md) now serve this restoration loop.
+The core restoration loop is now built as project **2.0.0**. See [implementation, capabilities and verification](RESTORATION_IMPLEMENTATION.md) for the delivered 16-painting studio, living ledger and final recovery. This design document also includes future extensions: only the coastal story environment is currently available; other commissions use the research desk. The [story portal ideas](STORY_PORTAL_FLOW_IDEAS.md) serve this restoration loop.
 
 ## New goal and student briefing
 

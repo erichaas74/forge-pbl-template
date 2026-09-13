@@ -7,6 +7,17 @@ export const heistLauncher: TemplateLauncher = {
   templateId: 'heist',
   async load(request) {
     if (request.session.authorityMode !== 'localDemo') throw new Error('CAPABILITY_NOT_INSTALLED: Heist currently supports local practice. Official shared attempts require an authoritative Heist adapter.');
+    if (request.projectDefinition && typeof request.projectDefinition === 'object' && 'experience' in request.projectDefinition && request.projectDefinition.experience === 'restoration') {
+      const { requireRestorationMission } = await import('../../../templates/heist/restoration/restoration-collection.validation');
+      const { RESTORATION_MISSION, RESTORATION_PERSISTENCE, RestorationCollectionRuntime, LocalRestorationAdapter } = await import('../../../templates/heist/restoration/restoration-collection.runtime');
+      const mission = requireRestorationMission(request.projectDefinition);
+      if (mission.projectId !== request.project.id || mission.projectVersion !== request.project.projectVersion) throw new Error('PROJECT_ID_MISMATCH: Restoration package does not match this project.');
+      const { RestorationCollectionComponent } = await import('../../../templates/heist/restoration/restoration-collection.component');
+      return { component: RestorationCollectionComponent, integratedHeader: true, providers: [
+        { provide: RESTORATION_MISSION, useValue: mission },
+        { provide: RESTORATION_PERSISTENCE, useFactory: () => new LocalRestorationAdapter(request.session, mission) }, RestorationCollectionRuntime,
+      ] };
+    }
     if (request.projectDefinition && typeof request.projectDefinition === 'object' && 'experience' in request.projectDefinition && request.projectDefinition.experience === 'escape') {
       const { requireEscapeMission } = await import('../../../templates/heist/escape/domain/escape.validation');
       const { ESCAPE_MISSION, ESCAPE_PERSISTENCE, EscapeRuntime, LocalEscapeAdapter } = await import('../../../templates/heist/escape/runtime/escape-runtime');

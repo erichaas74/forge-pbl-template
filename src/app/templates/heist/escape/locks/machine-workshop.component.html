@@ -1,0 +1,230 @@
+<section class="workshop" aria-label="Math machine workshop">
+  <header>
+    <button (click)="leave.emit()" [disabled]="testing() || paused()">
+      &#8592; {{ completed() ? 'Return to rescue' : 'Back to map' }}
+    </button>
+    <div>
+      <p>THE KEEPER'S WORKSHOPS / GRADE {{ grade() }}</p>
+      <h1 #heading tabindex="-1">{{ stage().title }}</h1>
+    </div>
+    <button (click)="pauseRequested.emit()">Pause</button>
+  </header>
+  <nav aria-label="Workshop stages">
+    @for (s of definition().stages; track s.id; let i = $index) {
+      <span [class.active]="i === active()" [class.sealed]="state().seals.includes(s.id)"
+        >{{ state().seals.includes(s.id) ? '✓' : i + 1 }} · {{ s.title }}</span
+      >
+    }
+  </nav>
+  <p class="mission">{{ stage().instruction }}</p>
+  <div class="stage-shell">
+    <div #stageHost class="stage"></div>
+    @if (!ready() && !error()) {
+      <p class="loading" role="status">Preparing the workshop...</p>
+    }
+    @if (error()) {
+      <p class="loading" role="status">
+        The animated workshop could not load. The same mathematical machine works with the controls
+        below.
+      </p>
+    }
+    @if (testing()) {
+      <div class="run-caption" role="status">
+        <b>{{ passed() ? 'MECHANISM ENGAGED' : 'TESTING THE MECHANISM' }}</b>
+        <p>{{ passed() ? stage().success : reading().feedback }}</p>
+        <button (click)="finish()" [disabled]="paused()">
+          {{ passed() ? 'Skip release animation' : 'Finish test' }}
+        </button>
+      </div>
+    }
+  </div>
+  <footer>
+    <div class="operation">
+      <div>
+        <small>{{ sealed() ? 'MECHANISM RELEASED' : 'LIVE MEASUREMENTS' }}</small>
+        <p class="equation">{{ reading().equation }}</p>
+        <p class="notice" aria-live="polite">{{ notice() }}</p>
+      </div>
+      @if (completed()) {
+        <button class="primary" (click)="leave.emit()" [disabled]="testing() || paused()">
+          Return to rescue &#8594;
+        </button>
+      } @else if (sealed()) {
+        <button class="primary" (click)="nextStage()" [disabled]="testing() || paused()">
+          Next mechanism &#8594;
+        </button>
+      } @else {
+        <button class="primary" (click)="test()" [disabled]="locked() || !settled()">
+          Engage release &#8594;
+        </button>
+      }
+    </div>
+    <div class="toolbar">
+      <button (click)="controls.set(!controls())" [attr.aria-expanded]="controls()">
+        {{ controls() ? 'Hide' : 'Show' }} machine controls</button
+      ><button (click)="help.set(!help())" [attr.aria-expanded]="help()">
+        Show the mechanic's clue
+      </button>
+      @if (sealed()) {
+        <button (click)="replay()" [disabled]="testing() || paused()">Replay release</button>
+      } @else {
+        <button (click)="reset()" [disabled]="locked()">Reset this mechanism</button>
+      }
+    </div>
+    @if (help()) {
+      <aside>{{ stage().hint }}</aside>
+    }
+    @if (controls()) {
+      <div class="controls" aria-label="Accessible machine controls">
+        @if (stage(); as d) {
+          @if (stageAnswer(); as a) {
+            @if (d.kind === 'fraction-gear' && a.kind === 'fraction-gear') {
+              <div class="inventory">
+                @for (p of d.pieces; track p.id; let i = $index) {
+                  <button
+                    (click)="select(i)"
+                    [disabled]="locked()"
+                    [attr.aria-pressed]="selected() === i"
+                  >
+                    {{ p.numerator }}/{{ p.denominator
+                    }}<small>Piece {{ i + 1 }} · {{ a.offsets[i] < 0 ? 'tray' : 'on ring' }}</small>
+                  </button>
+                }
+              </div>
+              <div class="actions">
+                <button (click)="seatPiece()" [disabled]="locked() || selected() === null">
+                  Seat selected sector</button
+                ><button (click)="turnPiece(-1)" [disabled]="locked() || selected() === null">
+                  Rotate sector left</button
+                ><button (click)="turnPiece(1)" [disabled]="locked() || selected() === null">
+                  Rotate sector right</button
+                ><button (click)="removePiece()" [disabled]="locked() || selected() === null">
+                  Return sector to tray
+                </button>
+              </div>
+            }
+            @if (d.kind === 'volume' && a.kind === 'volume') {
+              <div class="inventory">
+                @for (v of d.vessels; track v.id; let i = $index) {
+                  <div class="control-card">
+                    <strong>{{ v.label }}</strong
+                    ><small>{{ v.uses - a.pours[i] }} pours left</small
+                    ><button
+                      (click)="operate({ type: 'pour', index: i, delta: 1 })"
+                      [disabled]="locked() || a.pours[i] >= v.uses"
+                    >
+                      Pour {{ v.label }}</button
+                    ><button
+                      (click)="operate({ type: 'pour', index: i, delta: -1 })"
+                      [disabled]="locked() || a.pours[i] === 0"
+                    >
+                      Remove one {{ v.label }} pour
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+            @if (d.kind === 'timing-wheels' && a.kind === 'timing-wheels') {
+              <div class="actions">
+                <button
+                  (click)="operate({ type: 'steps', value: a.steps - 1 })"
+                  [disabled]="locked() || a.steps === 0"
+                >
+                  Rewind one step</button
+                ><strong>{{ a.steps }} steps</strong
+                ><button
+                  (click)="operate({ type: 'steps', value: a.steps + 1 })"
+                  [disabled]="locked() || a.steps === d.maxSteps"
+                >
+                  Advance one step
+                </button>
+              </div>
+              <label class="slider"
+                >Crank run: {{ a.steps }} steps<input
+                  type="range"
+                  min="0"
+                  [max]="d.maxSteps"
+                  [value]="a.steps"
+                  [disabled]="locked()"
+                  (change)="operate({ type: 'steps', value: +$any($event.target).value })"
+                  aria-label="Crank step count"
+              /></label>
+            }
+            @if (d.kind === 'coordinate' && a.kind === 'coordinate') {
+              <div class="actions">
+                <button (click)="moveHead('x', -1)" [disabled]="locked() || a.x === d.min">
+                  X left</button
+                ><strong>X = {{ a.x }}</strong
+                ><button (click)="moveHead('x', 1)" [disabled]="locked() || a.x === d.max">
+                  X right</button
+                ><button (click)="moveHead('y', -1)" [disabled]="locked() || a.y === d.min">
+                  Y down</button
+                ><strong>Y = {{ a.y }}</strong
+                ><button (click)="moveHead('y', 1)" [disabled]="locked() || a.y === d.max">
+                  Y up
+                </button>
+              </div>
+            }
+            @if (d.kind === 'reflection' && a.kind === 'reflection') {
+              <div class="inventory">
+                @for (m of d.mirrors; track m.id; let i = $index) {
+                  <div class="control-card">
+                    <strong>Mirror {{ i + 1 }} · {{ a.angles[i] }}°</strong
+                    ><small>Mirror surface angle; 0° is horizontal.</small
+                    ><button (click)="turnMirror(i, -1)" [disabled]="locked()">
+                      Mirror {{ i + 1 }} minus {{ m.step }}°</button
+                    ><button (click)="turnMirror(i, 1)" [disabled]="locked()">
+                      Mirror {{ i + 1 }} plus {{ m.step }}°
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+            @if (d.kind === 'mixing' && a.kind === 'mixing') {
+              <div class="inventory">
+                @for (v of d.ingredients; track v.id; let i = $index) {
+                  <div class="control-card">
+                    <strong>{{ v.label }}</strong
+                    ><small
+                      >{{ (a.measures[i] * v.measure) / d.unitTicks }} {{ d.unit }} in mix ·
+                      {{ v.measure / d.unitTicks }} {{ d.unit }} per pump</small
+                    ><button
+                      (click)="operate({ type: 'measure', index: i, delta: 1 })"
+                      [disabled]="locked() || (a.measures[i] + 1) * v.measure > v.supply"
+                    >
+                      Pump {{ v.label }}</button
+                    ><button
+                      (click)="operate({ type: 'measure', index: i, delta: -1 })"
+                      [disabled]="locked() || a.measures[i] === 0"
+                    >
+                      Remove {{ v.label }} measure
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+            @if (d.kind === 'cable' && a.kind === 'cable') {
+              <div class="inventory">
+                @for (c of d.cables; track c.id; let i = $index) {
+                  <button
+                    (click)="operate({ type: 'cable', index: i })"
+                    [disabled]="locked()"
+                    [attr.aria-pressed]="a.cable === i"
+                  >
+                    Attach {{ c.label }} cable
+                  </button>
+                }
+              </div>
+            }
+          }
+        }
+      </div>
+    }
+    @if (saveWarning()) {
+      <p role="alert" class="warning">
+        {{ saveWarning() }}
+        <button (click)="retrySave.emit()" [disabled]="paused()">Retry save</button>
+      </p>
+    }
+  </footer>
+</section>
