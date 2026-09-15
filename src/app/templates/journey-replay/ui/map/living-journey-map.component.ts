@@ -151,6 +151,9 @@ export class LivingJourneyMapComponent {
       return Math.abs(point.x - otherPoint.x) < 18 && Math.abs(point.y - otherPoint.y) < 12;
     });
     const offset = this.cover() === 'regional' ? 9 : 14;
+    if (this.expeditionStyle() && neighbor && location.longitude < neighbor.longitude) {
+      return { x: offset, y: -14, anchor: 'start' };
+    }
     if (neighbor && location.longitude < neighbor.longitude) {
       return { x: -offset, y: -5, anchor: 'end' };
     }

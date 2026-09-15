@@ -6,6 +6,14 @@ import { initialPanoramaState } from './panorama.models';
 import { transitionPanorama } from './panorama.engine';
 const scene = requirePanorama(fixture.previewWeeks.scenes[0]);
 describe('Spherical scene navigation', () => {
+  it('opens separate canoe and crop inspections with a supported crop source', () => {
+    const field = scene.viewpoints!.find(v => v.id === 'harvest')!.inspection!;
+    expect(field.title).toBe('Cultivated field');
+    expect(field.targets.map(t => t.name)).toEqual(['INT_maize','INT_vines','INT_roots','INT_ear']);
+    expect(field.asset.src).toContain('/field.glb');
+    expect(scene.viewpoints!.find(v => v.id === 'canoe')!.inspection!.asset.src).toContain('/workshop.glb');
+    expect(scene.sources.some(s => s.id === 'sweet-potato-crop')).toBe(true);
+  });
   it('wraps continuously through a full turn and reaches sky and ground', () => {
     expect(wrapYaw(180)).toBe(-180); expect(wrapYaw(360)).toBe(0); expect(wrapYaw(-540)).toBe(-180);
     expect(clampPitch(120)).toBe(89.9); expect(clampPitch(-120)).toBe(-89.9);

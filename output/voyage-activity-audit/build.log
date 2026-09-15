@@ -1,0 +1,16 @@
+> Building...
+√ Building...
+Initial chunk files | Names                  | Raw size
+main.js             | main                   |  1.85 MB | 
+chunk-GOMI4DH3.js   | -                      |  1.42 kB | 
+styles.css          | styles                 |  1.12 kB | 
+
+                    | Initial total          |  1.85 MB
+
+Lazy chunk files    | Names                  | Raw size
+chunk-BYCXJO7F.js   | journey-location-world |  5.84 MB | 
+
+Application bundle generation complete. [17.073 seconds] - 2026-09-15T19:47:54.914Z
+
+Output location: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\output\voyage-activity-audit\build
+

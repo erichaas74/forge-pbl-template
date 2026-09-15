@@ -1,7 +1,10 @@
 import type { RuntimeEvent } from '../../../core/events/runtime-event';
 import type { JourneyChoiceDefinition } from './journey-replay.models';
 
-export interface JourneyPathChoice extends Pick<JourneyChoiceDefinition, 'id' | 'label' | 'summary' | 'consequence' | 'resourceChanges' | 'consequenceModifiers'> {
+export interface JourneyPathChoice extends Pick<
+  JourneyChoiceDefinition,
+  'id' | 'label' | 'summary' | 'consequence' | 'resourceChanges' | 'consequenceModifiers'
+> {
   readonly nextNodeId?: string;
   readonly routeId?: string;
   readonly grants?: readonly string[];
@@ -18,7 +21,11 @@ export interface JourneyPathEvent {
   readonly observation: string;
   readonly question: string;
   readonly evidenceIds: readonly string[];
-  readonly object: { readonly x: number; readonly y: number; readonly icon: 'compass' | 'cargo' | 'sail' | 'shore' | 'log' };
+  readonly object: {
+    readonly x: number;
+    readonly y: number;
+    readonly icon: 'compass' | 'cargo' | 'sail' | 'shore' | 'log';
+  };
   readonly choices: readonly JourneyPathChoice[];
 }
 

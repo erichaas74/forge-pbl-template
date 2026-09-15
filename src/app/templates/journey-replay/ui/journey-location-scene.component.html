@@ -1,99 +1,279 @@
-<div class="location-scene" [class.storm]="storm()" [class.paused]="paused()" [class.resting]="effects().has('rest')" [attr.data-scene]="node().scene">
+<div
+  class="location-scene"
+  [class.storm]="storm()"
+  [class.paused]="paused()"
+  [class.resting]="effects().has('rest')"
+  [attr.data-scene]="node().scene"
+>
   @if (node().sceneArt; as art) {
-    <div #worldHost class="phaser-world" [style.background-image]="'url(' + art.backdrop + ')'" [attr.data-renderer-status]="worldStatus()" role="img" [attr.aria-label]="node().title + '. Interactive ship and shore. Use the marked objects to inspect events.'"></div>
+    <div
+      #worldHost
+      class="phaser-world"
+      [style.background-image]="'url(' + art.backdrop + ')'"
+      [attr.data-renderer-status]="worldStatus()"
+      role="img"
+      [attr.aria-label]="
+        node().title + '. Interactive ship and shore. Use the marked objects to inspect events.'
+      "
+    ></div>
     <div class="scene-vignette" aria-hidden="true"></div>
-    @if (worldStatus() === 'error') { <div class="world-error" role="alert">The interactive artwork could not load. <button type="button" (click)="reload()">Reload scene</button></div> }
+    @if (worldStatus() === 'error') {
+      <div class="world-error" role="alert">
+        The interactive artwork could not load.
+        <button type="button" (click)="reload()">Reload scene</button>
+      </div>
+    }
   } @else {
-  <svg class="scene-art" viewBox="0 0 1000 760" preserveAspectRatio="xMidYMid slice" role="img" [attr.aria-label]="node().title + '. Inspect the marked objects; event options change the ship and shore.'">
-    <defs>
-      <linearGradient id="location-sky" x2="0" y2="1"><stop stop-color="#769eab"/><stop offset=".68" stop-color="#d4ceaf"/><stop offset="1" stop-color="#edddad"/></linearGradient>
-      <linearGradient id="location-ocean" x2="0.2" y2="1"><stop stop-color="#427f88"/><stop offset=".5" stop-color="#286570"/><stop offset="1" stop-color="#143943"/></linearGradient>
-      <linearGradient id="location-sail" x2="1" y2=".5"><stop stop-color="#fbefc3"/><stop offset=".55" stop-color="#d5be87"/><stop offset="1" stop-color="#f2dfae"/></linearGradient>
-      <linearGradient id="location-hull" x2="0" y2="1"><stop stop-color="#b87942"/><stop offset=".45" stop-color="#6f472f"/><stop offset="1" stop-color="#302c27"/></linearGradient>
-      <pattern id="location-water" width="100" height="36" patternUnits="userSpaceOnUse"><path d="M2 17q16-5 32 0m26 8q12-4 25 0" stroke="#d4e5d0" stroke-width="1" opacity=".16"/></pattern>
-      <pattern id="location-wood" width="70" height="18" patternUnits="userSpaceOnUse"><path d="M0 17H70M35 0v17" stroke="#1f302a" opacity=".3"/></pattern>
-    </defs>
-    <rect width="1000" height="760" fill="url(#location-sky)"/>
-    <circle cx="746" cy="139" r="58" fill="#f3df9e" opacity=".75"/>
-    <g class="clouds" fill="#f2ecda" opacity=".45"><path d="M-55 140q65-68 133-19 66-81 140-22 77-27 125 46z"/><path d="M597 78q38-40 73-12 35-50 88-11 57-14 92 29z"/></g>
-    <path d="M0 290Q125 260 235 296T520 280T800 289T1000 274V760H0Z" fill="url(#location-ocean)"/>
-    @if (node().scene === 'island' || node().scene === 'cape') {
-      <path d="M540 300l81-69 28-73 49-86 44 71 29 80 66-35 65 69 98 27v87z" fill="#60705c"/>
-      <path d="M564 307l93-63 40-99 17 73 50 45 64-39 68 67 104 21v66z" fill="#80936b"/>
-      <path d="M616 288l55-78 21 18 8-80 26 80 35 36-60-14z" fill="#a0a075"/>
-      <path d="M580 326q130-22 210 0t210 4v41q-143-25-207-19t-213-26" fill="#d7c69c"/>
-      <path d="M870 338l37-20 29 11 16-21 48 38v42z" fill="#374d49"/>
-    } @else if (node().scene === 'river') {
-      <path d="M410 296q75-102 170-25 68-108 157-43 117-43 263 41v125L667 363z" fill="#426854"/>
-      <path d="M568 314q89-63 157-3l275-14v68l-313 5z" fill="#779365"/>
-      <path d="M680 334q83-16 161 14t159-1v38q-71 21-191-18t-137-2" fill="#d2bd86"/>
-      <path d="M902 240q-31 67-21 102m9-77q-43-25-59 7m61-9q30-35 53-19m-55 15q-1-45-26-44" fill="none" stroke="#304e3c" stroke-width="10"/>
-    } @else {
-      <path d="M430 299q85-56 166-18 91-55 197-12l207 7v96H450z" fill="#768875"/>
-      <path d="M427 335q168-10 263 17l310-29v45l-310 13z" fill="#d1bd89"/>
-    }
-    @if (town()) {
-      <g>
-        @for (building of buildings; track building) {
-          <g [attr.transform]="'translate(' + (505 + building * 66) + ' ' + (251 + (building % 3) * 9) + ')'">
-            <path d="M0 20h53v56H0z" fill="#d4c5a3"/><path d="M-5 22L25 0l34 22z" fill="#a16d4c"/>
-            <path d="M9 38h8v12H9m25-12h8v12h-8M23 58h10v18H23" fill="#3c5652"/>
-          </g>
-        }
-        <path d="M842 224v104h36V224l-18-32z" fill="#b7b395"/><path d="M854 245h12v28h-12" fill="#3d5654"/>
-        <path d="M698 366l198 0-86 66-210-8z" fill="#9c865b"/><path d="M695 376l200-2m-222 12h205m-224 12h201m-227 12h207" stroke="#5c6451" stroke-width="3"/>
-        <path d="M650 411v53m65-42v52m73-51v40m79-68v41" stroke="#605443" stroke-width="12"/>
+    <svg
+      class="scene-art"
+      viewBox="0 0 1000 760"
+      preserveAspectRatio="xMidYMid slice"
+      role="img"
+      [attr.aria-label]="
+        node().title + '. Inspect the marked objects; event options change the ship and shore.'
+      "
+    >
+      <defs>
+        <linearGradient id="location-sky" x2="0" y2="1">
+          <stop stop-color="#769eab" />
+          <stop offset=".68" stop-color="#d4ceaf" />
+          <stop offset="1" stop-color="#edddad" />
+        </linearGradient>
+        <linearGradient id="location-ocean" x2="0.2" y2="1">
+          <stop stop-color="#427f88" />
+          <stop offset=".5" stop-color="#286570" />
+          <stop offset="1" stop-color="#143943" />
+        </linearGradient>
+        <linearGradient id="location-sail" x2="1" y2=".5">
+          <stop stop-color="#fbefc3" />
+          <stop offset=".55" stop-color="#d5be87" />
+          <stop offset="1" stop-color="#f2dfae" />
+        </linearGradient>
+        <linearGradient id="location-hull" x2="0" y2="1">
+          <stop stop-color="#b87942" />
+          <stop offset=".45" stop-color="#6f472f" />
+          <stop offset="1" stop-color="#302c27" />
+        </linearGradient>
+        <pattern id="location-water" width="100" height="36" patternUnits="userSpaceOnUse">
+          <path
+            d="M2 17q16-5 32 0m26 8q12-4 25 0"
+            stroke="#d4e5d0"
+            stroke-width="1"
+            opacity=".16"
+          />
+        </pattern>
+        <pattern id="location-wood" width="70" height="18" patternUnits="userSpaceOnUse">
+          <path d="M0 17H70M35 0v17" stroke="#1f302a" opacity=".3" />
+        </pattern>
+      </defs>
+      <rect width="1000" height="760" fill="url(#location-sky)" />
+      <circle cx="746" cy="139" r="58" fill="#f3df9e" opacity=".75" />
+      <g class="clouds" fill="#f2ecda" opacity=".45">
+        <path d="M-55 140q65-68 133-19 66-81 140-22 77-27 125 46z" />
+        <path d="M597 78q38-40 73-12 35-50 88-11 57-14 92 29z" />
       </g>
-    }
-    <rect y="385" width="1000" height="375" fill="url(#location-water)"/>
-    <g class="sea-lines" fill="none" stroke="#bdd8c9" stroke-width="2" opacity=".35">
-      @for (wave of waves; track wave) { <path [attr.transform]="'translate(' + ((wave % 2) * -55) + ' ' + (wave * 56) + ')'" d="M-80 406q65-13 127 0t126 0m105 10q68-14 135 0t135 0m100-15q70-13 140 0t140 0"/> }
-    </g>
-    <g class="small-boat" [class.exchanged]="effects().has('exchange') || effects().has('water')">
-      <path d="M717 478q55 15 111-4l-17 25-72 1z" fill="#5d4431"/><path d="M754 459v24m38-27v25" stroke="#374939" stroke-width="9"/><circle cx="754" cy="452" r="7" fill="#9c7653"/><circle cx="792" cy="449" r="7" fill="#9c7653"/><path d="M777 470l48 41" stroke="#d1ad73" stroke-width="4"/>
-    </g>
-    <g class="ship">
-      <ellipse cx="400" cy="614" rx="225" ry="21" fill="#102f36" opacity=".35"/>
-      <path d="M204 523q185 46 400-22l-41 97q-43 45-248 10z" fill="url(#location-hull)"/>
-      <path d="M204 523q185 46 400-22l-8 24q-200 61-377 21z" fill="#dfba79"/>
-      <path d="M222 550q170 52 367-17M242 576q155 44 335-17M270 598q140 31 293-16" fill="none" stroke="#d3a365" stroke-width="4" opacity=".5"/>
-      <path d="M510 486h83v41l-80 21zM222 506h74v47l-74-16z" fill="#a88251"/>
-      <path d="M516 491v-21m20 18v-22m20 17v-22m20 13v-19M518 474l64-21" fill="none" stroke="#d3c092" stroke-width="4"/>
-      <path d="M385 212v345m-94-211v202m195-210v204" stroke="#5d513b" stroke-width="10"/>
-      <path d="M207 525l177-309 220 287M293 352l-79 173m273-185 96 174" fill="none" stroke="#544e3c" stroke-width="2"/>
-      <g class="canvas">
-        <path d="M394 237q96 15 159 196-85-15-159-4z" fill="url(#location-sail)"/>
-        <path d="M374 246q-95 55-104 191 44-30 104-12z" fill="url(#location-sail)"/>
-        <path d="M482 351q57 37 78 131l-78-18zM283 361q-59 43-64 101l64-7z" fill="#dbcd9f"/>
-        <path d="M414 246q17 87 4 180m39-159q9 96 5 159M309 315q17 30 3 111" fill="none" stroke="#9d966f" stroke-width="2" opacity=".6"/>
-      </g>
-      @if (damagedSail() && !effects().has('repair') && !effects().has('rest')) { <path class="sail-tear" d="M452 322l-22 21 25 10-31 38 47-31-20-13 20-33z" fill="#3b6268"/> }
-      @if (effects().has('repair')) { <path d="M422 320l47-5 18 63-54 5z" fill="#eee0b5" stroke="#816943" stroke-width="2" stroke-dasharray="4 5"/><path d="M429 328l43 43m-35 4 32-51" stroke="#b39d6d"/> }
-      <path d="M385 213l54 11-54 20z" fill="#b66c4d"/>
-      @for (barrel of barrels; track barrel) {
-        @if (barrel < 1 || effects().has('water') || effects().has('exchange')) { <g [attr.transform]="'translate(' + (305 + barrel * 34) + ' 514)'"><path d="M-12 0q-5 18 0 35h22q5-18 0-35z" fill="#bd965c" stroke="#5d573e" stroke-width="2"/><path d="M-12 8h22m-22 18h22" stroke="#54625a" stroke-width="4"/><ellipse cx="-1" cy="0" rx="11" ry="4" fill="#d3b882"/></g> }
+      <path
+        d="M0 290Q125 260 235 296T520 280T800 289T1000 274V760H0Z"
+        fill="url(#location-ocean)"
+      />
+      @if (node().scene === 'island' || node().scene === 'cape') {
+        <path d="M540 300l81-69 28-73 49-86 44 71 29 80 66-35 65 69 98 27v87z" fill="#60705c" />
+        <path d="M564 307l93-63 40-99 17 73 50 45 64-39 68 67 104 21v66z" fill="#80936b" />
+        <path d="M616 288l55-78 21 18 8-80 26 80 35 36-60-14z" fill="#a0a075" />
+        <path d="M580 326q130-22 210 0t210 4v41q-143-25-207-19t-213-26" fill="#d7c69c" />
+        <path d="M870 338l37-20 29 11 16-21 48 38v42z" fill="#374d49" />
+      } @else if (node().scene === 'river') {
+        <path d="M410 296q75-102 170-25 68-108 157-43 117-43 263 41v125L667 363z" fill="#426854" />
+        <path d="M568 314q89-63 157-3l275-14v68l-313 5z" fill="#779365" />
+        <path d="M680 334q83-16 161 14t159-1v38q-71 21-191-18t-137-2" fill="#d2bd86" />
+        <path
+          d="M902 240q-31 67-21 102m9-77q-43-25-59 7m61-9q30-35 53-19m-55 15q-1-45-26-44"
+          fill="none"
+          stroke="#304e3c"
+          stroke-width="10"
+        />
+      } @else {
+        <path d="M430 299q85-56 166-18 91-55 197-12l207 7v96H450z" fill="#768875" />
+        <path d="M427 335q168-10 263 17l310-29v45l-310 13z" fill="#d1bd89" />
       }
-      <path d="M447 510l42-9 18 22-50 11z" fill="#eee2b5" stroke="#76694c"/>
-      @if (effects().has('charts')) { <path d="M455 514l18 3 9-10 15 12" fill="none" stroke="#347d80" stroke-width="2"/> }
-      <circle cx="538" cy="531" r="10" fill="#273e38"/><circle cx="281" cy="551" r="8" fill="#263f3a"/>
-    </g>
-    @if (effects().has('charts')) {
-      <g class="bearings" fill="none" stroke="#f1d188" stroke-width="2" stroke-dasharray="7 8"><path d="M473 508L660 239M473 508L850 314"/><circle cx="660" cy="239" r="18"/><circle cx="850" cy="314" r="18"/><circle cx="473" cy="508" r="23"/></g>
-    }
-    @if (storm()) {
-      <path d="M-20 25q103-58 194 8 56-38 118 5 102-46 188 25 112-29 165 31 97-33 174 18 92-36 181 4v-116H0" fill="#344e55" opacity=".7"/>
-      <g class="rain" stroke="#c7dfd8" stroke-width="2" opacity=".35"><path d="M90 120l-35 120m140-82-35 120m250-125-35 120m275-130-35 120m240-60-35 120M155 375l-35 120m150-61-35 120m422-80-35 120m215-7-35 120"/></g>
-    }
-    <g fill="none" stroke="#3d5f5e" stroke-width="3" opacity=".8">@for (bird of skyBirds; track bird) { <path [attr.transform]="'translate(' + (130 + bird * 48) + ' ' + (160 + bird * 16) + ')'" d="M0 0q10-10 22 1 10-11 21-1"/> }</g>
-    <path d="M0 718q94-38 178-14 61-30 136 1l49 55H0" fill="#253f39"/><path d="M0 718q71-16 123 2l32 40H0" fill="#526451"/>
-  </svg>
+      @if (town()) {
+        <g>
+          @for (building of buildings; track building) {
+            <g
+              [attr.transform]="
+                'translate(' + (505 + building * 66) + ' ' + (251 + (building % 3) * 9) + ')'
+              "
+            >
+              <path d="M0 20h53v56H0z" fill="#d4c5a3" />
+              <path d="M-5 22L25 0l34 22z" fill="#a16d4c" />
+              <path d="M9 38h8v12H9m25-12h8v12h-8M23 58h10v18H23" fill="#3c5652" />
+            </g>
+          }
+          <path d="M842 224v104h36V224l-18-32z" fill="#b7b395" />
+          <path d="M854 245h12v28h-12" fill="#3d5654" />
+          <path d="M698 366l198 0-86 66-210-8z" fill="#9c865b" />
+          <path
+            d="M695 376l200-2m-222 12h205m-224 12h201m-227 12h207"
+            stroke="#5c6451"
+            stroke-width="3"
+          />
+          <path d="M650 411v53m65-42v52m73-51v40m79-68v41" stroke="#605443" stroke-width="12" />
+        </g>
+      }
+      <rect y="385" width="1000" height="375" fill="url(#location-water)" />
+      <g class="sea-lines" fill="none" stroke="#bdd8c9" stroke-width="2" opacity=".35">
+        @for (wave of waves; track wave) {
+          <path
+            [attr.transform]="'translate(' + (wave % 2) * -55 + ' ' + wave * 56 + ')'"
+            d="M-80 406q65-13 127 0t126 0m105 10q68-14 135 0t135 0m100-15q70-13 140 0t140 0"
+          />
+        }
+      </g>
+      <g class="small-boat" [class.exchanged]="effects().has('exchange') || effects().has('water')">
+        <path d="M717 478q55 15 111-4l-17 25-72 1z" fill="#5d4431" />
+        <path d="M754 459v24m38-27v25" stroke="#374939" stroke-width="9" />
+        <circle cx="754" cy="452" r="7" fill="#9c7653" />
+        <circle cx="792" cy="449" r="7" fill="#9c7653" />
+        <path d="M777 470l48 41" stroke="#d1ad73" stroke-width="4" />
+      </g>
+      <g class="ship">
+        <ellipse cx="400" cy="614" rx="225" ry="21" fill="#102f36" opacity=".35" />
+        <path d="M204 523q185 46 400-22l-41 97q-43 45-248 10z" fill="url(#location-hull)" />
+        <path d="M204 523q185 46 400-22l-8 24q-200 61-377 21z" fill="#dfba79" />
+        <path
+          d="M222 550q170 52 367-17M242 576q155 44 335-17M270 598q140 31 293-16"
+          fill="none"
+          stroke="#d3a365"
+          stroke-width="4"
+          opacity=".5"
+        />
+        <path d="M510 486h83v41l-80 21zM222 506h74v47l-74-16z" fill="#a88251" />
+        <path
+          d="M516 491v-21m20 18v-22m20 17v-22m20 13v-19M518 474l64-21"
+          fill="none"
+          stroke="#d3c092"
+          stroke-width="4"
+        />
+        <path d="M385 212v345m-94-211v202m195-210v204" stroke="#5d513b" stroke-width="10" />
+        <path
+          d="M207 525l177-309 220 287M293 352l-79 173m273-185 96 174"
+          fill="none"
+          stroke="#544e3c"
+          stroke-width="2"
+        />
+        <g class="canvas">
+          <path d="M394 237q96 15 159 196-85-15-159-4z" fill="url(#location-sail)" />
+          <path d="M374 246q-95 55-104 191 44-30 104-12z" fill="url(#location-sail)" />
+          <path d="M482 351q57 37 78 131l-78-18zM283 361q-59 43-64 101l64-7z" fill="#dbcd9f" />
+          <path
+            d="M414 246q17 87 4 180m39-159q9 96 5 159M309 315q17 30 3 111"
+            fill="none"
+            stroke="#9d966f"
+            stroke-width="2"
+            opacity=".6"
+          />
+        </g>
+        @if (damagedSail() && !effects().has('repair') && !effects().has('rest')) {
+          <path
+            class="sail-tear"
+            d="M452 322l-22 21 25 10-31 38 47-31-20-13 20-33z"
+            fill="#3b6268"
+          />
+        }
+        @if (effects().has('repair')) {
+          <path
+            d="M422 320l47-5 18 63-54 5z"
+            fill="#eee0b5"
+            stroke="#816943"
+            stroke-width="2"
+            stroke-dasharray="4 5"
+          />
+          <path d="M429 328l43 43m-35 4 32-51" stroke="#b39d6d" />
+        }
+        <path d="M385 213l54 11-54 20z" fill="#b66c4d" />
+        @for (barrel of barrels; track barrel) {
+          @if (barrel < 1 || effects().has('water') || effects().has('exchange')) {
+            <g [attr.transform]="'translate(' + (305 + barrel * 34) + ' 514)'">
+              <path
+                d="M-12 0q-5 18 0 35h22q5-18 0-35z"
+                fill="#bd965c"
+                stroke="#5d573e"
+                stroke-width="2"
+              />
+              <path d="M-12 8h22m-22 18h22" stroke="#54625a" stroke-width="4" />
+              <ellipse cx="-1" cy="0" rx="11" ry="4" fill="#d3b882" />
+            </g>
+          }
+        }
+        <path d="M447 510l42-9 18 22-50 11z" fill="#eee2b5" stroke="#76694c" />
+        @if (effects().has('charts')) {
+          <path d="M455 514l18 3 9-10 15 12" fill="none" stroke="#347d80" stroke-width="2" />
+        }
+        <circle cx="538" cy="531" r="10" fill="#273e38" />
+        <circle cx="281" cy="551" r="8" fill="#263f3a" />
+      </g>
+      @if (effects().has('charts')) {
+        <g class="bearings" fill="none" stroke="#f1d188" stroke-width="2" stroke-dasharray="7 8">
+          <path d="M473 508L660 239M473 508L850 314" />
+          <circle cx="660" cy="239" r="18" />
+          <circle cx="850" cy="314" r="18" />
+          <circle cx="473" cy="508" r="23" />
+        </g>
+      }
+      @if (storm()) {
+        <path
+          d="M-20 25q103-58 194 8 56-38 118 5 102-46 188 25 112-29 165 31 97-33 174 18 92-36 181 4v-116H0"
+          fill="#344e55"
+          opacity=".7"
+        />
+        <g class="rain" stroke="#c7dfd8" stroke-width="2" opacity=".35">
+          <path
+            d="M90 120l-35 120m140-82-35 120m250-125-35 120m275-130-35 120m240-60-35 120M155 375l-35 120m150-61-35 120m422-80-35 120m215-7-35 120"
+          />
+        </g>
+      }
+      <g fill="none" stroke="#3d5f5e" stroke-width="3" opacity=".8">
+        @for (bird of skyBirds; track bird) {
+          <path
+            [attr.transform]="'translate(' + (130 + bird * 48) + ' ' + (160 + bird * 16) + ')'"
+            d="M0 0q10-10 22 1 10-11 21-1"
+          />
+        }
+      </g>
+      <path d="M0 718q94-38 178-14 61-30 136 1l49 55H0" fill="#253f39" />
+      <path d="M0 718q71-16 123 2l32 40H0" fill="#526451" />
+    </svg>
   }
   <span class="place-label">{{ node().title }} <small>Fictional voyage · 1501</small></span>
   @for (event of node().events; track event.id; let index = $index) {
-    <button type="button" class="object-marker" [class.active]="activeEventId() === event.id" [class.resolved]="resolved(event.id)" [style.left.%]="event.object.x" [style.top.%]="event.object.y" [attr.aria-label]="'Inspect ' + event.label" [attr.aria-pressed]="activeEventId() === event.id" (click)="inspected.emit(event.id)">
-      <span aria-hidden="true">{{ resolved(event.id) ? '✓' : '0' + (index + 1) }}</span><b>{{ event.label }}</b>
+    <button
+      type="button"
+      class="object-marker"
+      [class.active]="activeEventId() === event.id"
+      [class.resolved]="resolved(event.id)"
+      [style.left.%]="event.object.x"
+      [style.top.%]="event.object.y"
+      [attr.aria-label]="'Inspect ' + event.label"
+      [attr.aria-pressed]="activeEventId() === event.id"
+      (click)="inspected.emit(event.id)"
+    >
+      <span aria-hidden="true">{{ resolved(event.id) ? '✓' : '0' + (index + 1) }}</span
+      ><b>{{ event.label }}</b>
     </button>
   }
-  @if (inspectedEvent(); as event) { <div class="observation" role="status"><span>⌖ {{ event.label }}</span>{{ event.observation }}</div> }
-  <button class="motion-control" type="button" [attr.aria-pressed]="paused()" [attr.aria-label]="paused() ? 'Resume scene motion' : 'Pause scene motion'" (click)="paused.set(!paused())">{{ paused() ? '▷' : 'Ⅱ' }}</button>
+  @if (inspectedEvent(); as event) {
+    <div class="observation" role="status">
+      <span>⌖ {{ event.label }}</span
+      >{{ event.observation }}
+    </div>
+  }
+  <button
+    class="motion-control"
+    type="button"
+    [attr.aria-pressed]="paused()"
+    [attr.aria-label]="paused() ? 'Resume scene motion' : 'Pause scene motion'"
+    (click)="paused.set(!paused())"
+  >
+    {{ paused() ? '▷' : 'Ⅱ' }}
+  </button>
 </div>

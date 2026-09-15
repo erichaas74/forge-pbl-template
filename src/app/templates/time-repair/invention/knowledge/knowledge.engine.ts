@@ -5,6 +5,7 @@ import {
 } from '../../../../core/registries/specialized-registries';
 import { assemblyActivity, diagramActivity, reconstructionActivity } from './object.activities';
 import { accessActivity, apprenticeActivity, distributionActivity } from './people.activities';
+import { circulationActivity } from './circulation.activity';
 import {
   KNOWLEDGE_KINDS,
   type KnowledgeAction,
@@ -21,6 +22,7 @@ export const knowledgeActivities: Readonly<Record<KnowledgeKind, KnowledgeActivi
   distribution: distributionActivity,
   access: accessActivity,
   apprentice: apprenticeActivity,
+  circulation: circulationActivity,
 };
 export const knowledgeCapabilities = new CapabilityRegistry();
 export const knowledgeEvents = new EventRegistry();

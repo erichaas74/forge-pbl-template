@@ -55,6 +55,7 @@ scene.viewpoints[0].places = [
 ];
 scene.viewpoints[1].places = [{ targetId: 'village', label: 'Back to village', yaw: 5, pitch: -12 }];
 scene.viewpoints[1].inspection = {
+  title: 'Canoe workshop', overviewLabel: 'Whole canoe',
   asset: { version: 1, src: '/projects/shadow-gallery/coastal-3d-v1/workshop.glb', nodes: [{name:'INT_hull',kind:'target'},{name:'INT_rim',kind:'target'},{name:'INT_stone',kind:'target'},{name:'SOCKET_overview',kind:'socket'}], clips: [] },
   targets: [
     {name:'INT_hull',label:'Hollowed interior',focus:[0,.6,0],distance:2.9},
@@ -63,6 +64,17 @@ scene.viewpoints[1].inspection = {
   ],
 };
 scene.viewpoints[2].places = [{ targetId: 'village', label: 'Back to village', yaw: -38, pitch: -12 }];
+scene.viewpoints[2].inspection = {
+  title: 'Cultivated field', overviewLabel: 'Whole field',
+  asset: {version:1,src:'/projects/shadow-gallery/coastal-3d-v1/field.glb',nodes:[{name:'INT_maize',kind:'target'},{name:'INT_vines',kind:'target'},{name:'INT_roots',kind:'target'},{name:'INT_ear',kind:'target'}],clips:[]},
+  targets:[
+    {name:'INT_maize',label:'Maize plants',focus:[-1.35,1,-.5],distance:2.2},
+    {name:'INT_vines',label:'Sweet potato vines',focus:[1.2,.25,-.4],distance:1.8},
+    {name:'INT_roots',label:'Harvested roots',focus:[.05,.22,2.2],distance:1},
+    {name:'INT_ear',label:'Ear of maize',focus:[.78,.27,2.25],distance:1},
+  ],
+};
+scene.sources.push({id:'sweet-potato-crop',title:'Taíno garden crops',text:'Maize and sweet potatoes were cultivated by Taíno communities. Sweet potatoes are a different crop from ordinary potatoes. The field model illustrates these crops; its layout and plant varieties are not archaeological measurements.',provenance:'National Park Service, Taíno Settlement at Salt River Bay, St. Croix. Regional comparative evidence, not an excavation record for this fictional Hispaniola field.',url:'https://www.nps.gov/places/taino-settlement.htm'});
 project.previewWeeks.scenes = [scene];
 const session = project.previewWeeks.weeks[0].sessions[0];
 session.title = 'Enter the painting: a morning on the shore';

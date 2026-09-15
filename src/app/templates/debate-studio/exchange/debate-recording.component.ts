@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, effect, inject, input, output, signal, untracked } from '@angular/core';
 import { DEBATE_EXCHANGE_PORT } from './debate-exchange.persistence';
 
 @Component({
@@ -54,7 +54,7 @@ export class DebateRecordingComponent {
     });
     inject(DestroyRef).onDestroy(() => { this.disposed = true; this.stop(); this.clearUrl(); });
   }
-  private clearUrl(): void { if (this.url()) URL.revokeObjectURL(this.url()); this.url.set(''); }
+  private clearUrl(): void { const url = untracked(this.url); if (url) URL.revokeObjectURL(url); this.url.set(''); }
   async record(): Promise<void> {
     this.busy.set(true);
     try {

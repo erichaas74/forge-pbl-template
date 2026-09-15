@@ -154518,6 +154518,7 @@ function mountJourneyLocationWorld(parent, node, view, callbacks) {
     survey;
     cargo = [];
     tender;
+    timber;
     shade;
     effectKey = "";
     elapsed = 0;
@@ -154544,19 +154545,46 @@ function mountJourneyLocationWorld(parent, node, view, callbacks) {
       this.ship = this.add.container(0, 0);
       this.frontSail = this.add.image(-126, -754, damaged ? "canvas-torn" : "canvas-full").setOrigin(0.5, 0).setDisplaySize(490, 400);
       this.rearSail = this.add.image(328, -722, "canvas-full").setOrigin(0.5, 0).setDisplaySize(402, 288);
-      this.ship.add([this.frontSail, this.rearSail, this.add.image(0, 0, "vessel").setOrigin(0.5, 1)]);
+      this.ship.add([
+        this.frontSail,
+        this.rearSail,
+        this.add.image(0, 0, "vessel").setOrigin(0.5, 1)
+      ]);
+      this.timber = this.add.graphics().setVisible(false);
+      for (let i = 0; i < 3; i++) {
+        this.timber.fillStyle(10319177).fillRoundedRect(-140, -259 + i * 13, 220, 12, 2).lineStyle(2, 14004080, 0.6).lineBetween(-130, -255 + i * 13, 72, -255 + i * 13);
+      }
+      this.ship.add(this.timber);
       for (let i = 0; i < 4; i++) {
         const barrel = this.add.image(-225 + i * 74, -276, "journey-barrel").setDisplaySize(59, 72).setAlpha(i === 0 ? 1 : 0);
         this.ship.add(barrel);
         this.cargo.push(barrel);
       }
-      const paper = this.add.graphics().fillStyle(15323546, 1).fillPoints([{ x: 190, y: -306 }, { x: 287, y: -331 }, { x: 320, y: -283 }, { x: 209, y: -265 }].map((p) => new __webpack_exports__Math.Vector2(p.x, p.y)), true);
+      const paper = this.add.graphics().fillStyle(15323546, 1).fillPoints(
+        [
+          { x: 190, y: -306 },
+          { x: 287, y: -331 },
+          { x: 320, y: -283 },
+          { x: 209, y: -265 }
+        ].map((p) => new __webpack_exports__Math.Vector2(p.x, p.y)),
+        true
+      );
       paper.lineStyle(2, 4944231, 0.9).lineBetween(210, -289, 252, -315).lineBetween(252, -315, 294, -292);
       this.ship.add(paper);
       this.tender = this.add.container(0, 0);
       const boat = this.add.graphics();
       boat.fillStyle(1124147, 0.5).fillEllipse(0, 15, 137, 22);
-      boat.fillStyle(5586215, 1).fillPoints([{ x: -74, y: -12 }, { x: -42, y: 18 }, { x: 47, y: 15 }, { x: 78, y: -19 }, { x: 33, y: -5 }, { x: -33, y: -3 }].map((p) => new __webpack_exports__Math.Vector2(p.x, p.y)), true);
+      boat.fillStyle(5586215, 1).fillPoints(
+        [
+          { x: -74, y: -12 },
+          { x: -42, y: 18 },
+          { x: 47, y: 15 },
+          { x: 78, y: -19 },
+          { x: 33, y: -5 },
+          { x: -33, y: -3 }
+        ].map((p) => new __webpack_exports__Math.Vector2(p.x, p.y)),
+        true
+      );
       boat.lineStyle(3, 12951916, 1).lineBetween(-73, -13, -32, -4).lineBetween(-32, -4, 33, -6).lineBetween(33, -6, 77, -19);
       boat.lineStyle(5, 9203011, 1).lineBetween(-11, -10, 43, 44);
       this.tender.add(boat);
@@ -154595,16 +154623,32 @@ function mountJourneyLocationWorld(parent, node, view, callbacks) {
       const sheltered = v.effects.has("rest");
       const strength = rough && !sheltered ? 1.5 : 0.45;
       this.ship.setAngle(moving ? Math.sin(t * 0.75) * strength : 0).setY(this.shipBase.y + (moving ? Math.sin(t * 1.05) * 3.5 : 0));
-      this.backdrop.setPosition(w * 0.5 + (moving ? this.lastPointer.x * 5 : 0), h * 0.5 + (moving ? this.lastPointer.y * 3 : 0));
+      this.backdrop.setPosition(
+        w * 0.5 + (moving ? this.lastPointer.x * 5 : 0),
+        h * 0.5 + (moving ? this.lastPointer.y * 3 : 0)
+      );
       const key = [...v.effects].sort().join("|");
       if (key !== this.effectKey) {
         this.effectKey = key;
-        this.frontSail.setTexture(v.effects.has("repair") ? "canvas-patched" : damaged ? "canvas-torn" : "canvas-full");
+        this.frontSail.setTexture(
+          v.effects.has("repair") && damaged ? "canvas-patched" : damaged ? "canvas-torn" : "canvas-full"
+        );
+        this.timber.setVisible(v.effects.has("repair") && !damaged);
         const sailHeight = sheltered ? 95 : 400;
         if (moving) {
           this.tweens.killTweensOf([this.frontSail, this.rearSail]);
-          this.tweens.add({ targets: this.frontSail, displayHeight: sailHeight, duration: 700, ease: "Sine.easeInOut" });
-          this.tweens.add({ targets: this.rearSail, displayHeight: sheltered ? 70 : 288, duration: 700, ease: "Sine.easeInOut" });
+          this.tweens.add({
+            targets: this.frontSail,
+            displayHeight: sailHeight,
+            duration: 700,
+            ease: "Sine.easeInOut"
+          });
+          this.tweens.add({
+            targets: this.rearSail,
+            displayHeight: sheltered ? 70 : 288,
+            duration: 700,
+            ease: "Sine.easeInOut"
+          });
         } else {
           this.frontSail.displayHeight = sailHeight;
           this.rearSail.displayHeight = sheltered ? 70 : 288;
@@ -154612,12 +154656,24 @@ function mountJourneyLocationWorld(parent, node, view, callbacks) {
         const supplied = v.effects.has("water") || v.effects.has("exchange");
         this.cargo.forEach((barrel, i) => {
           this.tweens.killTweensOf(barrel);
-          if (moving) this.tweens.add({ targets: barrel, alpha: supplied || i === 0 ? 1 : 0, duration: 550, delay: i * 100 });
+          if (moving)
+            this.tweens.add({
+              targets: barrel,
+              alpha: supplied || i === 0 ? 1 : 0,
+              duration: 550,
+              delay: i * 100
+            });
           else barrel.setAlpha(supplied || i === 0 ? 1 : 0);
         });
         const target = { x: w * (supplied ? 0.63 : 0.76), y: h * (supplied ? 0.78 : 0.63) };
         this.tweens.killTweensOf(this.tender);
-        if (moving) this.tweens.add(__spreadProps(__spreadValues({ targets: this.tender }, target), { duration: 1600, ease: "Sine.easeInOut" }));
+        if (moving)
+          this.tweens.add(__spreadProps(__spreadValues({
+            targets: this.tender
+          }, target), {
+            duration: 1600,
+            ease: "Sine.easeInOut"
+          }));
         else this.tender.setPosition(target.x, target.y);
       }
       this.drawWater(t, w, h, strength);
@@ -154632,7 +154688,11 @@ function mountJourneyLocationWorld(parent, node, view, callbacks) {
         const y2 = h * (0.48 + depth * 0.5);
         const x2 = (i * 163 + t * (8 + depth * 15)) % (w + 80) - 40;
         const width = 8 + depth * 35;
-        g.lineStyle(0.5 + depth, rough ? 12904934 : 16772540, (0.08 + Math.sin(t * 0.6 + i) * 0.04) * depth);
+        g.lineStyle(
+          0.5 + depth,
+          rough ? 12904934 : 16772540,
+          (0.08 + Math.sin(t * 0.6 + i) * 0.04) * depth
+        );
         g.beginPath();
         g.moveTo(x2, y2);
         g.lineTo(x2 + width * 0.4, y2 - 1.5 * strength);
@@ -154640,19 +154700,36 @@ function mountJourneyLocationWorld(parent, node, view, callbacks) {
         g.strokePath();
       }
       const x = this.shipBase.x, y = this.ship.y - 8, sw = this.ship.scaleX * 1536;
-      for (let i = 0; i < 3; i++) g.lineStyle(1.4, 14415852, 0.14 - i * 0.025).strokeEllipse(x + sw * 0.02, y + i * 5, sw * (0.68 + i * 0.05), 10 + i * 9);
+      for (let i = 0; i < 3; i++)
+        g.lineStyle(1.4, 14415852, 0.14 - i * 0.025).strokeEllipse(
+          x + sw * 0.02,
+          y + i * 5,
+          sw * (0.68 + i * 0.05),
+          10 + i * 9
+        );
     }
     drawSurvey(w, h, visible) {
       const g = this.survey;
       g.clear();
       if (!visible) return;
-      const start = { x: this.shipBase.x + this.ship.scaleX * 247, y: this.ship.y - this.ship.scaleX * 291 };
-      for (const end of [{ x: w * 0.68, y: h * 0.32 }, { x: w * 0.85, y: h * 0.43 }]) {
+      const start = {
+        x: this.shipBase.x + this.ship.scaleX * 247,
+        y: this.ship.y - this.ship.scaleX * 291
+      };
+      for (const end of [
+        { x: w * 0.68, y: h * 0.32 },
+        { x: w * 0.85, y: h * 0.43 }
+      ]) {
         const distance = Math.hypot(end.x - start.x, end.y - start.y), steps = Math.ceil(distance / 15);
         g.lineStyle(1.4, 16766856, 0.72);
         for (let i = 0; i < steps; i += 2) {
           const a = i / steps, b = Math.min(1, (i + 1) / steps);
-          g.lineBetween(start.x + (end.x - start.x) * a, start.y + (end.y - start.y) * a, start.x + (end.x - start.x) * b, start.y + (end.y - start.y) * b);
+          g.lineBetween(
+            start.x + (end.x - start.x) * a,
+            start.y + (end.y - start.y) * a,
+            start.x + (end.x - start.x) * b,
+            start.y + (end.y - start.y) * b
+          );
         }
         g.strokeCircle(end.x, end.y, 13).strokeCircle(end.x, end.y, 4);
       }
@@ -154674,19 +154751,34 @@ function mountJourneyLocationWorld(parent, node, view, callbacks) {
       }
     }
   }
-  const game = new __webpack_exports__Game({ type: __webpack_exports__AUTO, parent, width: Math.max(1, parent.clientWidth), height: Math.max(1, parent.clientHeight), backgroundColor: "#082934", scene: new Anchorage(), banner: false, audio: { noAudio: true }, fps: { target: 30 }, scale: { mode: __webpack_exports__Scale.RESIZE }, render: { antialias: true } });
+  const game = new __webpack_exports__Game({
+    type: __webpack_exports__AUTO,
+    parent,
+    width: Math.max(1, parent.clientWidth),
+    height: Math.max(1, parent.clientHeight),
+    backgroundColor: "#082934",
+    scene: new Anchorage(),
+    banner: false,
+    audio: { noAudio: true },
+    fps: { target: 30 },
+    scale: { mode: __webpack_exports__Scale.RESIZE },
+    render: { antialias: true }
+  });
   const observer = new ResizeObserver(() => {
-    if (!disposed && game.isBooted && parent.clientWidth && parent.clientHeight) game.scale.setParentSize(parent.clientWidth, parent.clientHeight);
+    if (!disposed && game.isBooted && parent.clientWidth && parent.clientHeight)
+      game.scale.setParentSize(parent.clientWidth, parent.clientHeight);
   });
   observer.observe(parent);
-  return { destroy() {
-    disposed = true;
-    observer.disconnect();
-    game.destroy(true);
-  } };
+  return {
+    destroy() {
+      disposed = true;
+      observer.disconnect();
+      game.destroy(true);
+    }
+  };
 }
 export {
   mountJourneyLocationWorld
 };
-//# debugId=60cf29cc-28fc-59d6-981d-dcfa9acb391a
-//# sourceMappingURL=chunk-66VE64H7.js.map
+//# debugId=df24a52a-ac3f-5097-8aaa-c06cd14dca32
+//# sourceMappingURL=chunk-BYCXJO7F.js.map

@@ -1,0 +1,19 @@
+> Building...
+√ Building...
+Initial chunk files | Names                |  Raw size | Estimated transfer size
+main-UP3HU4CF.js    | main                 | 278.74 kB |                63.48 kB
+styles-PWEBVAZL.css | styles               | 865 bytes |               865 bytes
+
+                    | Initial total        | 279.60 kB |                64.35 kB
+
+Lazy chunk files    | Names                |  Raw size | Estimated transfer size
+chunk-BSIWgYf-.js   | -                    | 711.92 kB |               148.50 kB
+chunk-DtSP0iQn.js   | GLTFLoader           |  44.87 kB |                11.96 kB
+chunk-HoKywT48.js   | OrbitControls        |  19.29 kB |                 3.93 kB
+chunk-C1I61bt0.js   | three-module         |  13.46 kB |                 3.91 kB
+chunk-DmKJAYHU.js   | spatial-asset-loader |   2.27 kB |                 1.00 kB
+
+Application bundle generation complete. [27.202 seconds] - 2026-09-15T19:47:05.476Z
+
+Output location: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\output\shadow-coastal-build
+

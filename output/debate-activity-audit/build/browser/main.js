@@ -42397,8 +42397,9 @@ var DebateRecordingComponent = class _DebateRecordingComponent {
     });
   }
   clearUrl() {
-    if (this.url())
-      URL.revokeObjectURL(this.url());
+    const url = untracked2(this.url);
+    if (url)
+      URL.revokeObjectURL(url);
     this.url.set("");
   }
   async record() {
@@ -49905,5 +49906,5 @@ var AuditRoot = class _AuditRoot {
   (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AuditRoot, { className: "AuditRoot", filePath: "output/debate-activity-audit/exchange-main.ts", lineNumber: 47 });
 })();
 bootstrapApplication(AuditRoot, { providers: [provideRouter([{ path: "**", component: AuditPage }])] }).catch(console.error);
-//# debugId=a80ec0b4-9098-561f-9d4f-d96104fa6b18
+//# debugId=0d0ced57-a3d3-5433-8be8-1f95e9c89886
 //# sourceMappingURL=main.js.map

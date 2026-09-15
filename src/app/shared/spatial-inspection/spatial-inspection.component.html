@@ -1,11 +1,11 @@
 <div class="workshop" #surface>
-  <canvas #canvas tabindex="0" role="img" aria-label="Three-dimensional canoe workshop. Drag or use arrow keys to move around. Select the canoe, rim or stone tool to inspect." (keydown)="key($event)" (pointerdown)="down($event)" (pointerup)="pick($event)"></canvas>
-  <div class="top"><button (click)="leave.emit()">← Village</button><span class="tag">Canoe workshop · 3D reconstruction</span><button (click)="overview()" [disabled]="loading()">Whole canoe</button></div>
-  @if(loading()){<p class="notice" role="status">Opening workshop…</p>}
+  <canvas #canvas tabindex="0" role="img" [attr.aria-label]="(definition().title || '3D scene') + '. Drag or use arrow keys to move around. Select an object to inspect.'" (keydown)="key($event)" (pointerdown)="down($event)" (pointerup)="pick($event)"></canvas>
+  <div class="top"><button (click)="leave.emit()">← Village</button><span class="tag">{{definition().title || 'Inspection area'}} · 3D reconstruction</span><button (click)="overview()" [disabled]="loading()">{{definition().overviewLabel || 'Whole scene'}}</button></div>
+  @if(loading()){<p class="notice" role="status">Opening scene…</p>}
   @if(error()){<p class="notice" role="alert">{{error()}}</p>}
   @if(!loading()&&!error()){
     <div class="inspect" aria-label="Inspect objects">@for(target of definition().targets;track target.name){<button [attr.aria-pressed]="selected()===target.label" (click)="inspect(target.name)">{{target.label}}</button>}</div>
-    <div class="navigation" aria-label="Move around the canoe"><button (click)="step(-.5236)" aria-label="Walk left around canoe">↶ Walk left</button><button (click)="step(.5236)" aria-label="Walk right around canoe">Walk right ↷</button><button (click)="elevation(-.2)" aria-label="Look into canoe">Look inside</button><button (click)="zoom(.8)" aria-label="Move closer">＋</button><button (click)="zoom(1.25)" aria-label="Move back">−</button></div>
-    <output class="position" aria-live="polite">{{selected()||'Whole canoe'}} · {{heading()}}°</output>
+    <div class="navigation" aria-label="Move around the scene"><button (click)="step(-.5236)" aria-label="Walk left">↶ Walk left</button><button (click)="step(.5236)" aria-label="Walk right">Walk right ↷</button><button (click)="elevation(-.2)" aria-label="View from above">View from above</button><button (click)="zoom(.8)" aria-label="Move closer">＋</button><button (click)="zoom(1.25)" aria-label="Move back">−</button></div>
+    <output class="position" aria-live="polite">{{selected()||definition().overviewLabel||'Whole scene'}} · {{heading()}}°</output>
   }
 </div>

@@ -1,11 +1,14 @@
 import { requireSpatialManifest, type SpatialAssetManifest } from './spatial-asset.contract';
 export interface SpatialInspectionDefinition {
+  readonly title?: string;
+  readonly overviewLabel?: string;
   readonly asset: SpatialAssetManifest;
   readonly targets: readonly { readonly name: string; readonly label: string; readonly focus: readonly [number,number,number]; readonly distance: number }[];
 }
 export function requireSpatialInspection(value: unknown): SpatialInspectionDefinition {
   const d = value as SpatialInspectionDefinition;
   if (!d || !Array.isArray(d.targets) || !d.targets.length || d.targets.length > 12) throw new Error('INVALID_SPATIAL_INSPECTION');
+  for (const label of [d.title,d.overviewLabel]) if (label !== undefined && (typeof label !== 'string' || !label.trim() || label.length > 80)) throw new Error('INVALID_SPATIAL_INSPECTION');
   const asset = requireSpatialManifest(d.asset);
   const names = new Set<string>();
   for (const t of d.targets) {

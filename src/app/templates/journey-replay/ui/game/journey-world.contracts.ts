@@ -5,6 +5,17 @@ export interface JourneyWorldView {
   readonly reducedMotion: boolean;
   readonly activeEventId?: string;
 }
-export interface JourneyWorldCallbacks { ready():void; failed():void; inspect(id:string):void }
-export interface JourneyWorldHandle { destroy():void }
-export type JourneyWorldMount = (parent:HTMLElement,node:JourneyPathNode,view:()=>JourneyWorldView,callbacks:JourneyWorldCallbacks)=>JourneyWorldHandle;
+export interface JourneyWorldCallbacks {
+  ready(): void;
+  failed(): void;
+  inspect(id: string): void;
+}
+export interface JourneyWorldHandle {
+  destroy(): void;
+}
+export type JourneyWorldMount = (
+  parent: HTMLElement,
+  node: JourneyPathNode,
+  view: () => JourneyWorldView,
+  callbacks: JourneyWorldCallbacks,
+) => JourneyWorldHandle;

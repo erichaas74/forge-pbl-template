@@ -5,6 +5,7 @@ export const KNOWLEDGE_KINDS = [
   'distribution',
   'access',
   'apprentice',
+  'circulation',
 ] as const;
 export type KnowledgeKind = (typeof KNOWLEDGE_KINDS)[number];
 export interface Fragment {
@@ -37,6 +38,15 @@ export interface KnowledgeDefinition {
   readonly stock?: number;
   readonly readers?: readonly Reader[];
   readonly cases?: readonly string[];
+  readonly circulation?: {
+    readonly document: string;
+    readonly mark: string;
+    readonly author: string;
+    readonly origin: string;
+    readonly date: string;
+    readonly trace: string;
+    readonly destinations: readonly { readonly id: string; readonly name: string }[];
+  };
 }
 /** Discrete physical operations only. Animation and the pointer are never persisted. */
 export interface KnowledgeAction {

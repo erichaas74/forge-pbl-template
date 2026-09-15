@@ -1,0 +1,36 @@
+ M docs/heist/CASTLE_BRIDGE_2_5D_WORKSHOP.md
+ M output/castle-optics-server-error.log
+ D output/voyage-activity-audit/build/browser/chunk-66VE64H7.js
+ D output/voyage-activity-audit/build/browser/chunk-66VE64H7.js.map
+ M output/voyage-activity-audit/build/browser/journey-location-scene.component.css.map
+ M output/voyage-activity-audit/build/browser/journey-path-workspace.component.css.map
+ M output/voyage-activity-audit/build/browser/living-journey-map.component.css.map
+ M output/voyage-activity-audit/build/browser/main.js
+ M output/voyage-activity-audit/build/browser/main.js.map
+ M src/app/projects/age-of-exploration-journey/voyage-experience.ts
+ M src/app/templates/journey-replay/core/journey-path.engine.spec.ts
+ M src/app/templates/journey-replay/core/journey-path.engine.ts
+ M src/app/templates/journey-replay/core/journey-path.rules.ts
+ M src/app/templates/journey-replay/domain/journey-path.models.ts
+ M src/app/templates/journey-replay/package/journey-path.validation.ts
+ M src/app/templates/journey-replay/persistence/journey-path.persistence.ts
+ M src/app/templates/journey-replay/runtime/journey-path.runtime.spec.ts
+ M src/app/templates/journey-replay/runtime/journey-path.runtime.ts
+ M src/app/templates/journey-replay/ui/game/journey-location.world.ts
+ M src/app/templates/journey-replay/ui/game/journey-ship.art.ts
+ M src/app/templates/journey-replay/ui/game/journey-world.contracts.ts
+ M src/app/templates/journey-replay/ui/game/journey-world.tokens.ts
+ M src/app/templates/journey-replay/ui/journey-location-scene.component.html
+ M src/app/templates/journey-replay/ui/journey-location-scene.component.scss
+ M src/app/templates/journey-replay/ui/journey-location-scene.component.ts
+ M src/app/templates/journey-replay/ui/journey-path-workspace.component.html
+ M src/app/templates/journey-replay/ui/journey-path-workspace.component.scss
+ M src/app/templates/journey-replay/ui/journey-path-workspace.component.spec.ts
+ M src/app/templates/journey-replay/ui/journey-path-workspace.component.ts
+?? docs/heist/build-coastal-field.mjs
+?? output/voyage-activity-audit/build.log
+?? output/voyage-activity-audit/build/browser/chunk-BYCXJO7F.js
+?? output/voyage-activity-audit/build/browser/chunk-BYCXJO7F.js.map
+?? output/voyage-activity-audit/full-build.log
+?? output/voyage-activity-audit/tests.log
+?? public/projects/shadow-gallery/coastal-3d-v1/field.glb

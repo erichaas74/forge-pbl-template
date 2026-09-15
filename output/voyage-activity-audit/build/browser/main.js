@@ -36952,7 +36952,10 @@ conditions.register({
   id: "journey.discoveryPresent",
   version: "1.0.0",
   status: "core",
-  evaluator: { type: "journey.discoveryPresent", evaluate: (condition, state) => state.stateValues[condition.targetId ?? ""] === true }
+  evaluator: {
+    type: "journey.discoveryPresent",
+    evaluate: (condition, state) => state.stateValues[condition.targetId ?? ""] === true
+  }
 });
 var engine = new DeterministicRuleEngine(conditions, new ActionRegistry());
 var cache = /* @__PURE__ */ new WeakMap();
@@ -36966,19 +36969,56 @@ function revealedJourneyChoices(node, tags) {
       repeatable: true,
       priority: 0,
       actions: []
-    }, choice.requiresAny?.length ? { conditions: { operator: "OR", conditions: choice.requiresAny.map((tag) => ({ type: "journey.discoveryPresent", targetId: tag })) } } : {}));
+    }, choice.requiresAny?.length ? {
+      conditions: {
+        operator: "OR",
+        conditions: choice.requiresAny.map((tag) => ({
+          type: "journey.discoveryPresent",
+          targetId: tag
+        }))
+      }
+    } : {}));
     cache.set(node, rules);
   }
-  const scope = { tenantId: "projection", projectId: "journey-path-query", projectVersion: "1.0", scopeType: "student" };
-  const state = __spreadProps(__spreadValues({}, scope), { scope, version: 0, lastUpdated: "", stateValues: Object.fromEntries([...tags].map((tag) => [tag, true])), firedRuleIds: [] });
-  const result = engine.evaluateEvent({ id: "availability-query", eventType: "activity.completed", timestamp: "", tenantId: scope.tenantId, projectId: scope.projectId, actor: { type: "system" } }, state, rules);
+  const scope = {
+    tenantId: "projection",
+    projectId: "journey-path-query",
+    projectVersion: "1.0",
+    scopeType: "student"
+  };
+  const state = __spreadProps(__spreadValues({}, scope), {
+    scope,
+    version: 0,
+    lastUpdated: "",
+    stateValues: Object.fromEntries([...tags].map((tag) => [tag, true])),
+    firedRuleIds: []
+  });
+  const result = engine.evaluateEvent(
+    {
+      id: "availability-query",
+      eventType: "activity.completed",
+      timestamp: "",
+      tenantId: scope.tenantId,
+      projectId: scope.projectId,
+      actor: { type: "system" }
+    },
+    state,
+    rules
+  );
   if (result.errors?.length) throw new Error("JOURNEY_PATH_RULE_INVALID");
   return new Set(result.matchedRules);
 }
 
 // src/app/templates/journey-replay/core/journey-path.engine.ts
 function emptyJourneyPath(projectVersion) {
-  return { schemaVersion: "1.0", projectVersion, revision: 0, decisions: [], history: [], previousPaths: [] };
+  return {
+    schemaVersion: "1.0",
+    projectVersion,
+    revision: 0,
+    decisions: [],
+    history: [],
+    previousPaths: []
+  };
 }
 function pathChoices(node, eventId) {
   return eventId === "route" ? node.choices : node.events.find((event2) => event2.id === eventId)?.choices ?? [];
@@ -37010,28 +37050,43 @@ function projectJourneyResources(config2, state, beforeSession = 9) {
   return projectPathChoices(config2, choices2);
 }
 function projectPathChoices(config2, choices2) {
-  let resources = Object.fromEntries(config2.resources.map((resource2) => [resource2.id, resource2.startingValue]));
+  let resources = Object.fromEntries(
+    config2.resources.map((resource2) => [resource2.id, resource2.startingValue])
+  );
   const completedSteps = [];
   for (const choice of choices2) {
     resources = resolveJourneyOutcome(config2, { resources, completedSteps }, choice).resources;
     completedSteps.push({ choiceId: choice.id });
   }
-  return { resources, completedSteps, choices: choices2, tags: new Set(choices2.flatMap((choice) => choice.grants ?? [])) };
+  return {
+    resources,
+    completedSteps,
+    choices: choices2,
+    tags: new Set(choices2.flatMap((choice) => choice.grants ?? []))
+  };
 }
 function availablePathChoices(node, tags) {
   const revealed = revealedJourneyChoices(node, tags);
   return node.choices.filter((choice) => revealed.has(choice.id));
 }
 function applyJourneyPathEvent(config2, state, event2) {
-  if (event2.eventType !== "activity.completed" || event2.projectId !== config2.projectId || event2.payload?.["projectVersion"] !== config2.projectVersion) throw new Error("JOURNEY_PATH_EVENT_INVALID");
-  if (state.history.some((item) => item.id === event2.id || event2.clientEventId && item.clientEventId === event2.clientEventId)) return state;
+  if (event2.eventType !== "activity.completed" || event2.projectId !== config2.projectId || event2.payload?.["projectVersion"] !== config2.projectVersion)
+    throw new Error("JOURNEY_PATH_EVENT_INVALID");
+  if (state.history.some(
+    (item) => item.id === event2.id || event2.clientEventId && item.clientEventId === event2.clientEventId
+  ))
+    return state;
   const node = config2.experience?.nodes.find((item) => item.id === event2.sourceId);
   const eventId = String(event2.payload["eventId"]);
   const choice = node && pathChoices(node, eventId).find((item) => item.id === event2.payload?.["choiceId"]);
   if (!node || !choice) throw new Error("JOURNEY_PATH_CHOICE_INVALID");
   const currentPath = resolveJourneyPath(config2.experience, state);
-  if (!currentPath.some((entry) => entry.node.id === node.id)) throw new Error("JOURNEY_PATH_PREVIEW_ONLY");
-  if (node.kind === "map" && !availablePathChoices(node, projectJourneyResources(config2, state, node.session).tags).some((item) => item.id === choice.id)) throw new Error("JOURNEY_PATH_NOT_REVEALED");
+  if (!currentPath.some((entry) => entry.node.id === node.id))
+    throw new Error("JOURNEY_PATH_PREVIEW_ONLY");
+  if (node.kind === "map" && !availablePathChoices(node, projectJourneyResources(config2, state, node.session).tags).some(
+    (item) => item.id === choice.id
+  ))
+    throw new Error("JOURNEY_PATH_NOT_REVEALED");
   if (selectedPathChoice(node, state.decisions, eventId)?.id === choice.id) return state;
   const retained = state.decisions.filter((item) => {
     const entry = config2.experience.nodes.find((candidate) => candidate.id === item.nodeId);
@@ -37046,16 +37101,28 @@ function applyJourneyPathEvent(config2, state, event2) {
 }
 function restoreJourneyPath(config2, value) {
   const record2 = value;
-  if (!record2 || record2.schemaVersion !== "1.0" || record2.projectVersion !== config2.projectVersion || !Number.isSafeInteger(record2.revision) || record2.revision < 0 || !Array.isArray(record2.decisions) || record2.decisions.length > 32 || !Array.isArray(record2.history) || record2.history.length > 200 || !Array.isArray(record2.previousPaths) || record2.previousPaths.length > 20) throw new Error("JOURNEY_PATH_CACHE_INVALID");
+  if (!record2 || record2.schemaVersion !== "1.0" || record2.projectVersion !== config2.projectVersion || !Number.isSafeInteger(record2.revision) || record2.revision < 0 || !Array.isArray(record2.decisions) || record2.decisions.length > 32 || !Array.isArray(record2.history) || record2.history.length > 200 || !Array.isArray(record2.previousPaths) || record2.previousPaths.length > 20)
+    throw new Error("JOURNEY_PATH_CACHE_INVALID");
   const validDecisions = (decisions) => Array.isArray(decisions) && decisions.length <= 32 && decisions.every((decision) => {
     if (!decision || typeof decision !== "object") return false;
     const node = config2.experience.nodes.find((item) => item.id === decision.nodeId);
     return node && pathChoices(node, decision.eventId).some((choice) => choice.id === decision.choiceId);
   }) && new Set(decisions.map((item) => `${item.nodeId}:${item.eventId}`)).size === decisions.length;
-  if (!validDecisions(record2.decisions) || !record2.previousPaths.every(validDecisions) || !record2.history.every((event2) => event2 && typeof event2.id === "string" && event2.eventType === "activity.completed" && event2.projectId === config2.projectId && typeof event2.timestamp === "string")) throw new Error("JOURNEY_PATH_CACHE_INVALID");
+  if (!validDecisions(record2.decisions) || !record2.previousPaths.every(validDecisions) || !record2.history.every(
+    (event2) => event2 && typeof event2.id === "string" && event2.eventType === "activity.completed" && event2.projectId === config2.projectId && typeof event2.timestamp === "string"
+  ))
+    throw new Error("JOURNEY_PATH_CACHE_INVALID");
   const state = record2;
   const path = resolveJourneyPath(config2.experience, state);
-  if (state.decisions.some((decision) => !path.some((entry) => entry.node.id === decision.nodeId)) || path.some((entry) => entry.node.kind === "map" && entry.choices.some((choice) => !availablePathChoices(entry.node, projectJourneyResources(config2, state, entry.node.session).tags).includes(choice)))) throw new Error("JOURNEY_PATH_CACHE_INVALID");
+  if (state.decisions.some((decision) => !path.some((entry) => entry.node.id === decision.nodeId)) || path.some(
+    (entry) => entry.node.kind === "map" && entry.choices.some(
+      (choice) => !availablePathChoices(
+        entry.node,
+        projectJourneyResources(config2, state, entry.node.session).tags
+      ).includes(choice)
+    )
+  ))
+    throw new Error("JOURNEY_PATH_CACHE_INVALID");
   return structuredClone(state);
 }
 
@@ -37163,14 +37230,23 @@ var BrowserJourneyPathPersistence = class {
     localStorage.setItem(key(scope), JSON.stringify(state));
   }
 };
-var JOURNEY_PATH_PERSISTENCE = new InjectionToken("JOURNEY_PATH_PERSISTENCE", { providedIn: "root", factory: () => new MemoryJourneyPathPersistence() });
+var JOURNEY_PATH_PERSISTENCE = new InjectionToken(
+  "JOURNEY_PATH_PERSISTENCE",
+  { providedIn: "root", factory: () => new MemoryJourneyPathPersistence() }
+);
 
 // src/app/templates/journey-replay/runtime/journey-path.runtime.ts
 var JourneyPathRuntime = class _JourneyPathRuntime {
   config = inject2(JOURNEY_REPLAY_CONFIG);
   enrollment = inject2(JOURNEY_REPLAY_ENROLLMENT);
   persistence = inject2(JOURNEY_PATH_PERSISTENCE);
-  scope = { tenantId: this.enrollment.tenantId, classId: this.enrollment.classId, studentId: this.enrollment.studentId, projectId: this.config.projectId, projectVersion: this.config.projectVersion };
+  scope = {
+    tenantId: this.enrollment.tenantId,
+    classId: this.enrollment.classId,
+    studentId: this.enrollment.studentId,
+    projectId: this.config.projectId,
+    projectVersion: this.config.projectVersion
+  };
   error = signal(
     "",
     ...ngDevMode ? [{ debugName: "error" }] : (
@@ -37215,7 +37291,13 @@ var JourneyPathRuntime = class _JourneyPathRuntime {
       projectId: this.scope.projectId,
       actor: { type: "student", id: this.scope.studentId },
       sourceId: nodeId,
-      payload: { capability: "branchingJourney", projectVersion: this.scope.projectVersion, eventId, choiceId, practice: true }
+      payload: {
+        capability: "branchingJourney",
+        projectVersion: this.scope.projectVersion,
+        eventId,
+        choiceId,
+        practice: true
+      }
     };
     try {
       const state = applyJourneyPathEvent(this.config, this.state(), event2);
@@ -38037,6 +38119,9 @@ var LivingJourneyMapComponent = class _LivingJourneyMapComponent {
       return Math.abs(point2.x - otherPoint.x) < 18 && Math.abs(point2.y - otherPoint.y) < 12;
     });
     const offset = this.cover() === "regional" ? 9 : 14;
+    if (this.expeditionStyle() && neighbor && location2.longitude < neighbor.longitude) {
+      return { x: offset, y: -14, anchor: "start" };
+    }
     if (neighbor && location2.longitude < neighbor.longitude) {
       return { x: -offset, y: -5, anchor: "end" };
     }
@@ -38154,7 +38239,7 @@ var LivingJourneyMapComponent = class _LivingJourneyMapComponent {
   static \u0275fac = function LivingJourneyMapComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || _LivingJourneyMapComponent)();
   };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _LivingJourneyMapComponent, selectors: [["app-living-journey-map"]], inputs: { map: [1, "map"], route: [1, "route"], team: [1, "team"], candidateRouteIds: [1, "candidateRouteIds"], candidateRouteLabels: [1, "candidateRouteLabels"], selectedRouteId: [1, "selectedRouteId"], candidateLocationIds: [1, "candidateLocationIds"], candidateLocationLabels: [1, "candidateLocationLabels"], selectedCandidateLocationId: [1, "selectedCandidateLocationId"], activeLocationId: [1, "activeLocationId"], immersive: [1, "immersive"], showRouteLabels: [1, "showRouteLabels"], expeditionStyle: [1, "expeditionStyle"], vesselArt: [1, "vesselArt"], classVoyages: [1, "classVoyages"], featuredVoyageId: [1, "featuredVoyageId"], intersections: [1, "intersections"], mapLabel: [1, "mapLabel"] }, outputs: { locationInspected: "locationInspected", routeInspected: "routeInspected" }, decls: 44, vars: 18, consts: [["aria-label", "Journey map workspace", 1, "atlas"], [1, "map-stage"], ["tabindex", "0", "role", "group", 1, "world-map", 3, "keydown", "pointerdown", "pointermove", "pointerup", "pointercancel", "lostpointercapture"], ["id", "longitude-grid", "width", "83.333", "height", "83.333", "patternUnits", "userSpaceOnUse"], ["d", "M83.333 0H0V83.333", "fill", "none", "stroke", "#557f82", "stroke-width", "0.8", "opacity", ".28"], ["href", "/journey-replay/world-coastlines.svg", "width", "1000", "height", "500", "preserveAspectRatio", "none", "aria-hidden", "true"], ["href", "/journey-replay/world-atlas-v1.webp", "width", "1000", "height", "500", "preserveAspectRatio", "none", "aria-hidden", "true"], ["aria-hidden", "true", 1, "navigation-layer"], ["aria-label", "Weather lens", 1, "weather-layer"], ["aria-label", "Risk lens", 1, "risk-layer"], ["aria-label", "Trade lens", 1, "trade-layer"], ["aria-label", "Available routes", 1, "candidate-routes"], ["role", "button", "tabindex", "0", 1, "candidate-route", 3, "selected"], ["aria-label", "Recorded voyage routes", 1, "voyage-routes"], [3, "featured", "context-route", "--%NS%route-color"], ["aria-label", "Map locations", 1, "locations"], ["role", "button", "tabindex", "0", 1, "location", 3, "inspected", "shared", "candidate-destination", "candidate-map-option", "selected-destination", "active-decision"], ["aria-label", "Current expedition position", 1, "ship"], ["aria-label", "Uncharted regions", 1, "knowledge-fog"], ["aria-hidden", "true", 1, "chart-compass"], ["viewBox", "0 0 100 100"], ["cx", "50", "cy", "50", "r", "34"], ["cx", "50", "cy", "50", "r", "29"], ["d", "M50 13L57 43 87 50 57 57 50 87 43 57 13 50 43 43Z"], ["d", "M50 13V50L43 43ZM87 50H50L57 43ZM50 87V50L57 57ZM13 50H50L43 57Z", 1, "compass-light"], ["x", "50", "y", "10"], ["x", "50", "y", "99"], ["x", "5", "y", "54"], ["x", "95", "y", "54"], ["aria-label", "Pan map", 1, "pan-pad"], [1, "chart-heading"], [1, "chart-kicker"], [1, "chart-edition"], [1, "atlas-tools"], ["aria-label", "Map scale", 1, "cover-switch"], ["type", "button", 3, "click"], ["aria-label", "Map zoom", 1, "zoom-tools"], ["type", "button", "aria-label", "Zoom out", 3, "click", "disabled"], ["aria-label", "Zoom level"], ["type", "button", "aria-label", "Zoom in", 3, "click", "disabled"], ["width", "1000", "height", "500", "fill", "url(#longitude-grid)"], ["d", "M0 250H1000", 1, "equator"], ["x", "403", "y", "220", "transform", "rotate(-12 403 220)", 1, "ocean-label"], ["x", "398", "y", "233", "transform", "rotate(-12 398 233)", 1, "ocean-label"], ["x", "692", "y", "322", 1, "ocean-label"], ["x", "134", "y", "275", 1, "ocean-label"], ["x", "523", "y", "221", 1, "land-label"], ["x", "310", "y", "300", "transform", "rotate(25 310 300)", 1, "land-label"], ["d", "M402 154C363 168 328 186 301 221"], ["d", "M302 221l15-3-8 13"], ["d", "M431 244C391 262 357 283 329 314"], ["d", "M329 314l15-3-8 13"], ["transform", "translate(390 275)"], ["r", "25"], ["y", "5"], ["cx", "552", "cy", "344", "rx", "54", "ry", "31"], ["cx", "408", "cy", "276", "rx", "47", "ry", "29"], ["x", "552", "y", "349"], ["x", "408", "y", "281"], ["d", "M475 147Q570 116 705 190T792 209"], ["x", "619", "y", "139"], ["role", "button", "tabindex", "0", 1, "candidate-route", 3, "click", "keydown.enter", "keydown.space"], [1, "route-hit"], [1, "route-option"], [1, "route-choice-label"], [1, "route-shadow"], [1, "route-line"], [1, "route-line", "double-line"], [1, "event-marker"], ["r", "7"], ["y", "3"], ["role", "button", "tabindex", "0", 1, "location", 3, "click", "keydown.enter", "keydown.space"], ["r", "14", 1, "location-ring"], ["d", "M0-8A7 7 0 0 1 7-1C7 4 0 10 0 10S-7 4-7-1A7 7 0 0 1 0-8Z", 1, "port-pin"], ["cy", "-1", "r", "2", 1, "pin-center"], [1, "location-label"], ["y", "-16", 1, "map-option-label"], ["y", "-13", 1, "shared-count"], ["transform", "translate(-2 -8)", 1, "painted-vessel"], ["r", "11"], ["cx", "0", "cy", "7", "rx", "18", "ry", "3"], ["d", "M-17-18Q-6-16 4-18L3-3Q-8 0-18-3ZM6-17Q14-15 23-17L21-5Q13-2 6-4Z", "fill", "#ecdcaa", "stroke", "#8b7856", "stroke-width", ".3"], ["x", "-35", "y", "-30", "width", "70", "height", "46.7"], ["cy", "10", "rx", "19", "ry", "4"], ["d", "M-19 2Q0 7 19 0L12 11H-10Z", 1, "ship-hull"], ["d", "M-4-30V5M9-22V4M-17-2L-4-28 18-1", 1, "ship-rigging"], ["d", "M-6-27Q-17-15-13-5L-6-6ZM-2-28Q13-17 6-7H-2ZM11-21Q22-12 17-5L11-4Z", 1, "ship-sails"], ["d", "M-4-30L6-29-4-25Z", 1, "ship-flag"], ["d", "M620 75Q740 42 965 95L990 420Q802 462 666 427T620 75Z"], ["x", "785", "y", "260"], ["type", "button", "aria-label", "Pan left", 3, "click"], ["type", "button", "aria-label", "Pan up", 3, "click"], ["type", "button", "aria-label", "Pan down", 3, "click"], ["type", "button", "aria-label", "Pan right", 3, "click"], ["aria-label", "Map legend", 1, "chart-legend"], [1, "legend-port"], [1, "legend-route"], [1, "legend-voyage"], ["aria-label", "Map lenses", 1, "lens-tray"], ["type", "button"], [1, "legend-class"]], template: function LivingJourneyMapComponent_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _LivingJourneyMapComponent, selectors: [["app-living-journey-map"]], inputs: { map: [1, "map"], route: [1, "route"], team: [1, "team"], candidateRouteIds: [1, "candidateRouteIds"], candidateRouteLabels: [1, "candidateRouteLabels"], selectedRouteId: [1, "selectedRouteId"], candidateLocationIds: [1, "candidateLocationIds"], candidateLocationLabels: [1, "candidateLocationLabels"], selectedCandidateLocationId: [1, "selectedCandidateLocationId"], activeLocationId: [1, "activeLocationId"], immersive: [1, "immersive"], showRouteLabels: [1, "showRouteLabels"], expeditionStyle: [1, "expeditionStyle"], vesselArt: [1, "vesselArt"], classVoyages: [1, "classVoyages"], featuredVoyageId: [1, "featuredVoyageId"], intersections: [1, "intersections"], mapLabel: [1, "mapLabel"] }, outputs: { locationInspected: "locationInspected", routeInspected: "routeInspected" }, decls: 44, vars: 18, consts: [["aria-label", "Journey map workspace", 1, "atlas"], [1, "map-stage"], ["tabindex", "0", "role", "group", 1, "world-map", 3, "keydown", "pointerdown", "pointermove", "pointerup", "pointercancel", "lostpointercapture"], ["id", "longitude-grid", "width", "83.333", "height", "83.333", "patternUnits", "userSpaceOnUse"], ["d", "M83.333 0H0V83.333", "fill", "none", "stroke", "#557f82", "stroke-width", "0.8", "opacity", ".28"], ["href", "/journey-replay/world-coastlines.svg", "width", "1000", "height", "500", "preserveAspectRatio", "none", "aria-hidden", "true"], ["href", "/journey-replay/world-atlas-v1.webp", "width", "1000", "height", "500", "preserveAspectRatio", "none", "aria-hidden", "true"], ["aria-hidden", "true", 1, "navigation-layer"], ["aria-label", "Weather lens", 1, "weather-layer"], ["aria-label", "Risk lens", 1, "risk-layer"], ["aria-label", "Trade lens", 1, "trade-layer"], ["aria-label", "Available routes", 1, "candidate-routes"], ["role", "button", "tabindex", "0", 1, "candidate-route", 3, "selected"], ["aria-label", "Recorded voyage routes", 1, "voyage-routes"], [3, "featured", "context-route", "--%NS%route-color"], ["aria-label", "Map locations", 1, "locations"], ["role", "button", "tabindex", "0", 1, "location", 3, "inspected", "shared", "candidate-destination", "candidate-map-option", "selected-destination", "active-decision"], ["aria-label", "Current expedition position", 1, "ship"], ["aria-label", "Uncharted regions", 1, "knowledge-fog"], ["aria-hidden", "true", 1, "chart-compass"], ["viewBox", "0 0 100 100"], ["cx", "50", "cy", "50", "r", "34"], ["cx", "50", "cy", "50", "r", "29"], ["d", "M50 13L57 43 87 50 57 57 50 87 43 57 13 50 43 43Z"], ["d", "M50 13V50L43 43ZM87 50H50L57 43ZM50 87V50L57 57ZM13 50H50L43 57Z", 1, "compass-light"], ["x", "50", "y", "10"], ["x", "50", "y", "99"], ["x", "5", "y", "54"], ["x", "95", "y", "54"], ["aria-label", "Pan map", 1, "pan-pad"], [1, "chart-heading"], [1, "chart-kicker"], [1, "chart-edition"], [1, "atlas-tools"], ["aria-label", "Map scale", 1, "cover-switch"], ["type", "button", 3, "click"], ["aria-label", "Map zoom", 1, "zoom-tools"], ["type", "button", "aria-label", "Zoom out", 3, "click", "disabled"], ["aria-label", "Zoom level"], ["type", "button", "aria-label", "Zoom in", 3, "click", "disabled"], ["width", "1000", "height", "500", "fill", "url(#longitude-grid)"], ["d", "M0 250H1000", 1, "equator"], ["x", "403", "y", "220", "transform", "rotate(-12 403 220)", 1, "ocean-label"], ["x", "398", "y", "233", "transform", "rotate(-12 398 233)", 1, "ocean-label"], ["x", "692", "y", "322", 1, "ocean-label"], ["x", "134", "y", "275", 1, "ocean-label"], ["x", "523", "y", "221", 1, "land-label"], ["x", "310", "y", "300", "transform", "rotate(25 310 300)", 1, "land-label"], ["d", "M402 154C363 168 328 186 301 221"], ["d", "M302 221l15-3-8 13"], ["d", "M431 244C391 262 357 283 329 314"], ["d", "M329 314l15-3-8 13"], ["transform", "translate(390 275)"], ["r", "25"], ["y", "5"], ["cx", "552", "cy", "344", "rx", "54", "ry", "31"], ["cx", "408", "cy", "276", "rx", "47", "ry", "29"], ["x", "552", "y", "349"], ["x", "408", "y", "281"], ["d", "M475 147Q570 116 705 190T792 209"], ["x", "619", "y", "139"], ["role", "button", "tabindex", "0", 1, "candidate-route", 3, "click", "keydown.enter", "keydown.space"], [1, "route-hit"], [1, "route-option"], [1, "route-choice-label"], [1, "route-shadow"], [1, "route-line"], [1, "route-line", "double-line"], [1, "event-marker"], ["r", "7"], ["y", "3"], ["role", "button", "tabindex", "0", 1, "location", 3, "click", "keydown.enter", "keydown.space"], ["r", "14", 1, "location-ring"], ["d", "M0-8A7 7 0 0 1 7-1C7 4 0 10 0 10S-7 4-7-1A7 7 0 0 1 0-8Z", 1, "port-pin"], ["cy", "-1", "r", "2", 1, "pin-center"], [1, "location-label"], ["y", "-16", 1, "map-option-label"], ["y", "-13", 1, "shared-count"], ["transform", "translate(0 -14) scale(.45)", 1, "painted-vessel"], ["r", "11"], ["cx", "0", "cy", "7", "rx", "18", "ry", "3"], ["d", "M-17-18Q-6-16 4-18L3-3Q-8 0-18-3ZM6-17Q14-15 23-17L21-5Q13-2 6-4Z", "fill", "#ecdcaa", "stroke", "#8b7856", "stroke-width", ".3"], ["x", "-35", "y", "-30", "width", "70", "height", "46.7"], ["cy", "10", "rx", "19", "ry", "4"], ["d", "M-19 2Q0 7 19 0L12 11H-10Z", 1, "ship-hull"], ["d", "M-4-30V5M9-22V4M-17-2L-4-28 18-1", 1, "ship-rigging"], ["d", "M-6-27Q-17-15-13-5L-6-6ZM-2-28Q13-17 6-7H-2ZM11-21Q22-12 17-5L11-4Z", 1, "ship-sails"], ["d", "M-4-30L6-29-4-25Z", 1, "ship-flag"], ["d", "M620 75Q740 42 965 95L990 420Q802 462 666 427T620 75Z"], ["x", "785", "y", "260"], ["type", "button", "aria-label", "Pan left", 3, "click"], ["type", "button", "aria-label", "Pan up", 3, "click"], ["type", "button", "aria-label", "Pan down", 3, "click"], ["type", "button", "aria-label", "Pan right", 3, "click"], ["aria-label", "Map legend", 1, "chart-legend"], [1, "legend-port"], [1, "legend-route"], [1, "legend-voyage"], ["aria-label", "Map lenses", 1, "lens-tray"], ["type", "button"], [1, "legend-class"]], template: function LivingJourneyMapComponent_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275domElementStart(0, "section", 0);
       \u0275\u0275conditionalCreate(1, LivingJourneyMapComponent_Conditional_1_Template, 25, 7);
@@ -38254,7 +38339,7 @@ var LivingJourneyMapComponent = class _LivingJourneyMapComponent {
       \u0275\u0275advance();
       \u0275\u0275conditional(!ctx.immersive() ? 43 : -1);
     }
-  }, styles: ['\n[_nghost-%COMP%] {\n  display: block;\n  min-width: 0;\n  color: #eee0bd;\n}\n*[_ngcontent-%COMP%] {\n  box-sizing: border-box;\n}\n.atlas[_ngcontent-%COMP%] {\n  position: relative;\n  overflow: hidden;\n  border: 1px solid #aa8c50;\n  border-radius: 0.6rem;\n  background: #151d1c;\n  box-shadow: 0 1.2rem 3rem rgba(5, 9, 8, 0.6), inset 0 0 0 3px rgba(183, 154, 88, 0.1254901961);\n}\n.chart-heading[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 1rem;\n  padding: 1rem 1.15rem;\n  background:\n    linear-gradient(\n      115deg,\n      #173b3c,\n      #0c2429);\n}\n.chart-kicker[_ngcontent-%COMP%] {\n  color: #dbb86f;\n  font: 800 0.6rem ui-sans-serif, sans-serif;\n  letter-spacing: 0.22em;\n  text-transform: uppercase;\n}\n.chart-heading[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  margin: 0.25rem 0 0;\n  color: #f3e6c6;\n  font: 400 clamp(1.25rem, 2vw, 1.8rem) Georgia, serif;\n}\n.chart-edition[_ngcontent-%COMP%] {\n  color: #d8c794;\n  font: italic 0.8rem Georgia, serif;\n  text-align: right;\n}\n.chart-edition[_ngcontent-%COMP%]   small[_ngcontent-%COMP%] {\n  display: block;\n  margin-top: 0.35rem;\n  color: #9bb6b1;\n  font: 0.6rem ui-sans-serif, sans-serif;\n}\n.atlas-tools[_ngcontent-%COMP%], \n.lens-tray[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 0.6rem;\n  padding: 0.55rem 0.7rem;\n  background:\n    linear-gradient(\n      90deg,\n      #172724,\n      #21352d 50%,\n      #17241f);\n}\n.atlas-tools[_ngcontent-%COMP%] {\n  border-bottom: 1px solid #816a41;\n}\n.cover-switch[_ngcontent-%COMP%], \n.zoom-tools[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 0.35rem;\n}\nbutton[_ngcontent-%COMP%] {\n  min-height: 2.45rem;\n  border: 1px solid #806b43;\n  border-radius: 0.35rem;\n  padding: 0.42rem 0.66rem;\n  color: #e9ddbd;\n  background: #283c34;\n  font:\n    750 0.76rem/1.1 ui-sans-serif,\n    system-ui,\n    sans-serif;\n  text-transform: capitalize;\n  cursor: pointer;\n}\nbutton[_ngcontent-%COMP%]:hover:not(:disabled), \nbutton[aria-pressed=true][_ngcontent-%COMP%] {\n  border-color: #e8c774;\n  color: #1e2823;\n  background: #dfc47c;\n}\nbutton[_ngcontent-%COMP%]:disabled {\n  opacity: 0.45;\n  cursor: not-allowed;\n}\nbutton[_ngcontent-%COMP%]:focus-visible, \n.world-map[_ngcontent-%COMP%]:focus-visible {\n  outline: 3px solid #72d4dc;\n  outline-offset: 2px;\n}\noutput[_ngcontent-%COMP%] {\n  min-width: 3.4rem;\n  color: #ddc88e;\n  font: 750 0.75rem ui-monospace, monospace;\n  text-align: center;\n}\n.map-stage[_ngcontent-%COMP%] {\n  position: relative;\n  min-height: 28rem;\n  overflow: hidden;\n  background: #143c44;\n}\n.map-stage[_ngcontent-%COMP%]::after {\n  content: "";\n  position: absolute;\n  inset: 0;\n  pointer-events: none;\n  box-shadow: inset 0 0 4rem rgba(3, 26, 36, 0.5019607843), inset 0 0 0 5px rgba(212, 189, 117, 0.1411764706);\n}\n.world-map[_ngcontent-%COMP%] {\n  display: block;\n  width: 100%;\n  height: clamp(28rem, 100dvh - 22rem, 46rem);\n  min-height: 28rem;\n  background: #143c44;\n  transition: background 180ms ease;\n}\n.navigation-layer[_ngcontent-%COMP%] {\n  pointer-events: none;\n}\n.equator[_ngcontent-%COMP%] {\n  fill: none;\n  stroke: #efe0a8;\n  stroke-width: 0.5;\n  stroke-dasharray: 3 5;\n  opacity: 0.3;\n}\n.ocean-label[_ngcontent-%COMP%] {\n  fill: #c1d8cb;\n  opacity: 0.68;\n  font: italic 9px Georgia, serif;\n  letter-spacing: 2px;\n  text-anchor: middle;\n}\n.land-label[_ngcontent-%COMP%] {\n  fill: #f2e4b8;\n  font: 7px Georgia, serif;\n  letter-spacing: 1.7px;\n  text-anchor: middle;\n  paint-order: stroke;\n  stroke: #463e26;\n  stroke-width: 0.5;\n}\n.candidate-route[_ngcontent-%COMP%] {\n  cursor: pointer;\n}\n.candidate-route[_ngcontent-%COMP%]:focus {\n  outline: none;\n}\n.candidate-route[_ngcontent-%COMP%]   .route-option[_ngcontent-%COMP%] {\n  fill: none;\n  stroke: #fff0bd;\n  stroke-width: 3;\n  stroke-dasharray: 5 7;\n  opacity: 0.9;\n  vector-effect: non-scaling-stroke;\n  filter: drop-shadow(0 0 4px #0b2a2d);\n  pointer-events: none;\n}\n.candidate-route[_ngcontent-%COMP%]   .route-hit[_ngcontent-%COMP%] {\n  fill: none;\n  stroke: transparent;\n  stroke-width: 18;\n  vector-effect: non-scaling-stroke;\n  pointer-events: stroke;\n}\n.candidate-route[_ngcontent-%COMP%]:hover   .route-option[_ngcontent-%COMP%], \n.candidate-route[_ngcontent-%COMP%]:focus-visible   .route-option[_ngcontent-%COMP%], \n.candidate-route.selected[_ngcontent-%COMP%]   .route-option[_ngcontent-%COMP%] {\n  stroke: #ffe08a;\n  stroke-width: 6;\n  stroke-dasharray: none;\n  opacity: 1;\n  filter: drop-shadow(0 0 8px #102d32) drop-shadow(0 0 3px #fff1b9);\n}\n.route-choice-label[_ngcontent-%COMP%] {\n  fill: #fff5d6;\n  font:\n    800 8px ui-sans-serif,\n    system-ui,\n    sans-serif;\n  text-anchor: middle;\n  paint-order: stroke;\n  stroke: #13363a;\n  stroke-width: 3.5;\n  stroke-linejoin: round;\n  pointer-events: none;\n}\n.route-shadow[_ngcontent-%COMP%], \n.route-line[_ngcontent-%COMP%] {\n  fill: none;\n  stroke-linecap: round;\n  stroke-linejoin: round;\n  vector-effect: non-scaling-stroke;\n}\n.voyage-routes[_ngcontent-%COMP%] {\n  pointer-events: none;\n}\n.route-shadow[_ngcontent-%COMP%] {\n  stroke: #17211e;\n  stroke-width: 7;\n  opacity: 0.78;\n}\n.route-line[_ngcontent-%COMP%] {\n  stroke: var(--%NS%route-color);\n  stroke-width: 4;\n  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.2));\n  animation: _ngcontent-%COMP%_route-reveal 850ms ease-out both;\n}\n.voyage.context-route[_ngcontent-%COMP%] {\n  opacity: 0.32;\n}\n.voyage.context-route[_ngcontent-%COMP%]   .route-line[_ngcontent-%COMP%] {\n  stroke-width: 3;\n  filter: none;\n}\n.voyage.context-route[_ngcontent-%COMP%]   .route-shadow[_ngcontent-%COMP%] {\n  opacity: 0.35;\n}\n.voyage.featured[_ngcontent-%COMP%]   .route-line[_ngcontent-%COMP%] {\n  stroke-width: 6;\n  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.4666666667));\n}\n.voyage.featured[_ngcontent-%COMP%]   .route-shadow[_ngcontent-%COMP%] {\n  stroke-width: 10;\n}\n.pattern-long-dash[_ngcontent-%COMP%]   .route-line[_ngcontent-%COMP%] {\n  stroke-dasharray: 20 10;\n}\n.pattern-short-dash[_ngcontent-%COMP%]   .route-line[_ngcontent-%COMP%] {\n  stroke-dasharray: 8 7;\n}\n.pattern-dot-dash[_ngcontent-%COMP%]   .route-line[_ngcontent-%COMP%] {\n  stroke-dasharray: 2 7 15 7;\n}\n.pattern-double[_ngcontent-%COMP%]   .route-line[_ngcontent-%COMP%] {\n  stroke-width: 8;\n}\n.pattern-double[_ngcontent-%COMP%]   .double-line[_ngcontent-%COMP%] {\n  stroke: #1d2a26;\n  stroke-width: 2;\n}\n.event-marker[_ngcontent-%COMP%]   circle[_ngcontent-%COMP%] {\n  fill: #f0dbc0;\n  stroke: var(--%NS%route-color);\n  stroke-width: 3;\n  vector-effect: non-scaling-stroke;\n}\n.event-marker[_ngcontent-%COMP%]   text[_ngcontent-%COMP%] {\n  fill: #33251a;\n  font: 900 16px Georgia, serif;\n  text-anchor: middle;\n}\n.weather-layer[_ngcontent-%COMP%]   path[_ngcontent-%COMP%] {\n  fill: none;\n  stroke: #eef9e7;\n  stroke-width: 3;\n  stroke-dasharray: 14 7;\n  opacity: 0.72;\n  vector-effect: non-scaling-stroke;\n}\n.weather-layer[_ngcontent-%COMP%]   circle[_ngcontent-%COMP%] {\n  fill: rgba(72, 92, 98, 0.6666666667);\n  stroke: #e6f4ef;\n  stroke-width: 2;\n}\n.weather-layer[_ngcontent-%COMP%]   text[_ngcontent-%COMP%], \n.risk-layer[_ngcontent-%COMP%]   text[_ngcontent-%COMP%], \n.trade-layer[_ngcontent-%COMP%]   text[_ngcontent-%COMP%] {\n  fill: #edf4e9;\n  font: 800 11px ui-sans-serif, sans-serif;\n  letter-spacing: 0.12em;\n  text-anchor: middle;\n}\n.risk-layer[_ngcontent-%COMP%]   ellipse[_ngcontent-%COMP%] {\n  fill: rgba(165, 63, 54, 0.3333333333);\n  stroke: #90352d;\n  stroke-width: 3;\n  stroke-dasharray: 8 7;\n}\n.trade-layer[_ngcontent-%COMP%]   path[_ngcontent-%COMP%] {\n  fill: none;\n  stroke: #8e572c;\n  stroke-width: 5;\n  stroke-dasharray: 3 8;\n  opacity: 0.75;\n}\n.trade-layer[_ngcontent-%COMP%]   text[_ngcontent-%COMP%] {\n  fill: #654124;\n}\n.location[_ngcontent-%COMP%] {\n  cursor: pointer;\n}\n.port-pin[_ngcontent-%COMP%] {\n  fill: #ede0b7;\n  stroke: #314943;\n  stroke-width: 2.4;\n  vector-effect: non-scaling-stroke;\n}\n.pin-center[_ngcontent-%COMP%] {\n  fill: #765126;\n}\n.location-ring[_ngcontent-%COMP%] {\n  fill: none;\n  stroke: transparent;\n  stroke-width: 4;\n  vector-effect: non-scaling-stroke;\n}\n.location[_ngcontent-%COMP%]:hover   .location-ring[_ngcontent-%COMP%], \n.location[_ngcontent-%COMP%]:focus-visible   .location-ring[_ngcontent-%COMP%], \n.location.inspected[_ngcontent-%COMP%]   .location-ring[_ngcontent-%COMP%] {\n  stroke: #eff5d6;\n}\n.location.candidate-destination[_ngcontent-%COMP%]   .location-ring[_ngcontent-%COMP%], \n.location.candidate-map-option[_ngcontent-%COMP%]   .location-ring[_ngcontent-%COMP%] {\n  stroke: #ffe08a;\n  stroke-dasharray: 3 3;\n  animation: _ngcontent-%COMP%_destination-pulse 1.6s ease-in-out infinite alternate;\n}\n.location.selected-destination[_ngcontent-%COMP%]   .location-ring[_ngcontent-%COMP%] {\n  stroke: #fff2b8;\n  stroke-width: 7;\n  stroke-dasharray: none;\n}\n.location.active-decision[_ngcontent-%COMP%]   .port-pin[_ngcontent-%COMP%] {\n  fill: #f7cb65;\n  stroke: #173e3d;\n}\n.location.active-decision[_ngcontent-%COMP%]   .location-label[_ngcontent-%COMP%] {\n  fill: #fff6d7;\n  font-weight: 900;\n}\n.location.shared[_ngcontent-%COMP%]   .location-ring[_ngcontent-%COMP%] {\n  stroke: #7b2e66;\n  stroke-dasharray: 4 4;\n}\n.location[_ngcontent-%COMP%]:focus {\n  outline: none;\n}\n.location-label[_ngcontent-%COMP%], \n.shared-count[_ngcontent-%COMP%], \n.map-option-label[_ngcontent-%COMP%] {\n  fill: #fff1cc;\n  font: 700 11px Georgia, serif;\n  paint-order: stroke;\n  stroke: #102d32;\n  stroke-width: 3;\n  stroke-linejoin: round;\n}\n.map-option-label[_ngcontent-%COMP%] {\n  fill: #ffe08a;\n  font:\n    800 7px ui-sans-serif,\n    system-ui,\n    sans-serif;\n  text-anchor: middle;\n  text-transform: uppercase;\n}\n.regional[_ngcontent-%COMP%]   .location-label[_ngcontent-%COMP%] {\n  font-size: 7px;\n  stroke-width: 2.4;\n}\n.shared-count[_ngcontent-%COMP%] {\n  fill: #6b245c;\n  font: 800 10px ui-sans-serif, sans-serif;\n  text-anchor: middle;\n}\n.ship[_ngcontent-%COMP%] {\n  color: #f0c96a;\n  filter: drop-shadow(0 5px 5px rgba(19, 32, 29, 0.7333333333));\n  transition: transform 650ms ease;\n  pointer-events: none;\n}\n.ship[_ngcontent-%COMP%]   ellipse[_ngcontent-%COMP%] {\n  fill: rgba(4, 26, 32, 0.6666666667);\n}\n.ship[_ngcontent-%COMP%]   path[_ngcontent-%COMP%] {\n  stroke: #e2be73;\n  stroke-width: 1;\n  vector-effect: non-scaling-stroke;\n}\n.ship[_ngcontent-%COMP%]   .ship-hull[_ngcontent-%COMP%] {\n  fill: #694024;\n}\n.ship[_ngcontent-%COMP%]   .ship-rigging[_ngcontent-%COMP%] {\n  fill: none;\n  stroke: #704a2d;\n}\n.ship[_ngcontent-%COMP%]   .ship-sails[_ngcontent-%COMP%] {\n  fill: #fff1c9;\n  stroke: #9f7c43;\n}\n.ship[_ngcontent-%COMP%]   .ship-flag[_ngcontent-%COMP%] {\n  fill: #d87144;\n}\n.ship[_ngcontent-%COMP%]   circle[_ngcontent-%COMP%] {\n  fill: none;\n  stroke: #f5df95;\n  stroke-width: 2;\n  stroke-dasharray: 5 5;\n  vector-effect: non-scaling-stroke;\n  animation: _ngcontent-%COMP%_ship-pulse 1.6s ease-in-out infinite alternate;\n}\n.knowledge-fog[_ngcontent-%COMP%]   path[_ngcontent-%COMP%] {\n  fill: rgba(20, 60, 68, 0.1882352941);\n  stroke: none;\n}\n.knowledge-fog[_ngcontent-%COMP%]   text[_ngcontent-%COMP%] {\n  fill: #e3d7af;\n  font: italic 13px Georgia, serif;\n  letter-spacing: 0.14em;\n  text-anchor: middle;\n}\n.knowledge-fog[_ngcontent-%COMP%] {\n  pointer-events: none;\n}\n.chart-compass[_ngcontent-%COMP%] {\n  position: absolute;\n  right: 1rem;\n  bottom: 1rem;\n  width: 5.2rem;\n  pointer-events: none;\n  opacity: 0.9;\n  filter: drop-shadow(0 2px 4px #031c24);\n}\n.chart-compass[_ngcontent-%COMP%]   svg[_ngcontent-%COMP%] {\n  display: block;\n  width: 100%;\n  overflow: visible;\n}\n.chart-compass[_ngcontent-%COMP%]   circle[_ngcontent-%COMP%] {\n  fill: rgba(18, 49, 59, 0.5019607843);\n  stroke: #c3a05a;\n  stroke-width: 0.65;\n}\n.chart-compass[_ngcontent-%COMP%]   path[_ngcontent-%COMP%] {\n  fill: #c4a25d;\n  stroke: #f3deb0;\n  stroke-width: 0.5;\n}\n.chart-compass[_ngcontent-%COMP%]   .compass-light[_ngcontent-%COMP%] {\n  fill: #f6eac8;\n}\n.chart-compass[_ngcontent-%COMP%]   text[_ngcontent-%COMP%] {\n  fill: #f3e6c5;\n  font: 9px Georgia, serif;\n  text-anchor: middle;\n}\n.chart-legend[_ngcontent-%COMP%] {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.65rem 1.2rem;\n  padding: 0.65rem 0.85rem;\n  background: #102b30;\n  color: #c2d3cb;\n  font: 0.65rem ui-sans-serif, sans-serif;\n}\n.chart-legend[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.4rem;\n}\n.chart-legend[_ngcontent-%COMP%]   i[_ngcontent-%COMP%] {\n  display: inline-block;\n  width: 1.1rem;\n}\n.legend-port[_ngcontent-%COMP%] {\n  width: 0.45rem !important;\n  height: 0.45rem;\n  border: 1px solid #f9e9bc;\n  border-radius: 50%;\n  background: #bd9551;\n}\n.legend-route[_ngcontent-%COMP%] {\n  border-top: 2px dashed #efdfab;\n}\n.legend-voyage[_ngcontent-%COMP%] {\n  height: 3px;\n  border-radius: 2px;\n}\n.legend-class[_ngcontent-%COMP%] {\n  height: 3px;\n  border-radius: 2px;\n  background: #aab7ae;\n  opacity: 0.45;\n}\n.pan-pad[_ngcontent-%COMP%] {\n  position: absolute;\n  bottom: 1rem;\n  left: 1rem;\n  display: grid;\n  grid-template-columns: repeat(4, 2.5rem);\n  gap: 0.25rem;\n}\n.pan-pad[_ngcontent-%COMP%]   button[_ngcontent-%COMP%] {\n  width: 2.5rem;\n  padding: 0;\n}\n.lens-tray[_ngcontent-%COMP%] {\n  justify-content: flex-start;\n  flex-wrap: wrap;\n  border-top: 1px solid #816a41;\n}\n.lens-tray[_ngcontent-%COMP%]    > span[_ngcontent-%COMP%] {\n  margin-right: 0.35rem;\n  color: #c8b681;\n  font: 850 0.68rem ui-sans-serif, sans-serif;\n  letter-spacing: 0.12em;\n  text-transform: uppercase;\n}\n.lens-tray[_ngcontent-%COMP%]   button[_ngcontent-%COMP%] {\n  min-height: 2.15rem;\n  font-size: 0.68rem;\n}\n@keyframes _ngcontent-%COMP%_route-reveal {\n  from {\n    opacity: 0;\n    stroke-dashoffset: 40;\n  }\n}\n@keyframes _ngcontent-%COMP%_ship-pulse {\n  to {\n    r: 15;\n    opacity: 0.3;\n  }\n}\n@keyframes _ngcontent-%COMP%_destination-pulse {\n  to {\n    stroke-width: 7;\n    opacity: 0.55;\n  }\n}\n@media (max-width: 760px) {\n  .atlas-tools[_ngcontent-%COMP%] {\n    align-items: stretch;\n    flex-direction: column;\n  }\n  .chart-heading[_ngcontent-%COMP%] {\n    padding: 0.85rem;\n  }\n  .chart-edition[_ngcontent-%COMP%] {\n    display: none;\n  }\n  .cover-switch[_ngcontent-%COMP%], \n   .zoom-tools[_ngcontent-%COMP%] {\n    justify-content: center;\n    flex-wrap: wrap;\n  }\n  .world-map[_ngcontent-%COMP%] {\n    height: auto;\n    min-height: 24rem;\n    aspect-ratio: 4/3;\n  }\n}\n@media (prefers-reduced-motion: reduce) {\n  .route-line[_ngcontent-%COMP%], \n   .ship[_ngcontent-%COMP%]   circle[_ngcontent-%COMP%], \n   .location.candidate-destination[_ngcontent-%COMP%]   .location-ring[_ngcontent-%COMP%], \n   .location.candidate-map-option[_ngcontent-%COMP%]   .location-ring[_ngcontent-%COMP%] {\n    animation: none;\n  }\n  .ship[_ngcontent-%COMP%] {\n    transition: none;\n  }\n}\n.map-stage[_ngcontent-%COMP%] {\n  min-height: var(--%NS%journey-map-min-height, 28rem);\n}\n.world-map[_ngcontent-%COMP%], \n.regional[_ngcontent-%COMP%]   .world-map[_ngcontent-%COMP%] {\n  height: var(--%NS%journey-map-height, clamp(28rem, 100dvh - 22rem, 46rem));\n  min-height: var(--%NS%journey-map-min-height, 28rem);\n}\n.atlas.immersive[_ngcontent-%COMP%] {\n  display: grid;\n  height: 100%;\n  min-height: 0;\n  grid-template-rows: minmax(0, 1fr);\n  border: 0;\n  border-radius: 0;\n  box-shadow: none;\n}\n.atlas.immersive[_ngcontent-%COMP%]   .map-stage[_ngcontent-%COMP%], \n.atlas.immersive[_ngcontent-%COMP%]   .world-map[_ngcontent-%COMP%], \n.atlas.immersive.regional[_ngcontent-%COMP%]   .world-map[_ngcontent-%COMP%] {\n  height: 100%;\n  min-height: 0;\n}\n@media (max-width: 760px) {\n  .atlas.immersive[_ngcontent-%COMP%]   .world-map[_ngcontent-%COMP%], \n   .atlas.immersive.regional[_ngcontent-%COMP%]   .world-map[_ngcontent-%COMP%] {\n    height: 100%;\n    min-height: 0;\n    aspect-ratio: auto;\n  }\n  .atlas.immersive[_ngcontent-%COMP%] {\n    grid-template-rows: minmax(0, 1fr);\n  }\n}\n/*# sourceMappingURL=living-journey-map.component.css.map */'] });
+  }, styles: ['\n[_nghost-%COMP%] {\n  display: block;\n  min-width: 0;\n  color: #eee0bd;\n}\n*[_ngcontent-%COMP%] {\n  box-sizing: border-box;\n}\n.atlas[_ngcontent-%COMP%] {\n  position: relative;\n  overflow: hidden;\n  border: 1px solid #aa8c50;\n  border-radius: 0.6rem;\n  background: #151d1c;\n  box-shadow: 0 1.2rem 3rem rgba(5, 9, 8, 0.6), inset 0 0 0 3px rgba(183, 154, 88, 0.1254901961);\n}\n.chart-heading[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 1rem;\n  padding: 1rem 1.15rem;\n  background:\n    linear-gradient(\n      115deg,\n      #173b3c,\n      #0c2429);\n}\n.chart-kicker[_ngcontent-%COMP%] {\n  color: #dbb86f;\n  font: 800 0.6rem ui-sans-serif, sans-serif;\n  letter-spacing: 0.22em;\n  text-transform: uppercase;\n}\n.chart-heading[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  margin: 0.25rem 0 0;\n  color: #f3e6c6;\n  font: 400 clamp(1.25rem, 2vw, 1.8rem) Georgia, serif;\n}\n.chart-edition[_ngcontent-%COMP%] {\n  color: #d8c794;\n  font: italic 0.8rem Georgia, serif;\n  text-align: right;\n}\n.chart-edition[_ngcontent-%COMP%]   small[_ngcontent-%COMP%] {\n  display: block;\n  margin-top: 0.35rem;\n  color: #9bb6b1;\n  font: 0.6rem ui-sans-serif, sans-serif;\n}\n.atlas-tools[_ngcontent-%COMP%], \n.lens-tray[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 0.6rem;\n  padding: 0.55rem 0.7rem;\n  background:\n    linear-gradient(\n      90deg,\n      #172724,\n      #21352d 50%,\n      #17241f);\n}\n.atlas-tools[_ngcontent-%COMP%] {\n  border-bottom: 1px solid #816a41;\n}\n.cover-switch[_ngcontent-%COMP%], \n.zoom-tools[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 0.35rem;\n}\nbutton[_ngcontent-%COMP%] {\n  min-height: 2.45rem;\n  border: 1px solid #806b43;\n  border-radius: 0.35rem;\n  padding: 0.42rem 0.66rem;\n  color: #e9ddbd;\n  background: #283c34;\n  font:\n    750 0.76rem/1.1 ui-sans-serif,\n    system-ui,\n    sans-serif;\n  text-transform: capitalize;\n  cursor: pointer;\n}\nbutton[_ngcontent-%COMP%]:hover:not(:disabled), \nbutton[aria-pressed=true][_ngcontent-%COMP%] {\n  border-color: #e8c774;\n  color: #1e2823;\n  background: #dfc47c;\n}\nbutton[_ngcontent-%COMP%]:disabled {\n  opacity: 0.45;\n  cursor: not-allowed;\n}\nbutton[_ngcontent-%COMP%]:focus-visible, \n.world-map[_ngcontent-%COMP%]:focus-visible {\n  outline: 3px solid #72d4dc;\n  outline-offset: 2px;\n}\noutput[_ngcontent-%COMP%] {\n  min-width: 3.4rem;\n  color: #ddc88e;\n  font: 750 0.75rem ui-monospace, monospace;\n  text-align: center;\n}\n.map-stage[_ngcontent-%COMP%] {\n  position: relative;\n  min-height: 28rem;\n  overflow: hidden;\n  background: #143c44;\n}\n.map-stage[_ngcontent-%COMP%]::after {\n  content: "";\n  position: absolute;\n  inset: 0;\n  pointer-events: none;\n  box-shadow: inset 0 0 4rem rgba(3, 26, 36, 0.5019607843), inset 0 0 0 5px rgba(212, 189, 117, 0.1411764706);\n}\n.world-map[_ngcontent-%COMP%] {\n  display: block;\n  width: 100%;\n  height: clamp(28rem, 100dvh - 22rem, 46rem);\n  min-height: 28rem;\n  background: #143c44;\n  transition: background 180ms ease;\n}\n.navigation-layer[_ngcontent-%COMP%] {\n  pointer-events: none;\n}\n.equator[_ngcontent-%COMP%] {\n  fill: none;\n  stroke: #efe0a8;\n  stroke-width: 0.5;\n  stroke-dasharray: 3 5;\n  opacity: 0.3;\n}\n.ocean-label[_ngcontent-%COMP%] {\n  fill: #c1d8cb;\n  opacity: 0.68;\n  font: italic 9px Georgia, serif;\n  letter-spacing: 2px;\n  text-anchor: middle;\n}\n.land-label[_ngcontent-%COMP%] {\n  fill: #f2e4b8;\n  font: 7px Georgia, serif;\n  letter-spacing: 1.7px;\n  text-anchor: middle;\n  paint-order: stroke;\n  stroke: #463e26;\n  stroke-width: 0.5;\n}\n.candidate-route[_ngcontent-%COMP%] {\n  cursor: pointer;\n}\n.expedition-style[_ngcontent-%COMP%]   .world-map[_ngcontent-%COMP%] {\n  touch-action: none;\n  cursor: grab;\n}\n.expedition-style[_ngcontent-%COMP%]   .world-map[_ngcontent-%COMP%]:active {\n  cursor: grabbing;\n}\n.expedition-style[_ngcontent-%COMP%]   .world-map[_ngcontent-%COMP%]    > image[_ngcontent-%COMP%] {\n  filter: saturate(0.86) contrast(1.12) brightness(0.91);\n}\n.expedition-style[_ngcontent-%COMP%]   .map-stage[_ngcontent-%COMP%]::after {\n  content: "";\n  position: absolute;\n  inset: 0;\n  pointer-events: none;\n  box-shadow: inset 0 0 110px rgba(2, 27, 45, 0.5019607843);\n  background:\n    linear-gradient(\n      135deg,\n      rgba(232, 195, 106, 0.0509803922),\n      transparent 45%,\n      rgba(1, 29, 45, 0.0941176471));\n}\n.expedition-style[_ngcontent-%COMP%]   .location[_ngcontent-%COMP%]:not(.candidate-destination):not(.active-decision):not(.inspected)   .location-label[_ngcontent-%COMP%] {\n  opacity: 0.45;\n  font-weight: 400;\n}\n.expedition-style[_ngcontent-%COMP%]   .location[_ngcontent-%COMP%]:hover   .location-label[_ngcontent-%COMP%], \n.expedition-style[_ngcontent-%COMP%]   .location[_ngcontent-%COMP%]:focus-visible   .location-label[_ngcontent-%COMP%] {\n  opacity: 1 !important;\n}\n.expedition-style[_ngcontent-%COMP%]   .candidate-destination[_ngcontent-%COMP%]   .location-label[_ngcontent-%COMP%], \n.expedition-style[_ngcontent-%COMP%]   .active-decision[_ngcontent-%COMP%]   .location-label[_ngcontent-%COMP%] {\n  fill: #ffedaf;\n  stroke: #082c38;\n  stroke-width: 2.8;\n}\n.expedition-style[_ngcontent-%COMP%]   .candidate-route[_ngcontent-%COMP%]   .route-option[_ngcontent-%COMP%] {\n  stroke: #edce81;\n  stroke-width: 3;\n  stroke-dasharray: 3 8;\n  animation: _ngcontent-%COMP%_passage-flow 12s linear infinite;\n  filter: drop-shadow(0 1px 2px #02111d);\n}\n.expedition-style[_ngcontent-%COMP%]   .candidate-route.selected[_ngcontent-%COMP%]   .route-option[_ngcontent-%COMP%] {\n  stroke: #fff1ae;\n  stroke-width: 5;\n  stroke-dasharray: 8 5;\n  filter: drop-shadow(0 0 4px rgba(233, 199, 120, 0.7019607843)) drop-shadow(0 0 2px #112e38);\n}\n.expedition-style[_ngcontent-%COMP%]   .route-line[_ngcontent-%COMP%] {\n  stroke: #c8e8cd;\n  stroke-width: 3;\n  opacity: 0.8;\n}\n.expedition-style[_ngcontent-%COMP%]   .weather-layer[_ngcontent-%COMP%]    > path[_ngcontent-%COMP%] {\n  stroke: #bddedb;\n  stroke-dasharray: 5 5;\n  animation: _ngcontent-%COMP%_wind-flow 15s linear infinite;\n}\n.expedition-style[_ngcontent-%COMP%]   .weather-layer[_ngcontent-%COMP%]   circle[_ngcontent-%COMP%] {\n  fill: rgba(180, 202, 207, 0.1254901961);\n  stroke: rgba(171, 196, 208, 0.5137254902);\n}\n.expedition-style[_ngcontent-%COMP%]   .painted-vessel[_ngcontent-%COMP%] {\n  filter: drop-shadow(0 3px 2px rgba(3, 21, 26, 0.7019607843));\n}\n.expedition-style[_ngcontent-%COMP%]   .painted-vessel[_ngcontent-%COMP%]   path[_ngcontent-%COMP%] {\n  stroke-width: 0.5;\n}\n.expedition-style[_ngcontent-%COMP%]   .chart-compass[_ngcontent-%COMP%] {\n  opacity: 0.72;\n  right: 22px;\n  bottom: 85px;\n  width: 78px;\n}\n@keyframes _ngcontent-%COMP%_passage-flow {\n  to {\n    stroke-dashoffset: -110;\n  }\n}\n@keyframes _ngcontent-%COMP%_wind-flow {\n  to {\n    stroke-dashoffset: -80;\n  }\n}\n@media (prefers-reduced-motion: reduce) {\n  .expedition-style[_ngcontent-%COMP%]   .candidate-route[_ngcontent-%COMP%]   .route-option[_ngcontent-%COMP%], \n   .expedition-style[_ngcontent-%COMP%]   .weather-layer[_ngcontent-%COMP%]    > path[_ngcontent-%COMP%] {\n    animation: none;\n  }\n}\n.candidate-route[_ngcontent-%COMP%]:focus {\n  outline: none;\n}\n.candidate-route[_ngcontent-%COMP%]   .route-option[_ngcontent-%COMP%] {\n  fill: none;\n  stroke: #fff0bd;\n  stroke-width: 3;\n  stroke-dasharray: 5 7;\n  opacity: 0.9;\n  vector-effect: non-scaling-stroke;\n  filter: drop-shadow(0 0 4px #0b2a2d);\n  pointer-events: none;\n}\n.candidate-route[_ngcontent-%COMP%]   .route-hit[_ngcontent-%COMP%] {\n  fill: none;\n  stroke: transparent;\n  stroke-width: 18;\n  vector-effect: non-scaling-stroke;\n  pointer-events: stroke;\n}\n.candidate-route[_ngcontent-%COMP%]:hover   .route-option[_ngcontent-%COMP%], \n.candidate-route[_ngcontent-%COMP%]:focus-visible   .route-option[_ngcontent-%COMP%], \n.candidate-route.selected[_ngcontent-%COMP%]   .route-option[_ngcontent-%COMP%] {\n  stroke: #ffe08a;\n  stroke-width: 6;\n  stroke-dasharray: none;\n  opacity: 1;\n  filter: drop-shadow(0 0 8px #102d32) drop-shadow(0 0 3px #fff1b9);\n}\n.route-choice-label[_ngcontent-%COMP%] {\n  fill: #fff5d6;\n  font:\n    800 8px ui-sans-serif,\n    system-ui,\n    sans-serif;\n  text-anchor: middle;\n  paint-order: stroke;\n  stroke: #13363a;\n  stroke-width: 3.5;\n  stroke-linejoin: round;\n  pointer-events: none;\n}\n.route-shadow[_ngcontent-%COMP%], \n.route-line[_ngcontent-%COMP%] {\n  fill: none;\n  stroke-linecap: round;\n  stroke-linejoin: round;\n  vector-effect: non-scaling-stroke;\n}\n.voyage-routes[_ngcontent-%COMP%] {\n  pointer-events: none;\n}\n.route-shadow[_ngcontent-%COMP%] {\n  stroke: #17211e;\n  stroke-width: 7;\n  opacity: 0.78;\n}\n.route-line[_ngcontent-%COMP%] {\n  stroke: var(--%NS%route-color);\n  stroke-width: 4;\n  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.2));\n  animation: _ngcontent-%COMP%_route-reveal 850ms ease-out both;\n}\n.voyage.context-route[_ngcontent-%COMP%] {\n  opacity: 0.32;\n}\n.voyage.context-route[_ngcontent-%COMP%]   .route-line[_ngcontent-%COMP%] {\n  stroke-width: 3;\n  filter: none;\n}\n.voyage.context-route[_ngcontent-%COMP%]   .route-shadow[_ngcontent-%COMP%] {\n  opacity: 0.35;\n}\n.voyage.featured[_ngcontent-%COMP%]   .route-line[_ngcontent-%COMP%] {\n  stroke-width: 6;\n  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.4666666667));\n}\n.voyage.featured[_ngcontent-%COMP%]   .route-shadow[_ngcontent-%COMP%] {\n  stroke-width: 10;\n}\n.pattern-long-dash[_ngcontent-%COMP%]   .route-line[_ngcontent-%COMP%] {\n  stroke-dasharray: 20 10;\n}\n.pattern-short-dash[_ngcontent-%COMP%]   .route-line[_ngcontent-%COMP%] {\n  stroke-dasharray: 8 7;\n}\n.pattern-dot-dash[_ngcontent-%COMP%]   .route-line[_ngcontent-%COMP%] {\n  stroke-dasharray: 2 7 15 7;\n}\n.pattern-double[_ngcontent-%COMP%]   .route-line[_ngcontent-%COMP%] {\n  stroke-width: 8;\n}\n.pattern-double[_ngcontent-%COMP%]   .double-line[_ngcontent-%COMP%] {\n  stroke: #1d2a26;\n  stroke-width: 2;\n}\n.event-marker[_ngcontent-%COMP%]   circle[_ngcontent-%COMP%] {\n  fill: #f0dbc0;\n  stroke: var(--%NS%route-color);\n  stroke-width: 3;\n  vector-effect: non-scaling-stroke;\n}\n.event-marker[_ngcontent-%COMP%]   text[_ngcontent-%COMP%] {\n  fill: #33251a;\n  font: 900 16px Georgia, serif;\n  text-anchor: middle;\n}\n.weather-layer[_ngcontent-%COMP%]   path[_ngcontent-%COMP%] {\n  fill: none;\n  stroke: #eef9e7;\n  stroke-width: 3;\n  stroke-dasharray: 14 7;\n  opacity: 0.72;\n  vector-effect: non-scaling-stroke;\n}\n.weather-layer[_ngcontent-%COMP%]   circle[_ngcontent-%COMP%] {\n  fill: rgba(72, 92, 98, 0.6666666667);\n  stroke: #e6f4ef;\n  stroke-width: 2;\n}\n.weather-layer[_ngcontent-%COMP%]   text[_ngcontent-%COMP%], \n.risk-layer[_ngcontent-%COMP%]   text[_ngcontent-%COMP%], \n.trade-layer[_ngcontent-%COMP%]   text[_ngcontent-%COMP%] {\n  fill: #edf4e9;\n  font: 800 11px ui-sans-serif, sans-serif;\n  letter-spacing: 0.12em;\n  text-anchor: middle;\n}\n.risk-layer[_ngcontent-%COMP%]   ellipse[_ngcontent-%COMP%] {\n  fill: rgba(165, 63, 54, 0.3333333333);\n  stroke: #90352d;\n  stroke-width: 3;\n  stroke-dasharray: 8 7;\n}\n.trade-layer[_ngcontent-%COMP%]   path[_ngcontent-%COMP%] {\n  fill: none;\n  stroke: #8e572c;\n  stroke-width: 5;\n  stroke-dasharray: 3 8;\n  opacity: 0.75;\n}\n.trade-layer[_ngcontent-%COMP%]   text[_ngcontent-%COMP%] {\n  fill: #654124;\n}\n.location[_ngcontent-%COMP%] {\n  cursor: pointer;\n}\n.port-pin[_ngcontent-%COMP%] {\n  fill: #ede0b7;\n  stroke: #314943;\n  stroke-width: 2.4;\n  vector-effect: non-scaling-stroke;\n}\n.pin-center[_ngcontent-%COMP%] {\n  fill: #765126;\n}\n.location-ring[_ngcontent-%COMP%] {\n  fill: none;\n  stroke: transparent;\n  stroke-width: 4;\n  vector-effect: non-scaling-stroke;\n}\n.location[_ngcontent-%COMP%]:hover   .location-ring[_ngcontent-%COMP%], \n.location[_ngcontent-%COMP%]:focus-visible   .location-ring[_ngcontent-%COMP%], \n.location.inspected[_ngcontent-%COMP%]   .location-ring[_ngcontent-%COMP%] {\n  stroke: #eff5d6;\n}\n.location.candidate-destination[_ngcontent-%COMP%]   .location-ring[_ngcontent-%COMP%], \n.location.candidate-map-option[_ngcontent-%COMP%]   .location-ring[_ngcontent-%COMP%] {\n  stroke: #ffe08a;\n  stroke-dasharray: 3 3;\n  animation: _ngcontent-%COMP%_destination-pulse 1.6s ease-in-out infinite alternate;\n}\n.location.selected-destination[_ngcontent-%COMP%]   .location-ring[_ngcontent-%COMP%] {\n  stroke: #fff2b8;\n  stroke-width: 7;\n  stroke-dasharray: none;\n}\n.location.active-decision[_ngcontent-%COMP%]   .port-pin[_ngcontent-%COMP%] {\n  fill: #f7cb65;\n  stroke: #173e3d;\n}\n.location.active-decision[_ngcontent-%COMP%]   .location-label[_ngcontent-%COMP%] {\n  fill: #fff6d7;\n  font-weight: 900;\n}\n.location.shared[_ngcontent-%COMP%]   .location-ring[_ngcontent-%COMP%] {\n  stroke: #7b2e66;\n  stroke-dasharray: 4 4;\n}\n.location[_ngcontent-%COMP%]:focus {\n  outline: none;\n}\n.location-label[_ngcontent-%COMP%], \n.shared-count[_ngcontent-%COMP%], \n.map-option-label[_ngcontent-%COMP%] {\n  fill: #fff1cc;\n  font: 700 11px Georgia, serif;\n  paint-order: stroke;\n  stroke: #102d32;\n  stroke-width: 3;\n  stroke-linejoin: round;\n}\n.map-option-label[_ngcontent-%COMP%] {\n  fill: #ffe08a;\n  font:\n    800 7px ui-sans-serif,\n    system-ui,\n    sans-serif;\n  text-anchor: middle;\n  text-transform: uppercase;\n}\n.regional[_ngcontent-%COMP%]   .location-label[_ngcontent-%COMP%] {\n  font-size: 7px;\n  stroke-width: 2.4;\n}\n.shared-count[_ngcontent-%COMP%] {\n  fill: #6b245c;\n  font: 800 10px ui-sans-serif, sans-serif;\n  text-anchor: middle;\n}\n.ship[_ngcontent-%COMP%] {\n  color: #f0c96a;\n  filter: drop-shadow(0 5px 5px rgba(19, 32, 29, 0.7333333333));\n  transition: transform 650ms ease;\n  pointer-events: none;\n}\n.ship[_ngcontent-%COMP%]   ellipse[_ngcontent-%COMP%] {\n  fill: rgba(4, 26, 32, 0.6666666667);\n}\n.ship[_ngcontent-%COMP%]   path[_ngcontent-%COMP%] {\n  stroke: #e2be73;\n  stroke-width: 1;\n  vector-effect: non-scaling-stroke;\n}\n.ship[_ngcontent-%COMP%]   .ship-hull[_ngcontent-%COMP%] {\n  fill: #694024;\n}\n.ship[_ngcontent-%COMP%]   .ship-rigging[_ngcontent-%COMP%] {\n  fill: none;\n  stroke: #704a2d;\n}\n.ship[_ngcontent-%COMP%]   .ship-sails[_ngcontent-%COMP%] {\n  fill: #fff1c9;\n  stroke: #9f7c43;\n}\n.ship[_ngcontent-%COMP%]   .ship-flag[_ngcontent-%COMP%] {\n  fill: #d87144;\n}\n.ship[_ngcontent-%COMP%]   circle[_ngcontent-%COMP%] {\n  fill: none;\n  stroke: #f5df95;\n  stroke-width: 2;\n  stroke-dasharray: 5 5;\n  vector-effect: non-scaling-stroke;\n  animation: _ngcontent-%COMP%_ship-pulse 1.6s ease-in-out infinite alternate;\n}\n.knowledge-fog[_ngcontent-%COMP%]   path[_ngcontent-%COMP%] {\n  fill: rgba(20, 60, 68, 0.1882352941);\n  stroke: none;\n}\n.knowledge-fog[_ngcontent-%COMP%]   text[_ngcontent-%COMP%] {\n  fill: #e3d7af;\n  font: italic 13px Georgia, serif;\n  letter-spacing: 0.14em;\n  text-anchor: middle;\n}\n.knowledge-fog[_ngcontent-%COMP%] {\n  pointer-events: none;\n}\n.chart-compass[_ngcontent-%COMP%] {\n  position: absolute;\n  right: 1rem;\n  bottom: 1rem;\n  width: 5.2rem;\n  pointer-events: none;\n  opacity: 0.9;\n  filter: drop-shadow(0 2px 4px #031c24);\n}\n.chart-compass[_ngcontent-%COMP%]   svg[_ngcontent-%COMP%] {\n  display: block;\n  width: 100%;\n  overflow: visible;\n}\n.chart-compass[_ngcontent-%COMP%]   circle[_ngcontent-%COMP%] {\n  fill: rgba(18, 49, 59, 0.5019607843);\n  stroke: #c3a05a;\n  stroke-width: 0.65;\n}\n.chart-compass[_ngcontent-%COMP%]   path[_ngcontent-%COMP%] {\n  fill: #c4a25d;\n  stroke: #f3deb0;\n  stroke-width: 0.5;\n}\n.chart-compass[_ngcontent-%COMP%]   .compass-light[_ngcontent-%COMP%] {\n  fill: #f6eac8;\n}\n.chart-compass[_ngcontent-%COMP%]   text[_ngcontent-%COMP%] {\n  fill: #f3e6c5;\n  font: 9px Georgia, serif;\n  text-anchor: middle;\n}\n.chart-legend[_ngcontent-%COMP%] {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.65rem 1.2rem;\n  padding: 0.65rem 0.85rem;\n  background: #102b30;\n  color: #c2d3cb;\n  font: 0.65rem ui-sans-serif, sans-serif;\n}\n.chart-legend[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.4rem;\n}\n.chart-legend[_ngcontent-%COMP%]   i[_ngcontent-%COMP%] {\n  display: inline-block;\n  width: 1.1rem;\n}\n.legend-port[_ngcontent-%COMP%] {\n  width: 0.45rem !important;\n  height: 0.45rem;\n  border: 1px solid #f9e9bc;\n  border-radius: 50%;\n  background: #bd9551;\n}\n.legend-route[_ngcontent-%COMP%] {\n  border-top: 2px dashed #efdfab;\n}\n.legend-voyage[_ngcontent-%COMP%] {\n  height: 3px;\n  border-radius: 2px;\n}\n.legend-class[_ngcontent-%COMP%] {\n  height: 3px;\n  border-radius: 2px;\n  background: #aab7ae;\n  opacity: 0.45;\n}\n.pan-pad[_ngcontent-%COMP%] {\n  position: absolute;\n  bottom: 1rem;\n  left: 1rem;\n  display: grid;\n  grid-template-columns: repeat(4, 2.5rem);\n  gap: 0.25rem;\n}\n.pan-pad[_ngcontent-%COMP%]   button[_ngcontent-%COMP%] {\n  width: 2.5rem;\n  padding: 0;\n}\n.lens-tray[_ngcontent-%COMP%] {\n  justify-content: flex-start;\n  flex-wrap: wrap;\n  border-top: 1px solid #816a41;\n}\n.lens-tray[_ngcontent-%COMP%]    > span[_ngcontent-%COMP%] {\n  margin-right: 0.35rem;\n  color: #c8b681;\n  font: 850 0.68rem ui-sans-serif, sans-serif;\n  letter-spacing: 0.12em;\n  text-transform: uppercase;\n}\n.lens-tray[_ngcontent-%COMP%]   button[_ngcontent-%COMP%] {\n  min-height: 2.15rem;\n  font-size: 0.68rem;\n}\n@keyframes _ngcontent-%COMP%_route-reveal {\n  from {\n    opacity: 0;\n    stroke-dashoffset: 40;\n  }\n}\n@keyframes _ngcontent-%COMP%_ship-pulse {\n  to {\n    r: 15;\n    opacity: 0.3;\n  }\n}\n@keyframes _ngcontent-%COMP%_destination-pulse {\n  to {\n    stroke-width: 7;\n    opacity: 0.55;\n  }\n}\n@media (max-width: 760px) {\n  .atlas-tools[_ngcontent-%COMP%] {\n    align-items: stretch;\n    flex-direction: column;\n  }\n  .chart-heading[_ngcontent-%COMP%] {\n    padding: 0.85rem;\n  }\n  .chart-edition[_ngcontent-%COMP%] {\n    display: none;\n  }\n  .cover-switch[_ngcontent-%COMP%], \n   .zoom-tools[_ngcontent-%COMP%] {\n    justify-content: center;\n    flex-wrap: wrap;\n  }\n  .world-map[_ngcontent-%COMP%] {\n    height: auto;\n    min-height: 24rem;\n    aspect-ratio: 4/3;\n  }\n}\n@media (prefers-reduced-motion: reduce) {\n  .route-line[_ngcontent-%COMP%], \n   .ship[_ngcontent-%COMP%]   circle[_ngcontent-%COMP%], \n   .location.candidate-destination[_ngcontent-%COMP%]   .location-ring[_ngcontent-%COMP%], \n   .location.candidate-map-option[_ngcontent-%COMP%]   .location-ring[_ngcontent-%COMP%] {\n    animation: none;\n  }\n  .ship[_ngcontent-%COMP%] {\n    transition: none;\n  }\n}\n.map-stage[_ngcontent-%COMP%] {\n  min-height: var(--%NS%journey-map-min-height, 28rem);\n}\n.world-map[_ngcontent-%COMP%], \n.regional[_ngcontent-%COMP%]   .world-map[_ngcontent-%COMP%] {\n  height: var(--%NS%journey-map-height, clamp(28rem, 100dvh - 22rem, 46rem));\n  min-height: var(--%NS%journey-map-min-height, 28rem);\n}\n.atlas.immersive[_ngcontent-%COMP%] {\n  display: grid;\n  height: 100%;\n  min-height: 0;\n  grid-template-rows: minmax(0, 1fr);\n  border: 0;\n  border-radius: 0;\n  box-shadow: none;\n}\n.atlas.immersive[_ngcontent-%COMP%]   .map-stage[_ngcontent-%COMP%], \n.atlas.immersive[_ngcontent-%COMP%]   .world-map[_ngcontent-%COMP%], \n.atlas.immersive.regional[_ngcontent-%COMP%]   .world-map[_ngcontent-%COMP%] {\n  height: 100%;\n  min-height: 0;\n}\n@media (max-width: 760px) {\n  .atlas.immersive[_ngcontent-%COMP%]   .world-map[_ngcontent-%COMP%], \n   .atlas.immersive.regional[_ngcontent-%COMP%]   .world-map[_ngcontent-%COMP%] {\n    height: 100%;\n    min-height: 0;\n    aspect-ratio: auto;\n  }\n  .atlas.immersive[_ngcontent-%COMP%] {\n    grid-template-rows: minmax(0, 1fr);\n  }\n}\n/*# sourceMappingURL=living-journey-map.component.css.map */'] });
 };
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(LivingJourneyMapComponent, [{
@@ -38506,7 +38591,7 @@ var LivingJourneyMapComponent = class _LivingJourneyMapComponent {
           aria-label="Current expedition position"\r
         >\r
           @if (expeditionStyle() && vesselArt()) {
-            <g class="painted-vessel" transform="translate(-2 -8)">
+            <g class="painted-vessel" transform="translate(0 -14) scale(.45)">
               <ellipse cx="0" cy="7" rx="18" ry="3" />
               <path d="M-17-18Q-6-16 4-18L3-3Q-8 0-18-3ZM6-17Q14-15 23-17L21-5Q13-2 6-4Z" fill="#ecdcaa" stroke="#8b7856" stroke-width=".3"/>
               <image [attr.href]="vesselArt()" x="-35" y="-30" width="70" height="46.7"/>
@@ -38584,7 +38669,7 @@ var LivingJourneyMapComponent = class _LivingJourneyMapComponent {
     </footer>\r
   }\r
 </section>\r
-`, styles: ['/* src/app/templates/journey-replay/ui/map/living-journey-map.component.scss */\n:host {\n  display: block;\n  min-width: 0;\n  color: #eee0bd;\n}\n* {\n  box-sizing: border-box;\n}\n.atlas {\n  position: relative;\n  overflow: hidden;\n  border: 1px solid #aa8c50;\n  border-radius: 0.6rem;\n  background: #151d1c;\n  box-shadow: 0 1.2rem 3rem rgba(5, 9, 8, 0.6), inset 0 0 0 3px rgba(183, 154, 88, 0.1254901961);\n}\n.chart-heading {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 1rem;\n  padding: 1rem 1.15rem;\n  background:\n    linear-gradient(\n      115deg,\n      #173b3c,\n      #0c2429);\n}\n.chart-kicker {\n  color: #dbb86f;\n  font: 800 0.6rem ui-sans-serif, sans-serif;\n  letter-spacing: 0.22em;\n  text-transform: uppercase;\n}\n.chart-heading h2 {\n  margin: 0.25rem 0 0;\n  color: #f3e6c6;\n  font: 400 clamp(1.25rem, 2vw, 1.8rem) Georgia, serif;\n}\n.chart-edition {\n  color: #d8c794;\n  font: italic 0.8rem Georgia, serif;\n  text-align: right;\n}\n.chart-edition small {\n  display: block;\n  margin-top: 0.35rem;\n  color: #9bb6b1;\n  font: 0.6rem ui-sans-serif, sans-serif;\n}\n.atlas-tools,\n.lens-tray {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 0.6rem;\n  padding: 0.55rem 0.7rem;\n  background:\n    linear-gradient(\n      90deg,\n      #172724,\n      #21352d 50%,\n      #17241f);\n}\n.atlas-tools {\n  border-bottom: 1px solid #816a41;\n}\n.cover-switch,\n.zoom-tools {\n  display: flex;\n  align-items: center;\n  gap: 0.35rem;\n}\nbutton {\n  min-height: 2.45rem;\n  border: 1px solid #806b43;\n  border-radius: 0.35rem;\n  padding: 0.42rem 0.66rem;\n  color: #e9ddbd;\n  background: #283c34;\n  font:\n    750 0.76rem/1.1 ui-sans-serif,\n    system-ui,\n    sans-serif;\n  text-transform: capitalize;\n  cursor: pointer;\n}\nbutton:hover:not(:disabled),\nbutton[aria-pressed=true] {\n  border-color: #e8c774;\n  color: #1e2823;\n  background: #dfc47c;\n}\nbutton:disabled {\n  opacity: 0.45;\n  cursor: not-allowed;\n}\nbutton:focus-visible,\n.world-map:focus-visible {\n  outline: 3px solid #72d4dc;\n  outline-offset: 2px;\n}\noutput {\n  min-width: 3.4rem;\n  color: #ddc88e;\n  font: 750 0.75rem ui-monospace, monospace;\n  text-align: center;\n}\n.map-stage {\n  position: relative;\n  min-height: 28rem;\n  overflow: hidden;\n  background: #143c44;\n}\n.map-stage::after {\n  content: "";\n  position: absolute;\n  inset: 0;\n  pointer-events: none;\n  box-shadow: inset 0 0 4rem rgba(3, 26, 36, 0.5019607843), inset 0 0 0 5px rgba(212, 189, 117, 0.1411764706);\n}\n.world-map {\n  display: block;\n  width: 100%;\n  height: clamp(28rem, 100dvh - 22rem, 46rem);\n  min-height: 28rem;\n  background: #143c44;\n  transition: background 180ms ease;\n}\n.navigation-layer {\n  pointer-events: none;\n}\n.equator {\n  fill: none;\n  stroke: #efe0a8;\n  stroke-width: 0.5;\n  stroke-dasharray: 3 5;\n  opacity: 0.3;\n}\n.ocean-label {\n  fill: #c1d8cb;\n  opacity: 0.68;\n  font: italic 9px Georgia, serif;\n  letter-spacing: 2px;\n  text-anchor: middle;\n}\n.land-label {\n  fill: #f2e4b8;\n  font: 7px Georgia, serif;\n  letter-spacing: 1.7px;\n  text-anchor: middle;\n  paint-order: stroke;\n  stroke: #463e26;\n  stroke-width: 0.5;\n}\n.candidate-route {\n  cursor: pointer;\n}\n.candidate-route:focus {\n  outline: none;\n}\n.candidate-route .route-option {\n  fill: none;\n  stroke: #fff0bd;\n  stroke-width: 3;\n  stroke-dasharray: 5 7;\n  opacity: 0.9;\n  vector-effect: non-scaling-stroke;\n  filter: drop-shadow(0 0 4px #0b2a2d);\n  pointer-events: none;\n}\n.candidate-route .route-hit {\n  fill: none;\n  stroke: transparent;\n  stroke-width: 18;\n  vector-effect: non-scaling-stroke;\n  pointer-events: stroke;\n}\n.candidate-route:hover .route-option,\n.candidate-route:focus-visible .route-option,\n.candidate-route.selected .route-option {\n  stroke: #ffe08a;\n  stroke-width: 6;\n  stroke-dasharray: none;\n  opacity: 1;\n  filter: drop-shadow(0 0 8px #102d32) drop-shadow(0 0 3px #fff1b9);\n}\n.route-choice-label {\n  fill: #fff5d6;\n  font:\n    800 8px ui-sans-serif,\n    system-ui,\n    sans-serif;\n  text-anchor: middle;\n  paint-order: stroke;\n  stroke: #13363a;\n  stroke-width: 3.5;\n  stroke-linejoin: round;\n  pointer-events: none;\n}\n.route-shadow,\n.route-line {\n  fill: none;\n  stroke-linecap: round;\n  stroke-linejoin: round;\n  vector-effect: non-scaling-stroke;\n}\n.voyage-routes {\n  pointer-events: none;\n}\n.route-shadow {\n  stroke: #17211e;\n  stroke-width: 7;\n  opacity: 0.78;\n}\n.route-line {\n  stroke: var(--route-color);\n  stroke-width: 4;\n  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.2));\n  animation: route-reveal 850ms ease-out both;\n}\n.voyage.context-route {\n  opacity: 0.32;\n}\n.voyage.context-route .route-line {\n  stroke-width: 3;\n  filter: none;\n}\n.voyage.context-route .route-shadow {\n  opacity: 0.35;\n}\n.voyage.featured .route-line {\n  stroke-width: 6;\n  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.4666666667));\n}\n.voyage.featured .route-shadow {\n  stroke-width: 10;\n}\n.pattern-long-dash .route-line {\n  stroke-dasharray: 20 10;\n}\n.pattern-short-dash .route-line {\n  stroke-dasharray: 8 7;\n}\n.pattern-dot-dash .route-line {\n  stroke-dasharray: 2 7 15 7;\n}\n.pattern-double .route-line {\n  stroke-width: 8;\n}\n.pattern-double .double-line {\n  stroke: #1d2a26;\n  stroke-width: 2;\n}\n.event-marker circle {\n  fill: #f0dbc0;\n  stroke: var(--route-color);\n  stroke-width: 3;\n  vector-effect: non-scaling-stroke;\n}\n.event-marker text {\n  fill: #33251a;\n  font: 900 16px Georgia, serif;\n  text-anchor: middle;\n}\n.weather-layer path {\n  fill: none;\n  stroke: #eef9e7;\n  stroke-width: 3;\n  stroke-dasharray: 14 7;\n  opacity: 0.72;\n  vector-effect: non-scaling-stroke;\n}\n.weather-layer circle {\n  fill: rgba(72, 92, 98, 0.6666666667);\n  stroke: #e6f4ef;\n  stroke-width: 2;\n}\n.weather-layer text,\n.risk-layer text,\n.trade-layer text {\n  fill: #edf4e9;\n  font: 800 11px ui-sans-serif, sans-serif;\n  letter-spacing: 0.12em;\n  text-anchor: middle;\n}\n.risk-layer ellipse {\n  fill: rgba(165, 63, 54, 0.3333333333);\n  stroke: #90352d;\n  stroke-width: 3;\n  stroke-dasharray: 8 7;\n}\n.trade-layer path {\n  fill: none;\n  stroke: #8e572c;\n  stroke-width: 5;\n  stroke-dasharray: 3 8;\n  opacity: 0.75;\n}\n.trade-layer text {\n  fill: #654124;\n}\n.location {\n  cursor: pointer;\n}\n.port-pin {\n  fill: #ede0b7;\n  stroke: #314943;\n  stroke-width: 2.4;\n  vector-effect: non-scaling-stroke;\n}\n.pin-center {\n  fill: #765126;\n}\n.location-ring {\n  fill: none;\n  stroke: transparent;\n  stroke-width: 4;\n  vector-effect: non-scaling-stroke;\n}\n.location:hover .location-ring,\n.location:focus-visible .location-ring,\n.location.inspected .location-ring {\n  stroke: #eff5d6;\n}\n.location.candidate-destination .location-ring,\n.location.candidate-map-option .location-ring {\n  stroke: #ffe08a;\n  stroke-dasharray: 3 3;\n  animation: destination-pulse 1.6s ease-in-out infinite alternate;\n}\n.location.selected-destination .location-ring {\n  stroke: #fff2b8;\n  stroke-width: 7;\n  stroke-dasharray: none;\n}\n.location.active-decision .port-pin {\n  fill: #f7cb65;\n  stroke: #173e3d;\n}\n.location.active-decision .location-label {\n  fill: #fff6d7;\n  font-weight: 900;\n}\n.location.shared .location-ring {\n  stroke: #7b2e66;\n  stroke-dasharray: 4 4;\n}\n.location:focus {\n  outline: none;\n}\n.location-label,\n.shared-count,\n.map-option-label {\n  fill: #fff1cc;\n  font: 700 11px Georgia, serif;\n  paint-order: stroke;\n  stroke: #102d32;\n  stroke-width: 3;\n  stroke-linejoin: round;\n}\n.map-option-label {\n  fill: #ffe08a;\n  font:\n    800 7px ui-sans-serif,\n    system-ui,\n    sans-serif;\n  text-anchor: middle;\n  text-transform: uppercase;\n}\n.regional .location-label {\n  font-size: 7px;\n  stroke-width: 2.4;\n}\n.shared-count {\n  fill: #6b245c;\n  font: 800 10px ui-sans-serif, sans-serif;\n  text-anchor: middle;\n}\n.ship {\n  color: #f0c96a;\n  filter: drop-shadow(0 5px 5px rgba(19, 32, 29, 0.7333333333));\n  transition: transform 650ms ease;\n  pointer-events: none;\n}\n.ship ellipse {\n  fill: rgba(4, 26, 32, 0.6666666667);\n}\n.ship path {\n  stroke: #e2be73;\n  stroke-width: 1;\n  vector-effect: non-scaling-stroke;\n}\n.ship .ship-hull {\n  fill: #694024;\n}\n.ship .ship-rigging {\n  fill: none;\n  stroke: #704a2d;\n}\n.ship .ship-sails {\n  fill: #fff1c9;\n  stroke: #9f7c43;\n}\n.ship .ship-flag {\n  fill: #d87144;\n}\n.ship circle {\n  fill: none;\n  stroke: #f5df95;\n  stroke-width: 2;\n  stroke-dasharray: 5 5;\n  vector-effect: non-scaling-stroke;\n  animation: ship-pulse 1.6s ease-in-out infinite alternate;\n}\n.knowledge-fog path {\n  fill: rgba(20, 60, 68, 0.1882352941);\n  stroke: none;\n}\n.knowledge-fog text {\n  fill: #e3d7af;\n  font: italic 13px Georgia, serif;\n  letter-spacing: 0.14em;\n  text-anchor: middle;\n}\n.knowledge-fog {\n  pointer-events: none;\n}\n.chart-compass {\n  position: absolute;\n  right: 1rem;\n  bottom: 1rem;\n  width: 5.2rem;\n  pointer-events: none;\n  opacity: 0.9;\n  filter: drop-shadow(0 2px 4px #031c24);\n}\n.chart-compass svg {\n  display: block;\n  width: 100%;\n  overflow: visible;\n}\n.chart-compass circle {\n  fill: rgba(18, 49, 59, 0.5019607843);\n  stroke: #c3a05a;\n  stroke-width: 0.65;\n}\n.chart-compass path {\n  fill: #c4a25d;\n  stroke: #f3deb0;\n  stroke-width: 0.5;\n}\n.chart-compass .compass-light {\n  fill: #f6eac8;\n}\n.chart-compass text {\n  fill: #f3e6c5;\n  font: 9px Georgia, serif;\n  text-anchor: middle;\n}\n.chart-legend {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.65rem 1.2rem;\n  padding: 0.65rem 0.85rem;\n  background: #102b30;\n  color: #c2d3cb;\n  font: 0.65rem ui-sans-serif, sans-serif;\n}\n.chart-legend span {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.4rem;\n}\n.chart-legend i {\n  display: inline-block;\n  width: 1.1rem;\n}\n.legend-port {\n  width: 0.45rem !important;\n  height: 0.45rem;\n  border: 1px solid #f9e9bc;\n  border-radius: 50%;\n  background: #bd9551;\n}\n.legend-route {\n  border-top: 2px dashed #efdfab;\n}\n.legend-voyage {\n  height: 3px;\n  border-radius: 2px;\n}\n.legend-class {\n  height: 3px;\n  border-radius: 2px;\n  background: #aab7ae;\n  opacity: 0.45;\n}\n.pan-pad {\n  position: absolute;\n  bottom: 1rem;\n  left: 1rem;\n  display: grid;\n  grid-template-columns: repeat(4, 2.5rem);\n  gap: 0.25rem;\n}\n.pan-pad button {\n  width: 2.5rem;\n  padding: 0;\n}\n.lens-tray {\n  justify-content: flex-start;\n  flex-wrap: wrap;\n  border-top: 1px solid #816a41;\n}\n.lens-tray > span {\n  margin-right: 0.35rem;\n  color: #c8b681;\n  font: 850 0.68rem ui-sans-serif, sans-serif;\n  letter-spacing: 0.12em;\n  text-transform: uppercase;\n}\n.lens-tray button {\n  min-height: 2.15rem;\n  font-size: 0.68rem;\n}\n@keyframes route-reveal {\n  from {\n    opacity: 0;\n    stroke-dashoffset: 40;\n  }\n}\n@keyframes ship-pulse {\n  to {\n    r: 15;\n    opacity: 0.3;\n  }\n}\n@keyframes destination-pulse {\n  to {\n    stroke-width: 7;\n    opacity: 0.55;\n  }\n}\n@media (max-width: 760px) {\n  .atlas-tools {\n    align-items: stretch;\n    flex-direction: column;\n  }\n  .chart-heading {\n    padding: 0.85rem;\n  }\n  .chart-edition {\n    display: none;\n  }\n  .cover-switch,\n  .zoom-tools {\n    justify-content: center;\n    flex-wrap: wrap;\n  }\n  .world-map {\n    height: auto;\n    min-height: 24rem;\n    aspect-ratio: 4/3;\n  }\n}\n@media (prefers-reduced-motion: reduce) {\n  .route-line,\n  .ship circle,\n  .location.candidate-destination .location-ring,\n  .location.candidate-map-option .location-ring {\n    animation: none;\n  }\n  .ship {\n    transition: none;\n  }\n}\n.map-stage {\n  min-height: var(--journey-map-min-height, 28rem);\n}\n.world-map,\n.regional .world-map {\n  height: var(--journey-map-height, clamp(28rem, 100dvh - 22rem, 46rem));\n  min-height: var(--journey-map-min-height, 28rem);\n}\n.atlas.immersive {\n  display: grid;\n  height: 100%;\n  min-height: 0;\n  grid-template-rows: minmax(0, 1fr);\n  border: 0;\n  border-radius: 0;\n  box-shadow: none;\n}\n.atlas.immersive .map-stage,\n.atlas.immersive .world-map,\n.atlas.immersive.regional .world-map {\n  height: 100%;\n  min-height: 0;\n}\n@media (max-width: 760px) {\n  .atlas.immersive .world-map,\n  .atlas.immersive.regional .world-map {\n    height: 100%;\n    min-height: 0;\n    aspect-ratio: auto;\n  }\n  .atlas.immersive {\n    grid-template-rows: minmax(0, 1fr);\n  }\n}\n/*# sourceMappingURL=living-journey-map.component.css.map */\n'] }]
+`, styles: ['/* src/app/templates/journey-replay/ui/map/living-journey-map.component.scss */\n:host {\n  display: block;\n  min-width: 0;\n  color: #eee0bd;\n}\n* {\n  box-sizing: border-box;\n}\n.atlas {\n  position: relative;\n  overflow: hidden;\n  border: 1px solid #aa8c50;\n  border-radius: 0.6rem;\n  background: #151d1c;\n  box-shadow: 0 1.2rem 3rem rgba(5, 9, 8, 0.6), inset 0 0 0 3px rgba(183, 154, 88, 0.1254901961);\n}\n.chart-heading {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 1rem;\n  padding: 1rem 1.15rem;\n  background:\n    linear-gradient(\n      115deg,\n      #173b3c,\n      #0c2429);\n}\n.chart-kicker {\n  color: #dbb86f;\n  font: 800 0.6rem ui-sans-serif, sans-serif;\n  letter-spacing: 0.22em;\n  text-transform: uppercase;\n}\n.chart-heading h2 {\n  margin: 0.25rem 0 0;\n  color: #f3e6c6;\n  font: 400 clamp(1.25rem, 2vw, 1.8rem) Georgia, serif;\n}\n.chart-edition {\n  color: #d8c794;\n  font: italic 0.8rem Georgia, serif;\n  text-align: right;\n}\n.chart-edition small {\n  display: block;\n  margin-top: 0.35rem;\n  color: #9bb6b1;\n  font: 0.6rem ui-sans-serif, sans-serif;\n}\n.atlas-tools,\n.lens-tray {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 0.6rem;\n  padding: 0.55rem 0.7rem;\n  background:\n    linear-gradient(\n      90deg,\n      #172724,\n      #21352d 50%,\n      #17241f);\n}\n.atlas-tools {\n  border-bottom: 1px solid #816a41;\n}\n.cover-switch,\n.zoom-tools {\n  display: flex;\n  align-items: center;\n  gap: 0.35rem;\n}\nbutton {\n  min-height: 2.45rem;\n  border: 1px solid #806b43;\n  border-radius: 0.35rem;\n  padding: 0.42rem 0.66rem;\n  color: #e9ddbd;\n  background: #283c34;\n  font:\n    750 0.76rem/1.1 ui-sans-serif,\n    system-ui,\n    sans-serif;\n  text-transform: capitalize;\n  cursor: pointer;\n}\nbutton:hover:not(:disabled),\nbutton[aria-pressed=true] {\n  border-color: #e8c774;\n  color: #1e2823;\n  background: #dfc47c;\n}\nbutton:disabled {\n  opacity: 0.45;\n  cursor: not-allowed;\n}\nbutton:focus-visible,\n.world-map:focus-visible {\n  outline: 3px solid #72d4dc;\n  outline-offset: 2px;\n}\noutput {\n  min-width: 3.4rem;\n  color: #ddc88e;\n  font: 750 0.75rem ui-monospace, monospace;\n  text-align: center;\n}\n.map-stage {\n  position: relative;\n  min-height: 28rem;\n  overflow: hidden;\n  background: #143c44;\n}\n.map-stage::after {\n  content: "";\n  position: absolute;\n  inset: 0;\n  pointer-events: none;\n  box-shadow: inset 0 0 4rem rgba(3, 26, 36, 0.5019607843), inset 0 0 0 5px rgba(212, 189, 117, 0.1411764706);\n}\n.world-map {\n  display: block;\n  width: 100%;\n  height: clamp(28rem, 100dvh - 22rem, 46rem);\n  min-height: 28rem;\n  background: #143c44;\n  transition: background 180ms ease;\n}\n.navigation-layer {\n  pointer-events: none;\n}\n.equator {\n  fill: none;\n  stroke: #efe0a8;\n  stroke-width: 0.5;\n  stroke-dasharray: 3 5;\n  opacity: 0.3;\n}\n.ocean-label {\n  fill: #c1d8cb;\n  opacity: 0.68;\n  font: italic 9px Georgia, serif;\n  letter-spacing: 2px;\n  text-anchor: middle;\n}\n.land-label {\n  fill: #f2e4b8;\n  font: 7px Georgia, serif;\n  letter-spacing: 1.7px;\n  text-anchor: middle;\n  paint-order: stroke;\n  stroke: #463e26;\n  stroke-width: 0.5;\n}\n.candidate-route {\n  cursor: pointer;\n}\n.expedition-style .world-map {\n  touch-action: none;\n  cursor: grab;\n}\n.expedition-style .world-map:active {\n  cursor: grabbing;\n}\n.expedition-style .world-map > image {\n  filter: saturate(0.86) contrast(1.12) brightness(0.91);\n}\n.expedition-style .map-stage::after {\n  content: "";\n  position: absolute;\n  inset: 0;\n  pointer-events: none;\n  box-shadow: inset 0 0 110px rgba(2, 27, 45, 0.5019607843);\n  background:\n    linear-gradient(\n      135deg,\n      rgba(232, 195, 106, 0.0509803922),\n      transparent 45%,\n      rgba(1, 29, 45, 0.0941176471));\n}\n.expedition-style .location:not(.candidate-destination):not(.active-decision):not(.inspected) .location-label {\n  opacity: 0.45;\n  font-weight: 400;\n}\n.expedition-style .location:hover .location-label,\n.expedition-style .location:focus-visible .location-label {\n  opacity: 1 !important;\n}\n.expedition-style .candidate-destination .location-label,\n.expedition-style .active-decision .location-label {\n  fill: #ffedaf;\n  stroke: #082c38;\n  stroke-width: 2.8;\n}\n.expedition-style .candidate-route .route-option {\n  stroke: #edce81;\n  stroke-width: 3;\n  stroke-dasharray: 3 8;\n  animation: passage-flow 12s linear infinite;\n  filter: drop-shadow(0 1px 2px #02111d);\n}\n.expedition-style .candidate-route.selected .route-option {\n  stroke: #fff1ae;\n  stroke-width: 5;\n  stroke-dasharray: 8 5;\n  filter: drop-shadow(0 0 4px rgba(233, 199, 120, 0.7019607843)) drop-shadow(0 0 2px #112e38);\n}\n.expedition-style .route-line {\n  stroke: #c8e8cd;\n  stroke-width: 3;\n  opacity: 0.8;\n}\n.expedition-style .weather-layer > path {\n  stroke: #bddedb;\n  stroke-dasharray: 5 5;\n  animation: wind-flow 15s linear infinite;\n}\n.expedition-style .weather-layer circle {\n  fill: rgba(180, 202, 207, 0.1254901961);\n  stroke: rgba(171, 196, 208, 0.5137254902);\n}\n.expedition-style .painted-vessel {\n  filter: drop-shadow(0 3px 2px rgba(3, 21, 26, 0.7019607843));\n}\n.expedition-style .painted-vessel path {\n  stroke-width: 0.5;\n}\n.expedition-style .chart-compass {\n  opacity: 0.72;\n  right: 22px;\n  bottom: 85px;\n  width: 78px;\n}\n@keyframes passage-flow {\n  to {\n    stroke-dashoffset: -110;\n  }\n}\n@keyframes wind-flow {\n  to {\n    stroke-dashoffset: -80;\n  }\n}\n@media (prefers-reduced-motion: reduce) {\n  .expedition-style .candidate-route .route-option,\n  .expedition-style .weather-layer > path {\n    animation: none;\n  }\n}\n.candidate-route:focus {\n  outline: none;\n}\n.candidate-route .route-option {\n  fill: none;\n  stroke: #fff0bd;\n  stroke-width: 3;\n  stroke-dasharray: 5 7;\n  opacity: 0.9;\n  vector-effect: non-scaling-stroke;\n  filter: drop-shadow(0 0 4px #0b2a2d);\n  pointer-events: none;\n}\n.candidate-route .route-hit {\n  fill: none;\n  stroke: transparent;\n  stroke-width: 18;\n  vector-effect: non-scaling-stroke;\n  pointer-events: stroke;\n}\n.candidate-route:hover .route-option,\n.candidate-route:focus-visible .route-option,\n.candidate-route.selected .route-option {\n  stroke: #ffe08a;\n  stroke-width: 6;\n  stroke-dasharray: none;\n  opacity: 1;\n  filter: drop-shadow(0 0 8px #102d32) drop-shadow(0 0 3px #fff1b9);\n}\n.route-choice-label {\n  fill: #fff5d6;\n  font:\n    800 8px ui-sans-serif,\n    system-ui,\n    sans-serif;\n  text-anchor: middle;\n  paint-order: stroke;\n  stroke: #13363a;\n  stroke-width: 3.5;\n  stroke-linejoin: round;\n  pointer-events: none;\n}\n.route-shadow,\n.route-line {\n  fill: none;\n  stroke-linecap: round;\n  stroke-linejoin: round;\n  vector-effect: non-scaling-stroke;\n}\n.voyage-routes {\n  pointer-events: none;\n}\n.route-shadow {\n  stroke: #17211e;\n  stroke-width: 7;\n  opacity: 0.78;\n}\n.route-line {\n  stroke: var(--route-color);\n  stroke-width: 4;\n  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.2));\n  animation: route-reveal 850ms ease-out both;\n}\n.voyage.context-route {\n  opacity: 0.32;\n}\n.voyage.context-route .route-line {\n  stroke-width: 3;\n  filter: none;\n}\n.voyage.context-route .route-shadow {\n  opacity: 0.35;\n}\n.voyage.featured .route-line {\n  stroke-width: 6;\n  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.4666666667));\n}\n.voyage.featured .route-shadow {\n  stroke-width: 10;\n}\n.pattern-long-dash .route-line {\n  stroke-dasharray: 20 10;\n}\n.pattern-short-dash .route-line {\n  stroke-dasharray: 8 7;\n}\n.pattern-dot-dash .route-line {\n  stroke-dasharray: 2 7 15 7;\n}\n.pattern-double .route-line {\n  stroke-width: 8;\n}\n.pattern-double .double-line {\n  stroke: #1d2a26;\n  stroke-width: 2;\n}\n.event-marker circle {\n  fill: #f0dbc0;\n  stroke: var(--route-color);\n  stroke-width: 3;\n  vector-effect: non-scaling-stroke;\n}\n.event-marker text {\n  fill: #33251a;\n  font: 900 16px Georgia, serif;\n  text-anchor: middle;\n}\n.weather-layer path {\n  fill: none;\n  stroke: #eef9e7;\n  stroke-width: 3;\n  stroke-dasharray: 14 7;\n  opacity: 0.72;\n  vector-effect: non-scaling-stroke;\n}\n.weather-layer circle {\n  fill: rgba(72, 92, 98, 0.6666666667);\n  stroke: #e6f4ef;\n  stroke-width: 2;\n}\n.weather-layer text,\n.risk-layer text,\n.trade-layer text {\n  fill: #edf4e9;\n  font: 800 11px ui-sans-serif, sans-serif;\n  letter-spacing: 0.12em;\n  text-anchor: middle;\n}\n.risk-layer ellipse {\n  fill: rgba(165, 63, 54, 0.3333333333);\n  stroke: #90352d;\n  stroke-width: 3;\n  stroke-dasharray: 8 7;\n}\n.trade-layer path {\n  fill: none;\n  stroke: #8e572c;\n  stroke-width: 5;\n  stroke-dasharray: 3 8;\n  opacity: 0.75;\n}\n.trade-layer text {\n  fill: #654124;\n}\n.location {\n  cursor: pointer;\n}\n.port-pin {\n  fill: #ede0b7;\n  stroke: #314943;\n  stroke-width: 2.4;\n  vector-effect: non-scaling-stroke;\n}\n.pin-center {\n  fill: #765126;\n}\n.location-ring {\n  fill: none;\n  stroke: transparent;\n  stroke-width: 4;\n  vector-effect: non-scaling-stroke;\n}\n.location:hover .location-ring,\n.location:focus-visible .location-ring,\n.location.inspected .location-ring {\n  stroke: #eff5d6;\n}\n.location.candidate-destination .location-ring,\n.location.candidate-map-option .location-ring {\n  stroke: #ffe08a;\n  stroke-dasharray: 3 3;\n  animation: destination-pulse 1.6s ease-in-out infinite alternate;\n}\n.location.selected-destination .location-ring {\n  stroke: #fff2b8;\n  stroke-width: 7;\n  stroke-dasharray: none;\n}\n.location.active-decision .port-pin {\n  fill: #f7cb65;\n  stroke: #173e3d;\n}\n.location.active-decision .location-label {\n  fill: #fff6d7;\n  font-weight: 900;\n}\n.location.shared .location-ring {\n  stroke: #7b2e66;\n  stroke-dasharray: 4 4;\n}\n.location:focus {\n  outline: none;\n}\n.location-label,\n.shared-count,\n.map-option-label {\n  fill: #fff1cc;\n  font: 700 11px Georgia, serif;\n  paint-order: stroke;\n  stroke: #102d32;\n  stroke-width: 3;\n  stroke-linejoin: round;\n}\n.map-option-label {\n  fill: #ffe08a;\n  font:\n    800 7px ui-sans-serif,\n    system-ui,\n    sans-serif;\n  text-anchor: middle;\n  text-transform: uppercase;\n}\n.regional .location-label {\n  font-size: 7px;\n  stroke-width: 2.4;\n}\n.shared-count {\n  fill: #6b245c;\n  font: 800 10px ui-sans-serif, sans-serif;\n  text-anchor: middle;\n}\n.ship {\n  color: #f0c96a;\n  filter: drop-shadow(0 5px 5px rgba(19, 32, 29, 0.7333333333));\n  transition: transform 650ms ease;\n  pointer-events: none;\n}\n.ship ellipse {\n  fill: rgba(4, 26, 32, 0.6666666667);\n}\n.ship path {\n  stroke: #e2be73;\n  stroke-width: 1;\n  vector-effect: non-scaling-stroke;\n}\n.ship .ship-hull {\n  fill: #694024;\n}\n.ship .ship-rigging {\n  fill: none;\n  stroke: #704a2d;\n}\n.ship .ship-sails {\n  fill: #fff1c9;\n  stroke: #9f7c43;\n}\n.ship .ship-flag {\n  fill: #d87144;\n}\n.ship circle {\n  fill: none;\n  stroke: #f5df95;\n  stroke-width: 2;\n  stroke-dasharray: 5 5;\n  vector-effect: non-scaling-stroke;\n  animation: ship-pulse 1.6s ease-in-out infinite alternate;\n}\n.knowledge-fog path {\n  fill: rgba(20, 60, 68, 0.1882352941);\n  stroke: none;\n}\n.knowledge-fog text {\n  fill: #e3d7af;\n  font: italic 13px Georgia, serif;\n  letter-spacing: 0.14em;\n  text-anchor: middle;\n}\n.knowledge-fog {\n  pointer-events: none;\n}\n.chart-compass {\n  position: absolute;\n  right: 1rem;\n  bottom: 1rem;\n  width: 5.2rem;\n  pointer-events: none;\n  opacity: 0.9;\n  filter: drop-shadow(0 2px 4px #031c24);\n}\n.chart-compass svg {\n  display: block;\n  width: 100%;\n  overflow: visible;\n}\n.chart-compass circle {\n  fill: rgba(18, 49, 59, 0.5019607843);\n  stroke: #c3a05a;\n  stroke-width: 0.65;\n}\n.chart-compass path {\n  fill: #c4a25d;\n  stroke: #f3deb0;\n  stroke-width: 0.5;\n}\n.chart-compass .compass-light {\n  fill: #f6eac8;\n}\n.chart-compass text {\n  fill: #f3e6c5;\n  font: 9px Georgia, serif;\n  text-anchor: middle;\n}\n.chart-legend {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 0.65rem 1.2rem;\n  padding: 0.65rem 0.85rem;\n  background: #102b30;\n  color: #c2d3cb;\n  font: 0.65rem ui-sans-serif, sans-serif;\n}\n.chart-legend span {\n  display: inline-flex;\n  align-items: center;\n  gap: 0.4rem;\n}\n.chart-legend i {\n  display: inline-block;\n  width: 1.1rem;\n}\n.legend-port {\n  width: 0.45rem !important;\n  height: 0.45rem;\n  border: 1px solid #f9e9bc;\n  border-radius: 50%;\n  background: #bd9551;\n}\n.legend-route {\n  border-top: 2px dashed #efdfab;\n}\n.legend-voyage {\n  height: 3px;\n  border-radius: 2px;\n}\n.legend-class {\n  height: 3px;\n  border-radius: 2px;\n  background: #aab7ae;\n  opacity: 0.45;\n}\n.pan-pad {\n  position: absolute;\n  bottom: 1rem;\n  left: 1rem;\n  display: grid;\n  grid-template-columns: repeat(4, 2.5rem);\n  gap: 0.25rem;\n}\n.pan-pad button {\n  width: 2.5rem;\n  padding: 0;\n}\n.lens-tray {\n  justify-content: flex-start;\n  flex-wrap: wrap;\n  border-top: 1px solid #816a41;\n}\n.lens-tray > span {\n  margin-right: 0.35rem;\n  color: #c8b681;\n  font: 850 0.68rem ui-sans-serif, sans-serif;\n  letter-spacing: 0.12em;\n  text-transform: uppercase;\n}\n.lens-tray button {\n  min-height: 2.15rem;\n  font-size: 0.68rem;\n}\n@keyframes route-reveal {\n  from {\n    opacity: 0;\n    stroke-dashoffset: 40;\n  }\n}\n@keyframes ship-pulse {\n  to {\n    r: 15;\n    opacity: 0.3;\n  }\n}\n@keyframes destination-pulse {\n  to {\n    stroke-width: 7;\n    opacity: 0.55;\n  }\n}\n@media (max-width: 760px) {\n  .atlas-tools {\n    align-items: stretch;\n    flex-direction: column;\n  }\n  .chart-heading {\n    padding: 0.85rem;\n  }\n  .chart-edition {\n    display: none;\n  }\n  .cover-switch,\n  .zoom-tools {\n    justify-content: center;\n    flex-wrap: wrap;\n  }\n  .world-map {\n    height: auto;\n    min-height: 24rem;\n    aspect-ratio: 4/3;\n  }\n}\n@media (prefers-reduced-motion: reduce) {\n  .route-line,\n  .ship circle,\n  .location.candidate-destination .location-ring,\n  .location.candidate-map-option .location-ring {\n    animation: none;\n  }\n  .ship {\n    transition: none;\n  }\n}\n.map-stage {\n  min-height: var(--journey-map-min-height, 28rem);\n}\n.world-map,\n.regional .world-map {\n  height: var(--journey-map-height, clamp(28rem, 100dvh - 22rem, 46rem));\n  min-height: var(--journey-map-min-height, 28rem);\n}\n.atlas.immersive {\n  display: grid;\n  height: 100%;\n  min-height: 0;\n  grid-template-rows: minmax(0, 1fr);\n  border: 0;\n  border-radius: 0;\n  box-shadow: none;\n}\n.atlas.immersive .map-stage,\n.atlas.immersive .world-map,\n.atlas.immersive.regional .world-map {\n  height: 100%;\n  min-height: 0;\n}\n@media (max-width: 760px) {\n  .atlas.immersive .world-map,\n  .atlas.immersive.regional .world-map {\n    height: 100%;\n    min-height: 0;\n    aspect-ratio: auto;\n  }\n  .atlas.immersive {\n    grid-template-rows: minmax(0, 1fr);\n  }\n}\n/*# sourceMappingURL=living-journey-map.component.css.map */\n'] }]
   }], null, { map: [{ type: Input, args: [{ isSignal: true, alias: "map", required: true }] }], route: [{ type: Input, args: [{ isSignal: true, alias: "route", required: false }] }], team: [{ type: Input, args: [{ isSignal: true, alias: "team", required: true }] }], candidateRouteIds: [{ type: Input, args: [{ isSignal: true, alias: "candidateRouteIds", required: false }] }], candidateRouteLabels: [{ type: Input, args: [{ isSignal: true, alias: "candidateRouteLabels", required: false }] }], selectedRouteId: [{ type: Input, args: [{ isSignal: true, alias: "selectedRouteId", required: false }] }], candidateLocationIds: [{ type: Input, args: [{ isSignal: true, alias: "candidateLocationIds", required: false }] }], candidateLocationLabels: [{ type: Input, args: [{ isSignal: true, alias: "candidateLocationLabels", required: false }] }], selectedCandidateLocationId: [{ type: Input, args: [{ isSignal: true, alias: "selectedCandidateLocationId", required: false }] }], activeLocationId: [{ type: Input, args: [{ isSignal: true, alias: "activeLocationId", required: false }] }], immersive: [{ type: Input, args: [{ isSignal: true, alias: "immersive", required: false }] }], showRouteLabels: [{ type: Input, args: [{ isSignal: true, alias: "showRouteLabels", required: false }] }], expeditionStyle: [{ type: Input, args: [{ isSignal: true, alias: "expeditionStyle", required: false }] }], vesselArt: [{ type: Input, args: [{ isSignal: true, alias: "vesselArt", required: false }] }], classVoyages: [{ type: Input, args: [{ isSignal: true, alias: "classVoyages", required: false }] }], featuredVoyageId: [{ type: Input, args: [{ isSignal: true, alias: "featuredVoyageId", required: false }] }], intersections: [{ type: Input, args: [{ isSignal: true, alias: "intersections", required: false }] }], mapLabel: [{ type: Input, args: [{ isSignal: true, alias: "mapLabel", required: false }] }], locationInspected: [{ type: Output, args: ["locationInspected"] }], routeInspected: [{ type: Output, args: ["routeInspected"] }] });
 })();
 (() => {
@@ -38592,10 +38677,13 @@ var LivingJourneyMapComponent = class _LivingJourneyMapComponent {
 })();
 
 // src/app/templates/journey-replay/ui/game/journey-world.tokens.ts
-var JOURNEY_WORLD_LOADER = new InjectionToken("JOURNEY_WORLD_LOADER", {
-  providedIn: "root",
-  factory: () => () => import("./chunk-66VE64H7.js").then((module) => module.mountJourneyLocationWorld)
-});
+var JOURNEY_WORLD_LOADER = new InjectionToken(
+  "JOURNEY_WORLD_LOADER",
+  {
+    providedIn: "root",
+    factory: () => () => import("./chunk-BYCXJO7F.js").then((module) => module.mountJourneyLocationWorld)
+  }
+);
 
 // src/app/templates/journey-replay/ui/journey-location-scene.component.ts
 var _c0 = ["worldHost"];
@@ -38604,7 +38692,7 @@ function JourneyLocationSceneComponent_Conditional_1_Conditional_3_Template(rf, 
   if (rf & 1) {
     const _r1 = \u0275\u0275getCurrentView();
     \u0275\u0275domElementStart(0, "div", 9);
-    \u0275\u0275text(1, "The interactive artwork could not load. ");
+    \u0275\u0275text(1, " The interactive artwork could not load. ");
     \u0275\u0275domElementStart(2, "button", 10);
     \u0275\u0275domListener("click", function JourneyLocationSceneComponent_Conditional_1_Conditional_3_Template_button_click_2_listener() {
       \u0275\u0275restoreView(_r1);
@@ -38874,7 +38962,7 @@ function JourneyLocationSceneComponent_Conditional_9_Template(rf, ctx) {
     \u0275\u0275advance(2);
     \u0275\u0275textInterpolate1("\u2316 ", event_r10.label);
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate(event_r10.observation);
+    \u0275\u0275textInterpolate1("", event_r10.observation, " ");
   }
 }
 var JourneyLocationSceneComponent = class _JourneyLocationSceneComponent {
@@ -38995,7 +39083,16 @@ var JourneyLocationSceneComponent = class _JourneyLocationSceneComponent {
         void this.loader().then((mount) => {
           if (disposed)
             return;
-          handle = mount(parent, node, () => ({ effects: this.effects(), paused: this.paused(), reducedMotion: this.reducedMotion(), activeEventId: this.activeEventId() }), { ready: () => this.worldStatus.set("ready"), failed: () => this.worldStatus.set("error"), inspect: (id) => this.inspected.emit(id) });
+          handle = mount(parent, node, () => ({
+            effects: this.effects(),
+            paused: this.paused(),
+            reducedMotion: this.reducedMotion(),
+            activeEventId: this.activeEventId()
+          }), {
+            ready: () => this.worldStatus.set("ready"),
+            failed: () => this.worldStatus.set("error"),
+            inspect: (id) => this.inspected.emit(id)
+          });
         }).catch(() => {
           if (!disposed)
             this.worldStatus.set("error");
@@ -39055,117 +39152,297 @@ var JourneyLocationSceneComponent = class _JourneyLocationSceneComponent {
       \u0275\u0275advance();
       \u0275\u0275attribute("aria-pressed", ctx.paused())("aria-label", ctx.paused() ? "Resume scene motion" : "Pause scene motion");
       \u0275\u0275advance();
-      \u0275\u0275textInterpolate(ctx.paused() ? "\u25B7" : "\u2161");
+      \u0275\u0275textInterpolate1(" ", ctx.paused() ? "\u25B7" : "\u2161", " ");
     }
-  }, styles: ["\n[_nghost-%COMP%] {\n  display: block;\n  height: 100%;\n  min-height: 0;\n}\n*[_ngcontent-%COMP%] {\n  box-sizing: border-box;\n}\n.location-scene[_ngcontent-%COMP%] {\n  height: 100%;\n  min-height: 390px;\n  position: relative;\n  overflow: hidden;\n  background: #356b72;\n  isolation: isolate;\n}\n.scene-art[_ngcontent-%COMP%] {\n  position: absolute;\n  inset: 0;\n  width: 100%;\n  height: 100%;\n}\n.phaser-world[_ngcontent-%COMP%] {\n  position: absolute;\n  inset: 0;\n  background-size: cover;\n  background-position: center;\n}\n.phaser-world[_ngcontent-%COMP%]   canvas[_ngcontent-%COMP%] {\n  display: block;\n}\n.scene-vignette[_ngcontent-%COMP%] {\n  position: absolute;\n  inset: 0;\n  pointer-events: none;\n  box-shadow: inset 0 0 100px rgba(2, 22, 35, 0.4392156863);\n  background:\n    linear-gradient(\n      rgba(6, 34, 44, 0.5490196078),\n      transparent 24%,\n      transparent 78%,\n      rgba(3, 28, 40, 0.4));\n}\n.world-error[_ngcontent-%COMP%] {\n  position: absolute;\n  z-index: 5;\n  left: 20px;\n  top: 50%;\n  padding: 16px;\n  max-width: 280px;\n  color: #ffedce;\n  background: #17333b;\n  border: 1px solid #b89e67;\n  font: 13px Arial, sans-serif;\n}\n.world-error[_ngcontent-%COMP%]   button[_ngcontent-%COMP%] {\n  display: block;\n  padding: 10px;\n  margin-top: 10px;\n}\n.storm[_ngcontent-%COMP%]   .scene-art[_ngcontent-%COMP%] {\n  filter: saturate(0.8) brightness(0.85);\n}\n.place-label[_ngcontent-%COMP%] {\n  position: absolute;\n  top: 26px;\n  left: 28px;\n  max-width: calc(100% - 100px);\n  color: #fff0c5;\n  font: 500 clamp(18px, 2.1vw, 29px)/1.25 Georgia, serif;\n  text-shadow: 0 2px 10px rgba(2, 21, 30, 0.8784313725);\n}\n.place-label[_ngcontent-%COMP%]   small[_ngcontent-%COMP%] {\n  display: block;\n  margin-top: 8px;\n  font: 10px/1.3 Arial, sans-serif;\n  letter-spacing: 0.15em;\n  text-transform: uppercase;\n}\n.storm[_ngcontent-%COMP%]   .place-label[_ngcontent-%COMP%] {\n  color: #f4e5bd;\n}\n.object-marker[_ngcontent-%COMP%] {\n  position: absolute;\n  z-index: 3;\n  display: flex;\n  gap: 9px;\n  align-items: center;\n  transform: translate(-50%, -50%);\n  border: 1px solid #e9d293;\n  border-radius: 24px;\n  min-width: 46px;\n  min-height: 46px;\n  padding: 6px 14px 6px 7px;\n  background: rgba(20, 47, 54, 0.9294117647);\n  color: #f4e3b9;\n  box-shadow: 0 5px 16px rgba(5, 40, 48, 0.3137254902);\n  cursor: pointer;\n  font: 12px/1.2 Arial, sans-serif;\n}\n.object-marker[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  display: grid;\n  place-items: center;\n  font: 600 12px Georgia, serif;\n  width: 30px;\n  height: 30px;\n  border-radius: 50%;\n  background:\n    linear-gradient(\n      145deg,\n      #d9ba74,\n      #8d7040);\n  color: #132d35;\n  border: 1px solid #f2df9c;\n  box-shadow: 0 0 0 5px rgba(192, 166, 108, 0.0980392157);\n}\n.object-marker.resolved[_ngcontent-%COMP%] {\n  border-color: #b6d5af;\n}\n.object-marker.resolved[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  background: #b7d1a2;\n}\n.object-marker[_ngcontent-%COMP%]   b[_ngcontent-%COMP%] {\n  max-width: 125px;\n  text-align: left;\n}\n.object-marker[_ngcontent-%COMP%]:hover, \n.object-marker.active[_ngcontent-%COMP%] {\n  background: #e8c580;\n  color: #173436;\n}\n.object-marker.active[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  background: #f3deaf;\n}\n.observation[_ngcontent-%COMP%] {\n  position: absolute;\n  bottom: 22px;\n  right: 22px;\n  width: min(300px, 48%);\n  padding: 14px 17px;\n  background: rgba(20, 46, 53, 0.9215686275);\n  color: #eff0dc;\n  border-left: 2px solid #e8c580;\n  border-radius: 3px;\n  font: 12px/1.55 Arial, sans-serif;\n}\n.observation[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  display: block;\n  color: #e8c580;\n  margin-bottom: 6px;\n  font-weight: 700;\n}\n.motion-control[_ngcontent-%COMP%] {\n  position: absolute;\n  right: 18px;\n  top: 18px;\n  width: 44px;\n  height: 44px;\n  border: 1px solid #b8ccc2;\n  border-radius: 50%;\n  background: rgba(24, 60, 66, 0.7803921569);\n  color: #fff0c7;\n  cursor: pointer;\n}\nbutton[_ngcontent-%COMP%]:focus-visible {\n  outline: 3px solid #f4e5ad;\n  outline-offset: 4px;\n}\n.ship[_ngcontent-%COMP%] {\n  transform-origin: 400px 565px;\n  animation: _ngcontent-%COMP%_vessel 8s ease-in-out infinite alternate;\n}\n.small-boat[_ngcontent-%COMP%] {\n  transition: transform 1.4s ease;\n}\n.small-boat.exchanged[_ngcontent-%COMP%] {\n  transform: translate(-117px, 47px);\n}\n.resting[_ngcontent-%COMP%]   .canvas[_ngcontent-%COMP%] {\n  transform: scaleY(0.62);\n  transform-origin: 385px 429px;\n}\n.canvas[_ngcontent-%COMP%] {\n  transition: transform 1s;\n}\n.sea-lines[_ngcontent-%COMP%] {\n  animation: _ngcontent-%COMP%_water 11s ease-in-out infinite alternate;\n}\n.rain[_ngcontent-%COMP%] {\n  animation: _ngcontent-%COMP%_rainfall 1.7s linear infinite;\n}\n.paused[_ngcontent-%COMP%]   *[_ngcontent-%COMP%] {\n  animation-play-state: paused !important;\n}\n@keyframes _ngcontent-%COMP%_vessel {\n  from {\n    transform: rotate(-0.8deg) translateY(-3px);\n  }\n  to {\n    transform: rotate(0.8deg) translateY(4px);\n  }\n}\n@keyframes _ngcontent-%COMP%_water {\n  to {\n    transform: translateX(32px);\n  }\n}\n@keyframes _ngcontent-%COMP%_rainfall {\n  to {\n    transform: translate(-20px, 35px);\n  }\n}\n@media (max-width: 700px) {\n  .place-label[_ngcontent-%COMP%] {\n    top: 18px;\n    left: 18px;\n    font-size: 19px;\n  }\n  .place-label[_ngcontent-%COMP%]   small[_ngcontent-%COMP%] {\n    font-size: 9px;\n  }\n  .object-marker[_ngcontent-%COMP%] {\n    padding: 4px;\n  }\n  .object-marker[_ngcontent-%COMP%]   b[_ngcontent-%COMP%] {\n    position: absolute;\n    bottom: calc(100% + 7px);\n    left: 50%;\n    transform: translateX(-50%);\n    width: 110px;\n    padding: 5px;\n    border-radius: 4px;\n    background: rgba(22, 52, 59, 0.9333333333);\n    color: #f4e3b9;\n    font-size: 10px;\n    text-align: center;\n  }\n  .observation[_ngcontent-%COMP%] {\n    right: 12px;\n    bottom: 12px;\n    width: 56%;\n    font-size: 10px;\n    padding: 9px 11px;\n  }\n}\n@media (prefers-reduced-motion: reduce) {\n  *[_ngcontent-%COMP%], \n   *[_ngcontent-%COMP%]::before, \n   *[_ngcontent-%COMP%]::after {\n    animation: none !important;\n    transition: none !important;\n  }\n}\n/*# sourceMappingURL=journey-location-scene.component.css.map */"] });
+  }, styles: ["\n[_nghost-%COMP%] {\n  display: block;\n  height: 100%;\n  min-height: 0;\n}\n*[_ngcontent-%COMP%] {\n  box-sizing: border-box;\n}\n.location-scene[_ngcontent-%COMP%] {\n  height: 100%;\n  min-height: 390px;\n  position: relative;\n  overflow: hidden;\n  background: #356b72;\n  isolation: isolate;\n}\n.scene-art[_ngcontent-%COMP%] {\n  position: absolute;\n  inset: 0;\n  width: 100%;\n  height: 100%;\n}\n.phaser-world[_ngcontent-%COMP%] {\n  position: absolute;\n  inset: 0;\n  background-size: cover;\n  background-position: center;\n}\n.phaser-world[_ngcontent-%COMP%]   canvas[_ngcontent-%COMP%] {\n  display: block;\n}\n.scene-vignette[_ngcontent-%COMP%] {\n  position: absolute;\n  inset: 0;\n  pointer-events: none;\n  box-shadow: inset 0 0 100px rgba(2, 22, 35, 0.4392156863);\n  background:\n    linear-gradient(\n      rgba(6, 34, 44, 0.5490196078),\n      transparent 24%,\n      transparent 78%,\n      rgba(3, 28, 40, 0.4));\n}\n.world-error[_ngcontent-%COMP%] {\n  position: absolute;\n  z-index: 5;\n  left: 20px;\n  top: 50%;\n  padding: 16px;\n  max-width: 280px;\n  color: #ffedce;\n  background: #17333b;\n  border: 1px solid #b89e67;\n  font: 13px Arial, sans-serif;\n}\n.world-error[_ngcontent-%COMP%]   button[_ngcontent-%COMP%] {\n  display: block;\n  padding: 10px;\n  margin-top: 10px;\n}\n.storm[_ngcontent-%COMP%]   .scene-art[_ngcontent-%COMP%] {\n  filter: saturate(0.8) brightness(0.85);\n}\n.place-label[_ngcontent-%COMP%] {\n  position: absolute;\n  top: 26px;\n  left: 28px;\n  max-width: calc(100% - 100px);\n  color: #fff0c5;\n  font: 500 clamp(18px, 2.1vw, 29px)/1.25 Georgia, serif;\n  text-shadow: 0 2px 10px rgba(2, 21, 30, 0.8784313725);\n}\n.place-label[_ngcontent-%COMP%]   small[_ngcontent-%COMP%] {\n  display: block;\n  margin-top: 8px;\n  font: 10px/1.3 Arial, sans-serif;\n  letter-spacing: 0.15em;\n  text-transform: uppercase;\n}\n.storm[_ngcontent-%COMP%]   .place-label[_ngcontent-%COMP%] {\n  color: #f4e5bd;\n}\n.object-marker[_ngcontent-%COMP%] {\n  position: absolute;\n  z-index: 3;\n  display: flex;\n  gap: 9px;\n  align-items: center;\n  transform: translate(-50%, -50%);\n  border: 1px solid #e9d293;\n  border-radius: 24px;\n  min-width: 46px;\n  min-height: 46px;\n  padding: 7px;\n  background: rgba(20, 47, 54, 0.9294117647);\n  color: #f4e3b9;\n  box-shadow: 0 5px 16px rgba(5, 40, 48, 0.3137254902);\n  cursor: pointer;\n  font: 12px/1.2 Arial, sans-serif;\n}\n.object-marker[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  display: grid;\n  place-items: center;\n  font: 600 12px Georgia, serif;\n  width: 30px;\n  height: 30px;\n  border-radius: 50%;\n  background:\n    linear-gradient(\n      145deg,\n      #d9ba74,\n      #8d7040);\n  color: #132d35;\n  border: 1px solid #f2df9c;\n  box-shadow: 0 0 0 5px rgba(192, 166, 108, 0.0980392157);\n}\n.object-marker.resolved[_ngcontent-%COMP%] {\n  border-color: #b6d5af;\n}\n.object-marker.resolved[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  background: #b7d1a2;\n}\n.object-marker[_ngcontent-%COMP%]   b[_ngcontent-%COMP%] {\n  position: absolute;\n  bottom: calc(100% + 7px);\n  left: 50%;\n  transform: translateX(-50%);\n  width: max-content;\n  max-width: 125px;\n  padding: 5px 8px;\n  border-radius: 4px;\n  background: rgba(22, 52, 59, 0.9333333333);\n  color: #f4e3b9;\n  text-align: center;\n}\n.object-marker[_ngcontent-%COMP%]:hover, \n.object-marker.active[_ngcontent-%COMP%] {\n  background: #e8c580;\n  color: #173436;\n}\n.object-marker.active[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  background: #f3deaf;\n}\n.observation[_ngcontent-%COMP%] {\n  position: absolute;\n  bottom: 22px;\n  right: 22px;\n  width: min(300px, 48%);\n  padding: 14px 17px;\n  background: rgba(20, 46, 53, 0.9215686275);\n  color: #eff0dc;\n  border-left: 2px solid #e8c580;\n  border-radius: 3px;\n  font: 12px/1.55 Arial, sans-serif;\n}\n.observation[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  display: block;\n  color: #e8c580;\n  margin-bottom: 6px;\n  font-weight: 700;\n}\n.motion-control[_ngcontent-%COMP%] {\n  position: absolute;\n  right: 18px;\n  top: 18px;\n  width: 44px;\n  height: 44px;\n  border: 1px solid #b8ccc2;\n  border-radius: 50%;\n  background: rgba(24, 60, 66, 0.7803921569);\n  color: #fff0c7;\n  cursor: pointer;\n}\nbutton[_ngcontent-%COMP%]:focus-visible {\n  outline: 3px solid #f4e5ad;\n  outline-offset: 4px;\n}\n.ship[_ngcontent-%COMP%] {\n  transform-origin: 400px 565px;\n  animation: _ngcontent-%COMP%_vessel 8s ease-in-out infinite alternate;\n}\n.small-boat[_ngcontent-%COMP%] {\n  transition: transform 1.4s ease;\n}\n.small-boat.exchanged[_ngcontent-%COMP%] {\n  transform: translate(-117px, 47px);\n}\n.resting[_ngcontent-%COMP%]   .canvas[_ngcontent-%COMP%] {\n  transform: scaleY(0.62);\n  transform-origin: 385px 429px;\n}\n.canvas[_ngcontent-%COMP%] {\n  transition: transform 1s;\n}\n.sea-lines[_ngcontent-%COMP%] {\n  animation: _ngcontent-%COMP%_water 11s ease-in-out infinite alternate;\n}\n.rain[_ngcontent-%COMP%] {\n  animation: _ngcontent-%COMP%_rainfall 1.7s linear infinite;\n}\n.paused[_ngcontent-%COMP%]   *[_ngcontent-%COMP%] {\n  animation-play-state: paused !important;\n}\n@keyframes _ngcontent-%COMP%_vessel {\n  from {\n    transform: rotate(-0.8deg) translateY(-3px);\n  }\n  to {\n    transform: rotate(0.8deg) translateY(4px);\n  }\n}\n@keyframes _ngcontent-%COMP%_water {\n  to {\n    transform: translateX(32px);\n  }\n}\n@keyframes _ngcontent-%COMP%_rainfall {\n  to {\n    transform: translate(-20px, 35px);\n  }\n}\n@media (max-width: 700px) {\n  .place-label[_ngcontent-%COMP%] {\n    top: 18px;\n    left: 18px;\n    font-size: 19px;\n  }\n  .place-label[_ngcontent-%COMP%]   small[_ngcontent-%COMP%] {\n    font-size: 9px;\n  }\n  .object-marker[_ngcontent-%COMP%] {\n    padding: 4px;\n  }\n  .object-marker[_ngcontent-%COMP%]   b[_ngcontent-%COMP%] {\n    position: absolute;\n    bottom: calc(100% + 7px);\n    left: 50%;\n    transform: translateX(-50%);\n    width: 110px;\n    padding: 5px;\n    border-radius: 4px;\n    background: rgba(22, 52, 59, 0.9333333333);\n    color: #f4e3b9;\n    font-size: 10px;\n    text-align: center;\n  }\n  .observation[_ngcontent-%COMP%] {\n    right: 12px;\n    bottom: 12px;\n    width: 56%;\n    font-size: 10px;\n    padding: 9px 11px;\n  }\n}\n@media (prefers-reduced-motion: reduce) {\n  *[_ngcontent-%COMP%], \n   *[_ngcontent-%COMP%]::before, \n   *[_ngcontent-%COMP%]::after {\n    animation: none !important;\n    transition: none !important;\n  }\n}\n/*# sourceMappingURL=journey-location-scene.component.css.map */"] });
 };
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(JourneyLocationSceneComponent, [{
     type: Component,
-    args: [{ selector: "app-journey-location-scene", changeDetection: ChangeDetectionStrategy.OnPush, template: `<div class="location-scene" [class.storm]="storm()" [class.paused]="paused()" [class.resting]="effects().has('rest')" [attr.data-scene]="node().scene">
+    args: [{ selector: "app-journey-location-scene", changeDetection: ChangeDetectionStrategy.OnPush, template: `<div
+  class="location-scene"
+  [class.storm]="storm()"
+  [class.paused]="paused()"
+  [class.resting]="effects().has('rest')"
+  [attr.data-scene]="node().scene"
+>
   @if (node().sceneArt; as art) {
-    <div #worldHost class="phaser-world" [style.background-image]="'url(' + art.backdrop + ')'" [attr.data-renderer-status]="worldStatus()" role="img" [attr.aria-label]="node().title + '. Interactive ship and shore. Use the marked objects to inspect events.'"></div>
+    <div
+      #worldHost
+      class="phaser-world"
+      [style.background-image]="'url(' + art.backdrop + ')'"
+      [attr.data-renderer-status]="worldStatus()"
+      role="img"
+      [attr.aria-label]="
+        node().title + '. Interactive ship and shore. Use the marked objects to inspect events.'
+      "
+    ></div>
     <div class="scene-vignette" aria-hidden="true"></div>
-    @if (worldStatus() === 'error') { <div class="world-error" role="alert">The interactive artwork could not load. <button type="button" (click)="reload()">Reload scene</button></div> }
+    @if (worldStatus() === 'error') {
+      <div class="world-error" role="alert">
+        The interactive artwork could not load.
+        <button type="button" (click)="reload()">Reload scene</button>
+      </div>
+    }
   } @else {
-  <svg class="scene-art" viewBox="0 0 1000 760" preserveAspectRatio="xMidYMid slice" role="img" [attr.aria-label]="node().title + '. Inspect the marked objects; event options change the ship and shore.'">
-    <defs>
-      <linearGradient id="location-sky" x2="0" y2="1"><stop stop-color="#769eab"/><stop offset=".68" stop-color="#d4ceaf"/><stop offset="1" stop-color="#edddad"/></linearGradient>
-      <linearGradient id="location-ocean" x2="0.2" y2="1"><stop stop-color="#427f88"/><stop offset=".5" stop-color="#286570"/><stop offset="1" stop-color="#143943"/></linearGradient>
-      <linearGradient id="location-sail" x2="1" y2=".5"><stop stop-color="#fbefc3"/><stop offset=".55" stop-color="#d5be87"/><stop offset="1" stop-color="#f2dfae"/></linearGradient>
-      <linearGradient id="location-hull" x2="0" y2="1"><stop stop-color="#b87942"/><stop offset=".45" stop-color="#6f472f"/><stop offset="1" stop-color="#302c27"/></linearGradient>
-      <pattern id="location-water" width="100" height="36" patternUnits="userSpaceOnUse"><path d="M2 17q16-5 32 0m26 8q12-4 25 0" stroke="#d4e5d0" stroke-width="1" opacity=".16"/></pattern>
-      <pattern id="location-wood" width="70" height="18" patternUnits="userSpaceOnUse"><path d="M0 17H70M35 0v17" stroke="#1f302a" opacity=".3"/></pattern>
-    </defs>
-    <rect width="1000" height="760" fill="url(#location-sky)"/>
-    <circle cx="746" cy="139" r="58" fill="#f3df9e" opacity=".75"/>
-    <g class="clouds" fill="#f2ecda" opacity=".45"><path d="M-55 140q65-68 133-19 66-81 140-22 77-27 125 46z"/><path d="M597 78q38-40 73-12 35-50 88-11 57-14 92 29z"/></g>
-    <path d="M0 290Q125 260 235 296T520 280T800 289T1000 274V760H0Z" fill="url(#location-ocean)"/>
-    @if (node().scene === 'island' || node().scene === 'cape') {
-      <path d="M540 300l81-69 28-73 49-86 44 71 29 80 66-35 65 69 98 27v87z" fill="#60705c"/>
-      <path d="M564 307l93-63 40-99 17 73 50 45 64-39 68 67 104 21v66z" fill="#80936b"/>
-      <path d="M616 288l55-78 21 18 8-80 26 80 35 36-60-14z" fill="#a0a075"/>
-      <path d="M580 326q130-22 210 0t210 4v41q-143-25-207-19t-213-26" fill="#d7c69c"/>
-      <path d="M870 338l37-20 29 11 16-21 48 38v42z" fill="#374d49"/>
-    } @else if (node().scene === 'river') {
-      <path d="M410 296q75-102 170-25 68-108 157-43 117-43 263 41v125L667 363z" fill="#426854"/>
-      <path d="M568 314q89-63 157-3l275-14v68l-313 5z" fill="#779365"/>
-      <path d="M680 334q83-16 161 14t159-1v38q-71 21-191-18t-137-2" fill="#d2bd86"/>
-      <path d="M902 240q-31 67-21 102m9-77q-43-25-59 7m61-9q30-35 53-19m-55 15q-1-45-26-44" fill="none" stroke="#304e3c" stroke-width="10"/>
-    } @else {
-      <path d="M430 299q85-56 166-18 91-55 197-12l207 7v96H450z" fill="#768875"/>
-      <path d="M427 335q168-10 263 17l310-29v45l-310 13z" fill="#d1bd89"/>
-    }
-    @if (town()) {
-      <g>
-        @for (building of buildings; track building) {
-          <g [attr.transform]="'translate(' + (505 + building * 66) + ' ' + (251 + (building % 3) * 9) + ')'">
-            <path d="M0 20h53v56H0z" fill="#d4c5a3"/><path d="M-5 22L25 0l34 22z" fill="#a16d4c"/>
-            <path d="M9 38h8v12H9m25-12h8v12h-8M23 58h10v18H23" fill="#3c5652"/>
-          </g>
-        }
-        <path d="M842 224v104h36V224l-18-32z" fill="#b7b395"/><path d="M854 245h12v28h-12" fill="#3d5654"/>
-        <path d="M698 366l198 0-86 66-210-8z" fill="#9c865b"/><path d="M695 376l200-2m-222 12h205m-224 12h201m-227 12h207" stroke="#5c6451" stroke-width="3"/>
-        <path d="M650 411v53m65-42v52m73-51v40m79-68v41" stroke="#605443" stroke-width="12"/>
+    <svg
+      class="scene-art"
+      viewBox="0 0 1000 760"
+      preserveAspectRatio="xMidYMid slice"
+      role="img"
+      [attr.aria-label]="
+        node().title + '. Inspect the marked objects; event options change the ship and shore.'
+      "
+    >
+      <defs>
+        <linearGradient id="location-sky" x2="0" y2="1">
+          <stop stop-color="#769eab" />
+          <stop offset=".68" stop-color="#d4ceaf" />
+          <stop offset="1" stop-color="#edddad" />
+        </linearGradient>
+        <linearGradient id="location-ocean" x2="0.2" y2="1">
+          <stop stop-color="#427f88" />
+          <stop offset=".5" stop-color="#286570" />
+          <stop offset="1" stop-color="#143943" />
+        </linearGradient>
+        <linearGradient id="location-sail" x2="1" y2=".5">
+          <stop stop-color="#fbefc3" />
+          <stop offset=".55" stop-color="#d5be87" />
+          <stop offset="1" stop-color="#f2dfae" />
+        </linearGradient>
+        <linearGradient id="location-hull" x2="0" y2="1">
+          <stop stop-color="#b87942" />
+          <stop offset=".45" stop-color="#6f472f" />
+          <stop offset="1" stop-color="#302c27" />
+        </linearGradient>
+        <pattern id="location-water" width="100" height="36" patternUnits="userSpaceOnUse">
+          <path
+            d="M2 17q16-5 32 0m26 8q12-4 25 0"
+            stroke="#d4e5d0"
+            stroke-width="1"
+            opacity=".16"
+          />
+        </pattern>
+        <pattern id="location-wood" width="70" height="18" patternUnits="userSpaceOnUse">
+          <path d="M0 17H70M35 0v17" stroke="#1f302a" opacity=".3" />
+        </pattern>
+      </defs>
+      <rect width="1000" height="760" fill="url(#location-sky)" />
+      <circle cx="746" cy="139" r="58" fill="#f3df9e" opacity=".75" />
+      <g class="clouds" fill="#f2ecda" opacity=".45">
+        <path d="M-55 140q65-68 133-19 66-81 140-22 77-27 125 46z" />
+        <path d="M597 78q38-40 73-12 35-50 88-11 57-14 92 29z" />
       </g>
-    }
-    <rect y="385" width="1000" height="375" fill="url(#location-water)"/>
-    <g class="sea-lines" fill="none" stroke="#bdd8c9" stroke-width="2" opacity=".35">
-      @for (wave of waves; track wave) { <path [attr.transform]="'translate(' + ((wave % 2) * -55) + ' ' + (wave * 56) + ')'" d="M-80 406q65-13 127 0t126 0m105 10q68-14 135 0t135 0m100-15q70-13 140 0t140 0"/> }
-    </g>
-    <g class="small-boat" [class.exchanged]="effects().has('exchange') || effects().has('water')">
-      <path d="M717 478q55 15 111-4l-17 25-72 1z" fill="#5d4431"/><path d="M754 459v24m38-27v25" stroke="#374939" stroke-width="9"/><circle cx="754" cy="452" r="7" fill="#9c7653"/><circle cx="792" cy="449" r="7" fill="#9c7653"/><path d="M777 470l48 41" stroke="#d1ad73" stroke-width="4"/>
-    </g>
-    <g class="ship">
-      <ellipse cx="400" cy="614" rx="225" ry="21" fill="#102f36" opacity=".35"/>
-      <path d="M204 523q185 46 400-22l-41 97q-43 45-248 10z" fill="url(#location-hull)"/>
-      <path d="M204 523q185 46 400-22l-8 24q-200 61-377 21z" fill="#dfba79"/>
-      <path d="M222 550q170 52 367-17M242 576q155 44 335-17M270 598q140 31 293-16" fill="none" stroke="#d3a365" stroke-width="4" opacity=".5"/>
-      <path d="M510 486h83v41l-80 21zM222 506h74v47l-74-16z" fill="#a88251"/>
-      <path d="M516 491v-21m20 18v-22m20 17v-22m20 13v-19M518 474l64-21" fill="none" stroke="#d3c092" stroke-width="4"/>
-      <path d="M385 212v345m-94-211v202m195-210v204" stroke="#5d513b" stroke-width="10"/>
-      <path d="M207 525l177-309 220 287M293 352l-79 173m273-185 96 174" fill="none" stroke="#544e3c" stroke-width="2"/>
-      <g class="canvas">
-        <path d="M394 237q96 15 159 196-85-15-159-4z" fill="url(#location-sail)"/>
-        <path d="M374 246q-95 55-104 191 44-30 104-12z" fill="url(#location-sail)"/>
-        <path d="M482 351q57 37 78 131l-78-18zM283 361q-59 43-64 101l64-7z" fill="#dbcd9f"/>
-        <path d="M414 246q17 87 4 180m39-159q9 96 5 159M309 315q17 30 3 111" fill="none" stroke="#9d966f" stroke-width="2" opacity=".6"/>
-      </g>
-      @if (damagedSail() && !effects().has('repair') && !effects().has('rest')) { <path class="sail-tear" d="M452 322l-22 21 25 10-31 38 47-31-20-13 20-33z" fill="#3b6268"/> }
-      @if (effects().has('repair')) { <path d="M422 320l47-5 18 63-54 5z" fill="#eee0b5" stroke="#816943" stroke-width="2" stroke-dasharray="4 5"/><path d="M429 328l43 43m-35 4 32-51" stroke="#b39d6d"/> }
-      <path d="M385 213l54 11-54 20z" fill="#b66c4d"/>
-      @for (barrel of barrels; track barrel) {
-        @if (barrel < 1 || effects().has('water') || effects().has('exchange')) { <g [attr.transform]="'translate(' + (305 + barrel * 34) + ' 514)'"><path d="M-12 0q-5 18 0 35h22q5-18 0-35z" fill="#bd965c" stroke="#5d573e" stroke-width="2"/><path d="M-12 8h22m-22 18h22" stroke="#54625a" stroke-width="4"/><ellipse cx="-1" cy="0" rx="11" ry="4" fill="#d3b882"/></g> }
+      <path
+        d="M0 290Q125 260 235 296T520 280T800 289T1000 274V760H0Z"
+        fill="url(#location-ocean)"
+      />
+      @if (node().scene === 'island' || node().scene === 'cape') {
+        <path d="M540 300l81-69 28-73 49-86 44 71 29 80 66-35 65 69 98 27v87z" fill="#60705c" />
+        <path d="M564 307l93-63 40-99 17 73 50 45 64-39 68 67 104 21v66z" fill="#80936b" />
+        <path d="M616 288l55-78 21 18 8-80 26 80 35 36-60-14z" fill="#a0a075" />
+        <path d="M580 326q130-22 210 0t210 4v41q-143-25-207-19t-213-26" fill="#d7c69c" />
+        <path d="M870 338l37-20 29 11 16-21 48 38v42z" fill="#374d49" />
+      } @else if (node().scene === 'river') {
+        <path d="M410 296q75-102 170-25 68-108 157-43 117-43 263 41v125L667 363z" fill="#426854" />
+        <path d="M568 314q89-63 157-3l275-14v68l-313 5z" fill="#779365" />
+        <path d="M680 334q83-16 161 14t159-1v38q-71 21-191-18t-137-2" fill="#d2bd86" />
+        <path
+          d="M902 240q-31 67-21 102m9-77q-43-25-59 7m61-9q30-35 53-19m-55 15q-1-45-26-44"
+          fill="none"
+          stroke="#304e3c"
+          stroke-width="10"
+        />
+      } @else {
+        <path d="M430 299q85-56 166-18 91-55 197-12l207 7v96H450z" fill="#768875" />
+        <path d="M427 335q168-10 263 17l310-29v45l-310 13z" fill="#d1bd89" />
       }
-      <path d="M447 510l42-9 18 22-50 11z" fill="#eee2b5" stroke="#76694c"/>
-      @if (effects().has('charts')) { <path d="M455 514l18 3 9-10 15 12" fill="none" stroke="#347d80" stroke-width="2"/> }
-      <circle cx="538" cy="531" r="10" fill="#273e38"/><circle cx="281" cy="551" r="8" fill="#263f3a"/>
-    </g>
-    @if (effects().has('charts')) {
-      <g class="bearings" fill="none" stroke="#f1d188" stroke-width="2" stroke-dasharray="7 8"><path d="M473 508L660 239M473 508L850 314"/><circle cx="660" cy="239" r="18"/><circle cx="850" cy="314" r="18"/><circle cx="473" cy="508" r="23"/></g>
-    }
-    @if (storm()) {
-      <path d="M-20 25q103-58 194 8 56-38 118 5 102-46 188 25 112-29 165 31 97-33 174 18 92-36 181 4v-116H0" fill="#344e55" opacity=".7"/>
-      <g class="rain" stroke="#c7dfd8" stroke-width="2" opacity=".35"><path d="M90 120l-35 120m140-82-35 120m250-125-35 120m275-130-35 120m240-60-35 120M155 375l-35 120m150-61-35 120m422-80-35 120m215-7-35 120"/></g>
-    }
-    <g fill="none" stroke="#3d5f5e" stroke-width="3" opacity=".8">@for (bird of skyBirds; track bird) { <path [attr.transform]="'translate(' + (130 + bird * 48) + ' ' + (160 + bird * 16) + ')'" d="M0 0q10-10 22 1 10-11 21-1"/> }</g>
-    <path d="M0 718q94-38 178-14 61-30 136 1l49 55H0" fill="#253f39"/><path d="M0 718q71-16 123 2l32 40H0" fill="#526451"/>
-  </svg>
+      @if (town()) {
+        <g>
+          @for (building of buildings; track building) {
+            <g
+              [attr.transform]="
+                'translate(' + (505 + building * 66) + ' ' + (251 + (building % 3) * 9) + ')'
+              "
+            >
+              <path d="M0 20h53v56H0z" fill="#d4c5a3" />
+              <path d="M-5 22L25 0l34 22z" fill="#a16d4c" />
+              <path d="M9 38h8v12H9m25-12h8v12h-8M23 58h10v18H23" fill="#3c5652" />
+            </g>
+          }
+          <path d="M842 224v104h36V224l-18-32z" fill="#b7b395" />
+          <path d="M854 245h12v28h-12" fill="#3d5654" />
+          <path d="M698 366l198 0-86 66-210-8z" fill="#9c865b" />
+          <path
+            d="M695 376l200-2m-222 12h205m-224 12h201m-227 12h207"
+            stroke="#5c6451"
+            stroke-width="3"
+          />
+          <path d="M650 411v53m65-42v52m73-51v40m79-68v41" stroke="#605443" stroke-width="12" />
+        </g>
+      }
+      <rect y="385" width="1000" height="375" fill="url(#location-water)" />
+      <g class="sea-lines" fill="none" stroke="#bdd8c9" stroke-width="2" opacity=".35">
+        @for (wave of waves; track wave) {
+          <path
+            [attr.transform]="'translate(' + (wave % 2) * -55 + ' ' + wave * 56 + ')'"
+            d="M-80 406q65-13 127 0t126 0m105 10q68-14 135 0t135 0m100-15q70-13 140 0t140 0"
+          />
+        }
+      </g>
+      <g class="small-boat" [class.exchanged]="effects().has('exchange') || effects().has('water')">
+        <path d="M717 478q55 15 111-4l-17 25-72 1z" fill="#5d4431" />
+        <path d="M754 459v24m38-27v25" stroke="#374939" stroke-width="9" />
+        <circle cx="754" cy="452" r="7" fill="#9c7653" />
+        <circle cx="792" cy="449" r="7" fill="#9c7653" />
+        <path d="M777 470l48 41" stroke="#d1ad73" stroke-width="4" />
+      </g>
+      <g class="ship">
+        <ellipse cx="400" cy="614" rx="225" ry="21" fill="#102f36" opacity=".35" />
+        <path d="M204 523q185 46 400-22l-41 97q-43 45-248 10z" fill="url(#location-hull)" />
+        <path d="M204 523q185 46 400-22l-8 24q-200 61-377 21z" fill="#dfba79" />
+        <path
+          d="M222 550q170 52 367-17M242 576q155 44 335-17M270 598q140 31 293-16"
+          fill="none"
+          stroke="#d3a365"
+          stroke-width="4"
+          opacity=".5"
+        />
+        <path d="M510 486h83v41l-80 21zM222 506h74v47l-74-16z" fill="#a88251" />
+        <path
+          d="M516 491v-21m20 18v-22m20 17v-22m20 13v-19M518 474l64-21"
+          fill="none"
+          stroke="#d3c092"
+          stroke-width="4"
+        />
+        <path d="M385 212v345m-94-211v202m195-210v204" stroke="#5d513b" stroke-width="10" />
+        <path
+          d="M207 525l177-309 220 287M293 352l-79 173m273-185 96 174"
+          fill="none"
+          stroke="#544e3c"
+          stroke-width="2"
+        />
+        <g class="canvas">
+          <path d="M394 237q96 15 159 196-85-15-159-4z" fill="url(#location-sail)" />
+          <path d="M374 246q-95 55-104 191 44-30 104-12z" fill="url(#location-sail)" />
+          <path d="M482 351q57 37 78 131l-78-18zM283 361q-59 43-64 101l64-7z" fill="#dbcd9f" />
+          <path
+            d="M414 246q17 87 4 180m39-159q9 96 5 159M309 315q17 30 3 111"
+            fill="none"
+            stroke="#9d966f"
+            stroke-width="2"
+            opacity=".6"
+          />
+        </g>
+        @if (damagedSail() && !effects().has('repair') && !effects().has('rest')) {
+          <path
+            class="sail-tear"
+            d="M452 322l-22 21 25 10-31 38 47-31-20-13 20-33z"
+            fill="#3b6268"
+          />
+        }
+        @if (effects().has('repair')) {
+          <path
+            d="M422 320l47-5 18 63-54 5z"
+            fill="#eee0b5"
+            stroke="#816943"
+            stroke-width="2"
+            stroke-dasharray="4 5"
+          />
+          <path d="M429 328l43 43m-35 4 32-51" stroke="#b39d6d" />
+        }
+        <path d="M385 213l54 11-54 20z" fill="#b66c4d" />
+        @for (barrel of barrels; track barrel) {
+          @if (barrel < 1 || effects().has('water') || effects().has('exchange')) {
+            <g [attr.transform]="'translate(' + (305 + barrel * 34) + ' 514)'">
+              <path
+                d="M-12 0q-5 18 0 35h22q5-18 0-35z"
+                fill="#bd965c"
+                stroke="#5d573e"
+                stroke-width="2"
+              />
+              <path d="M-12 8h22m-22 18h22" stroke="#54625a" stroke-width="4" />
+              <ellipse cx="-1" cy="0" rx="11" ry="4" fill="#d3b882" />
+            </g>
+          }
+        }
+        <path d="M447 510l42-9 18 22-50 11z" fill="#eee2b5" stroke="#76694c" />
+        @if (effects().has('charts')) {
+          <path d="M455 514l18 3 9-10 15 12" fill="none" stroke="#347d80" stroke-width="2" />
+        }
+        <circle cx="538" cy="531" r="10" fill="#273e38" />
+        <circle cx="281" cy="551" r="8" fill="#263f3a" />
+      </g>
+      @if (effects().has('charts')) {
+        <g class="bearings" fill="none" stroke="#f1d188" stroke-width="2" stroke-dasharray="7 8">
+          <path d="M473 508L660 239M473 508L850 314" />
+          <circle cx="660" cy="239" r="18" />
+          <circle cx="850" cy="314" r="18" />
+          <circle cx="473" cy="508" r="23" />
+        </g>
+      }
+      @if (storm()) {
+        <path
+          d="M-20 25q103-58 194 8 56-38 118 5 102-46 188 25 112-29 165 31 97-33 174 18 92-36 181 4v-116H0"
+          fill="#344e55"
+          opacity=".7"
+        />
+        <g class="rain" stroke="#c7dfd8" stroke-width="2" opacity=".35">
+          <path
+            d="M90 120l-35 120m140-82-35 120m250-125-35 120m275-130-35 120m240-60-35 120M155 375l-35 120m150-61-35 120m422-80-35 120m215-7-35 120"
+          />
+        </g>
+      }
+      <g fill="none" stroke="#3d5f5e" stroke-width="3" opacity=".8">
+        @for (bird of skyBirds; track bird) {
+          <path
+            [attr.transform]="'translate(' + (130 + bird * 48) + ' ' + (160 + bird * 16) + ')'"
+            d="M0 0q10-10 22 1 10-11 21-1"
+          />
+        }
+      </g>
+      <path d="M0 718q94-38 178-14 61-30 136 1l49 55H0" fill="#253f39" />
+      <path d="M0 718q71-16 123 2l32 40H0" fill="#526451" />
+    </svg>
   }
   <span class="place-label">{{ node().title }} <small>Fictional voyage \xB7 1501</small></span>
   @for (event of node().events; track event.id; let index = $index) {
-    <button type="button" class="object-marker" [class.active]="activeEventId() === event.id" [class.resolved]="resolved(event.id)" [style.left.%]="event.object.x" [style.top.%]="event.object.y" [attr.aria-label]="'Inspect ' + event.label" [attr.aria-pressed]="activeEventId() === event.id" (click)="inspected.emit(event.id)">
-      <span aria-hidden="true">{{ resolved(event.id) ? '\u2713' : '0' + (index + 1) }}</span><b>{{ event.label }}</b>
+    <button
+      type="button"
+      class="object-marker"
+      [class.active]="activeEventId() === event.id"
+      [class.resolved]="resolved(event.id)"
+      [style.left.%]="event.object.x"
+      [style.top.%]="event.object.y"
+      [attr.aria-label]="'Inspect ' + event.label"
+      [attr.aria-pressed]="activeEventId() === event.id"
+      (click)="inspected.emit(event.id)"
+    >
+      <span aria-hidden="true">{{ resolved(event.id) ? '\u2713' : '0' + (index + 1) }}</span
+      ><b>{{ event.label }}</b>
     </button>
   }
-  @if (inspectedEvent(); as event) { <div class="observation" role="status"><span>\u2316 {{ event.label }}</span>{{ event.observation }}</div> }
-  <button class="motion-control" type="button" [attr.aria-pressed]="paused()" [attr.aria-label]="paused() ? 'Resume scene motion' : 'Pause scene motion'" (click)="paused.set(!paused())">{{ paused() ? '\u25B7' : '\u2161' }}</button>
+  @if (inspectedEvent(); as event) {
+    <div class="observation" role="status">
+      <span>\u2316 {{ event.label }}</span
+      >{{ event.observation }}
+    </div>
+  }
+  <button
+    class="motion-control"
+    type="button"
+    [attr.aria-pressed]="paused()"
+    [attr.aria-label]="paused() ? 'Resume scene motion' : 'Pause scene motion'"
+    (click)="paused.set(!paused())"
+  >
+    {{ paused() ? '\u25B7' : '\u2161' }}
+  </button>
 </div>
-`, styles: ["/* src/app/templates/journey-replay/ui/journey-location-scene.component.scss */\n:host {\n  display: block;\n  height: 100%;\n  min-height: 0;\n}\n* {\n  box-sizing: border-box;\n}\n.location-scene {\n  height: 100%;\n  min-height: 390px;\n  position: relative;\n  overflow: hidden;\n  background: #356b72;\n  isolation: isolate;\n}\n.scene-art {\n  position: absolute;\n  inset: 0;\n  width: 100%;\n  height: 100%;\n}\n.phaser-world {\n  position: absolute;\n  inset: 0;\n  background-size: cover;\n  background-position: center;\n}\n.phaser-world canvas {\n  display: block;\n}\n.scene-vignette {\n  position: absolute;\n  inset: 0;\n  pointer-events: none;\n  box-shadow: inset 0 0 100px rgba(2, 22, 35, 0.4392156863);\n  background:\n    linear-gradient(\n      rgba(6, 34, 44, 0.5490196078),\n      transparent 24%,\n      transparent 78%,\n      rgba(3, 28, 40, 0.4));\n}\n.world-error {\n  position: absolute;\n  z-index: 5;\n  left: 20px;\n  top: 50%;\n  padding: 16px;\n  max-width: 280px;\n  color: #ffedce;\n  background: #17333b;\n  border: 1px solid #b89e67;\n  font: 13px Arial, sans-serif;\n}\n.world-error button {\n  display: block;\n  padding: 10px;\n  margin-top: 10px;\n}\n.storm .scene-art {\n  filter: saturate(0.8) brightness(0.85);\n}\n.place-label {\n  position: absolute;\n  top: 26px;\n  left: 28px;\n  max-width: calc(100% - 100px);\n  color: #fff0c5;\n  font: 500 clamp(18px, 2.1vw, 29px)/1.25 Georgia, serif;\n  text-shadow: 0 2px 10px rgba(2, 21, 30, 0.8784313725);\n}\n.place-label small {\n  display: block;\n  margin-top: 8px;\n  font: 10px/1.3 Arial, sans-serif;\n  letter-spacing: 0.15em;\n  text-transform: uppercase;\n}\n.storm .place-label {\n  color: #f4e5bd;\n}\n.object-marker {\n  position: absolute;\n  z-index: 3;\n  display: flex;\n  gap: 9px;\n  align-items: center;\n  transform: translate(-50%, -50%);\n  border: 1px solid #e9d293;\n  border-radius: 24px;\n  min-width: 46px;\n  min-height: 46px;\n  padding: 6px 14px 6px 7px;\n  background: rgba(20, 47, 54, 0.9294117647);\n  color: #f4e3b9;\n  box-shadow: 0 5px 16px rgba(5, 40, 48, 0.3137254902);\n  cursor: pointer;\n  font: 12px/1.2 Arial, sans-serif;\n}\n.object-marker span {\n  display: grid;\n  place-items: center;\n  font: 600 12px Georgia, serif;\n  width: 30px;\n  height: 30px;\n  border-radius: 50%;\n  background:\n    linear-gradient(\n      145deg,\n      #d9ba74,\n      #8d7040);\n  color: #132d35;\n  border: 1px solid #f2df9c;\n  box-shadow: 0 0 0 5px rgba(192, 166, 108, 0.0980392157);\n}\n.object-marker.resolved {\n  border-color: #b6d5af;\n}\n.object-marker.resolved span {\n  background: #b7d1a2;\n}\n.object-marker b {\n  max-width: 125px;\n  text-align: left;\n}\n.object-marker:hover,\n.object-marker.active {\n  background: #e8c580;\n  color: #173436;\n}\n.object-marker.active span {\n  background: #f3deaf;\n}\n.observation {\n  position: absolute;\n  bottom: 22px;\n  right: 22px;\n  width: min(300px, 48%);\n  padding: 14px 17px;\n  background: rgba(20, 46, 53, 0.9215686275);\n  color: #eff0dc;\n  border-left: 2px solid #e8c580;\n  border-radius: 3px;\n  font: 12px/1.55 Arial, sans-serif;\n}\n.observation span {\n  display: block;\n  color: #e8c580;\n  margin-bottom: 6px;\n  font-weight: 700;\n}\n.motion-control {\n  position: absolute;\n  right: 18px;\n  top: 18px;\n  width: 44px;\n  height: 44px;\n  border: 1px solid #b8ccc2;\n  border-radius: 50%;\n  background: rgba(24, 60, 66, 0.7803921569);\n  color: #fff0c7;\n  cursor: pointer;\n}\nbutton:focus-visible {\n  outline: 3px solid #f4e5ad;\n  outline-offset: 4px;\n}\n.ship {\n  transform-origin: 400px 565px;\n  animation: vessel 8s ease-in-out infinite alternate;\n}\n.small-boat {\n  transition: transform 1.4s ease;\n}\n.small-boat.exchanged {\n  transform: translate(-117px, 47px);\n}\n.resting .canvas {\n  transform: scaleY(0.62);\n  transform-origin: 385px 429px;\n}\n.canvas {\n  transition: transform 1s;\n}\n.sea-lines {\n  animation: water 11s ease-in-out infinite alternate;\n}\n.rain {\n  animation: rainfall 1.7s linear infinite;\n}\n.paused * {\n  animation-play-state: paused !important;\n}\n@keyframes vessel {\n  from {\n    transform: rotate(-0.8deg) translateY(-3px);\n  }\n  to {\n    transform: rotate(0.8deg) translateY(4px);\n  }\n}\n@keyframes water {\n  to {\n    transform: translateX(32px);\n  }\n}\n@keyframes rainfall {\n  to {\n    transform: translate(-20px, 35px);\n  }\n}\n@media (max-width: 700px) {\n  .place-label {\n    top: 18px;\n    left: 18px;\n    font-size: 19px;\n  }\n  .place-label small {\n    font-size: 9px;\n  }\n  .object-marker {\n    padding: 4px;\n  }\n  .object-marker b {\n    position: absolute;\n    bottom: calc(100% + 7px);\n    left: 50%;\n    transform: translateX(-50%);\n    width: 110px;\n    padding: 5px;\n    border-radius: 4px;\n    background: rgba(22, 52, 59, 0.9333333333);\n    color: #f4e3b9;\n    font-size: 10px;\n    text-align: center;\n  }\n  .observation {\n    right: 12px;\n    bottom: 12px;\n    width: 56%;\n    font-size: 10px;\n    padding: 9px 11px;\n  }\n}\n@media (prefers-reduced-motion: reduce) {\n  *,\n  *::before,\n  *::after {\n    animation: none !important;\n    transition: none !important;\n  }\n}\n/*# sourceMappingURL=journey-location-scene.component.css.map */\n"] }]
+`, styles: ["/* src/app/templates/journey-replay/ui/journey-location-scene.component.scss */\n:host {\n  display: block;\n  height: 100%;\n  min-height: 0;\n}\n* {\n  box-sizing: border-box;\n}\n.location-scene {\n  height: 100%;\n  min-height: 390px;\n  position: relative;\n  overflow: hidden;\n  background: #356b72;\n  isolation: isolate;\n}\n.scene-art {\n  position: absolute;\n  inset: 0;\n  width: 100%;\n  height: 100%;\n}\n.phaser-world {\n  position: absolute;\n  inset: 0;\n  background-size: cover;\n  background-position: center;\n}\n.phaser-world canvas {\n  display: block;\n}\n.scene-vignette {\n  position: absolute;\n  inset: 0;\n  pointer-events: none;\n  box-shadow: inset 0 0 100px rgba(2, 22, 35, 0.4392156863);\n  background:\n    linear-gradient(\n      rgba(6, 34, 44, 0.5490196078),\n      transparent 24%,\n      transparent 78%,\n      rgba(3, 28, 40, 0.4));\n}\n.world-error {\n  position: absolute;\n  z-index: 5;\n  left: 20px;\n  top: 50%;\n  padding: 16px;\n  max-width: 280px;\n  color: #ffedce;\n  background: #17333b;\n  border: 1px solid #b89e67;\n  font: 13px Arial, sans-serif;\n}\n.world-error button {\n  display: block;\n  padding: 10px;\n  margin-top: 10px;\n}\n.storm .scene-art {\n  filter: saturate(0.8) brightness(0.85);\n}\n.place-label {\n  position: absolute;\n  top: 26px;\n  left: 28px;\n  max-width: calc(100% - 100px);\n  color: #fff0c5;\n  font: 500 clamp(18px, 2.1vw, 29px)/1.25 Georgia, serif;\n  text-shadow: 0 2px 10px rgba(2, 21, 30, 0.8784313725);\n}\n.place-label small {\n  display: block;\n  margin-top: 8px;\n  font: 10px/1.3 Arial, sans-serif;\n  letter-spacing: 0.15em;\n  text-transform: uppercase;\n}\n.storm .place-label {\n  color: #f4e5bd;\n}\n.object-marker {\n  position: absolute;\n  z-index: 3;\n  display: flex;\n  gap: 9px;\n  align-items: center;\n  transform: translate(-50%, -50%);\n  border: 1px solid #e9d293;\n  border-radius: 24px;\n  min-width: 46px;\n  min-height: 46px;\n  padding: 7px;\n  background: rgba(20, 47, 54, 0.9294117647);\n  color: #f4e3b9;\n  box-shadow: 0 5px 16px rgba(5, 40, 48, 0.3137254902);\n  cursor: pointer;\n  font: 12px/1.2 Arial, sans-serif;\n}\n.object-marker span {\n  display: grid;\n  place-items: center;\n  font: 600 12px Georgia, serif;\n  width: 30px;\n  height: 30px;\n  border-radius: 50%;\n  background:\n    linear-gradient(\n      145deg,\n      #d9ba74,\n      #8d7040);\n  color: #132d35;\n  border: 1px solid #f2df9c;\n  box-shadow: 0 0 0 5px rgba(192, 166, 108, 0.0980392157);\n}\n.object-marker.resolved {\n  border-color: #b6d5af;\n}\n.object-marker.resolved span {\n  background: #b7d1a2;\n}\n.object-marker b {\n  position: absolute;\n  bottom: calc(100% + 7px);\n  left: 50%;\n  transform: translateX(-50%);\n  width: max-content;\n  max-width: 125px;\n  padding: 5px 8px;\n  border-radius: 4px;\n  background: rgba(22, 52, 59, 0.9333333333);\n  color: #f4e3b9;\n  text-align: center;\n}\n.object-marker:hover,\n.object-marker.active {\n  background: #e8c580;\n  color: #173436;\n}\n.object-marker.active span {\n  background: #f3deaf;\n}\n.observation {\n  position: absolute;\n  bottom: 22px;\n  right: 22px;\n  width: min(300px, 48%);\n  padding: 14px 17px;\n  background: rgba(20, 46, 53, 0.9215686275);\n  color: #eff0dc;\n  border-left: 2px solid #e8c580;\n  border-radius: 3px;\n  font: 12px/1.55 Arial, sans-serif;\n}\n.observation span {\n  display: block;\n  color: #e8c580;\n  margin-bottom: 6px;\n  font-weight: 700;\n}\n.motion-control {\n  position: absolute;\n  right: 18px;\n  top: 18px;\n  width: 44px;\n  height: 44px;\n  border: 1px solid #b8ccc2;\n  border-radius: 50%;\n  background: rgba(24, 60, 66, 0.7803921569);\n  color: #fff0c7;\n  cursor: pointer;\n}\nbutton:focus-visible {\n  outline: 3px solid #f4e5ad;\n  outline-offset: 4px;\n}\n.ship {\n  transform-origin: 400px 565px;\n  animation: vessel 8s ease-in-out infinite alternate;\n}\n.small-boat {\n  transition: transform 1.4s ease;\n}\n.small-boat.exchanged {\n  transform: translate(-117px, 47px);\n}\n.resting .canvas {\n  transform: scaleY(0.62);\n  transform-origin: 385px 429px;\n}\n.canvas {\n  transition: transform 1s;\n}\n.sea-lines {\n  animation: water 11s ease-in-out infinite alternate;\n}\n.rain {\n  animation: rainfall 1.7s linear infinite;\n}\n.paused * {\n  animation-play-state: paused !important;\n}\n@keyframes vessel {\n  from {\n    transform: rotate(-0.8deg) translateY(-3px);\n  }\n  to {\n    transform: rotate(0.8deg) translateY(4px);\n  }\n}\n@keyframes water {\n  to {\n    transform: translateX(32px);\n  }\n}\n@keyframes rainfall {\n  to {\n    transform: translate(-20px, 35px);\n  }\n}\n@media (max-width: 700px) {\n  .place-label {\n    top: 18px;\n    left: 18px;\n    font-size: 19px;\n  }\n  .place-label small {\n    font-size: 9px;\n  }\n  .object-marker {\n    padding: 4px;\n  }\n  .object-marker b {\n    position: absolute;\n    bottom: calc(100% + 7px);\n    left: 50%;\n    transform: translateX(-50%);\n    width: 110px;\n    padding: 5px;\n    border-radius: 4px;\n    background: rgba(22, 52, 59, 0.9333333333);\n    color: #f4e3b9;\n    font-size: 10px;\n    text-align: center;\n  }\n  .observation {\n    right: 12px;\n    bottom: 12px;\n    width: 56%;\n    font-size: 10px;\n    padding: 9px 11px;\n  }\n}\n@media (prefers-reduced-motion: reduce) {\n  *,\n  *::before,\n  *::after {\n    animation: none !important;\n    transition: none !important;\n  }\n}\n/*# sourceMappingURL=journey-location-scene.component.css.map */\n"] }]
   }], () => [], { worldHost: [{ type: ViewChild, args: ["worldHost", { isSignal: true }] }], node: [{ type: Input, args: [{ isSignal: true, alias: "node", required: true }] }], selections: [{ type: Input, args: [{ isSignal: true, alias: "selections", required: false }] }], activeEventId: [{ type: Input, args: [{ isSignal: true, alias: "activeEventId", required: false }] }], inspected: [{ type: Output, args: ["inspected"] }] });
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(JourneyLocationSceneComponent, { className: "JourneyLocationSceneComponent", filePath: "src/app/templates/journey-replay/ui/journey-location-scene.component.ts", lineNumber: 12 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(JourneyLocationSceneComponent, { className: "JourneyLocationSceneComponent", filePath: "src/app/templates/journey-replay/ui/journey-location-scene.component.ts", lineNumber: 26 });
 })();
 
 // src/app/templates/journey-replay/ui/journey-history-context.component.ts
@@ -39363,7 +39640,7 @@ function JourneyPathWorkspaceComponent_Conditional_2_Template(rf, ctx) {
       const ctx_r2 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r2.map()?.toggleLens("weather"));
     });
-    \u0275\u0275text(12, "Wind");
+    \u0275\u0275text(12, " Wind ");
     \u0275\u0275elementEnd()()();
   }
   if (rf & 2) {
@@ -39431,7 +39708,7 @@ function JourneyPathWorkspaceComponent_Conditional_36_Template(rf, ctx) {
   if (rf & 1) {
     const _r7 = \u0275\u0275getCurrentView();
     \u0275\u0275elementStart(0, "p", 16);
-    \u0275\u0275text(1, "Scene preview \xB7 changes stay in this preview. ");
+    \u0275\u0275text(1, " Scene preview \xB7 changes stay in this preview. ");
     \u0275\u0275elementStart(2, "button", 37);
     \u0275\u0275listener("click", function JourneyPathWorkspaceComponent_Conditional_36_Template_button_click_2_listener() {
       \u0275\u0275restoreView(_r7);
@@ -39544,7 +39821,7 @@ function JourneyPathWorkspaceComponent_Conditional_41_Conditional_5_Template(rf,
     \u0275\u0275advance(2);
     \u0275\u0275textInterpolate(ctx_r2.effectLabel(choice_r12));
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate1("Enter location \xB7 Session ", ctx_r2.session() + 1, " \u2192");
+    \u0275\u0275textInterpolate1(" Enter location \xB7 Session ", ctx_r2.session() + 1, " \u2192 ");
   }
 }
 function JourneyPathWorkspaceComponent_Conditional_41_Conditional_6_Template(rf, ctx) {
@@ -39604,7 +39881,7 @@ function JourneyPathWorkspaceComponent_Conditional_42_For_2_Template(rf, ctx) {
     const ctx_r2 = \u0275\u0275nextContext(2);
     \u0275\u0275attribute("aria-pressed", ctx_r2.activeEvent()?.id === event_r15.id);
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate2("", \u0275$index_160_r16 + 1, " \xB7 ", event_r15.label);
+    \u0275\u0275textInterpolate2(" ", \u0275$index_160_r16 + 1, " \xB7 ", event_r15.label, " ");
   }
 }
 function JourneyPathWorkspaceComponent_Conditional_42_Conditional_3_For_9_Template(rf, ctx) {
@@ -39657,7 +39934,7 @@ function JourneyPathWorkspaceComponent_Conditional_42_Conditional_3_Conditional_
       const ctx_r2 = \u0275\u0275nextContext(3);
       return \u0275\u0275resetView(ctx_r2.showScene());
     });
-    \u0275\u0275text(8, "See ship & shore \u2191");
+    \u0275\u0275text(8, " See ship & shore \u2191 ");
     \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
@@ -39684,7 +39961,7 @@ function JourneyPathWorkspaceComponent_Conditional_42_Conditional_3_Template(rf,
       const ctx_r2 = \u0275\u0275nextContext(2);
       return \u0275\u0275resetView(ctx_r2.openSources());
     });
-    \u0275\u0275text(7, "Inspect source evidence \u2197");
+    \u0275\u0275text(7, " Inspect source evidence \u2197 ");
     \u0275\u0275elementEnd();
     \u0275\u0275repeaterCreate(8, JourneyPathWorkspaceComponent_Conditional_42_Conditional_3_For_9_Template, 7, 4, "button", 40, _forTrack04);
     \u0275\u0275conditionalCreate(10, JourneyPathWorkspaceComponent_Conditional_42_Conditional_3_Conditional_10_Template, 9, 2, "div", 43);
@@ -39723,15 +40000,15 @@ function JourneyPathWorkspaceComponent_Conditional_42_Conditional_4_Template(rf,
   if (rf & 2) {
     const ctx_r2 = \u0275\u0275nextContext(2);
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate1("Next map \xB7 Session ", ctx_r2.session() + 1, " \u2192");
+    \u0275\u0275textInterpolate1(" Next map \xB7 Session ", ctx_r2.session() + 1, " \u2192 ");
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate2("", ctx_r2.completedEvents(), " / ", ctx_r2.node().events.length, " event choices \xB7 all sessions remain open.");
+    \u0275\u0275textInterpolate2(" ", ctx_r2.completedEvents(), " / ", ctx_r2.node().events.length, " event choices \xB7 all sessions remain open. ");
   }
 }
 function JourneyPathWorkspaceComponent_Conditional_42_Conditional_5_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementStart(0, "p", 48);
-    \u0275\u0275text(1, "Your route and event choices remain available to inspect or revise.");
+    \u0275\u0275text(1, " Your route and event choices remain available to inspect or revise. ");
     \u0275\u0275elementEnd();
   }
 }
@@ -39811,7 +40088,7 @@ function JourneyPathWorkspaceComponent_For_62_Template(rf, ctx) {
     const ctx_r2 = \u0275\u0275nextContext();
     \u0275\u0275property("value", scene_r27.id);
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate4("", scene_r27.session, " \xB7 ", scene_r27.kind === "map" ? "Map" : "Location", " \xB7 ", ctx_r2.placeName(scene_r27.locationId), " \xB7 ", scene_r27.title);
+    \u0275\u0275textInterpolate4(" ", scene_r27.session, " \xB7 ", scene_r27.kind === "map" ? "Map" : "Location", " \xB7 ", ctx_r2.placeName(scene_r27.locationId), " \xB7 ", scene_r27.title, " ");
   }
 }
 function JourneyPathWorkspaceComponent_For_67_For_4_Template(rf, ctx) {
@@ -39905,7 +40182,7 @@ function JourneyPathWorkspaceComponent_Conditional_76_Template(rf, ctx) {
   if (rf & 2) {
     const ctx_r2 = \u0275\u0275nextContext();
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate1("", ctx_r2.runtime.error(), " ");
+    \u0275\u0275textInterpolate1(" ", ctx_r2.runtime.error(), " ");
   }
 }
 function JourneyPathWorkspaceComponent_For_85_For_6_Conditional_1_Template(rf, ctx) {
@@ -39932,7 +40209,7 @@ function JourneyPathWorkspaceComponent_For_85_For_6_Template(rf, ctx) {
     \u0275\u0275advance();
     \u0275\u0275conditional(paragraph_r35.perspective ? 1 : -1);
     \u0275\u0275advance();
-    \u0275\u0275textInterpolate(paragraph_r35.text);
+    \u0275\u0275textInterpolate1(" ", paragraph_r35.text, " ");
   }
 }
 function JourneyPathWorkspaceComponent_For_85_Conditional_7_Template(rf, ctx) {
@@ -40147,7 +40424,10 @@ var JourneyPathWorkspaceComponent = class _JourneyPathWorkspaceComponent {
     )
   );
   incoming = computed(
-    () => this.runtime.path().find((entry) => entry.node.session === this.session() - 1)?.choices ?? [],
+    () => this.previewing() ? this.definition.nodes.filter((node) => node.session === this.session() - 1).flatMap((node) => (node.kind === "map" ? ["route"] : node.events.map((event2) => event2.id)).flatMap((key2) => {
+      const choice = selectedPathChoice(node, this.previewDecisions(), key2);
+      return choice ? [choice] : [];
+    })) : this.runtime.path().find((entry) => entry.node.session === this.session() - 1)?.choices ?? [],
     ...ngDevMode ? [{ debugName: "incoming" }] : (
       /* istanbul ignore next */
       []
@@ -40162,9 +40442,15 @@ var JourneyPathWorkspaceComponent = class _JourneyPathWorkspaceComponent {
   );
   resources = computed(
     () => {
-      let record2 = { resources: this.before().resources, completedSteps: this.before().completedSteps };
+      let record2 = {
+        resources: this.before().resources,
+        completedSteps: this.before().completedSteps
+      };
       for (const choice of this.currentChoices())
-        record2 = { resources: resolveJourneyOutcome(this.runtime.config, record2, choice).resources, completedSteps: [...record2.completedSteps, { choiceId: choice.id }] };
+        record2 = {
+          resources: resolveJourneyOutcome(this.runtime.config, record2, choice).resources,
+          completedSteps: [...record2.completedSteps, { choiceId: choice.id }]
+        };
       return record2.resources;
     },
     ...ngDevMode ? [{ debugName: "resources" }] : (
@@ -40174,11 +40460,20 @@ var JourneyPathWorkspaceComponent = class _JourneyPathWorkspaceComponent {
   );
   routeTrace = computed(
     () => {
-      const routes = this.runtime.path().filter((entry) => entry.node.session < this.session()).flatMap((entry) => entry.choices.flatMap((choice) => choice.routeId ? [choice.routeId] : []));
+      const routes = this.previewing() ? this.definition.nodes.filter((node) => node.session < this.session()).flatMap((node) => {
+        const choice = selectedPathChoice(node, this.previewDecisions(), "route");
+        return choice?.routeId ? [choice.routeId] : [];
+      }) : this.runtime.path().filter((entry) => entry.node.session < this.session()).flatMap((entry) => entry.choices.flatMap((choice) => choice.routeId ? [choice.routeId] : []));
       const coordinates = routes.flatMap((id) => this.runtime.config.map.routes.find((route) => route.id === id)?.coordinates ?? []);
       const place = this.runtime.config.map.locations.find((place2) => place2.id === this.node().locationId);
       const points = coordinates.length ? [...coordinates, place] : [place];
-      return points.map((point2, sequence) => __spreadValues(__spreadProps(__spreadValues({}, point2), { voyageId: "practice-path", pointId: `path-${sequence}`, sequence, legId: "practice", timestamp: "" }), "id" in point2 ? { locationId: String(point2.id) } : {}));
+      return points.map((point2, sequence) => __spreadValues(__spreadProps(__spreadValues({}, point2), {
+        voyageId: "practice-path",
+        pointId: `path-${sequence}`,
+        sequence,
+        legId: "practice",
+        timestamp: ""
+      }), "id" in point2 ? { locationId: String(point2.id) } : {}));
     },
     ...ngDevMode ? [{ debugName: "routeTrace" }] : (
       /* istanbul ignore next */
@@ -40254,7 +40549,10 @@ var JourneyPathWorkspaceComponent = class _JourneyPathWorkspaceComponent {
   }
   choose(eventId, choice) {
     if (this.previewing()) {
-      this.previewDecisions.update((decisions) => [...decisions.filter((item) => item.nodeId !== this.node().id || item.eventId !== eventId), { nodeId: this.node().id, eventId, choiceId: choice.id }]);
+      this.previewDecisions.update((decisions) => [
+        ...decisions.filter((item) => item.nodeId !== this.node().id || item.eventId !== eventId),
+        { nodeId: this.node().id, eventId, choiceId: choice.id }
+      ]);
       return true;
     }
     return this.runtime.choose(this.node().id, eventId, choice.id);
@@ -40269,7 +40567,11 @@ var JourneyPathWorkspaceComponent = class _JourneyPathWorkspaceComponent {
     if (this.previewing())
       this.previewNodeId.set(id);
     this.session.set(node.session);
-    void this.router.navigate([], { relativeTo: this.route, queryParams: { lesson: node.session }, queryParamsHandling: "merge" });
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { lesson: node.session },
+      queryParamsHandling: "merge"
+    });
     afterNextRender(() => {
       const surface = this.element.nativeElement.querySelector(".activity");
       surface?.scrollIntoView({ block: "start", behavior: "instant" });
@@ -40297,13 +40599,19 @@ var JourneyPathWorkspaceComponent = class _JourneyPathWorkspaceComponent {
     return selectedPathChoice(this.node(), this.decisions(), eventId)?.id === choiceId;
   }
   preview(choice) {
-    let record2 = { resources: this.before().resources, completedSteps: this.before().completedSteps };
+    let record2 = {
+      resources: this.before().resources,
+      completedSteps: this.before().completedSteps
+    };
     for (const event2 of this.node().events) {
       if (event2.choices.some((item) => item.id === choice.id))
         break;
       const earlier = selectedPathChoice(this.node(), this.decisions(), event2.id);
       if (earlier)
-        record2 = { resources: resolveJourneyOutcome(this.runtime.config, record2, earlier).resources, completedSteps: [...record2.completedSteps, { choiceId: earlier.id }] };
+        record2 = {
+          resources: resolveJourneyOutcome(this.runtime.config, record2, earlier).resources,
+          completedSteps: [...record2.completedSteps, { choiceId: earlier.id }]
+        };
     }
     return resolveJourneyOutcome(this.runtime.config, record2, choice);
   }
@@ -40371,7 +40679,7 @@ var JourneyPathWorkspaceComponent = class _JourneyPathWorkspaceComponent {
       \u0275\u0275text(15);
       \u0275\u0275elementEnd();
       \u0275\u0275elementStart(16, "ul");
-      \u0275\u0275repeaterCreate(17, JourneyPathWorkspaceComponent_For_18_Template, 2, 1, "li", null, \u0275\u0275repeaterTrackByIdentity);
+      \u0275\u0275repeaterCreate(17, JourneyPathWorkspaceComponent_For_18_Template, 2, 1, "li", null, \u0275\u0275repeaterTrackByIndex);
       \u0275\u0275elementEnd();
       \u0275\u0275conditionalCreate(19, JourneyPathWorkspaceComponent_Conditional_19_Template, 5, 0, "div", 10);
       \u0275\u0275elementStart(20, "p", 11)(21, "b");
@@ -40405,7 +40713,7 @@ var JourneyPathWorkspaceComponent = class _JourneyPathWorkspaceComponent {
       \u0275\u0275repeaterCreate(48, JourneyPathWorkspaceComponent_For_49_Template, 2, 1, "p", null, _forTrack04);
       \u0275\u0275conditionalCreate(50, JourneyPathWorkspaceComponent_Conditional_50_Template, 9, 1);
       \u0275\u0275elementStart(51, "p");
-      \u0275\u0275text(52, "Future controls: ask about evidence, compare predictions, explain a revision. No AI responses, assessment or automatic adaptation are connected.");
+      \u0275\u0275text(52, " Future controls: ask about evidence, compare predictions, explain a revision. No AI responses, assessment or automatic adaptation are connected. ");
       \u0275\u0275elementEnd()();
       \u0275\u0275elementStart(53, "details", 19)(54, "summary");
       \u0275\u0275text(55, "Explore paths & records");
@@ -40423,7 +40731,7 @@ var JourneyPathWorkspaceComponent = class _JourneyPathWorkspaceComponent {
       \u0275\u0275repeaterCreate(61, JourneyPathWorkspaceComponent_For_62_Template, 2, 5, "option", 23, _forTrack04);
       \u0275\u0275elementEnd();
       \u0275\u0275elementStart(63, "p");
-      \u0275\u0275text(64, "Alternate scenes are available for testing. Preview choices leave your saved path intact.");
+      \u0275\u0275text(64, " Alternate scenes are available for testing. Preview choices leave your saved path intact. ");
       \u0275\u0275elementEnd();
       \u0275\u0275elementStart(65, "ol", 24);
       \u0275\u0275repeaterCreate(66, JourneyPathWorkspaceComponent_For_67_Template, 6, 3, "li", null, _forTrack12);
@@ -40452,7 +40760,7 @@ var JourneyPathWorkspaceComponent = class _JourneyPathWorkspaceComponent {
         const sources_r34 = \u0275\u0275reference(78);
         return \u0275\u0275resetView(sources_r34.close());
       });
-      \u0275\u0275text(83, "Close");
+      \u0275\u0275text(83, " Close ");
       \u0275\u0275elementEnd()();
       \u0275\u0275repeaterCreate(84, JourneyPathWorkspaceComponent_For_85_Template, 8, 3, "article", null, _forTrack04);
       \u0275\u0275elementEnd();
@@ -40465,7 +40773,7 @@ var JourneyPathWorkspaceComponent = class _JourneyPathWorkspaceComponent {
       \u0275\u0275advance();
       \u0275\u0275conditional(ctx.node().kind === "map" ? 2 : 3);
       \u0275\u0275advance(3);
-      \u0275\u0275textInterpolate1("", ctx.node().kind === "map" ? "Passage choices" : "Event options", " \u2197");
+      \u0275\u0275textInterpolate1(" ", ctx.node().kind === "map" ? "Passage choices" : "Event options", " \u2197 ");
       \u0275\u0275advance(5);
       \u0275\u0275textInterpolate2("Week ", (ctx.session() + ctx.session() % 2) / 2, " \xB7 Session ", ctx.session());
       \u0275\u0275advance(5);
@@ -40501,116 +40809,337 @@ var JourneyPathWorkspaceComponent = class _JourneyPathWorkspaceComponent {
       \u0275\u0275advance(2);
       \u0275\u0275conditional((tmp_23_0 = ctx.runtime.config.historicalFrame) ? 73 : -1, tmp_23_0);
       \u0275\u0275advance(2);
-      \u0275\u0275textInterpolate1("Local practice \xB7 ", ctx.runtime.saved() ? "choices retained" : "not saved", ". No classroom submission or grade.");
+      \u0275\u0275textInterpolate1(" Local practice \xB7 ", ctx.runtime.saved() ? "choices retained" : "not saved", ". No classroom submission or grade. ");
       \u0275\u0275advance();
       \u0275\u0275conditional(ctx.runtime.error() ? 76 : -1);
       \u0275\u0275advance(8);
       \u0275\u0275repeater(ctx.evidence());
     }
-  }, dependencies: [LivingJourneyMapComponent, JourneyLocationSceneComponent, JourneyHistoryContextComponent], styles: ["\n[_nghost-%COMP%] {\n  display: block;\n  min-height: 0;\n  color: #203f42;\n  background: #eae9df;\n  font: 13px/1.5 Arial, sans-serif;\n}\n*[_ngcontent-%COMP%] {\n  box-sizing: border-box;\n}\n.path-workspace[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) 345px;\n  height: calc(100dvh - 102px);\n  min-height: 580px;\n}\n.activity[_ngcontent-%COMP%] {\n  position: relative;\n  min-width: 0;\n  min-height: 0;\n  overflow: hidden;\n  background: #163d45;\n  scroll-margin-top: 104px;\n}\n.activity[_ngcontent-%COMP%]    > app-living-journey-map[_ngcontent-%COMP%], \n.activity[_ngcontent-%COMP%]    > app-journey-location-scene[_ngcontent-%COMP%] {\n  display: block;\n  width: 100%;\n  height: 100%;\n}\n.activity[_ngcontent-%COMP%]:focus {\n  outline: none;\n}\n.activity[_ngcontent-%COMP%]:focus-visible {\n  outline: 3px solid #d6b776;\n  outline-offset: -3px;\n}\n.planning-column[_ngcontent-%COMP%] {\n  overflow: auto;\n  border-left: 1px solid #acb7ad;\n  scrollbar-width: thin;\n  padding: 18px 17px 24px;\n}\n.weekly-tasks[_ngcontent-%COMP%], \n.tutor[_ngcontent-%COMP%] {\n  border: 1px solid #c1c9bd;\n  border-radius: 9px;\n  background: #f7f7ef;\n  overflow: hidden;\n}\n.weekly-tasks[_ngcontent-%COMP%] {\n  margin-bottom: 14px;\n}\nsummary[_ngcontent-%COMP%] {\n  cursor: pointer;\n}\n.weekly-tasks[_ngcontent-%COMP%]    > summary[_ngcontent-%COMP%] {\n  padding: 13px 16px;\n  background: #e0e7dc;\n}\n.weekly-tasks[_ngcontent-%COMP%]    > summary[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  display: block;\n  font-size: 10px;\n  text-transform: uppercase;\n  letter-spacing: 0.09em;\n  color: #57716a;\n}\n.weekly-tasks[_ngcontent-%COMP%]    > summary[_ngcontent-%COMP%]   b[_ngcontent-%COMP%] {\n  font-size: 12px;\n}\n.tasks-body[_ngcontent-%COMP%] {\n  padding: 12px 16px;\n}\n.tasks-body[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  margin: 0 0 8px;\n  font: 500 20px/1.25 Georgia, serif;\n}\n.tasks-body[_ngcontent-%COMP%]   ul[_ngcontent-%COMP%] {\n  padding-left: 17px;\n  margin: 9px 0;\n}\n.tasks-body[_ngcontent-%COMP%]   li[_ngcontent-%COMP%] {\n  margin-bottom: 6px;\n  font-size: 12px;\n}\n.product[_ngcontent-%COMP%] {\n  border-top: 1px solid #d6dbcf;\n  padding-top: 9px;\n  margin: 10px 0 0;\n  font-size: 11px;\n}\n.product[_ngcontent-%COMP%]   b[_ngcontent-%COMP%] {\n  text-transform: uppercase;\n  letter-spacing: 0.08em;\n  margin-right: 5px;\n}\n.carried-task[_ngcontent-%COMP%] {\n  border-left: 2px solid #cda660;\n  padding-left: 10px;\n  margin-top: 13px;\n}\n.carried-task[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  color: #806430;\n  font-size: 10px;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.carried-task[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  margin: 4px 0 6px;\n  font-size: 11px;\n}\n.tutor[_ngcontent-%COMP%]    > summary[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 12px 14px;\n  background: #193d43;\n  color: #eff0df;\n}\n.tutor[_ngcontent-%COMP%]    > summary[_ngcontent-%COMP%]   small[_ngcontent-%COMP%] {\n  margin-left: auto;\n  color: #b8c9c1;\n  font-size: 10px;\n}\n.tutor-emblem[_ngcontent-%COMP%] {\n  color: #e7c27d;\n  font-size: 18px;\n}\n.tutor-body[_ngcontent-%COMP%] {\n  padding: 12px 14px 16px;\n}\n.connection[_ngcontent-%COMP%] {\n  font-size: 10px;\n  margin: 0 0 12px;\n  color: #546b65;\n}\n.practice-note[_ngcontent-%COMP%] {\n  border-left: 2px solid #ae8a4f;\n  padding: 4px 0 4px 8px;\n  color: #725d34;\n  font-size: 10px;\n}\n.practice-note[_ngcontent-%COMP%]   button[_ngcontent-%COMP%] {\n  display: block;\n  margin-top: 8px;\n}\n.resource-meters[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n  gap: 8px 10px;\n  padding-bottom: 14px;\n  margin-bottom: 12px;\n  border-bottom: 1px solid #d5dccf;\n}\n.resource-meters[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  font-size: 9px;\n  display: block;\n  color: #5b716b;\n}\n.resource-meters[_ngcontent-%COMP%]   strong[_ngcontent-%COMP%] {\n  font: 600 17px Georgia, serif;\n  display: block;\n}\n.resource-meters[_ngcontent-%COMP%]   small[_ngcontent-%COMP%] {\n  font: 9px Arial, sans-serif;\n}\nmeter[_ngcontent-%COMP%] {\n  height: 6px;\n  width: 100%;\n  display: block;\n  margin-top: 4px;\n  accent-color: #387973;\n}\nh3[_ngcontent-%COMP%] {\n  font: 600 15px/1.4 Georgia, serif;\n  margin: 0 0 10px;\n}\nbutton[_ngcontent-%COMP%], \nselect[_ngcontent-%COMP%] {\n  font: inherit;\n}\nbutton[_ngcontent-%COMP%] {\n  cursor: pointer;\n}\nbutton[_ngcontent-%COMP%]:focus-visible, \nsummary[_ngcontent-%COMP%]:focus-visible, \nselect[_ngcontent-%COMP%]:focus-visible, \na[_ngcontent-%COMP%]:focus-visible, \n[tabindex][_ngcontent-%COMP%]:focus-visible {\n  outline: 3px solid #298a8a;\n  outline-offset: 3px;\n}\n.choice[_ngcontent-%COMP%] {\n  display: block;\n  width: 100%;\n  text-align: left;\n  border: 1px solid #bfccc2;\n  border-radius: 6px;\n  background: #fffef5;\n  color: #233f40;\n  padding: 11px 12px;\n  margin: 8px 0;\n  min-height: 50px;\n  transition: background 0.15s;\n}\n.choice[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  display: block;\n  font-size: 12px;\n  font-weight: 700;\n}\n.choice[_ngcontent-%COMP%]   small[_ngcontent-%COMP%] {\n  display: block;\n  font-size: 10px;\n  margin-top: 4px;\n  line-height: 1.5;\n  color: #5c6d62;\n}\n.choice[_ngcontent-%COMP%]   em[_ngcontent-%COMP%] {\n  display: block;\n  font-size: 9px;\n  margin-top: 5px;\n  color: #776334;\n  font-style: normal;\n}\n.choice[_ngcontent-%COMP%]:hover {\n  border-color: #4c807a;\n  background: #eef5e8;\n}\n.choice[aria-pressed=true][_ngcontent-%COMP%] {\n  border: 2px solid #427d73;\n  padding: 10px 11px;\n  background: #e1eddf;\n}\n.choice-result[_ngcontent-%COMP%] {\n  border-left: 2px solid #b99451;\n  padding: 2px 0 2px 11px;\n  margin: 12px 0;\n}\n.choice-result[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  font-size: 11px;\n  margin: 0 0 8px;\n}\n.choice-result[_ngcontent-%COMP%]   small[_ngcontent-%COMP%] {\n  font-size: 10px;\n  color: #6e673f;\n  display: block;\n}\n.scene-return[_ngcontent-%COMP%] {\n  min-height: 44px;\n  padding: 8px 0;\n  border: 0;\n  background: none;\n  color: #235e61;\n  text-decoration: underline;\n  font-size: 11px;\n}\n.continue[_ngcontent-%COMP%] {\n  display: block;\n  width: 100%;\n  min-height: 44px;\n  margin-top: 12px;\n  padding: 10px;\n  border: 0;\n  border-radius: 5px;\n  color: #fff2cf;\n  background: #1e5558;\n  font-size: 12px;\n  font-weight: bold;\n}\n.event-tabs[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 6px;\n  margin-bottom: 15px;\n}\n.event-tabs[_ngcontent-%COMP%]   button[_ngcontent-%COMP%] {\n  flex: 1;\n  min-height: 44px;\n  border: 1px solid #c1ccb9;\n  border-radius: 5px;\n  background: #e8eddf;\n  color: #496157;\n  padding: 6px;\n  font-size: 10px;\n}\n.event-tabs[_ngcontent-%COMP%]   button[aria-pressed=true][_ngcontent-%COMP%] {\n  background: #d1dec9;\n  color: #203f36;\n  border-color: #70866e;\n}\n.observation-text[_ngcontent-%COMP%], \n.place-report[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  font-size: 11px;\n  line-height: 1.6;\n}\n.source-button[_ngcontent-%COMP%] {\n  padding: 5px 0;\n  min-height: 40px;\n  background: none;\n  border: 0;\n  text-decoration: underline;\n  color: #306d70;\n  font-size: 11px;\n}\n.tutor-plan[_ngcontent-%COMP%], \n.path-tools[_ngcontent-%COMP%] {\n  margin-top: 16px;\n  padding-top: 12px;\n  border-top: 1px solid #d3dacf;\n  font-size: 11px;\n}\n.tutor-plan[_ngcontent-%COMP%]   summary[_ngcontent-%COMP%], \n.path-tools[_ngcontent-%COMP%]   summary[_ngcontent-%COMP%] {\n  min-height: 36px;\n  color: #506861;\n  font-size: 11px;\n}\n.path-tools[_ngcontent-%COMP%]   label[_ngcontent-%COMP%] {\n  display: block;\n  margin: 8px 0;\n}\n.path-tools[_ngcontent-%COMP%]   select[_ngcontent-%COMP%] {\n  width: 100%;\n  padding: 10px 7px;\n  border: 1px solid #a8baab;\n  color: #284d48;\n  background: #fffef5;\n  border-radius: 4px;\n  font-size: 11px;\n}\n.path-record[_ngcontent-%COMP%] {\n  padding-left: 18px;\n  font-size: 10px;\n}\n.path-record[_ngcontent-%COMP%]   li[_ngcontent-%COMP%] {\n  margin: 10px 0;\n}\n.path-record[_ngcontent-%COMP%]   b[_ngcontent-%COMP%], \n.path-record[_ngcontent-%COMP%]   span[_ngcontent-%COMP%], \n.path-record[_ngcontent-%COMP%]   small[_ngcontent-%COMP%] {\n  display: block;\n}\n.path-record[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  color: #59846a;\n}\n.testing-cue[_ngcontent-%COMP%], \n.save-note[_ngcontent-%COMP%] {\n  font-size: 10px;\n  color: #6b756c;\n}\n.map-tools[_ngcontent-%COMP%] {\n  position: absolute;\n  left: 18px;\n  bottom: 18px;\n  color: #f7e8c4;\n  background: rgba(21, 52, 59, 0.9098039216);\n  border: 1px solid #9eb4a4;\n  border-radius: 6px;\n}\n.map-tools[_ngcontent-%COMP%]   summary[_ngcontent-%COMP%] {\n  display: grid;\n  place-content: center;\n  width: 46px;\n  height: 46px;\n  font-size: 22px;\n  list-style: none;\n}\n.map-tools[_ngcontent-%COMP%]    > div[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: 44px 44px;\n  gap: 5px;\n  padding: 8px;\n}\n.map-tools[_ngcontent-%COMP%]   button[_ngcontent-%COMP%] {\n  min-height: 44px;\n  padding: 4px;\n  border: 1px solid #63837b;\n  color: #f7e8c4;\n  background: #1e484c;\n  border-radius: 4px;\n  font-size: 11px;\n}\n.show-options[_ngcontent-%COMP%] {\n  position: absolute;\n  right: 18px;\n  bottom: 18px;\n  min-height: 44px;\n  border: 1px solid #a3b8a9;\n  border-radius: 6px;\n  background: rgba(22, 60, 66, 0.9098039216);\n  color: #f2e6bb;\n  font-size: 11px;\n  padding: 9px 14px;\n}\n.activity[_ngcontent-%COMP%]:has(app-journey-location-scene)   .show-options[_ngcontent-%COMP%] {\n  top: 72px;\n  bottom: auto;\n}\n.error[_ngcontent-%COMP%] {\n  color: #99432f;\n  font-size: 11px;\n}\n.source-dialog[_ngcontent-%COMP%] {\n  width: min(680px, 100% - 28px);\n  max-height: 85dvh;\n  border: 1px solid #809b8b;\n  padding: 24px;\n  border-radius: 9px;\n  background: #f7f5e8;\n  color: #304a43;\n}\n.source-dialog[_ngcontent-%COMP%]::backdrop {\n  background: rgba(12, 37, 43, 0.7333333333);\n}\n.source-dialog[_ngcontent-%COMP%]   header[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 20px;\n}\n.source-dialog[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  font: 24px Georgia, serif;\n}\n.source-dialog[_ngcontent-%COMP%]   button[_ngcontent-%COMP%] {\n  border: 0;\n  padding: 10px 15px;\n  min-height: 44px;\n  color: white;\n  background: #245356;\n  border-radius: 5px;\n}\n.source-dialog[_ngcontent-%COMP%]   article[_ngcontent-%COMP%] {\n  margin-top: 18px;\n  padding-top: 16px;\n  border-top: 1px solid #bdc8b7;\n}\n.source-dialog[_ngcontent-%COMP%]   blockquote[_ngcontent-%COMP%] {\n  margin: 14px 0;\n  padding-left: 15px;\n  border-left: 2px solid #c6a762;\n  line-height: 1.7;\n}\n.source-dialog[_ngcontent-%COMP%]   blockquote[_ngcontent-%COMP%]   b[_ngcontent-%COMP%] {\n  display: block;\n  color: #64775e;\n}\n@media (max-width: 1000px) {\n  .path-workspace[_ngcontent-%COMP%] {\n    grid-template-columns: minmax(0, 1fr) 310px;\n  }\n  .planning-column[_ngcontent-%COMP%] {\n    padding: 12px;\n  }\n}\n@media (max-width: 760px) {\n  .path-workspace[_ngcontent-%COMP%] {\n    grid-template-columns: minmax(0, 1fr);\n    height: auto;\n    min-height: 0;\n  }\n  .activity[_ngcontent-%COMP%] {\n    height: min(64dvh, 550px);\n    min-height: 420px;\n  }\n  .planning-column[_ngcontent-%COMP%] {\n    overflow: visible;\n    padding: 14px;\n    border-left: 0;\n  }\n  .resource-meters[_ngcontent-%COMP%] {\n    grid-template-columns: repeat(5, minmax(0, 1fr));\n  }\n  .show-options[_ngcontent-%COMP%] {\n    bottom: 13px;\n    right: 13px;\n  }\n}\n@media (prefers-reduced-motion: reduce) {\n  *[_ngcontent-%COMP%] {\n    transition: none !important;\n  }\n}\n/*# sourceMappingURL=journey-path-workspace.component.css.map */"] });
+  }, dependencies: [
+    LivingJourneyMapComponent,
+    JourneyLocationSceneComponent,
+    JourneyHistoryContextComponent
+  ], styles: ["\n[_nghost-%COMP%] {\n  display: block;\n  min-height: 0;\n  color: #203f42;\n  background: #eae9df;\n  font: 13px/1.5 Arial, sans-serif;\n}\n*[_ngcontent-%COMP%] {\n  box-sizing: border-box;\n}\n.path-workspace[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) 345px;\n  height: calc(100dvh - 102px);\n  min-height: 580px;\n}\n.activity[_ngcontent-%COMP%] {\n  position: relative;\n  min-width: 0;\n  min-height: 0;\n  overflow: hidden;\n  background: #163d45;\n  scroll-margin-top: 104px;\n}\n.activity[_ngcontent-%COMP%]    > app-living-journey-map[_ngcontent-%COMP%], \n.activity[_ngcontent-%COMP%]    > app-journey-location-scene[_ngcontent-%COMP%] {\n  display: block;\n  width: 100%;\n  height: 100%;\n}\n.activity[_ngcontent-%COMP%]:focus {\n  outline: none;\n}\n.activity[_ngcontent-%COMP%]:focus-visible {\n  outline: 3px solid #d6b776;\n  outline-offset: -3px;\n}\n.planning-column[_ngcontent-%COMP%] {\n  overflow: auto;\n  border-left: 1px solid #acb7ad;\n  scrollbar-width: thin;\n  padding: 18px 17px 24px;\n}\n.weekly-tasks[_ngcontent-%COMP%], \n.tutor[_ngcontent-%COMP%] {\n  border: 1px solid #c1c9bd;\n  border-radius: 9px;\n  background: #f7f7ef;\n  overflow: hidden;\n}\n.weekly-tasks[_ngcontent-%COMP%] {\n  margin-bottom: 14px;\n}\nsummary[_ngcontent-%COMP%] {\n  cursor: pointer;\n}\n.weekly-tasks[_ngcontent-%COMP%]    > summary[_ngcontent-%COMP%] {\n  padding: 13px 16px;\n  background: #e0e7dc;\n}\n.weekly-tasks[_ngcontent-%COMP%]    > summary[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  display: block;\n  font-size: 10px;\n  text-transform: uppercase;\n  letter-spacing: 0.09em;\n  color: #57716a;\n}\n.weekly-tasks[_ngcontent-%COMP%]    > summary[_ngcontent-%COMP%]   b[_ngcontent-%COMP%] {\n  font-size: 12px;\n}\n.tasks-body[_ngcontent-%COMP%] {\n  padding: 12px 16px;\n}\n.tasks-body[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  margin: 0 0 8px;\n  font: 500 20px/1.25 Georgia, serif;\n}\n.tasks-body[_ngcontent-%COMP%]   ul[_ngcontent-%COMP%] {\n  padding-left: 17px;\n  margin: 9px 0;\n}\n.tasks-body[_ngcontent-%COMP%]   li[_ngcontent-%COMP%] {\n  margin-bottom: 6px;\n  font-size: 12px;\n}\n.product[_ngcontent-%COMP%] {\n  border-top: 1px solid #d6dbcf;\n  padding-top: 9px;\n  margin: 10px 0 0;\n  font-size: 11px;\n}\n.product[_ngcontent-%COMP%]   b[_ngcontent-%COMP%] {\n  text-transform: uppercase;\n  letter-spacing: 0.08em;\n  margin-right: 5px;\n}\n.carried-task[_ngcontent-%COMP%] {\n  border-left: 2px solid #cda660;\n  padding-left: 10px;\n  margin-top: 13px;\n}\n.carried-task[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  color: #806430;\n  font-size: 10px;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.carried-task[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  margin: 4px 0 6px;\n  font-size: 11px;\n}\n.tutor[_ngcontent-%COMP%]    > summary[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 12px 14px;\n  background: #193d43;\n  color: #eff0df;\n}\n.tutor[_ngcontent-%COMP%]    > summary[_ngcontent-%COMP%]   small[_ngcontent-%COMP%] {\n  margin-left: auto;\n  color: #b8c9c1;\n  font-size: 10px;\n}\n.tutor-emblem[_ngcontent-%COMP%] {\n  color: #e7c27d;\n  font-size: 18px;\n}\n.tutor-body[_ngcontent-%COMP%] {\n  padding: 12px 14px 16px;\n}\n.connection[_ngcontent-%COMP%] {\n  font-size: 10px;\n  margin: 0 0 12px;\n  color: #546b65;\n}\n.practice-note[_ngcontent-%COMP%] {\n  border-left: 2px solid #ae8a4f;\n  padding: 4px 0 4px 8px;\n  color: #725d34;\n  font-size: 10px;\n}\n.practice-note[_ngcontent-%COMP%]   button[_ngcontent-%COMP%] {\n  display: block;\n  margin-top: 8px;\n}\n.resource-meters[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n  gap: 8px 10px;\n  padding-bottom: 14px;\n  margin-bottom: 12px;\n  border-bottom: 1px solid #d5dccf;\n}\n.resource-meters[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  font-size: 9px;\n  display: block;\n  color: #5b716b;\n}\n.resource-meters[_ngcontent-%COMP%]   strong[_ngcontent-%COMP%] {\n  font: 600 17px Georgia, serif;\n  display: block;\n}\n.resource-meters[_ngcontent-%COMP%]   small[_ngcontent-%COMP%] {\n  font: 9px Arial, sans-serif;\n}\nmeter[_ngcontent-%COMP%] {\n  height: 6px;\n  width: 100%;\n  display: block;\n  margin-top: 4px;\n  accent-color: #387973;\n}\nh3[_ngcontent-%COMP%] {\n  font: 600 15px/1.4 Georgia, serif;\n  margin: 0 0 10px;\n}\nbutton[_ngcontent-%COMP%], \nselect[_ngcontent-%COMP%] {\n  font: inherit;\n}\nbutton[_ngcontent-%COMP%] {\n  cursor: pointer;\n}\nbutton[_ngcontent-%COMP%]:focus-visible, \nsummary[_ngcontent-%COMP%]:focus-visible, \nselect[_ngcontent-%COMP%]:focus-visible, \na[_ngcontent-%COMP%]:focus-visible, \n[tabindex][_ngcontent-%COMP%]:focus-visible {\n  outline: 3px solid #298a8a;\n  outline-offset: 3px;\n}\n.choice[_ngcontent-%COMP%] {\n  display: block;\n  width: 100%;\n  text-align: left;\n  border: 1px solid #bfccc2;\n  border-radius: 6px;\n  background: #fffef5;\n  color: #233f40;\n  padding: 11px 12px;\n  margin: 8px 0;\n  min-height: 50px;\n  transition: background 0.15s;\n}\n.choice[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  display: block;\n  font-size: 12px;\n  font-weight: 700;\n}\n.choice[_ngcontent-%COMP%]   small[_ngcontent-%COMP%] {\n  display: block;\n  font-size: 10px;\n  margin-top: 4px;\n  line-height: 1.5;\n  color: #5c6d62;\n}\n.choice[_ngcontent-%COMP%]   em[_ngcontent-%COMP%] {\n  display: block;\n  font-size: 9px;\n  margin-top: 5px;\n  color: #776334;\n  font-style: normal;\n}\n.choice[_ngcontent-%COMP%]:hover {\n  border-color: #4c807a;\n  background: #eef5e8;\n}\n.choice[aria-pressed=true][_ngcontent-%COMP%] {\n  border: 2px solid #427d73;\n  padding: 10px 11px;\n  background: #e1eddf;\n}\n.choice-result[_ngcontent-%COMP%] {\n  border-left: 2px solid #b99451;\n  padding: 2px 0 2px 11px;\n  margin: 12px 0;\n}\n.choice-result[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  font-size: 11px;\n  margin: 0 0 8px;\n}\n.choice-result[_ngcontent-%COMP%]   small[_ngcontent-%COMP%] {\n  font-size: 10px;\n  color: #6e673f;\n  display: block;\n}\n.scene-return[_ngcontent-%COMP%] {\n  min-height: 44px;\n  padding: 8px 0;\n  border: 0;\n  background: none;\n  color: #235e61;\n  text-decoration: underline;\n  font-size: 11px;\n}\n.continue[_ngcontent-%COMP%] {\n  display: block;\n  width: 100%;\n  min-height: 44px;\n  margin-top: 12px;\n  padding: 10px;\n  border: 0;\n  border-radius: 5px;\n  color: #fff2cf;\n  background: #1e5558;\n  font-size: 12px;\n  font-weight: bold;\n}\n.event-tabs[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 6px;\n  margin-bottom: 15px;\n}\n.event-tabs[_ngcontent-%COMP%]   button[_ngcontent-%COMP%] {\n  flex: 1;\n  min-height: 44px;\n  border: 1px solid #c1ccb9;\n  border-radius: 5px;\n  background: #e8eddf;\n  color: #496157;\n  padding: 6px;\n  font-size: 10px;\n}\n.event-tabs[_ngcontent-%COMP%]   button[aria-pressed=true][_ngcontent-%COMP%] {\n  background: #d1dec9;\n  color: #203f36;\n  border-color: #70866e;\n}\n.observation-text[_ngcontent-%COMP%], \n.place-report[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  font-size: 11px;\n  line-height: 1.6;\n}\n.source-button[_ngcontent-%COMP%] {\n  padding: 5px 0;\n  min-height: 40px;\n  background: none;\n  border: 0;\n  text-decoration: underline;\n  color: #306d70;\n  font-size: 11px;\n}\n.tutor-plan[_ngcontent-%COMP%], \n.path-tools[_ngcontent-%COMP%] {\n  margin-top: 16px;\n  padding-top: 12px;\n  border-top: 1px solid #d3dacf;\n  font-size: 11px;\n}\n.tutor-plan[_ngcontent-%COMP%]   summary[_ngcontent-%COMP%], \n.path-tools[_ngcontent-%COMP%]   summary[_ngcontent-%COMP%] {\n  min-height: 36px;\n  color: #506861;\n  font-size: 11px;\n}\n.path-tools[_ngcontent-%COMP%]   label[_ngcontent-%COMP%] {\n  display: block;\n  margin: 8px 0;\n}\n.path-tools[_ngcontent-%COMP%]   select[_ngcontent-%COMP%] {\n  width: 100%;\n  padding: 10px 7px;\n  border: 1px solid #a8baab;\n  color: #284d48;\n  background: #fffef5;\n  border-radius: 4px;\n  font-size: 11px;\n}\n.path-record[_ngcontent-%COMP%] {\n  padding-left: 18px;\n  font-size: 10px;\n}\n.path-record[_ngcontent-%COMP%]   li[_ngcontent-%COMP%] {\n  margin: 10px 0;\n}\n.path-record[_ngcontent-%COMP%]   b[_ngcontent-%COMP%], \n.path-record[_ngcontent-%COMP%]   span[_ngcontent-%COMP%], \n.path-record[_ngcontent-%COMP%]   small[_ngcontent-%COMP%] {\n  display: block;\n}\n.path-record[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  color: #59846a;\n}\n.testing-cue[_ngcontent-%COMP%], \n.save-note[_ngcontent-%COMP%] {\n  font-size: 10px;\n  color: #6b756c;\n}\n.map-tools[_ngcontent-%COMP%] {\n  position: absolute;\n  left: 18px;\n  bottom: 18px;\n  color: #f7e8c4;\n  background: rgba(21, 52, 59, 0.9098039216);\n  border: 1px solid #9eb4a4;\n  border-radius: 6px;\n}\n.map-tools[_ngcontent-%COMP%]   summary[_ngcontent-%COMP%] {\n  display: grid;\n  place-content: center;\n  width: 46px;\n  height: 46px;\n  font-size: 22px;\n  list-style: none;\n}\n.map-tools[_ngcontent-%COMP%]    > div[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: 44px 44px;\n  gap: 5px;\n  padding: 8px;\n}\n.map-tools[_ngcontent-%COMP%]   button[_ngcontent-%COMP%] {\n  min-height: 44px;\n  padding: 4px;\n  border: 1px solid #63837b;\n  color: #f7e8c4;\n  background: #1e484c;\n  border-radius: 4px;\n  font-size: 11px;\n}\n.show-options[_ngcontent-%COMP%] {\n  position: absolute;\n  right: 18px;\n  bottom: 18px;\n  min-height: 44px;\n  border: 1px solid #a3b8a9;\n  border-radius: 6px;\n  background: rgba(22, 60, 66, 0.9098039216);\n  color: #f2e6bb;\n  font-size: 11px;\n  padding: 9px 14px;\n}\n.activity[_ngcontent-%COMP%]:has(app-journey-location-scene)   .show-options[_ngcontent-%COMP%] {\n  top: 72px;\n  bottom: auto;\n}\n.error[_ngcontent-%COMP%] {\n  color: #99432f;\n  font-size: 11px;\n}\n.source-dialog[_ngcontent-%COMP%] {\n  width: min(680px, 100% - 28px);\n  max-height: 85dvh;\n  border: 1px solid #809b8b;\n  padding: 24px;\n  border-radius: 9px;\n  background: #f7f5e8;\n  color: #304a43;\n}\n.source-dialog[_ngcontent-%COMP%]::backdrop {\n  background: rgba(12, 37, 43, 0.7333333333);\n}\n.source-dialog[_ngcontent-%COMP%]   header[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 20px;\n}\n.source-dialog[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  font: 24px Georgia, serif;\n}\n.source-dialog[_ngcontent-%COMP%]   button[_ngcontent-%COMP%] {\n  border: 0;\n  padding: 10px 15px;\n  min-height: 44px;\n  color: white;\n  background: #245356;\n  border-radius: 5px;\n}\n.source-dialog[_ngcontent-%COMP%]   article[_ngcontent-%COMP%] {\n  margin-top: 18px;\n  padding-top: 16px;\n  border-top: 1px solid #bdc8b7;\n}\n.source-dialog[_ngcontent-%COMP%]   blockquote[_ngcontent-%COMP%] {\n  margin: 14px 0;\n  padding-left: 15px;\n  border-left: 2px solid #c6a762;\n  line-height: 1.7;\n}\n.source-dialog[_ngcontent-%COMP%]   blockquote[_ngcontent-%COMP%]   b[_ngcontent-%COMP%] {\n  display: block;\n  color: #64775e;\n}\n@media (max-width: 1000px) {\n  .path-workspace[_ngcontent-%COMP%] {\n    grid-template-columns: minmax(0, 1fr) 310px;\n  }\n  .planning-column[_ngcontent-%COMP%] {\n    padding: 12px;\n  }\n}\n@media (max-width: 760px) {\n  .path-workspace[_ngcontent-%COMP%] {\n    grid-template-columns: minmax(0, 1fr);\n    height: auto;\n    min-height: 0;\n  }\n  .activity[_ngcontent-%COMP%] {\n    height: min(64dvh, 550px);\n    min-height: 420px;\n  }\n  .planning-column[_ngcontent-%COMP%] {\n    overflow: visible;\n    padding: 14px;\n    border-left: 0;\n  }\n  .resource-meters[_ngcontent-%COMP%] {\n    grid-template-columns: repeat(5, minmax(0, 1fr));\n  }\n  .show-options[_ngcontent-%COMP%] {\n    bottom: 13px;\n    right: 13px;\n  }\n}\n@media (prefers-reduced-motion: reduce) {\n  *[_ngcontent-%COMP%] {\n    transition: none !important;\n  }\n}\n/*# sourceMappingURL=journey-path-workspace.component.css.map */"] });
 };
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(JourneyPathWorkspaceComponent, [{
     type: Component,
-    args: [{ selector: "app-journey-path-workspace", imports: [LivingJourneyMapComponent, JourneyLocationSceneComponent, JourneyHistoryContextComponent], providers: [JourneyPathRuntime], changeDetection: ChangeDetectionStrategy.OnPush, template: `<div class="path-workspace">
-  <section class="activity" tabindex="-1" [attr.aria-label]="node().kind === 'map' ? 'Choose the next passage on the map' : node().title" [attr.data-node]="node().id" [attr.data-session]="session()">
+    args: [{ selector: "app-journey-path-workspace", imports: [
+      LivingJourneyMapComponent,
+      JourneyLocationSceneComponent,
+      JourneyHistoryContextComponent
+    ], providers: [JourneyPathRuntime], changeDetection: ChangeDetectionStrategy.OnPush, template: `<div class="path-workspace">
+  <section
+    class="activity"
+    tabindex="-1"
+    [attr.aria-label]="node().kind === 'map' ? 'Choose the next passage on the map' : node().title"
+    [attr.data-node]="node().id"
+    [attr.data-session]="session()"
+  >
     @if (node().kind === 'map') {
-      <app-living-journey-map [map]="runtime.config.map" [team]="runtime.config.team" [route]="routeTrace()" [candidateRouteIds]="routeIds()" [candidateRouteLabels]="routeLabels()" [selectedRouteId]="selectedRoute()?.routeId" [activeLocationId]="node().locationId" [immersive]="true" [showRouteLabels]="false" [expeditionStyle]="true" [vesselArt]="vesselArt" mapLabel="Your Atlantic passage. Inspect a highlighted route, then choose it in AI Tutor. Drag the chart or use arrow keys to pan." (routeInspected)="inspectRoute($event)" (locationInspected)="inspectPlace($event)" />
-      <details class="map-tools"><summary aria-label="Map tools">\u2316</summary><div>
-        <button type="button" aria-label="Zoom map in" (click)="map()?.zoomBy(.25)">+</button>
-        <button type="button" aria-label="Zoom map out" (click)="map()?.zoomBy(-.25)">\u2212</button>
-        <button type="button" (click)="map()?.resetView()">Fit chart</button>
-        <button type="button" [attr.aria-pressed]="map()?.lensOn('weather')" (click)="map()?.toggleLens('weather')">Wind</button>
-      </div></details>
+      <app-living-journey-map
+        [map]="runtime.config.map"
+        [team]="runtime.config.team"
+        [route]="routeTrace()"
+        [candidateRouteIds]="routeIds()"
+        [candidateRouteLabels]="routeLabels()"
+        [selectedRouteId]="selectedRoute()?.routeId"
+        [activeLocationId]="node().locationId"
+        [immersive]="true"
+        [showRouteLabels]="false"
+        [expeditionStyle]="true"
+        [vesselArt]="vesselArt"
+        mapLabel="Your Atlantic passage. Inspect a highlighted route, then choose it in AI Tutor. Drag the chart or use arrow keys to pan."
+        (routeInspected)="inspectRoute($event)"
+        (locationInspected)="inspectPlace($event)"
+      />
+      <details class="map-tools">
+        <summary aria-label="Map tools">\u2316</summary>
+        <div>
+          <button type="button" aria-label="Zoom map in" (click)="map()?.zoomBy(0.25)">+</button>
+          <button type="button" aria-label="Zoom map out" (click)="map()?.zoomBy(-0.25)">\u2212</button>
+          <button type="button" (click)="map()?.resetView()">Fit chart</button>
+          <button
+            type="button"
+            [attr.aria-pressed]="map()?.lensOn('weather')"
+            (click)="map()?.toggleLens('weather')"
+          >
+            Wind
+          </button>
+        </div>
+      </details>
     } @else {
-      <app-journey-location-scene [node]="node()" [selections]="currentChoices()" [activeEventId]="activeEventId()" (inspected)="inspectEvent($event)" />
+      <app-journey-location-scene
+        [node]="node()"
+        [selections]="currentChoices()"
+        [activeEventId]="activeEventId()"
+        (inspected)="inspectEvent($event)"
+      />
     }
-    <button class="show-options" type="button" (click)="revealTutor()">{{ node().kind === 'map' ? 'Passage choices' : 'Event options' }} \u2197</button>
+    <button class="show-options" type="button" (click)="revealTutor()">
+      {{ node().kind === 'map' ? 'Passage choices' : 'Event options' }} \u2197
+    </button>
   </section>
   <aside class="planning-column" aria-label="Weekly tasks and AI Tutor">
     <details class="weekly-tasks" open>
-      <summary><span>Week {{ (session() + session() % 2) / 2 }} \xB7 Session {{ session() }}</span><b>Tasks & product</b></summary>
+      <summary>
+        <span>Week {{ (session() + (session() % 2)) / 2 }} \xB7 Session {{ session() }}</span
+        ><b>Tasks & product</b>
+      </summary>
       <div class="tasks-body">
         <h2>{{ node().title }}</h2>
-        <ul>@for (task of node().tasks; track task) { <li>{{ task }}</li> }</ul>
+        <ul>
+          @for (task of node().tasks; track $index) {
+            <li>{{ task }}</li>
+          }
+        </ul>
         @if (!previewing() && incoming().length) {
-          <div class="carried-task"><span>From your choices</span>@for (choice of incoming(); track choice.id) { <p>{{ choice.nextTask }}</p> }</div>
+          <div class="carried-task">
+            <span>From your choices</span>
+            @for (choice of incoming(); track choice.id) {
+              <p>{{ choice.nextTask }}</p>
+            }
+          </div>
         }
         <p class="product"><b>Make</b> {{ node().product }}</p>
       </div>
     </details>
     <details #tutor class="tutor" open>
-      <summary><span class="tutor-emblem" aria-hidden="true">\u2726</span><b>AI Tutor</b><small>Options only</small></summary>
+      <summary>
+        <span class="tutor-emblem" aria-hidden="true">\u2726</span><b>AI Tutor</b
+        ><small>Options only</small>
+      </summary>
       <div class="tutor-body" tabindex="-1">
         <p class="connection">AI not connected \xB7 choose the next event here.</p>
-        @if (previewing()) { <p class="practice-note">Scene preview \xB7 changes stay in this preview. <button (click)="backToPath()">Return to your path</button></p> }
-        @else if (pathEntry().provisional && session() > 1) { <p class="practice-note">Practice entry \xB7 earlier choices have not been recorded.</p> }
+        @if (previewing()) {
+          <p class="practice-note">
+            Scene preview \xB7 changes stay in this preview.
+            <button (click)="backToPath()">Return to your path</button>
+          </p>
+        } @else if (pathEntry().provisional && session() > 1) {
+          <p class="practice-note">Practice entry \xB7 earlier choices have not been recorded.</p>
+        }
         <div class="resource-meters" aria-label="Modeled expedition resources">
           @for (resource of runtime.config.resources; track resource.id) {
-            <div><span>{{ resource.label }}</span><strong>{{ resources()[resource.id] }}<small>{{ resource.unit }}</small></strong><meter [min]="resource.minimum" [max]="resource.maximum" [value]="resources()[resource.id]" [attr.aria-label]="resource.label"></meter></div>
+            <div>
+              <span>{{ resource.label }}</span
+              ><strong
+                >{{ resources()[resource.id] }}<small>{{ resource.unit }}</small></strong
+              ><meter
+                [min]="resource.minimum"
+                [max]="resource.maximum"
+                [value]="resources()[resource.id]"
+                [attr.aria-label]="resource.label"
+              ></meter>
+            </div>
           }
         </div>
         @if (node().kind === 'map') {
           <section class="route-options" aria-label="Passage choices" tabindex="-1">
             <h3>Choose where to explore</h3>
             @for (choice of availableRoutes(); track choice.id) {
-              <button type="button" class="choice" [attr.aria-pressed]="selectedRoute()?.id === choice.id" (click)="selectRoute(choice.id)">
-                <span>{{ choice.label }}</span><small>{{ choice.summary }}</small>
-                @if (choice.requiresAny?.length) { <em>{{ previewing() ? 'Alternate path' : 'Revealed by earlier choices' }}</em> }
+              <button
+                type="button"
+                class="choice"
+                [attr.aria-pressed]="selectedRoute()?.id === choice.id"
+                (click)="selectRoute(choice.id)"
+              >
+                <span>{{ choice.label }}</span
+                ><small>{{ choice.summary }}</small>
+                @if (choice.requiresAny?.length) {
+                  <em>{{ previewing() ? 'Alternate path' : 'Revealed by earlier choices' }}</em>
+                }
               </button>
             }
             @if (selectedRoute(); as choice) {
-              <div class="choice-result" aria-live="polite"><p>{{ choice.nextTask }}</p><small>{{ effectLabel(choice) }}</small></div>
-              <button class="continue" type="button" (click)="enterLocation()">Enter location \xB7 Session {{ session() + 1 }} \u2192</button>
+              <div class="choice-result" aria-live="polite">
+                <p>{{ choice.nextTask }}</p>
+                <small>{{ effectLabel(choice) }}</small>
+              </div>
+              <button class="continue" type="button" (click)="enterLocation()">
+                Enter location \xB7 Session {{ session() + 1 }} \u2192
+              </button>
             }
           </section>
-          @if (inspectedPlace(); as place) { <section class="place-report" tabindex="-1"><h3>{{ place.name }}</h3><p>{{ place.description }}</p></section> }
+          @if (inspectedPlace(); as place) {
+            <section class="place-report" tabindex="-1">
+              <h3>{{ place.name }}</h3>
+              <p>{{ place.description }}</p>
+            </section>
+          }
         } @else {
           <nav class="event-tabs" aria-label="Location events">
-            @for (event of node().events; track event.id; let index = $index) { <button type="button" [attr.aria-pressed]="activeEvent()?.id === event.id" (click)="inspectEvent(event.id)">{{ index + 1 }} \xB7 {{ event.label }}</button> }
+            @for (event of node().events; track event.id; let index = $index) {
+              <button
+                type="button"
+                [attr.aria-pressed]="activeEvent()?.id === event.id"
+                (click)="inspectEvent(event.id)"
+              >
+                {{ index + 1 }} \xB7 {{ event.label }}
+              </button>
+            }
           </nav>
           @if (activeEvent(); as event) {
             <section class="event-options" tabindex="-1" [attr.aria-label]="event.label">
-              <h3>{{ event.label }}</h3><p class="observation-text">{{ event.observation }}</p>
-              <button #sourceTrigger type="button" class="source-button" (click)="openSources()">Inspect source evidence \u2197</button>
+              <h3>{{ event.label }}</h3>
+              <p class="observation-text">{{ event.observation }}</p>
+              <button #sourceTrigger type="button" class="source-button" (click)="openSources()">
+                Inspect source evidence \u2197
+              </button>
               @for (choice of event.choices; track choice.id) {
-                <button type="button" class="choice" [attr.aria-pressed]="selected(event.id, choice.id)" (click)="choose(event.id, choice)"><span>{{ choice.label }}</span><small>{{ choice.summary }}</small><em>{{ effectLabel(choice) }}</em></button>
+                <button
+                  type="button"
+                  class="choice"
+                  [attr.aria-pressed]="selected(event.id, choice.id)"
+                  (click)="choose(event.id, choice)"
+                >
+                  <span>{{ choice.label }}</span
+                  ><small>{{ choice.summary }}</small
+                  ><em>{{ effectLabel(choice) }}</em>
+                </button>
               }
-              @if (eventSelected(); as choice) { <div class="choice-result" aria-live="polite"><p>{{ preview(choice).consequence }}</p><small><b>Next investigation</b> {{ choice.nextTask }}</small><button type="button" class="scene-return" (click)="showScene()">See ship & shore \u2191</button></div> }
+              @if (eventSelected(); as choice) {
+                <div class="choice-result" aria-live="polite">
+                  <p>{{ preview(choice).consequence }}</p>
+                  <small><b>Next investigation</b> {{ choice.nextTask }}</small
+                  ><button type="button" class="scene-return" (click)="showScene()">
+                    See ship & shore \u2191
+                  </button>
+                </div>
+              }
             </section>
           }
-          @if (nextNode()) { <button class="continue" type="button" (click)="next()">Next map \xB7 Session {{ session() + 1 }} \u2192</button><p class="testing-cue">{{ completedEvents() }} / {{ node().events.length }} event choices \xB7 all sessions remain open.</p> }
-          @else { <p class="testing-cue">Your route and event choices remain available to inspect or revise.</p> }
+          @if (nextNode()) {
+            <button class="continue" type="button" (click)="next()">
+              Next map \xB7 Session {{ session() + 1 }} \u2192
+            </button>
+            <p class="testing-cue">
+              {{ completedEvents() }} / {{ node().events.length }} event choices \xB7 all sessions
+              remain open.
+            </p>
+          } @else {
+            <p class="testing-cue">
+              Your route and event choices remain available to inspect or revise.
+            </p>
+          }
         }
-        <details class="tutor-plan"><summary>Learning & future tutor plan</summary>
+        <details class="tutor-plan">
+          <summary>Learning & future tutor plan</summary>
           <p>{{ node().learning }}</p>
-          @for (choice of incoming(); track choice.id) { <p>{{ choice.learning }}</p> }
-          @if (activeEvent(); as event) { <p><b>Question</b> {{ event.question }}</p><p><b>Evidence to inspect</b> @for (id of event.evidenceIds; track id) { <span>{{ sourceText(id) }}. </span> }</p> }
-          <p>Future controls: ask about evidence, compare predictions, explain a revision. No AI responses, assessment or automatic adaptation are connected.</p>
+          @for (choice of incoming(); track choice.id) {
+            <p>{{ choice.learning }}</p>
+          }
+          @if (activeEvent(); as event) {
+            <p><b>Question</b> {{ event.question }}</p>
+            <p>
+              <b>Evidence to inspect</b>
+              @for (id of event.evidenceIds; track id) {
+                <span>{{ sourceText(id) }}. </span>
+              }
+            </p>
+          }
+          <p>
+            Future controls: ask about evidence, compare predictions, explain a revision. No AI
+            responses, assessment or automatic adaptation are connected.
+          </p>
         </details>
-        <details class="path-tools"><summary>Explore paths & records</summary>
+        <details class="path-tools">
+          <summary>Explore paths & records</summary>
           <label for="path-scene">Inspect any scene</label>
-          <select id="path-scene" [value]="previewNodeId() ?? ''" (change)="previewScene($any($event.target).value)"><option value="">Your current path</option>@for (scene of definition.nodes; track scene.id) { <option [value]="scene.id">{{ scene.session }} \xB7 {{ scene.kind === 'map' ? 'Map' : 'Location' }} \xB7 {{ placeName(scene.locationId) }} \xB7 {{ scene.title }}</option> }</select>
-          <p>Alternate scenes are available for testing. Preview choices leave your saved path intact.</p>
-          <ol class="path-record">@for (entry of runtime.path(); track entry.node.id) { <li><b>{{ entry.node.session }} \xB7 {{ entry.node.title }}</b>@for (choice of entry.choices; track choice.id) { <span>{{ choice.label }}</span> } @empty { <small>No choice recorded</small> }</li> }</ol>
-          <details><summary>Earlier path revisions \xB7 {{ runtime.state().previousPaths.length }}</summary>@for (branch of runtime.state().previousPaths; track $index) { <p><b>Revision {{ $index + 1 }}</b> @for (decision of branch; track decision.nodeId + decision.eventId) { <span>{{ decisionLabel(decision) }} \xB7 </span> }</p> }</details>
-          @if (runtime.config.historicalFrame; as history) { <app-journey-history-context [history]="history" [includeEpilogue]="session() === 8" /> }
-          <p class="save-note">Local practice \xB7 {{ runtime.saved() ? 'choices retained' : 'not saved' }}. No classroom submission or grade.</p>
+          <select
+            id="path-scene"
+            [value]="previewNodeId() ?? ''"
+            (change)="previewScene($any($event.target).value)"
+          >
+            <option value="">Your current path</option>
+            @for (scene of definition.nodes; track scene.id) {
+              <option [value]="scene.id">
+                {{ scene.session }} \xB7 {{ scene.kind === 'map' ? 'Map' : 'Location' }} \xB7
+                {{ placeName(scene.locationId) }} \xB7 {{ scene.title }}
+              </option>
+            }
+          </select>
+          <p>
+            Alternate scenes are available for testing. Preview choices leave your saved path
+            intact.
+          </p>
+          <ol class="path-record">
+            @for (entry of runtime.path(); track entry.node.id) {
+              <li>
+                <b>{{ entry.node.session }} \xB7 {{ entry.node.title }}</b>
+                @for (choice of entry.choices; track choice.id) {
+                  <span>{{ choice.label }}</span>
+                } @empty {
+                  <small>No choice recorded</small>
+                }
+              </li>
+            }
+          </ol>
+          <details>
+            <summary>Earlier path revisions \xB7 {{ runtime.state().previousPaths.length }}</summary>
+            @for (branch of runtime.state().previousPaths; track $index) {
+              <p>
+                <b>Revision {{ $index + 1 }}</b>
+                @for (decision of branch; track decision.nodeId + decision.eventId) {
+                  <span>{{ decisionLabel(decision) }} \xB7 </span>
+                }
+              </p>
+            }
+          </details>
+          @if (runtime.config.historicalFrame; as history) {
+            <app-journey-history-context [history]="history" [includeEpilogue]="session() === 8" />
+          }
+          <p class="save-note">
+            Local practice \xB7 {{ runtime.saved() ? 'choices retained' : 'not saved' }}. No classroom
+            submission or grade.
+          </p>
         </details>
-        @if (runtime.error()) { <p class="error" role="alert">{{ runtime.error() }} <button (click)="runtime.retrySave()">Retry save</button></p> }
+        @if (runtime.error()) {
+          <p class="error" role="alert">
+            {{ runtime.error() }} <button (click)="runtime.retrySave()">Retry save</button>
+          </p>
+        }
       </div>
     </details>
   </aside>
 </div>
-<dialog #sources class="source-dialog" aria-label="Location source evidence" (close)="closeSources()">
-  <header><h2>Source evidence</h2><button type="button" (click)="sources.close()" aria-label="Close source evidence">Close</button></header>
-  @for (source of evidence(); track source.id) { <article><h3>{{ source.title }}</h3><small>{{ source.sourceLabel }}</small>@for (paragraph of source.paragraphs; track paragraph.id) { <blockquote>@if (paragraph.perspective) { <b>{{ paragraph.perspective }}</b> }{{ paragraph.text }}</blockquote> }@if (source.sourceUrl) { <a [href]="source.sourceUrl" target="_blank" rel="noopener noreferrer">{{ source.attribution ?? source.sourceLabel }} \u2197</a> }</article> }
+<dialog
+  #sources
+  class="source-dialog"
+  aria-label="Location source evidence"
+  (close)="closeSources()"
+>
+  <header>
+    <h2>Source evidence</h2>
+    <button type="button" (click)="sources.close()" aria-label="Close source evidence">
+      Close
+    </button>
+  </header>
+  @for (source of evidence(); track source.id) {
+    <article>
+      <h3>{{ source.title }}</h3>
+      <small>{{ source.sourceLabel }}</small>
+      @for (paragraph of source.paragraphs; track paragraph.id) {
+        <blockquote>
+          @if (paragraph.perspective) {
+            <b>{{ paragraph.perspective }}</b>
+          }
+          {{ paragraph.text }}
+        </blockquote>
+      }
+      @if (source.sourceUrl) {
+        <a [href]="source.sourceUrl" target="_blank" rel="noopener noreferrer"
+          >{{ source.attribution ?? source.sourceLabel }} \u2197</a
+        >
+      }
+    </article>
+  }
 </dialog>
 `, styles: ["/* src/app/templates/journey-replay/ui/journey-path-workspace.component.scss */\n:host {\n  display: block;\n  min-height: 0;\n  color: #203f42;\n  background: #eae9df;\n  font: 13px/1.5 Arial, sans-serif;\n}\n* {\n  box-sizing: border-box;\n}\n.path-workspace {\n  display: grid;\n  grid-template-columns: minmax(0, 1fr) 345px;\n  height: calc(100dvh - 102px);\n  min-height: 580px;\n}\n.activity {\n  position: relative;\n  min-width: 0;\n  min-height: 0;\n  overflow: hidden;\n  background: #163d45;\n  scroll-margin-top: 104px;\n}\n.activity > app-living-journey-map,\n.activity > app-journey-location-scene {\n  display: block;\n  width: 100%;\n  height: 100%;\n}\n.activity:focus {\n  outline: none;\n}\n.activity:focus-visible {\n  outline: 3px solid #d6b776;\n  outline-offset: -3px;\n}\n.planning-column {\n  overflow: auto;\n  border-left: 1px solid #acb7ad;\n  scrollbar-width: thin;\n  padding: 18px 17px 24px;\n}\n.weekly-tasks,\n.tutor {\n  border: 1px solid #c1c9bd;\n  border-radius: 9px;\n  background: #f7f7ef;\n  overflow: hidden;\n}\n.weekly-tasks {\n  margin-bottom: 14px;\n}\nsummary {\n  cursor: pointer;\n}\n.weekly-tasks > summary {\n  padding: 13px 16px;\n  background: #e0e7dc;\n}\n.weekly-tasks > summary span {\n  display: block;\n  font-size: 10px;\n  text-transform: uppercase;\n  letter-spacing: 0.09em;\n  color: #57716a;\n}\n.weekly-tasks > summary b {\n  font-size: 12px;\n}\n.tasks-body {\n  padding: 12px 16px;\n}\n.tasks-body h2 {\n  margin: 0 0 8px;\n  font: 500 20px/1.25 Georgia, serif;\n}\n.tasks-body ul {\n  padding-left: 17px;\n  margin: 9px 0;\n}\n.tasks-body li {\n  margin-bottom: 6px;\n  font-size: 12px;\n}\n.product {\n  border-top: 1px solid #d6dbcf;\n  padding-top: 9px;\n  margin: 10px 0 0;\n  font-size: 11px;\n}\n.product b {\n  text-transform: uppercase;\n  letter-spacing: 0.08em;\n  margin-right: 5px;\n}\n.carried-task {\n  border-left: 2px solid #cda660;\n  padding-left: 10px;\n  margin-top: 13px;\n}\n.carried-task span {\n  color: #806430;\n  font-size: 10px;\n  text-transform: uppercase;\n  letter-spacing: 0.05em;\n}\n.carried-task p {\n  margin: 4px 0 6px;\n  font-size: 11px;\n}\n.tutor > summary {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 12px 14px;\n  background: #193d43;\n  color: #eff0df;\n}\n.tutor > summary small {\n  margin-left: auto;\n  color: #b8c9c1;\n  font-size: 10px;\n}\n.tutor-emblem {\n  color: #e7c27d;\n  font-size: 18px;\n}\n.tutor-body {\n  padding: 12px 14px 16px;\n}\n.connection {\n  font-size: 10px;\n  margin: 0 0 12px;\n  color: #546b65;\n}\n.practice-note {\n  border-left: 2px solid #ae8a4f;\n  padding: 4px 0 4px 8px;\n  color: #725d34;\n  font-size: 10px;\n}\n.practice-note button {\n  display: block;\n  margin-top: 8px;\n}\n.resource-meters {\n  display: grid;\n  grid-template-columns: repeat(3, minmax(0, 1fr));\n  gap: 8px 10px;\n  padding-bottom: 14px;\n  margin-bottom: 12px;\n  border-bottom: 1px solid #d5dccf;\n}\n.resource-meters span {\n  font-size: 9px;\n  display: block;\n  color: #5b716b;\n}\n.resource-meters strong {\n  font: 600 17px Georgia, serif;\n  display: block;\n}\n.resource-meters small {\n  font: 9px Arial, sans-serif;\n}\nmeter {\n  height: 6px;\n  width: 100%;\n  display: block;\n  margin-top: 4px;\n  accent-color: #387973;\n}\nh3 {\n  font: 600 15px/1.4 Georgia, serif;\n  margin: 0 0 10px;\n}\nbutton,\nselect {\n  font: inherit;\n}\nbutton {\n  cursor: pointer;\n}\nbutton:focus-visible,\nsummary:focus-visible,\nselect:focus-visible,\na:focus-visible,\n[tabindex]:focus-visible {\n  outline: 3px solid #298a8a;\n  outline-offset: 3px;\n}\n.choice {\n  display: block;\n  width: 100%;\n  text-align: left;\n  border: 1px solid #bfccc2;\n  border-radius: 6px;\n  background: #fffef5;\n  color: #233f40;\n  padding: 11px 12px;\n  margin: 8px 0;\n  min-height: 50px;\n  transition: background 0.15s;\n}\n.choice span {\n  display: block;\n  font-size: 12px;\n  font-weight: 700;\n}\n.choice small {\n  display: block;\n  font-size: 10px;\n  margin-top: 4px;\n  line-height: 1.5;\n  color: #5c6d62;\n}\n.choice em {\n  display: block;\n  font-size: 9px;\n  margin-top: 5px;\n  color: #776334;\n  font-style: normal;\n}\n.choice:hover {\n  border-color: #4c807a;\n  background: #eef5e8;\n}\n.choice[aria-pressed=true] {\n  border: 2px solid #427d73;\n  padding: 10px 11px;\n  background: #e1eddf;\n}\n.choice-result {\n  border-left: 2px solid #b99451;\n  padding: 2px 0 2px 11px;\n  margin: 12px 0;\n}\n.choice-result p {\n  font-size: 11px;\n  margin: 0 0 8px;\n}\n.choice-result small {\n  font-size: 10px;\n  color: #6e673f;\n  display: block;\n}\n.scene-return {\n  min-height: 44px;\n  padding: 8px 0;\n  border: 0;\n  background: none;\n  color: #235e61;\n  text-decoration: underline;\n  font-size: 11px;\n}\n.continue {\n  display: block;\n  width: 100%;\n  min-height: 44px;\n  margin-top: 12px;\n  padding: 10px;\n  border: 0;\n  border-radius: 5px;\n  color: #fff2cf;\n  background: #1e5558;\n  font-size: 12px;\n  font-weight: bold;\n}\n.event-tabs {\n  display: flex;\n  gap: 6px;\n  margin-bottom: 15px;\n}\n.event-tabs button {\n  flex: 1;\n  min-height: 44px;\n  border: 1px solid #c1ccb9;\n  border-radius: 5px;\n  background: #e8eddf;\n  color: #496157;\n  padding: 6px;\n  font-size: 10px;\n}\n.event-tabs button[aria-pressed=true] {\n  background: #d1dec9;\n  color: #203f36;\n  border-color: #70866e;\n}\n.observation-text,\n.place-report p {\n  font-size: 11px;\n  line-height: 1.6;\n}\n.source-button {\n  padding: 5px 0;\n  min-height: 40px;\n  background: none;\n  border: 0;\n  text-decoration: underline;\n  color: #306d70;\n  font-size: 11px;\n}\n.tutor-plan,\n.path-tools {\n  margin-top: 16px;\n  padding-top: 12px;\n  border-top: 1px solid #d3dacf;\n  font-size: 11px;\n}\n.tutor-plan summary,\n.path-tools summary {\n  min-height: 36px;\n  color: #506861;\n  font-size: 11px;\n}\n.path-tools label {\n  display: block;\n  margin: 8px 0;\n}\n.path-tools select {\n  width: 100%;\n  padding: 10px 7px;\n  border: 1px solid #a8baab;\n  color: #284d48;\n  background: #fffef5;\n  border-radius: 4px;\n  font-size: 11px;\n}\n.path-record {\n  padding-left: 18px;\n  font-size: 10px;\n}\n.path-record li {\n  margin: 10px 0;\n}\n.path-record b,\n.path-record span,\n.path-record small {\n  display: block;\n}\n.path-record span {\n  color: #59846a;\n}\n.testing-cue,\n.save-note {\n  font-size: 10px;\n  color: #6b756c;\n}\n.map-tools {\n  position: absolute;\n  left: 18px;\n  bottom: 18px;\n  color: #f7e8c4;\n  background: rgba(21, 52, 59, 0.9098039216);\n  border: 1px solid #9eb4a4;\n  border-radius: 6px;\n}\n.map-tools summary {\n  display: grid;\n  place-content: center;\n  width: 46px;\n  height: 46px;\n  font-size: 22px;\n  list-style: none;\n}\n.map-tools > div {\n  display: grid;\n  grid-template-columns: 44px 44px;\n  gap: 5px;\n  padding: 8px;\n}\n.map-tools button {\n  min-height: 44px;\n  padding: 4px;\n  border: 1px solid #63837b;\n  color: #f7e8c4;\n  background: #1e484c;\n  border-radius: 4px;\n  font-size: 11px;\n}\n.show-options {\n  position: absolute;\n  right: 18px;\n  bottom: 18px;\n  min-height: 44px;\n  border: 1px solid #a3b8a9;\n  border-radius: 6px;\n  background: rgba(22, 60, 66, 0.9098039216);\n  color: #f2e6bb;\n  font-size: 11px;\n  padding: 9px 14px;\n}\n.activity:has(app-journey-location-scene) .show-options {\n  top: 72px;\n  bottom: auto;\n}\n.error {\n  color: #99432f;\n  font-size: 11px;\n}\n.source-dialog {\n  width: min(680px, 100% - 28px);\n  max-height: 85dvh;\n  border: 1px solid #809b8b;\n  padding: 24px;\n  border-radius: 9px;\n  background: #f7f5e8;\n  color: #304a43;\n}\n.source-dialog::backdrop {\n  background: rgba(12, 37, 43, 0.7333333333);\n}\n.source-dialog header {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 20px;\n}\n.source-dialog h2 {\n  font: 24px Georgia, serif;\n}\n.source-dialog button {\n  border: 0;\n  padding: 10px 15px;\n  min-height: 44px;\n  color: white;\n  background: #245356;\n  border-radius: 5px;\n}\n.source-dialog article {\n  margin-top: 18px;\n  padding-top: 16px;\n  border-top: 1px solid #bdc8b7;\n}\n.source-dialog blockquote {\n  margin: 14px 0;\n  padding-left: 15px;\n  border-left: 2px solid #c6a762;\n  line-height: 1.7;\n}\n.source-dialog blockquote b {\n  display: block;\n  color: #64775e;\n}\n@media (max-width: 1000px) {\n  .path-workspace {\n    grid-template-columns: minmax(0, 1fr) 310px;\n  }\n  .planning-column {\n    padding: 12px;\n  }\n}\n@media (max-width: 760px) {\n  .path-workspace {\n    grid-template-columns: minmax(0, 1fr);\n    height: auto;\n    min-height: 0;\n  }\n  .activity {\n    height: min(64dvh, 550px);\n    min-height: 420px;\n  }\n  .planning-column {\n    overflow: visible;\n    padding: 14px;\n    border-left: 0;\n  }\n  .resource-meters {\n    grid-template-columns: repeat(5, minmax(0, 1fr));\n  }\n  .show-options {\n    bottom: 13px;\n    right: 13px;\n  }\n}\n@media (prefers-reduced-motion: reduce) {\n  * {\n    transition: none !important;\n  }\n}\n/*# sourceMappingURL=journey-path-workspace.component.css.map */\n"] }]
   }], () => [], { map: [{ type: ViewChild, args: [forwardRef(() => LivingJourneyMapComponent), { isSignal: true }] }], tutor: [{ type: ViewChild, args: ["tutor", { isSignal: true }] }], sources: [{ type: ViewChild, args: ["sources", { isSignal: true }] }], sourceTrigger: [{ type: ViewChild, args: ["sourceTrigger", { isSignal: true }] }] });
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(JourneyPathWorkspaceComponent, { className: "JourneyPathWorkspaceComponent", filePath: "src/app/templates/journey-replay/ui/journey-path-workspace.component.ts", lineNumber: 22 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(JourneyPathWorkspaceComponent, { className: "JourneyPathWorkspaceComponent", filePath: "src/app/templates/journey-replay/ui/journey-path-workspace.component.ts", lineNumber: 44 });
 })();
 
 // src/app/projects/age-of-exploration-journey/age-of-exploration-learning.ts
@@ -41218,43 +41747,254 @@ function withHistoricalVoyage(base) {
 }
 
 // src/app/projects/age-of-exploration-journey/voyage-experience.ts
-var option = (id, label, summary, consequence, nextTask, learning, resourceChanges, grants, effect2) => ({ id, label, summary, consequence, nextTask, learning, resourceChanges, grants, effect: effect2 });
-var event = (id, label, observation, question, icon, x, y, evidenceIds, choices2) => ({ id, label, observation, question, object: { icon, x, y }, evidenceIds, choices: choices2 });
+var option = (id, label, summary, consequence, nextTask, learning, resourceChanges, grants, effect2) => ({
+  id,
+  label,
+  summary,
+  consequence,
+  nextTask,
+  learning,
+  resourceChanges,
+  grants,
+  effect: effect2
+});
+var event = (id, label, observation, question, icon, x, y, evidenceIds, choices2) => ({
+  id,
+  label,
+  observation,
+  question,
+  object: { icon, x, y },
+  evidenceIds,
+  choices: choices2
+});
 function cargo(prefix) {
-  return event(`${prefix}-hold`, "The last cargo berth", "One berth remains. Water, instruments and repair timber compete for it.", "What will your crew need if the next passage changes?", "cargo", 35, 72, ["evidence-wind-chart", "evidence-astrolabe"], [
-    option(`${prefix}-water`, "Load water barrels", "More reserve; one week loading.", "Water barrels fill the berth. A longer passage is now easier to supply.", "Compare the longer passage against the water reserve you packed.", "Opportunity cost: carrying water leaves the instruments and timber ashore.", { supplies: 12, time: 1 }, ["water"], "water"),
-    option(`${prefix}-instruments`, "Pack navigation instruments", "Less water; better observations.", "The navigator unpacks an instrument case. A survey passage is revealed on the next chart.", "Inspect the newly revealed survey passage and compare its observations with its cost.", "Instruments help establish position; they do not replace supplies.", { supplies: -5, knowledge: 12 }, ["charts"], "charts"),
-    option(`${prefix}-timber`, "Stow repair timber", "Use provision space for a later repair.", "Timber and canvas are secured beside the mast. A later sail patch will use fewer supplies.", "Locate a repair stop and compare its cost with the stores you packed.", "Preparation changes the cost of responding to a later failure.", { supplies: -6 }, ["repair"], "repair")
-  ]);
+  return event(
+    `${prefix}-hold`,
+    "The last cargo berth",
+    "One berth remains. Water, instruments and repair timber compete for it.",
+    "What will your crew need if the next passage changes?",
+    "cargo",
+    35,
+    72,
+    ["evidence-wind-chart", "evidence-astrolabe"],
+    [
+      option(
+        `${prefix}-water`,
+        "Load water barrels",
+        "More reserve; one week loading.",
+        "Water barrels fill the berth. A longer passage is now easier to supply.",
+        "Compare the longer passage against the water reserve you packed.",
+        "Opportunity cost: carrying water leaves the instruments and timber ashore.",
+        { supplies: 12, time: 1 },
+        ["water"],
+        "water"
+      ),
+      option(
+        `${prefix}-instruments`,
+        "Pack navigation instruments",
+        "Less water; better observations.",
+        "The navigator unpacks an instrument case. A survey passage is revealed on the next chart.",
+        "Inspect the newly revealed survey passage and compare its observations with its cost.",
+        "Instruments help establish position; they do not replace supplies.",
+        { supplies: -5, knowledge: 12 },
+        ["charts"],
+        "charts"
+      ),
+      option(
+        `${prefix}-timber`,
+        "Stow repair timber",
+        "Use provision space for a later repair.",
+        "Timber and canvas are secured beside the mast. A later sail patch will use fewer supplies.",
+        "Locate a repair stop and compare its cost with the stores you packed.",
+        "Preparation changes the cost of responding to a later failure.",
+        { supplies: -6 },
+        ["repair"],
+        "repair"
+      )
+    ]
+  );
 }
 function bearings(prefix, coastal = false) {
-  return event(`${prefix}-bearings`, coastal ? "Wind at the roadstead" : "The headland bearings", coastal ? "A crosswind pushes the anchored ship toward a shallow shelf." : "Two headlands line up differently as the ship moves. One sighting cannot fix its position.", "What observation would you trust for your next passage?", "compass", 74, 35, ["evidence-portolan", "evidence-wind-chart"], [
-    option(`${prefix}-survey`, "Take a second bearing", "Use a day to check the chart.", "A second sight line crosses the first. The chart now records a checked position.", "Use both bearings to evaluate the survey route on the next map.", "A second independent observation can reduce uncertainty.", { knowledge: 8, time: 1 }, ["charts"], "charts"),
-    option(`${prefix}-pilot`, "Consult the coastal pilot", "Trade supplies for local route knowledge.", "The pilot marks a sheltered approach. Coastal options remain available as weather changes.", "Compare the pilot\u2019s sheltered route with the open-water crossing.", "Local knowledge offers useful evidence; ask whose experience it represents.", { supplies: -4, crew: 3 }, ["shelter"], "rest")
-  ]);
+  return event(
+    `${prefix}-bearings`,
+    coastal ? "Wind at the roadstead" : "The headland bearings",
+    coastal ? "A crosswind pushes the anchored ship toward a shallow shelf." : "Two headlands line up differently as the ship moves. One sighting cannot fix its position.",
+    "What observation would you trust for your next passage?",
+    "compass",
+    74,
+    35,
+    ["evidence-portolan", "evidence-wind-chart"],
+    [
+      option(
+        `${prefix}-survey`,
+        "Take a second bearing",
+        "Use one model week to check the chart.",
+        "A second sight line crosses the first. The chart now records a checked position.",
+        "Use both bearings to evaluate the survey route on the next map.",
+        "A second independent observation can reduce uncertainty.",
+        { knowledge: 8, time: 1 },
+        ["charts"],
+        "charts"
+      ),
+      option(
+        `${prefix}-pilot`,
+        "Consult the coastal pilot",
+        "Trade supplies for local route knowledge.",
+        "The pilot marks a sheltered approach. Coastal options remain available as weather changes.",
+        "Compare the pilot\u2019s sheltered route with the open-water crossing.",
+        "Local knowledge offers useful evidence; ask whose experience it represents.",
+        { supplies: -4, crew: 3 },
+        ["shelter"],
+        "rest"
+      )
+    ]
+  );
 }
 function exchange(prefix) {
-  return event(`${prefix}-exchange`, "Two accounts at the shore", "Your crew wants water. Households ashore must keep their own reserve. The terms are not yet agreed.", "What can each account establish, and what is still uncertain?", "shore", 78, 59, ["evidence-port-accounts"], [
-    option(`${prefix}-negotiate`, "Give the interpreter time", "More supplies after a longer agreement.", "Two parties agree on the marked barrels. The shoreline reserve remains with the households.", "Account for your delay when comparing the next departure windows.", "Consent requires agreed terms; the ship\u2019s account alone cannot establish them.", { supplies: 10, time: 2, backing: -5 }, ["agreement", "water"], "exchange"),
-    option(`${prefix}-limited`, "Accept the smaller exchange", "Leave sooner with fewer supplies.", "Only the offered barrels cross the water. Your crew keeps a smaller reserve.", "Find a resupply route that fits the smaller reserve you accepted.", "An agreed exchange can respect limits while leaving a practical problem unsolved.", { supplies: 4, time: 1 }, ["agreement", "shelter"], "water"),
-    option(`${prefix}-offshore`, "Remain offshore", "Rest without taking shore supplies.", "The ship stays beyond the surf. The crew rests using its own stores.", "Compare a short passage or refuge with a longer open-water route.", "Choosing not to trade changes the evidence and resources available next.", { supplies: -6, crew: 6, time: 1 }, ["shelter"], "rest")
-  ]);
+  return event(
+    `${prefix}-exchange`,
+    "Two accounts at the shore",
+    "Your crew wants water. Households ashore must keep their own reserve. The terms are not yet agreed.",
+    "What can each account establish, and what is still uncertain?",
+    "shore",
+    78,
+    59,
+    ["evidence-port-accounts"],
+    [
+      option(
+        `${prefix}-negotiate`,
+        "Give the interpreter time",
+        "More supplies after a longer agreement.",
+        "Two parties agree on the marked barrels. The shoreline reserve remains with the households.",
+        "Account for your delay when comparing the next departure windows.",
+        "Consent requires agreed terms; the ship\u2019s account alone cannot establish them.",
+        { supplies: 10, time: 2, backing: -5 },
+        ["agreement", "water"],
+        "exchange"
+      ),
+      option(
+        `${prefix}-limited`,
+        "Accept the smaller exchange",
+        "Leave sooner with fewer supplies.",
+        "Only the offered barrels cross the water. Your crew keeps a smaller reserve.",
+        "Find a resupply route that fits the smaller reserve you accepted.",
+        "An agreed exchange can respect limits while leaving a practical problem unsolved.",
+        { supplies: 4, time: 1 },
+        ["agreement", "shelter"],
+        "water"
+      ),
+      option(
+        `${prefix}-offshore`,
+        "Remain offshore",
+        "Rest without taking shore supplies.",
+        "The ship stays beyond the surf. The crew rests using its own stores.",
+        "Compare a short passage or refuge with a longer open-water route.",
+        "Choosing not to trade changes the evidence and resources available next.",
+        { supplies: -6, crew: 6, time: 1 },
+        ["shelter"],
+        "rest"
+      )
+    ]
+  );
 }
 function damage(prefix) {
-  return event(`${prefix}-damage`, "The torn mainsail", "A tear runs down the canvas. The lower mast is sound; the loose line needs attention.", "Which response addresses the damage you can actually observe?", "sail", 48, 40, ["evidence-storm-log"], [
-    __spreadProps(__spreadValues({}, option(`${prefix}-repair`, "Patch and secure the sail", "Spend supplies and time to restore it.", "Canvas covers the tear and the line is secured. The ship can attempt a longer passage.", "Compare the restored ship\u2019s longer route with a nearby refuge.", "Repair targets observed failure; its cost belongs in the route comparison.", { supplies: -8, crew: 2, time: 1 }, ["repair"], "repair")), { consequenceModifiers: ["azores-timber", "cape-verde-timber"].map((afterChoiceId) => ({ afterChoiceId, resourceChanges: { supplies: 4 }, narrative: "The repair materials packed at the first landing save four supply points." })) }),
-    option(`${prefix}-reef`, "Reef sail and seek shelter", "Reduce exposure; accept a shorter next leg.", "The sail is shortened. A refuge course is marked on the next chart.", "Inspect the refuge route before committing to another open-water crossing.", "Reducing exposure trades progress for a margin of safety.", { crew: 5, time: 1 }, ["shelter"], "rest")
-  ]);
+  return event(
+    `${prefix}-damage`,
+    "The torn mainsail",
+    "A tear runs down the canvas. The lower mast is sound; the loose line needs attention.",
+    "Which response addresses the damage you can actually observe?",
+    "sail",
+    27,
+    56,
+    ["evidence-storm-log"],
+    [
+      __spreadProps(__spreadValues({}, option(
+        `${prefix}-repair`,
+        "Patch and secure the sail",
+        "Spend supplies and time to restore it.",
+        "Canvas covers the tear and the line is secured. The ship can attempt a longer passage.",
+        "Compare the restored ship\u2019s longer route with a nearby refuge.",
+        "Repair targets observed failure; its cost belongs in the route comparison.",
+        { supplies: -8, crew: 2, time: 1 },
+        ["repair"],
+        "repair"
+      )), {
+        consequenceModifiers: ["azores-timber", "cape-verde-timber"].map((afterChoiceId) => ({
+          afterChoiceId,
+          resourceChanges: { supplies: 4 },
+          narrative: "The repair materials packed at the first landing save four supply points."
+        }))
+      }),
+      option(
+        `${prefix}-reef`,
+        "Reef sail and seek shelter",
+        "Reduce exposure; accept a shorter next leg.",
+        "The sail is shortened. A refuge course is marked on the next chart.",
+        "Inspect the refuge route before committing to another open-water crossing.",
+        "Reducing exposure trades progress for a margin of safety.",
+        { crew: 5, time: 1 },
+        ["shelter"],
+        "rest"
+      )
+    ]
+  );
 }
 function record(prefix, final = false) {
-  return event(`${prefix}-record`, final ? "The expedition record" : "The navigator\u2019s table", final ? "Route, cargo and shore decisions are separate pieces of evidence. A short voyage is not a complete account." : "A coast sighting and a source account describe different kinds of knowledge.", "Which evidence should the next investigation follow?", "log", 29, 85, ["evidence-portolan", "evidence-port-accounts"], [
-    option(`${prefix}-chart`, final ? "Assemble the route evidence" : "Compare the coastal observations", "Connect observations to the chart.", final ? "The voyage trace is laid beside the instrument observations." : "Survey markers appear along the coast. The next map reveals an observation passage.", final ? "Use the route record to explain one decision and one remaining uncertainty." : "Inspect the observation passage and decide whether its new evidence is worth the journey.", "A map is a record of observations and choices, not proof that a place was unknown to others.", { knowledge: 8 }, ["charts"], "charts"),
-    option(`${prefix}-accounts`, final ? "Assemble the encounter evidence" : "Compare both shore accounts", "Keep the speakers and their claims distinct.", final ? "The two accounts remain separate beside the journey trace." : "Two source markers are placed by the shore. A return visit remains an option.", final ? "Explain a disagreement using a detail from each account." : "Follow the sheltered return route and identify a question that would need new evidence.", "A fictional reconstruction can test perspective reasoning; it cannot establish real testimony.", { knowledge: 5, time: 1 }, ["shelter", "agreement"], "exchange")
-  ]);
+  return event(
+    `${prefix}-record`,
+    final ? "The expedition record" : "The navigator\u2019s table",
+    final ? "Route, cargo and shore decisions are separate pieces of evidence. A short voyage is not a complete account." : "A coast sighting and a source account describe different kinds of knowledge.",
+    "Which evidence should the next investigation follow?",
+    "log",
+    51,
+    65,
+    ["evidence-portolan", "evidence-port-accounts"],
+    [
+      option(
+        `${prefix}-chart`,
+        final ? "Assemble the route evidence" : "Compare the coastal observations",
+        "Connect observations to the chart.",
+        final ? "The voyage trace is laid beside the instrument observations." : "Survey markers appear along the coast. The next map reveals an observation passage.",
+        final ? "Use the route record to explain one decision and one remaining uncertainty." : "Inspect the observation passage and decide whether its new evidence is worth the journey.",
+        "A map is a record of observations and choices, not proof that a place was unknown to others.",
+        { knowledge: 8 },
+        ["charts"],
+        "charts"
+      ),
+      option(
+        `${prefix}-accounts`,
+        final ? "Assemble the encounter evidence" : "Compare both shore accounts",
+        "Keep the speakers and their claims distinct.",
+        final ? "The two accounts remain separate beside the journey trace." : "Two source markers are placed by the shore. A return visit remains an option.",
+        final ? "Explain a disagreement using a detail from each account." : "Follow the sheltered return route and identify a question that would need new evidence.",
+        "A fictional reconstruction can test perspective reasoning; it cannot establish real testimony.",
+        { knowledge: 5, time: 1 },
+        ["shelter", "agreement"],
+        "exchange"
+      )
+    ]
+  );
 }
 function site(id, session, locationId, title, scene, defaultNextId, tasks, learning, events) {
   const backdrop = scene === "storm" || scene === "cape" ? "storm" : scene === "home" ? "harbor" : scene === "harbor" ? "market" : scene === "river" ? "river" : "island";
-  return { id, session, kind: "location", locationId, title, scene, sceneArt: { backdrop: `/journey-replay/voyage-v2/${backdrop}.webp`, ship: "/journey-replay/voyage-v2/ship.webp" }, defaultNextId, tasks, learning, product: session === 8 ? "A route and event record with selected evidence." : "An inspected location, event decisions and the next passage task.", choices: [], events };
+  return {
+    id,
+    session,
+    kind: "location",
+    locationId,
+    title,
+    scene,
+    sceneArt: {
+      backdrop: `/journey-replay/voyage-v2/${backdrop}.webp`,
+      ship: "/journey-replay/voyage-v2/ship.webp"
+    },
+    defaultNextId,
+    tasks,
+    learning,
+    product: session === 8 ? "A route and event record with selected evidence." : "An inspected location, event decisions and the next passage task.",
+    choices: [],
+    events
+  };
 }
 function withVoyageExperience(base) {
   const extraRoutes = [];
@@ -41263,62 +42003,383 @@ function withVoyageExperience(base) {
     const end = base.map.locations.find((place) => place.id === to);
     const id = `${nodeId}-${nextNodeId}${requiresAny ? "-survey" : ""}`;
     const west = Math.min(start.longitude, end.longitude, -25) - (from2 === "cape-town" || to === "cape-town" ? 7 : 0);
-    extraRoutes.push({ id, fromLocationId: from2, toLocationId: to, coordinates: [start, { longitude: west, latitude: start.latitude * 0.65 + end.latitude * 0.35 }, { longitude: west, latitude: start.latitude * 0.25 + end.latitude * 0.75 }, end], distanceLabel: `Model passage \xB7 ${weeks} weeks`, risk: weeks > 2 ? "high" : "moderate", windLabel: requiresAny ? "Survey passage revealed by your observations" : weeks > 2 ? "Open water; compare the reserve" : "Island or coastal refuge" });
-    return { id, label, routeId: id, nextNodeId, requiresAny, summary: `${weeks} model weeks \xB7 ${weeks * 4} supply points${requiresAny ? " \xB7 newly charted" : ""}`, consequence: `Your ship reaches ${end.shortName}. The route costs ${weeks * 4} supply points and ${weeks} weeks in this classroom model.`, resourceChanges: { supplies: -weeks * 4, time: weeks, crew: weeks > 2 ? -5 : -2, knowledge: requiresAny ? 8 : 2 }, grants: requiresAny ? ["charts"] : [], effect: "sail", nextTask: task, learning: "Compare direction, waypoints, time and reserve. These passage costs are simulation rules." };
+    extraRoutes.push({
+      id,
+      fromLocationId: from2,
+      toLocationId: to,
+      coordinates: [
+        start,
+        { longitude: west, latitude: start.latitude * 0.65 + end.latitude * 0.35 },
+        { longitude: west, latitude: start.latitude * 0.25 + end.latitude * 0.75 },
+        end
+      ],
+      distanceLabel: `Model passage \xB7 ${weeks} weeks`,
+      risk: weeks > 2 ? "high" : "moderate",
+      windLabel: requiresAny ? "Survey passage revealed by your observations" : weeks > 2 ? "Open water; compare the reserve" : "Island or coastal refuge"
+    });
+    return {
+      id,
+      label,
+      routeId: id,
+      nextNodeId,
+      requiresAny,
+      summary: `${weeks} model weeks \xB7 ${weeks * 4} supply points${requiresAny ? " \xB7 newly charted" : ""}`,
+      consequence: `Your ship reaches ${end.shortName}. The route costs ${weeks * 4} supply points and ${weeks} weeks in this classroom model.`,
+      resourceChanges: {
+        supplies: -weeks * 4,
+        time: weeks,
+        crew: weeks > 2 ? -5 : -2,
+        knowledge: requiresAny ? 8 : 2
+      },
+      grants: requiresAny ? ["charts"] : [],
+      effect: "sail",
+      nextTask: task,
+      learning: "Compare direction, waypoints, time and reserve. These passage costs are simulation rules."
+    };
   }
   function chart(id, session, locationId, title, choices2) {
-    return { id, session, kind: "map", locationId, title, defaultNextId: choices2[0].nextNodeId, tasks: ["Inspect a route and its destination.", "Compare passage costs with what your earlier choices left aboard."], product: "A chosen passage and the investigation it opens.", learning: "Use geographic evidence and the expedition\u2019s current resources to choose the next investigation.", choices: choices2, events: [] };
+    return {
+      id,
+      session,
+      kind: "map",
+      locationId,
+      title,
+      defaultNextId: choices2[0].nextNodeId,
+      tasks: [
+        "Inspect a route and its destination.",
+        "Compare passage costs with what your earlier choices left aboard."
+      ],
+      product: "A chosen passage and the investigation it opens.",
+      learning: "Use geographic evidence and the expedition\u2019s current resources to choose the next investigation.",
+      choices: choices2,
+      events: []
+    };
   }
   const nodes = [
     chart("departure-chart", 1, "lisbon", "Where will you investigate first?", [
-      passage("departure-chart", "lisbon", "azores", "azores-arrival", "The Azores \xB7 bearings & cargo", 2, "Inspect the headlands and choose the last load for the cargo berth."),
-      passage("departure-chart", "lisbon", "cape-verde", "cape-verde-arrival", "Cape Verde \xB7 wind & reserves", 3, "Inspect the crosswind, then prepare your ship for the next passage.")
+      passage(
+        "departure-chart",
+        "lisbon",
+        "azores",
+        "azores-arrival",
+        "The Azores \xB7 bearings & cargo",
+        2,
+        "Inspect the headlands and choose the last load for the cargo berth."
+      ),
+      passage(
+        "departure-chart",
+        "lisbon",
+        "cape-verde",
+        "cape-verde-arrival",
+        "Cape Verde \xB7 wind & reserves",
+        3,
+        "Inspect the crosswind, then prepare your ship for the next passage."
+      )
     ]),
-    site("azores-arrival", 2, "azores", "The island anchorage", "island", "azores-chart", ["Inspect the two headlands.", "Compare the three loads that fit the last berth."], "Position fixing and preparation: one observation or one cargo load cannot solve every risk.", [bearings("azores"), cargo("azores")]),
-    site("cape-verde-arrival", 2, "cape-verde", "Wind across the roadstead", "harbor", "cape-verde-chart", ["Inspect the crosswind and the shallow shelf.", "Choose which preparation the ship will carry."], "Wind and reserves change the cost of a departure plan.", [bearings("cape-verde", true), cargo("cape-verde")]),
+    site(
+      "azores-arrival",
+      2,
+      "azores",
+      "The island anchorage",
+      "island",
+      "azores-chart",
+      ["Inspect the two headlands.", "Compare the three loads that fit the last berth."],
+      "Position fixing and preparation: one observation or one cargo load cannot solve every risk.",
+      [bearings("azores"), cargo("azores")]
+    ),
+    site(
+      "cape-verde-arrival",
+      2,
+      "cape-verde",
+      "Wind across the roadstead",
+      "harbor",
+      "cape-verde-chart",
+      [
+        "Inspect the crosswind and the shallow shelf.",
+        "Choose which preparation the ship will carry."
+      ],
+      "Wind and reserves change the cost of a departure plan.",
+      [bearings("cape-verde", true), cargo("cape-verde")]
+    ),
     chart("azores-chart", 3, "azores", "A coast, a market, or a survey?", [
-      passage("azores-chart", "azores", "cape-verde", "storm-roadstead", "Cape Verde \xB7 damaged sail", 2, "Inspect the torn canvas and compare repair with shelter."),
-      passage("azores-chart", "azores", "elmina", "market-arrival", "Elmina \xB7 exchange accounts", 3, "Compare the shore accounts before deciding how to resupply."),
-      passage("azores-chart", "azores", "elmina", "market-arrival", "Survey the coastal approach", 4, "Connect a second bearing to the arrival chart, then inspect the shore accounts.", ["charts"])
+      passage(
+        "azores-chart",
+        "azores",
+        "cape-verde",
+        "storm-roadstead",
+        "Cape Verde \xB7 damaged sail",
+        2,
+        "Inspect the torn canvas and compare repair with shelter."
+      ),
+      passage(
+        "azores-chart",
+        "azores",
+        "elmina",
+        "market-arrival",
+        "Elmina \xB7 exchange accounts",
+        3,
+        "Compare the shore accounts before deciding how to resupply."
+      ),
+      passage(
+        "azores-chart",
+        "azores",
+        "elmina",
+        "market-arrival",
+        "Survey the coastal approach",
+        4,
+        "Connect a second bearing to the arrival chart, then inspect the shore accounts.",
+        ["charts"]
+      )
     ]),
     chart("cape-verde-chart", 3, "cape-verde", "Follow the coast or find a refuge?", [
-      passage("cape-verde-chart", "cape-verde", "elmina", "market-arrival", "Elmina \xB7 negotiate resupply", 2, "Keep the ship\u2019s needs and the households\u2019 reserve visible in the exchange."),
-      passage("cape-verde-chart", "cape-verde", "azores", "refuge-arrival", "Azores \xB7 repair & bearings", 3, "Inspect the sail at refuge and check the headland bearings."),
-      passage("cape-verde-chart", "cape-verde", "azores", "refuge-arrival", "Follow the checked island bearings", 2, "Test how the earlier observations improve the refuge passage.", ["charts", "repair"])
+      passage(
+        "cape-verde-chart",
+        "cape-verde",
+        "elmina",
+        "market-arrival",
+        "Elmina \xB7 negotiate resupply",
+        2,
+        "Keep the ship\u2019s needs and the households\u2019 reserve visible in the exchange."
+      ),
+      passage(
+        "cape-verde-chart",
+        "cape-verde",
+        "azores",
+        "refuge-arrival",
+        "Azores \xB7 repair & bearings",
+        3,
+        "Inspect the sail at refuge and check the headland bearings."
+      ),
+      passage(
+        "cape-verde-chart",
+        "cape-verde",
+        "azores",
+        "refuge-arrival",
+        "Follow the checked island bearings",
+        2,
+        "Test how the earlier observations improve the refuge passage.",
+        ["charts", "repair"]
+      )
     ]),
-    site("storm-roadstead", 4, "cape-verde", "A crack above the thunder", "storm", "storm-chart", ["Locate the damage on the ship.", "Compare a patch with a shortened sail."], "Update a plan from observed damage, then test the remaining reserve.", [damage("roadstead"), record("roadstead")]),
-    site("market-arrival", 4, "elmina", "An agreement at the water\u2019s edge", "harbor", "market-chart", ["Inspect both accounts of the proposed exchange.", "Decide what the next chart should investigate."], "Compare interests and evidence without treating a reconstructed account as historical testimony.", [exchange("market"), record("market")]),
-    site("refuge-arrival", 4, "azores", "Repair in sheltered water", "island", "refuge-chart", ["Inspect the damaged sail beside the sheltered anchorage.", "Check the headland bearings before departure."], "Preparation and location affect the cost of responding to the same damage.", [damage("refuge"), bearings("refuge")])
+    site(
+      "storm-roadstead",
+      4,
+      "cape-verde",
+      "A crack above the thunder",
+      "storm",
+      "storm-chart",
+      ["Locate the damage on the ship.", "Compare a patch with a shortened sail."],
+      "Update a plan from observed damage, then test the remaining reserve.",
+      [damage("roadstead"), record("roadstead")]
+    ),
+    site(
+      "market-arrival",
+      4,
+      "elmina",
+      "An agreement at the water\u2019s edge",
+      "harbor",
+      "market-chart",
+      [
+        "Inspect both accounts of the proposed exchange.",
+        "Decide what the next chart should investigate."
+      ],
+      "Compare interests and evidence without treating a reconstructed account as historical testimony.",
+      [exchange("market"), record("market")]
+    ),
+    site(
+      "refuge-arrival",
+      4,
+      "azores",
+      "Repair in sheltered water",
+      "island",
+      "refuge-chart",
+      [
+        "Inspect the damaged sail beside the sheltered anchorage.",
+        "Check the headland bearings before departure."
+      ],
+      "Preparation and location affect the cost of responding to the same damage.",
+      [damage("refuge"), bearings("refuge")]
+    )
   ];
-  for (const [id, from2] of [["storm-chart", "cape-verde"], ["market-chart", "elmina"], ["refuge-chart", "azores"]]) {
-    nodes.push(chart(id, 5, from2, "An ocean crossing or a return?", [
-      passage(id, from2, "recife", "brazil-arrival", "Brazilian coast \xB7 two perspectives", 3, "Compare two reconstructed accounts and decide how your crew will approach the shore."),
-      passage(id, from2, "cape-town", "cape-arrival", "The Cape \xB7 repair & navigation", 4, "Inspect the sail and the coastline; compare continuing with taking shelter."),
-      passage(id, from2, "lisbon", "return-arrival", "Lisbon \xB7 sheltered return", 2, "Compare what the shorter return preserves with what the voyage leaves uncertain.", ["shelter"])
-    ]));
+  for (const [id, from2] of [
+    ["storm-chart", "cape-verde"],
+    ["market-chart", "elmina"],
+    ["refuge-chart", "azores"]
+  ]) {
+    nodes.push(
+      chart(id, 5, from2, "An ocean crossing or a return?", [
+        passage(
+          id,
+          from2,
+          "recife",
+          "brazil-arrival",
+          "Brazilian coast \xB7 two perspectives",
+          3,
+          "Compare two reconstructed accounts and decide how your crew will approach the shore."
+        ),
+        passage(
+          id,
+          from2,
+          "cape-town",
+          "cape-arrival",
+          "The Cape \xB7 repair & navigation",
+          4,
+          "Inspect the sail and the coastline; compare continuing with taking shelter."
+        ),
+        passage(
+          id,
+          from2,
+          "lisbon",
+          "return-arrival",
+          "Lisbon \xB7 sheltered return",
+          2,
+          "Compare what the shorter return preserves with what the voyage leaves uncertain.",
+          ["shelter"]
+        )
+      ])
+    );
   }
   nodes.push(
-    site("brazil-arrival", 6, "recife", "Beyond the surf", "river", "brazil-chart", ["Inspect the ship\u2019s account and the shore account.", "Choose how to proceed while recording the limits of the evidence."], "Your fictional crew\u2019s arrival changes its experience; it does not rewrite the documented historical record.", [exchange("brazil"), record("brazil")]),
-    site("cape-arrival", 6, "cape-town", "The southern turning point", "cape", "cape-chart", ["Inspect the canvas and the rocky approach.", "Choose whether the next passage should prioritize survey or shelter."], "A demanding route can preserve a plan while using the reserve needed for the return.", [damage("cape"), record("cape")]),
-    site("return-arrival", 6, "lisbon", "Back inside the breakwater", "home", "home-chart", ["Inspect the stores and the surviving route record.", "Choose the evidence for one final investigation."], "A return offers a new comparison; it does not make an incomplete account complete.", [cargo("return"), record("return")])
+    site(
+      "brazil-arrival",
+      6,
+      "recife",
+      "Beyond the surf",
+      "river",
+      "brazil-chart",
+      [
+        "Inspect the ship\u2019s account and the shore account.",
+        "Choose how to proceed while recording the limits of the evidence."
+      ],
+      "Your fictional crew\u2019s arrival changes its experience; it does not rewrite the documented historical record.",
+      [exchange("brazil"), record("brazil")]
+    ),
+    site(
+      "cape-arrival",
+      6,
+      "cape-town",
+      "The southern turning point",
+      "cape",
+      "cape-chart",
+      [
+        "Inspect the canvas and the rocky approach.",
+        "Choose whether the next passage should prioritize survey or shelter."
+      ],
+      "A demanding route can preserve a plan while using the reserve needed for the return.",
+      [damage("cape"), record("cape")]
+    ),
+    site(
+      "return-arrival",
+      6,
+      "lisbon",
+      "Back inside the breakwater",
+      "home",
+      "home-chart",
+      [
+        "Inspect the stores and the surviving route record.",
+        "Choose the evidence for one final investigation."
+      ],
+      "A return offers a new comparison; it does not make an incomplete account complete.",
+      [cargo("return"), record("return")]
+    )
   );
-  for (const [id, from2] of [["brazil-chart", "recife"], ["cape-chart", "cape-town"], ["home-chart", "lisbon"]]) {
+  for (const [id, from2] of [
+    ["brazil-chart", "recife"],
+    ["cape-chart", "cape-town"],
+    ["home-chart", "lisbon"]
+  ]) {
     const harbor = from2 === "lisbon" ? "cape-verde" : "lisbon";
     const harborNode = from2 === "lisbon" ? "final-harbor" : "final-home";
-    nodes.push(chart(id, 7, from2, "Which evidence will close your voyage?", [
-      passage(id, from2, harbor, harborNode, from2 === "lisbon" ? "Cape Verde \xB7 revisit the accounts" : "Lisbon \xB7 compare the voyage record", 3, "Select one recorded passage and connect it to its observed consequence."),
-      passage(id, from2, "azores", "final-atlas", "Azores \xB7 check the chart", 3, "Compare the route record with two headland observations."),
-      passage(id, from2, "azores", "final-atlas", "Follow your survey observations", 2, "Use the checked observations from your earlier investigation to examine a shorter modeled return.", ["charts"])
-    ]));
+    nodes.push(
+      chart(id, 7, from2, "Which evidence will close your voyage?", [
+        passage(
+          id,
+          from2,
+          harbor,
+          harborNode,
+          from2 === "lisbon" ? "Cape Verde \xB7 revisit the accounts" : "Lisbon \xB7 compare the voyage record",
+          3,
+          "Select one recorded passage and connect it to its observed consequence."
+        ),
+        passage(
+          id,
+          from2,
+          "azores",
+          "final-atlas",
+          "Azores \xB7 check the chart",
+          3,
+          "Compare the route record with two headland observations."
+        ),
+        passage(
+          id,
+          from2,
+          "azores",
+          "final-atlas",
+          "Follow your survey observations",
+          2,
+          "Use the checked observations from your earlier investigation to examine a shorter modeled return.",
+          ["charts"]
+        )
+      ])
+    );
   }
   nodes.push(
-    site("final-home", 8, "lisbon", "The record comes ashore", "home", void 0, ["Inspect the complete route and its remaining resources.", "Choose the evidence that explains a decision and a limit."], "An account is stronger when its route, sources and consequences can be inspected together.", [record("final-home", true), exchange("final-home")]),
-    site("final-atlas", 8, "azores", "A chart worth questioning", "island", void 0, ["Check the headlands against the route you recorded.", "Assemble the evidence for the voyage\u2019s strongest remaining question."], "New observations can confirm or challenge a chart; retain what remains uncertain.", [bearings("final-atlas"), record("final-atlas", true)]),
-    site("final-harbor", 8, "cape-verde", "Return to the roadstead", "harbor", void 0, ["Compare the new approach with the earlier wind observation.", "Assemble both source perspectives beside the route."], "Returning to a place creates a comparison, not proof that the first interpretation was complete.", [bearings("final-harbor", true), record("final-harbor", true)])
+    site(
+      "final-home",
+      8,
+      "lisbon",
+      "The record comes ashore",
+      "home",
+      void 0,
+      [
+        "Inspect the complete route and its remaining resources.",
+        "Choose the evidence that explains a decision and a limit."
+      ],
+      "An account is stronger when its route, sources and consequences can be inspected together.",
+      [record("final-home", true), exchange("final-home")]
+    ),
+    site(
+      "final-atlas",
+      8,
+      "azores",
+      "A chart worth questioning",
+      "island",
+      void 0,
+      [
+        "Check the headlands against the route you recorded.",
+        "Assemble the evidence for the voyage\u2019s strongest remaining question."
+      ],
+      "New observations can confirm or challenge a chart; retain what remains uncertain.",
+      [bearings("final-atlas"), record("final-atlas", true)]
+    ),
+    site(
+      "final-harbor",
+      8,
+      "cape-verde",
+      "Return to the roadstead",
+      "harbor",
+      void 0,
+      [
+        "Compare the new approach with the earlier wind observation.",
+        "Assemble both source perspectives beside the route."
+      ],
+      "Returning to a place creates a comparison, not proof that the first interpretation was complete.",
+      [bearings("final-harbor", true), record("final-harbor", true)]
+    )
   );
-  const experience = { schemaVersion: "1.0", capability: "branchingJourney", startNodeId: "departure-chart", nodes };
+  const experience = {
+    schemaVersion: "1.0",
+    capability: "branchingJourney",
+    startNodeId: "departure-chart",
+    nodes
+  };
   const map2 = __spreadProps(__spreadValues({}, base.map), { routes: [...base.map.routes, ...extraRoutes] });
-  return __spreadProps(__spreadValues({}, base), { projectVersion: "1.4.0", subtitle: "A branching Atlantic investigation", map: map2, experience });
+  return __spreadProps(__spreadValues({}, base), {
+    projectVersion: "1.4.0",
+    subtitle: "A branching Atlantic investigation",
+    map: map2,
+    experience
+  });
 }
 
 // src/app/projects/age-of-exploration-journey/age-of-exploration-journey.config.ts
@@ -44936,5 +45997,5 @@ var AuditRoot = class _AuditRoot {
   (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AuditRoot, { className: "AuditRoot", filePath: "output/voyage-activity-audit/main.ts", lineNumber: 38 });
 })();
 bootstrapApplication(AuditRoot, { providers: [provideRouter([{ path: "**", component: AuditPage }])] }).catch(console.error);
-//# debugId=f695c26b-1e93-596e-af99-cd320f3e1908
+//# debugId=6ea4a441-90ab-5f0a-8120-daef724b1ce4
 //# sourceMappingURL=main.js.map

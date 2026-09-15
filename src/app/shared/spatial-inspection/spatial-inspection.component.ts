@@ -24,7 +24,7 @@ export class SpatialInspectionComponent {
       const controls=this.controls=new OrbitControls(camera,this.canvas()!.nativeElement);controls.enablePan=false;controls.enableDamping=false;controls.minPolarAngle=.18;controls.maxPolarAngle=1.3;controls.maxDistance=11;controls.addEventListener('change',()=>this.draw());
       this.mounted=await loadSpatialAsset(definition.asset,this.request.signal);this.mounted.pivot.traverse(node=>{if(node instanceof T.Mesh){node.castShadow=true;node.receiveShadow=true;}});scene.add(this.mounted.pivot);renderer.shadowMap.needsUpdate=true;
       this.loading.set(false);this.overview();this.observer=new ResizeObserver(()=>this.resize());this.observer.observe(this.surface()!.nativeElement);this.resize();
-    }catch(error){if(!this.request.signal.aborted){this.loading.set(false);this.error.set('The workshop could not open. Return to the village and try again.');}}
+    }catch(error){if(!this.request.signal.aborted){this.loading.set(false);this.error.set('The scene could not open. Return to the village and try again.');}}
   }
   private resize():void{const box=this.surface()?.nativeElement;if(!box||!this.camera||!this.renderer)return;this.renderer.setSize(box.clientWidth,box.clientHeight,false);this.camera.aspect=box.clientWidth/Math.max(1,box.clientHeight);this.camera.updateProjectionMatrix();this.draw();}
   private draw():void{if(this.renderer&&this.scene&&this.camera){this.renderer.render(this.scene,this.camera);if(this.controls){const degrees=this.controls.getAzimuthalAngle()*180/Math.PI;this.heading.set(Math.round((degrees+360)%360));}}}

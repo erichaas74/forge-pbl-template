@@ -8,6 +8,7 @@ import { DiagramComponent } from './diagram.component';
 import { DistributionComponent } from './distribution.component';
 import { AccessComponent } from './access.component';
 import { ApprenticeComponent } from './apprentice.component';
+import { CirculationComponent } from './circulation.component';
 
 export const KNOWLEDGE_RENDERERS: Readonly<Record<KnowledgeKind, Type<unknown>>> = {
   reconstruction: ReconstructionComponent,
@@ -16,6 +17,7 @@ export const KNOWLEDGE_RENDERERS: Readonly<Record<KnowledgeKind, Type<unknown>>>
   distribution: DistributionComponent,
   access: AccessComponent,
   apprentice: ApprenticeComponent,
+  circulation: CirculationComponent,
 };
 @Component({
   selector: 'app-knowledge-host',

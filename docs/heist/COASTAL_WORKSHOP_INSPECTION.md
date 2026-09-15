@@ -1,5 +1,13 @@
 # Canoe workshop inspection build
 
+## Field inspection extension
+
+The harvest destination now opens a separate authored `field.glb` through the same inspection component. Four independent targets expose maize plants, sweet potato vines, harvested roots and a maize ear. There is no wheat geometry or automatic answer message. A new `sweet-potato-crop` source identifies the NPS regional evidence; potatoes are represented specifically as sweet potatoes. Optional title/overview labels remove canoe-specific text from the shared viewer while keeping the canoe configuration intact.
+
+The isolated preview now starts in the field. Village returns to the panorama and its canoe destination. Asset generator: `build-coastal-field.mjs`; historical/model limits: `coastal-3d-v1/FIELD_PROVENANCE.md`. Actual GLB parsing confirms 12 meshes and 25,110 triangles. Verification logs: `output/spatial-foundation/field-tests.log` and `field-build.log`. Browser inspection was attempted again and remains blocked by the same kernel-assets initialization failure; no visual acceptance is claimed.
+
+Field verification: 27 tests in six files passed; isolated production preview build passed in 27.202 seconds. The full application was not rebuilt during this extension; unrelated projects remain outside this task.
+
 The canoe place in shadow-gallery now resolves an optional `inspection` definition. The village marker and existing viewpoint button both open a Three.js scene loaded from an authored GLB. Village return restores panorama navigation. Other viewpoints retain their panoramic images.
 
 ## Implemented interactions
