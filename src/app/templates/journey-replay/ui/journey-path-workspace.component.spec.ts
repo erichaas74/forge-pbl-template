@@ -5,6 +5,8 @@ import { ageOfExplorationJourneyConfig as config } from '../../../projects/age-o
 import { JOURNEY_REPLAY_CONFIG, JOURNEY_REPLAY_ENROLLMENT } from '../runtime/journey-replay.tokens';
 import { JOURNEY_PATH_PERSISTENCE, MemoryJourneyPathPersistence } from '../persistence/journey-path.persistence';
 import { JourneyPathWorkspaceComponent } from './journey-path-workspace.component';
+import { JOURNEY_WORLD_LOADER } from './game/journey-world.tokens';
+import type { JourneyWorldMount } from './game/journey-world.contracts';
 
 describe('branching journey workspace', () => {
   async function setup(session = 1) {
@@ -15,6 +17,7 @@ describe('branching journey workspace', () => {
       {provide:JOURNEY_REPLAY_CONFIG,useValue:config},
       {provide:JOURNEY_REPLAY_ENROLLMENT,useValue:{tenantId:'ui',classId:'review',studentId:'navigator',mode:'demo'}},
       {provide:JOURNEY_PATH_PERSISTENCE,useValue:new MemoryJourneyPathPersistence()},
+      {provide:JOURNEY_WORLD_LOADER,useValue:()=>Promise.resolve<JourneyWorldMount>((_parent,_node,_view,callbacks)=>{callbacks.ready();return {destroy:()=>undefined};})},
     ]}).compileComponents();
     const fixture = TestBed.createComponent(JourneyPathWorkspaceComponent);
     fixture.detectChanges();
@@ -68,9 +71,10 @@ describe('branching journey workspace', () => {
     const {component,fixture,element}=await setup(4);
     const event = component.node().events[0]; component.activeEventId.set(event.id);
     fixture.detectChanges();
-    expect(element.querySelector('.sail-tear')).not.toBeNull();
+    expect(component.currentChoices()).toHaveLength(0);
     (element.querySelector('.event-options .choice') as HTMLButtonElement).click(); fixture.detectChanges();
-    expect(element.querySelector('.sail-tear')).toBeNull();
+    expect(component.currentChoices()[0].effect).toBe('repair');
+    expect(element.querySelector('.object-marker.resolved')).not.toBeNull();
     expect(component.activeEventId()).toBe(event.id);
     expect(element.querySelector('.choice-result')?.textContent).toContain('Canvas covers the tear');
   });

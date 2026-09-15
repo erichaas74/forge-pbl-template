@@ -1,1 +1,0 @@
-import{W as Jp,_r as w,ht as R,kr as yu}from"./chunk-BJblw9Vk.js";var r=new R(`PROJECT_LESSON_FOCUS`);function p(c){let i=w(r,{optional:!0});yu(()=>{let o=i?.();o?.focusTarget&&Jp(()=>c(o))})}export{r as n,p as t};

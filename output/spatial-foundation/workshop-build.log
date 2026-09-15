@@ -1,0 +1,11 @@
+> Building...
+√ Building...
+Application bundle generation failed. [128.910 seconds] - 2026-09-15T19:25:07.185Z
+
+X [ERROR] TS2307: Cannot find module './journey-location.world' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/journey-replay/ui/game/journey-world.tokens.ts:4:44:
+      4 │ ...ory:()=>()=>import('./journey-location.world').then(module=>modu...
+        ╵                       ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+

@@ -343,6 +343,20 @@ describe('Expedition authoring weeks', () => {
     new LocalEscapeAdapter(session, oldMission).save(history);
     expect(new LocalEscapeAdapter(session, mission).load()).toEqual(history);
   });
+  it('retains both bridge drafts, prior trials, and assessed history through the bridge presentation upgrade', () => {
+    const oldMission = requireEscapeMission(JSON.parse(JSON.stringify(data, (key,value) =>
+      key === 'presentation' && value?.kind === 'bridge-cage' ? undefined : value)));
+    const answer = {type:'machine-lock' as const,stages:[{kind:'coordinate' as const,x:4,y:3},{kind:'cable' as const,cable:1}],seals:[]};
+    const snapshot: ExpeditionPreviewSnapshot = {version:1,grade:5,drafts:{
+      '5:bridge':{answer,trials:[{id:'prior-bridge',stage:1,answer,success:false,equation:'5 m attached',feedback:'Short cable.'}]},
+      '5:foxes':{answer:[2,1,3],trials:[]},
+    }};
+    new LocalExpeditionPreviewAdapter(session,oldMission).save(snapshot);
+    expect(new LocalExpeditionPreviewAdapter(session,mission).load()).toEqual(snapshot);
+    const history=[{id:'prior-bridge-history',command:{type:'start' as const}}];
+    new LocalEscapeAdapter(session,oldMission).save(history);
+    expect(new LocalEscapeAdapter(session,mission).load()).toEqual(history);
+  });
 });
 
 describe('Expedition preview configuration and launch boundary', () => {

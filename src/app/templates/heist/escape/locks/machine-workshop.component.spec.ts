@@ -171,4 +171,18 @@ describe('Independent machine workshop controls', () => {
     expect(solved).not.toHaveBeenCalled();
     expect(c.state().seals).toEqual([]);
   });
+  it('opens either bridge stage in preview and preserves both answers through native stage controls', async () => {
+    const f = await create(5), c = f.componentInstance, tested = vi.fn(), awarded = vi.fn();
+    f.componentRef.setInput('authoringPreview', true); f.detectChanges();
+    c.tested.subscribe(tested); c.solved.subscribe(awarded);
+    callbacks.stage?.(1); f.detectChanges();
+    expect(c.active()).toBe(1);
+    callbacks.input({type:'cable',index:2}); f.detectChanges(); callbacks.engage?.();
+    callbacks.stage?.(0); expect(c.active()).toBe(1);
+    callbacks.finished(); callbacks.stage?.(0); f.detectChanges();
+    callbacks.input({type:'point',x:6,y:4}); f.detectChanges(); callbacks.engage?.(); callbacks.finished();
+    expect(c.state().stages).toEqual([{kind:'coordinate',x:6,y:4},{kind:'cable',cable:2}]);
+    callbacks.replay?.(); callbacks.finished();
+    expect(tested).toHaveBeenCalledTimes(2); expect(awarded).not.toHaveBeenCalled(); expect(c.state().seals).toEqual([]);
+  });
 });

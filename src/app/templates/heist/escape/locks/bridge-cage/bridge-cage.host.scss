@@ -1,5 +1,11 @@
 .workshop.bridge-diorama .stage-shell,
-:host(.week-preview) .workshop.bridge-diorama .stage-shell { height: 720px; min-height: 720px; }
+:host(.week-preview) .workshop.bridge-diorama .stage-shell {
+  height: 720px;
+  min-height: 720px;
+}
 @media (max-width: 600px) {
-  :host(.week-preview) .workshop.bridge-diorama .stage-shell { height: 740px; min-height: 740px; }
+  :host(.week-preview) .workshop.bridge-diorama .stage-shell {
+    height: 740px;
+    min-height: 740px;
+  }
 }

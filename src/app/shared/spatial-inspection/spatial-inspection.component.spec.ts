@@ -7,7 +7,7 @@ describe('Spatial inspection camera controls',()=>{
   function setup(){
     const f=TestBed.createComponent(SpatialInspectionComponent),c=f.componentInstance;
     f.componentRef.setInput('definition',{asset:{version:1,src:'/projects/test/a.glb',nodes:[],clips:[]},targets:[{name:'INT_rim',label:'Rim',focus:[.6,.9,0],distance:1.6}]});
-    const camera=new T.PerspectiveCamera(),controls={target:new T.Vector3(),minDistance:4.3,maxDistance:11,update:vi.fn()};
+    const camera=new T.PerspectiveCamera(),controls={target:new T.Vector3(),minDistance:4.3,maxDistance:11,update:vi.fn(),dispose:vi.fn()};
     // Camera behavior is tested without a WebGL context. Renderer lifecycle is not simulated.
     Object.assign(c,{T,camera,controls});c.overview();return {c,camera,controls};
   }

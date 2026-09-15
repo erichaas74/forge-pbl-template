@@ -2,6 +2,7 @@
   class="atlas"
   [class.regional]="cover() === 'regional'"
   [class.immersive]="immersive()"
+  [class.expedition-style]="expeditionStyle()"
   aria-label="Journey map workspace"
 >
   @if (!immersive()) {
@@ -59,6 +60,7 @@
       role="group"
       [attr.aria-label]="mapLabel()"
       (keydown)="mapKey($event)"
+      (pointerdown)="startPan($event)" (pointermove)="dragPan($event)" (pointerup)="endPan()" (pointercancel)="endPan()" (lostpointercapture)="endPan()"
     >
       <title>{{ map().title }}</title>
       <desc>
@@ -242,7 +244,13 @@
           [attr.transform]="'translate(' + project(ship).x + ' ' + project(ship).y + ')'"
           aria-label="Current expedition position"
         >
-          <g
+          @if (expeditionStyle() && vesselArt()) {
+            <g class="painted-vessel" transform="translate(0 -14) scale(.45)">
+              <ellipse cx="0" cy="7" rx="18" ry="3" />
+              <path d="M-17-18Q-6-16 4-18L3-3Q-8 0-18-3ZM6-17Q14-15 23-17L21-5Q13-2 6-4Z" fill="#ecdcaa" stroke="#8b7856" stroke-width=".3"/>
+              <image [attr.href]="vesselArt()" x="-35" y="-30" width="70" height="46.7"/>
+            </g>
+          } @else { <g
             [attr.transform]="
               cover() === 'regional' ? 'translate(0 -13) scale(.65)' : 'translate(0 -18)'
             "
@@ -255,7 +263,7 @@
               d="M-6-27Q-17-15-13-5L-6-6ZM-2-28Q13-17 6-7H-2ZM11-21Q22-12 17-5L11-4Z"
             />
             <path class="ship-flag" d="M-4-30L6-29-4-25Z" />
-          </g>
+          </g> }
           <circle r="11" />
         </g>
       }

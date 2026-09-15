@@ -43,7 +43,8 @@ function record(prefix: string, final = false): JourneyPathEvent {
 }
 
 function site(id: string, session: number, locationId: string, title: string, scene: JourneyPathNode['scene'], defaultNextId: string | undefined, tasks: string[], learning: string, events: JourneyPathEvent[]): JourneyPathNode {
-  return { id, session, kind: 'location', locationId, title, scene, defaultNextId, tasks, learning, product: session === 8 ? 'A route and event record with selected evidence.' : 'An inspected location, event decisions and the next passage task.', choices: [], events };
+  const backdrop = scene === 'storm' || scene === 'cape' ? 'storm' : scene === 'home' ? 'harbor' : scene === 'harbor' ? 'market' : scene === 'river' ? 'river' : 'island';
+  return { id, session, kind: 'location', locationId, title, scene, sceneArt: {backdrop: `/journey-replay/voyage-v2/${backdrop}.webp`, ship:'/journey-replay/voyage-v2/ship.webp'}, defaultNextId, tasks, learning, product: session === 8 ? 'A route and event record with selected evidence.' : 'An inspected location, event decisions and the next passage task.', choices: [], events };
 }
 
 /** Content-only graph; no project conditions or story facts live in the renderer/engine. */

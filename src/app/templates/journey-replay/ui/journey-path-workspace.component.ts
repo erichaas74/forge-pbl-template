@@ -37,6 +37,7 @@ export class JourneyPathWorkspaceComponent {
   readonly sources = viewChild<ElementRef<HTMLDialogElement>>('sources');
   readonly sourceTrigger = viewChild<ElementRef<HTMLButtonElement>>('sourceTrigger');
   readonly definition = this.runtime.config.experience!;
+  readonly vesselArt = this.definition.nodes.find(node=>node.sceneArt)?.sceneArt?.ship;
   readonly pathEntry = computed(() => this.runtime.path().find(entry => entry.node.session === this.session())!);
   readonly node = computed(() => this.definition.nodes.find(node => node.id === this.previewNodeId()) ?? this.pathEntry().node);
   readonly previewing = computed(() => this.previewNodeId() !== undefined);

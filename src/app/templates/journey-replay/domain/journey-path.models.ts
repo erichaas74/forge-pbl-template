@@ -23,6 +23,7 @@ export interface JourneyPathEvent {
 }
 
 export interface JourneyPathNode {
+  readonly sceneArt?: { readonly backdrop: string; readonly ship: string };
   readonly id: string;
   readonly session: number;
   readonly kind: 'map' | 'location';

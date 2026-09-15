@@ -1,5 +1,7 @@
 # Coastal historical investigation — Three.js + glTF build rules
 
+Step 2 update: [Canoe workshop inspection build](COASTAL_WORKSHOP_INSPECTION.md) now records the authored GLB, actual geometry inspection and bounded camera movement. Browser visual acceptance remains pending because computer-control tools cannot initialize.
+
 Status: step 1 engineering foundation. This replaces the supplied generic optimization rulebook for this build. Follow PROJECT_ACTIVITY_RULES.md and repository engineering rules. Scope: shadow-gallery, first coastal scene only. Do not replace other projects or enable an unfinished student scene.
 
 ## Experience and first visual milestone

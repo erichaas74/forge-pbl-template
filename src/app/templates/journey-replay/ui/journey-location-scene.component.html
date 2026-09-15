@@ -1,4 +1,9 @@
 <div class="location-scene" [class.storm]="storm()" [class.paused]="paused()" [class.resting]="effects().has('rest')" [attr.data-scene]="node().scene">
+  @if (node().sceneArt; as art) {
+    <div #worldHost class="phaser-world" [style.background-image]="'url(' + art.backdrop + ')'" [attr.data-renderer-status]="worldStatus()" role="img" [attr.aria-label]="node().title + '. Interactive ship and shore. Use the marked objects to inspect events.'"></div>
+    <div class="scene-vignette" aria-hidden="true"></div>
+    @if (worldStatus() === 'error') { <div class="world-error" role="alert">The interactive artwork could not load. <button type="button" (click)="reload()">Reload scene</button></div> }
+  } @else {
   <svg class="scene-art" viewBox="0 0 1000 760" preserveAspectRatio="xMidYMid slice" role="img" [attr.aria-label]="node().title + '. Inspect the marked objects; event options change the ship and shore.'">
     <defs>
       <linearGradient id="location-sky" x2="0" y2="1"><stop stop-color="#769eab"/><stop offset=".68" stop-color="#d4ceaf"/><stop offset="1" stop-color="#edddad"/></linearGradient>
@@ -82,10 +87,11 @@
     <g fill="none" stroke="#3d5f5e" stroke-width="3" opacity=".8">@for (bird of skyBirds; track bird) { <path [attr.transform]="'translate(' + (130 + bird * 48) + ' ' + (160 + bird * 16) + ')'" d="M0 0q10-10 22 1 10-11 21-1"/> }</g>
     <path d="M0 718q94-38 178-14 61-30 136 1l49 55H0" fill="#253f39"/><path d="M0 718q71-16 123 2l32 40H0" fill="#526451"/>
   </svg>
+  }
   <span class="place-label">{{ node().title }} <small>Fictional voyage · 1501</small></span>
-  @for (event of node().events; track event.id) {
-    <button type="button" class="object-marker" [class.active]="activeEventId() === event.id" [style.left.%]="event.object.x" [style.top.%]="event.object.y" [attr.aria-label]="'Inspect ' + event.label" [attr.aria-pressed]="activeEventId() === event.id" (click)="inspected.emit(event.id)">
-      <span aria-hidden="true">{{ symbol(event.object.icon) }}</span><b>{{ event.label }}</b>
+  @for (event of node().events; track event.id; let index = $index) {
+    <button type="button" class="object-marker" [class.active]="activeEventId() === event.id" [class.resolved]="resolved(event.id)" [style.left.%]="event.object.x" [style.top.%]="event.object.y" [attr.aria-label]="'Inspect ' + event.label" [attr.aria-pressed]="activeEventId() === event.id" (click)="inspected.emit(event.id)">
+      <span aria-hidden="true">{{ resolved(event.id) ? '✓' : '0' + (index + 1) }}</span><b>{{ event.label }}</b>
     </button>
   }
   @if (inspectedEvent(); as event) { <div class="observation" role="status"><span>⌖ {{ event.label }}</span>{{ event.observation }}</div> }

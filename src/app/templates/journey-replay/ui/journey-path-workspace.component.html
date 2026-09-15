@@ -1,7 +1,7 @@
 <div class="path-workspace">
   <section class="activity" tabindex="-1" [attr.aria-label]="node().kind === 'map' ? 'Choose the next passage on the map' : node().title" [attr.data-node]="node().id" [attr.data-session]="session()">
     @if (node().kind === 'map') {
-      <app-living-journey-map [map]="runtime.config.map" [team]="runtime.config.team" [route]="routeTrace()" [candidateRouteIds]="routeIds()" [candidateRouteLabels]="routeLabels()" [selectedRouteId]="selectedRoute()?.routeId" [activeLocationId]="node().locationId" [immersive]="true" [showRouteLabels]="false" mapLabel="Your Atlantic passage. Inspect a highlighted route, then choose it in AI Tutor." (routeInspected)="inspectRoute($event)" (locationInspected)="inspectPlace($event)" />
+      <app-living-journey-map [map]="runtime.config.map" [team]="runtime.config.team" [route]="routeTrace()" [candidateRouteIds]="routeIds()" [candidateRouteLabels]="routeLabels()" [selectedRouteId]="selectedRoute()?.routeId" [activeLocationId]="node().locationId" [immersive]="true" [showRouteLabels]="false" [expeditionStyle]="true" [vesselArt]="vesselArt" mapLabel="Your Atlantic passage. Inspect a highlighted route, then choose it in AI Tutor. Drag the chart or use arrow keys to pan." (routeInspected)="inspectRoute($event)" (locationInspected)="inspectPlace($event)" />
       <details class="map-tools"><summary aria-label="Map tools">⌖</summary><div>
         <button type="button" aria-label="Zoom map in" (click)="map()?.zoomBy(.25)">+</button>
         <button type="button" aria-label="Zoom map out" (click)="map()?.zoomBy(-.25)">−</button>

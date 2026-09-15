@@ -1,7 +1,6 @@
 import { afterNextRender, ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, input, output, signal, viewChild } from '@angular/core';
 import type * as Three from 'three';
 import type { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { loadSpatialAsset } from './spatial-asset.loader';
 import type { MountedSpatialAsset } from './spatial-asset';
 import { requireSpatialInspection, type SpatialInspectionDefinition } from './spatial-inspection.definition';
 @Component({selector:'app-spatial-inspection',templateUrl:'./spatial-inspection.component.html',styleUrl:'./spatial-inspection.component.scss',changeDetection:ChangeDetectionStrategy.OnPush})
@@ -12,11 +11,11 @@ export class SpatialInspectionComponent {
   private T?:typeof Three; private renderer?:Three.WebGLRenderer; private camera?:Three.PerspectiveCamera; private scene?:Three.Scene;
   private controls?:OrbitControls; private mounted?:MountedSpatialAsset; private observer?:ResizeObserver; private request=new AbortController();
   private pointer?:{x:number;y:number};
-  constructor(){afterNextRender(()=>void this.setup());inject(DestroyRef).onDestroy(()=>{this.request.abort();this.observer?.disconnect();this.controls?.dispose();this.mounted?.dispose();this.renderer?.dispose();});}
+  constructor(){afterNextRender(()=>void this.setup());inject(DestroyRef).onDestroy(()=>{this.request.abort();this.observer?.disconnect();this.controls?.dispose();this.mounted?.dispose();this.scene?.traverse(node=>{if(this.T&&node instanceof this.T.DirectionalLight)node.shadow.dispose();});this.renderer?.dispose();});}
   private async setup():Promise<void>{
     try {
       const definition=requireSpatialInspection(this.definition());
-      const [T,{OrbitControls}]=await Promise.all([import('three'),import('three/addons/controls/OrbitControls.js')]);
+      const [T,{OrbitControls},{loadSpatialAsset}]=await Promise.all([import('three'),import('three/addons/controls/OrbitControls.js'),import('./spatial-asset.loader')]);
       if(this.request.signal.aborted)return;this.T=T;
       const renderer=this.renderer=new T.WebGLRenderer({canvas:this.canvas()!.nativeElement,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setClearColor(0xc8d6d5);renderer.outputColorSpace=T.SRGBColorSpace;renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.shadowMap.autoUpdate=false;
       const scene=this.scene=new T.Scene();scene.fog=new T.Fog(0xc8d6d5,15,30);

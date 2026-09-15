@@ -1636,6 +1636,7 @@
             {
               "id": "reflection",
               "kind": "reflection",
+              "presentation": { "kind": "optics-cage", "owls": 2 },
               "title": "The moonbeam relay",
               "instruction": "Turn the mirrors to guide the moonbeam into the green receiver. Use two reflections to turn the beam around the corner. Mirror angles are measured clockwise from horizontal; the angle of incidence equals the angle of reflection.",
               "hint": "A 45-degree mirror turns a horizontal ray vertically. Trace each bounce before turning the next mirror.",
@@ -1694,6 +1695,7 @@
               {
                 "id": "reflection",
                 "kind": "reflection",
+                "presentation": { "kind": "optics-cage", "owls": 2 },
                 "title": "The moonbeam relay",
                 "instruction": "Turn the mirrors to guide the moonbeam into the green receiver. Use two reflections to turn the beam around the corner. Mirror angles are measured clockwise from horizontal; the angle of incidence equals the angle of reflection.",
                 "hint": "A 45-degree mirror turns a horizontal ray vertically. Trace each bounce before turning the next mirror.",
@@ -1748,6 +1750,7 @@
               {
                 "id": "reflection",
                 "kind": "reflection",
+                "presentation": { "kind": "optics-cage", "owls": 2 },
                 "title": "The moonbeam relay",
                 "instruction": "Turn the mirrors to guide the moonbeam into the green receiver. Use a three-reflection path around the stone baffle. Mirror angles are measured clockwise from horizontal; the angle of incidence equals the angle of reflection.",
                 "hint": "A 45-degree mirror turns a horizontal ray vertically. Trace each bounce before turning the next mirror.",
@@ -1823,6 +1826,7 @@
               {
                 "id": "reflection",
                 "kind": "reflection",
+                "presentation": { "kind": "optics-cage", "owls": 2 },
                 "title": "The moonbeam relay",
                 "instruction": "Turn the mirrors to guide the moonbeam into the green receiver. Use a three-reflection path around the stone baffle. Mirror angles are measured clockwise from horizontal; the angle of incidence equals the angle of reflection.",
                 "hint": "A 45-degree mirror turns a horizontal ray vertically. Trace each bounce before turning the next mirror.",
@@ -1916,6 +1920,7 @@
         "skill": "Coordinates, transformations and length",
         "lock": {
           "title": "Bridge engineering workshop",
+          "presentation": { "kind": "bridge-cage", "rabbits": 6 },
           "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
           "stages": [
             {
@@ -2004,6 +2009,7 @@
           "skill": "Coordinates, transformations and length",
           "lock": {
             "title": "Bridge engineering workshop",
+            "presentation": { "kind": "bridge-cage", "rabbits": 6 },
             "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
             "stages": [
               {
@@ -2086,6 +2092,7 @@
           "skill": "Coordinates, transformations and length",
           "lock": {
             "title": "Bridge engineering workshop",
+            "presentation": { "kind": "bridge-cage", "rabbits": 6 },
             "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
             "stages": [
               {
@@ -2172,6 +2179,7 @@
           "skill": "Coordinates, transformations and length",
           "lock": {
             "title": "Bridge engineering workshop",
+            "presentation": { "kind": "bridge-cage", "rabbits": 6 },
             "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
             "stages": [
               {

@@ -13,10 +13,14 @@ export function acceptsBridgeCageUpgrade(before: string, after: string): boolean
     if (Array.isArray(a) && Array.isArray(b)) return b.map((v, i) => normalize(a[i], v));
     if (!row(a) || !row(b)) return b;
     const upgrade =
-      Array.isArray(a['stages']) && Array.isArray(b['stages']) &&
-      a['stages'].length === 2 && b['stages'].length === 2 &&
-      row(b['stages'][0]) && b['stages'][0]['kind'] === 'coordinate' &&
-      row(b['stages'][1]) && b['stages'][1]['kind'] === 'cable' &&
+      Array.isArray(a['stages']) &&
+      Array.isArray(b['stages']) &&
+      a['stages'].length === 2 &&
+      b['stages'].length === 2 &&
+      row(b['stages'][0]) &&
+      b['stages'][0]['kind'] === 'coordinate' &&
+      row(b['stages'][1]) &&
+      b['stages'][1]['kind'] === 'cable' &&
       a['presentation'] === undefined &&
       row(b['presentation']) &&
       b['presentation']['kind'] === 'bridge-cage';

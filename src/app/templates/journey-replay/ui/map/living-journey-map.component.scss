@@ -182,6 +182,26 @@ output {
   cursor: pointer;
 }
 
+/* Opt-in expedition chart keeps geographic hit targets and keyboard navigation. */
+.expedition-style .world-map { touch-action:none; cursor:grab; }
+.expedition-style .world-map:active { cursor:grabbing; }
+.expedition-style .world-map > image { filter:saturate(.86) contrast(1.12) brightness(.91); }
+.expedition-style .map-stage::after { content:''; position:absolute; inset:0; pointer-events:none; box-shadow:inset 0 0 110px #021b2d80; background:linear-gradient(135deg,#e8c36a0d,transparent 45%,#011d2d18); }
+.expedition-style .location:not(.candidate-destination):not(.active-decision):not(.inspected) .location-label { opacity:.45; font-weight:400; }
+.expedition-style .location:hover .location-label,.expedition-style .location:focus-visible .location-label { opacity:1 !important; }
+.expedition-style .candidate-destination .location-label,.expedition-style .active-decision .location-label { fill:#ffedaf; stroke:#082c38; stroke-width:2.8; }
+.expedition-style .candidate-route .route-option { stroke:#edce81; stroke-width:3; stroke-dasharray:3 8; animation:passage-flow 12s linear infinite; filter:drop-shadow(0 1px 2px #02111d); }
+.expedition-style .candidate-route.selected .route-option { stroke:#fff1ae; stroke-width:5; stroke-dasharray:8 5; filter:drop-shadow(0 0 4px #e9c778b3) drop-shadow(0 0 2px #112e38); }
+.expedition-style .route-line { stroke:#c8e8cd; stroke-width:3; opacity:.8; }
+.expedition-style .weather-layer > path { stroke:#bddedb; stroke-dasharray:5 5; animation:wind-flow 15s linear infinite; }
+.expedition-style .weather-layer circle { fill:#b4cacf20; stroke:#abc4d083; }
+.expedition-style .painted-vessel { filter:drop-shadow(0 3px 2px #03151ab3); }
+.expedition-style .painted-vessel path { stroke-width:.5; }
+.expedition-style .chart-compass { opacity:.72; right:22px; bottom:85px; width:78px; }
+@keyframes passage-flow { to { stroke-dashoffset:-110; } }
+@keyframes wind-flow { to { stroke-dashoffset:-80; } }
+@media(prefers-reduced-motion:reduce) { .expedition-style .candidate-route .route-option,.expedition-style .weather-layer > path { animation:none; } }
+
 .candidate-route:focus {
   outline: none;
 }

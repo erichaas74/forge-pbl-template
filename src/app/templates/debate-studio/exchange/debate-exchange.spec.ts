@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
-import { describe, expect, it, afterEach } from 'vitest';
+import { describe, expect, it, afterEach, vi } from 'vitest';
 import { romanSenateDebateConfig as roman } from '../../../projects/roman-senate-debate/roman-senate-debate.config';
 import { hammurabiOnTrialConfig as hammurabi } from '../../../projects/hammurabi-on-trial/hammurabi-on-trial.config';
 import { PROJECT_LESSON_FOCUS } from '../../../shared/project-lessons/project-lesson-focus';
@@ -11,6 +11,10 @@ import { applyExchangeCommand, emptyDraft, emptyExchange, rankDebatePerformers, 
 import { BrowserDebateExchangeAdapter, DEBATE_EXCHANGE_PORT, exchangeFile, importExchangeFile } from './debate-exchange.persistence';
 import { DebateExchangeRuntime } from './debate-exchange-runtime.service';
 import { DebateExchangeComponent } from './debate-exchange.component';
+import { debateStudioLauncher } from '../../../runtime/project-launch/template-launchers/debate-studio.launcher';
+import { createLocalPreviewSession } from '../../../core/context/project-session-context';
+import { projectCatalog } from '../../../projects/project-catalog';
+import { DebateStudioPageComponent } from '../ui/debate-studio-page.component';
 
 const now = '2026-09-15T12:00:00.000Z';
 function opening(id: string, actorId = id, side = roman.factions[0].id): DebateContribution {
@@ -92,6 +96,39 @@ describe('debate exchange cycle', () => {
 });
 
 describe('debate exchange activity', () => {
+  it('selects the new renderer for both projects and preserves legacy package compatibility', async () => {
+    for (const config of [roman, hammurabi]) {
+      const request = { project: projectCatalog.find(project => project.id === config.projectId)!, projectDefinition: config, session: createLocalPreviewSession(config.projectId, config.projectVersion) };
+      expect((await debateStudioLauncher.load(request)).component).toBe(DebateExchangeComponent);
+      expect((await debateStudioLauncher.load({ ...request, projectDefinition: { ...config, exchange: undefined } })).component).toBe(DebateStudioPageComponent);
+      await expect(debateStudioLauncher.load({ ...request, session: { ...request.session, authorityMode: 'serverAuthoritative' } })).rejects.toThrow(/gateway/);
+    }
+  });
+  it('keeps an exportable submission when browser persistence fails', () => {
+    const storage = new TestStorage();
+    vi.spyOn(storage, 'setItem').mockImplementation(() => { throw new Error('Storage full'); });
+    TestBed.configureTestingModule({ providers: [
+      { provide: DEBATE_STUDIO_CONFIG, useValue: roman },
+      { provide: DEBATE_EXCHANGE_PORT, useValue: new BrowserDebateExchangeAdapter(roman, scope, storage) }, DebateExchangeRuntime,
+    ] });
+    const runtime = TestBed.inject(DebateExchangeRuntime);
+    expect(runtime.dispatch({ type: 'debate.exchange.submit', value: opening('me') })).toBe(true);
+    expect(runtime.message()).toContain('in memory only');
+    expect(JSON.parse(runtime.exportFile()).state.contributions).toHaveLength(1);
+  });
+  it('restores a submitted ballot after reload and leaves classroom work out of practice', () => {
+    const storage = new TestStorage(); const adapter = new BrowserDebateExchangeAdapter(roman, scope, storage);
+    TestBed.configureTestingModule({ providers: [ { provide: DEBATE_STUDIO_CONFIG, useValue: roman }, { provide: DEBATE_EXCHANGE_PORT, useValue: adapter }, DebateExchangeRuntime ] });
+    let runtime = TestBed.inject(DebateExchangeRuntime); runtime.openPractice();
+    const target = runtime.performers()[0];
+    runtime.rank([{ performerId: target.actorId, contributionId: target.id, ratings: { evidence: 3, reasoning: 3, response: 2 }, reason: 'The argument uses a named source and states its limits.' }]);
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({ providers: [ { provide: DEBATE_STUDIO_CONFIG, useValue: roman }, { provide: DEBATE_EXCHANGE_PORT, useValue: adapter }, DebateExchangeRuntime ] });
+    runtime = TestBed.inject(DebateExchangeRuntime);
+    expect(runtime.state().contributions).toHaveLength(0);
+    runtime.openPractice(); expect(runtime.latestBallot()?.judgments[0].performerId).toBe(target.actorId);
+    expect(runtime.ranks()[0].points).toBe(3);
+  });
   for (const config of [roman, hammurabi]) {
     it(`opens all eight ${config.projectId} sessions without completing earlier work`, async () => {
       const plan = projectLessonRegistry.find(config.projectId, config.projectVersion)!;

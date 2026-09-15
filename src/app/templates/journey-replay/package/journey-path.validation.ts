@@ -21,6 +21,7 @@ export function validateJourneyPaths(value: unknown, map: JourneyMapConfig, reso
     if (!record(node) || !['id', 'title', 'locationId', 'product', 'learning'].every(key => text(node[key])) || !Number.isInteger(node['session']) || Number(node['session']) < 1 || Number(node['session']) > 8 || !['map', 'location'].includes(String(node['kind'])) || !strings(node['tasks']) || !node['tasks'].length || !Array.isArray(node['choices']) || !Array.isArray(node['events'])) { error('Every node needs a session, task, product and typed activities.'); continue; }
     if (ids.has(String(node['id']))) error(`Duplicate node ${node['id']}.`);
     ids.add(String(node['id']));
+    if (node['sceneArt'] !== undefined && (!record(node['sceneArt']) || !['backdrop','ship'].every(key => { const art = node['sceneArt'] as Record<string,unknown>; return typeof art[key] === 'string' && /^\/[a-zA-Z0-9/_.-]+\.(webp|png|jpg)$/.test(String(art[key])); }))) error(`Invalid local scene artwork in ${node['id']}.`);
     if (!validLocations.has(String(node['locationId']))) error(`Unknown location in ${node['id']}.`);
     if ((Number(node['session']) % 2 === 1) !== (node['kind'] === 'map')) error(`Sessions must alternate map and location: ${node['id']}.`);
     if (node['kind'] === 'map' ? node['choices'].length < 1 || node['events'].length !== 0 : node['events'].length < 1 || node['choices'].length !== 0 || !['island','harbor','storm','river','cape','home'].includes(String(node['scene']))) error(`Unsupported activity or scene in ${node['id']}.`);

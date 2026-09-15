@@ -1,0 +1,9 @@
+src/app/templates/heist/escape/locks/bridge-cage/bridge-cage.layout.ts 96ms (unchanged)
+src/app/templates/heist/escape/locks/bridge-cage/bridge-cage.migration.ts 83ms
+src/app/templates/heist/escape/locks/bridge-cage/bridge-cage.model.ts 436ms
+src/app/templates/heist/escape/locks/bridge-cage/bridge-cage.motion.ts 127ms
+src/app/templates/heist/escape/locks/bridge-cage/bridge-cage.scene.ts 283ms
+src/app/templates/heist/escape/locks/bridge-cage/bridge-cage.spec.ts 125ms
+src/app/templates/heist/escape/locks/bridge-cage/bridge-cage.host.scss 84ms
+src/app/templates/heist/escape/locks/diorama-label.ts 33ms
+docs/heist/CASTLE_BRIDGE_2_5D_WORKSHOP.md 182ms (unchanged)

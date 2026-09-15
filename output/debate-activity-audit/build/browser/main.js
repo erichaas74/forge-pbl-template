@@ -41989,6 +41989,13 @@ var DebateExchangeRuntime = class _DebateExchangeRuntime {
       []
     )
   );
+  latestBallot = computed(
+    () => this.state().ballots.filter((ballot) => ballot.actorId === this.actorId).sort((a, b) => a.createdAt.localeCompare(b.createdAt) || a.id.localeCompare(b.id)).at(-1),
+    ...ngDevMode ? [{ debugName: "latestBallot" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
   peers = computed(
     () => this.state().contributions.filter((entry) => entry.side === this.side() && entry.actorId !== this.actorId),
     ...ngDevMode ? [{ debugName: "peers" }] : (
@@ -42087,8 +42094,12 @@ var DebateExchangeRuntime = class _DebateExchangeRuntime {
     try {
       const next = applyExchangeCommand(this.state(), command, this.config);
       this.state.set(next);
-      this.port.save(next, this.practice());
-      this.message.set(this.practice() ? "Saved in the practice debate." : "Saved locally. Export the exchange to share it with your class.");
+      try {
+        this.port.save(next, this.practice());
+        this.message.set(this.practice() ? "Saved in the practice debate." : "Saved locally. Export the exchange to share it with your class.");
+      } catch {
+        this.message.set("Submitted in memory only. Browser save failed; export your exchange before leaving.");
+      }
       return true;
     } catch (error) {
       this.report(error);
@@ -44239,8 +44250,11 @@ var DebateExchangeComponent = class _DebateExchangeComponent {
     });
     effect(() => {
       this.runtime.practice();
-      this.ballot.set([]);
       this.selectedId.set("");
+    });
+    effect(() => {
+      this.runtime.practice();
+      this.ballot.set(this.runtime.latestBallot()?.judgments ?? []);
     });
     inject2(DestroyRef).onDestroy(() => {
       if (this.reading())
@@ -47356,7 +47370,7 @@ var project_lesson_plans_default = [
         number: 2,
         title: "Build from other people\u2019s knowledge",
         output: "An assembled and operated printing system, with trial evidence showing what each part contributes.",
-        workspace: "Fit the frame, mold, ink roller, and screw into the press system. Operate each fitted mechanism. Cast four pieces, hold them steady, coat them, and bring the platen into contact. Compare failed and successful impressions.",
+        workspace: "Fit the frame, mold, ink ball, and screw into the press system. Operate each fitted mechanism. Cast four pieces, hold them steady, coat them, and bring the platen into contact. Compare failed and successful impressions.",
         checkpoint: "Which contribution could the other parts not replace? What did your failed impressions reveal?",
         criteria: [
           "Connect specialized crafts and mechanical functions within an invention."
@@ -48472,7 +48486,7 @@ var projectCatalog = [
     projectVersion: "2.1.0",
     template: { id: "time-repair", version: "1.1" },
     packageReference: "projects/exploration-time-repair/versions/2.1.0",
-    capabilityIds: ["invention-repair.printing-press"],
+    capabilityIds: ["invention-repair.printing-press", "invention-knowledge.reconstruction", "invention-knowledge.assembly", "invention-knowledge.diagram", "invention-knowledge.apprentice", "invention-knowledge.distribution", "invention-knowledge.access"],
     title: "Time Repair: The Press That Never Printed",
     subtitle: "Ideas That Changed the World \xB7 Rescue an invention",
     grade: "Grade 7",
@@ -48484,7 +48498,7 @@ var projectCatalog = [
     theme: "atlas",
     status: "Pilot",
     studentInvitation: "Rescue the printing press",
-    coverImage: "/projects/exploration-time-repair/versions/2.0.0/press-cover.svg"
+    coverImage: "/projects/exploration-time-repair/versions/2.1.0/press-cover.svg"
   },
   {
     id: "community-story-network",
@@ -49891,5 +49905,5 @@ var AuditRoot = class _AuditRoot {
   (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AuditRoot, { className: "AuditRoot", filePath: "output/debate-activity-audit/exchange-main.ts", lineNumber: 47 });
 })();
 bootstrapApplication(AuditRoot, { providers: [provideRouter([{ path: "**", component: AuditPage }])] }).catch(console.error);
-//# debugId=a4d91a9f-2f40-566f-a768-75c29a72d64a
+//# debugId=a80ec0b4-9098-561f-9d4f-d96104fa6b18
 //# sourceMappingURL=main.js.map

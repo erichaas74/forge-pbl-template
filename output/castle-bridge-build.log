@@ -1,19 +1,19 @@
 > Building...
 √ Building...
 Initial chunk files | Names              |  Raw size | Estimated transfer size
-main-A7HCPOLF.js    | main               | 545.56 kB |               122.62 kB
+main-PZXEXBY4.js    | main               | 545.56 kB |               122.74 kB
 styles-PWEBVAZL.css | styles             | 865 bytes |               865 bytes
 
-                    | Initial total      | 546.42 kB |               123.48 kB
+                    | Initial total      | 546.42 kB |               123.60 kB
 
 Lazy chunk files    | Names              |  Raw size | Estimated transfer size
-chunk-DTUybznV.js   | -                  |   1.44 MB |               309.14 kB
-chunk-V7CsywOs.js   | -                  | 603.91 kB |               128.28 kB
-chunk-DLUtN5_p.js   | machine-scene      | 125.79 kB |                36.49 kB
-chunk-K7xC4ahz.js   | gear-lock-scene    |  40.58 kB |                14.04 kB
-chunk-C0v0KQ0K.js   | balance-lock-scene |  21.01 kB |                 7.33 kB
+chunk-fMW8PrUb.js   | -                  |   1.44 MB |               308.96 kB
+chunk-B7bA0U0v.js   | -                  | 605.29 kB |               128.39 kB
+chunk-De_N8uL7.js   | machine-scene      | 128.24 kB |                37.48 kB
+chunk-DahPcrzz.js   | gear-lock-scene    |  40.58 kB |                14.03 kB
+chunk-C3OCO383.js   | balance-lock-scene |  21.01 kB |                 7.31 kB
 
-Application bundle generation complete. [48.791 seconds] - 2026-09-15T19:16:31.297Z
+Application bundle generation complete. [25.806 seconds] - 2026-09-15T19:33:01.923Z
 
 ▲ [WARNING] bundle initial exceeded maximum budget. Budget 500.00 kB was not met by 46.42 kB with a total of 546.42 kB.
 

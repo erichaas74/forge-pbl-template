@@ -17,6 +17,7 @@ export const bridgeCageLayout = `<style>
 [data-bridge-cage] .bc-stages b{font:24px Georgia;color:#f3d294}[data-bridge-cage] .bc-stages small{display:block;color:#c2d9d4;font-size:10px}
 [data-bridge-cage] .bc-clue{font-size:12px;min-height:32px;color:#f0dfb2}
 [data-bridge-cage] .bc-rails,[data-bridge-cage] .bc-actions,[data-bridge-cage] .bc-cables{display:flex;gap:7px;align-items:center;justify-content:space-between}
+[data-bridge-cage] .bc-rails{justify-content:center;gap:32px}
 [data-bridge-cage] .bc-rails label{display:flex;align-items:center;gap:5px}[data-bridge-cage] .bc-axis{display:flex;align-items:center;gap:5px}
 [data-bridge-cage] .bc-axis button{font-size:19px;min-width:42px;padding:4px}
 [data-bridge-cage] .bc-cables button{flex:1;padding:5px 7px;display:flex;align-items:center;justify-content:center;gap:6px}
