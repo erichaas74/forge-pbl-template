@@ -21,6 +21,7 @@ export const simpleJourneyReplayPackage = {
     replayConfigRef: 'replay.json',
     capabilities: [
       'livingJourneyMap',
+      'branchingJourney',
       'journeyChoices',
       'studentResponses',
       'journeyReplay',
@@ -46,6 +47,7 @@ export const simpleJourneyReplayPackage = {
     evidence: config.evidence,
     resources: config.resources,
     historicalFrame: config.historicalFrame,
+    experience: config.experience,
   },
   'map.json': config.map,
   'replay.json': { ...config.replay, classVoyages: config.classVoyages },

@@ -23,6 +23,7 @@ export class ExpeditionNavigation {
   constructor(
     readonly world: ExpeditionWorldDefinition,
     position = world.spawn,
+    private readonly allowLockedPaths = false,
   ) {
     this.position = { ...position };
     this.segments = world.paths.map(([a, b]) => [
@@ -35,10 +36,13 @@ export class ExpeditionNavigation {
     this.stop();
   }
   private pathOpen(index: number): boolean {
+    if (this.allowLockedPaths) return true;
     const [a, b] = this.world.paths[index];
-    return !(this.world.pathLocks ?? []).some((lock) =>
-      !this.solved.has(lock.stepId) && lock.paths.some(([x, y]) =>
-        (x === a && y === b) || (x === b && y === a)));
+    return !(this.world.pathLocks ?? []).some(
+      (lock) =>
+        !this.solved.has(lock.stepId) &&
+        lock.paths.some(([x, y]) => (x === a && y === b) || (x === b && y === a)),
+    );
   }
   walkable(p: WorldPoint): boolean {
     return (
@@ -48,7 +52,9 @@ export class ExpeditionNavigation {
       p.y >= 16 &&
       p.x <= this.world.width - 16 &&
       p.y <= this.world.height - 16 &&
-      this.segments.some(([a, b], i) => this.pathOpen(i) && segmentDistance(p, a, b) <= this.world.pathRadius)
+      this.segments.some(
+        ([a, b], i) => this.pathOpen(i) && segmentDistance(p, a, b) <= this.world.pathRadius,
+      )
     );
   }
   /** Dijkstra over a small authored graph; unobstructed local movement stays direct. */

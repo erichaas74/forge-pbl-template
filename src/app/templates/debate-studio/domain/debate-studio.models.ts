@@ -1,3 +1,6 @@
+import type { DebateInquiryConfig, DebateInquiryState } from './debate-inquiry.models';
+import type { DebateExchangeConfig } from '../exchange/debate-exchange.models';
+
 export type DebateRoom = 'chamber' | 'premiere' | 'ballot' | 'verdict';
 
 export type DebateStation = 'opponent' | 'moderator' | 'evidence' | 'lectern' | 'premiere';
@@ -56,6 +59,7 @@ export interface DebateEvidence {
   readonly context: string;
   readonly citation: string;
   readonly perspective: string;
+  readonly sourceUrl?: string;
 }
 
 export interface DebateRoundDefinition {
@@ -143,6 +147,10 @@ export interface DebateStudioProjectConfig {
   readonly centralQuestion: string;
   readonly chamberImageUrl: string;
   readonly chamberImageAlt: string;
+  /** Optional presentation and inquiry capabilities; older debate packages remain compatible. */
+  readonly presentation?: { readonly assembly: string; readonly seal: string; readonly speaker: string };
+  readonly inquiry?: DebateInquiryConfig;
+  readonly exchange?: DebateExchangeConfig;
   readonly factions: readonly [DebateFaction, DebateFaction];
   readonly rounds: readonly DebateRoundDefinition[];
   readonly evidence: readonly DebateEvidence[];
@@ -289,6 +297,7 @@ export interface DebateTurnFiling {
 }
 
 export interface DebateWorkspaceState {
+  readonly inquiry?: DebateInquiryState;
   readonly schemaVersion: '2.0';
   readonly room: DebateRoom;
   readonly activeStation?: DebateStation;

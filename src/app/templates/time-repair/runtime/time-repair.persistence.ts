@@ -27,7 +27,8 @@ export class BrowserTimeRepairPersistence implements TimeRepairPersistence {
     storage = safeBrowserStorage(),
   ) {
     this.available = storage !== undefined;
-    this.definition = JSON.stringify(config);
+    // Optional authoring content must not invalidate existing assessed exercise records.
+    this.definition = JSON.stringify(Object.fromEntries(Object.entries(config).filter(([key]) => key !== 'previewWeeks')));
     this.store = new ScopedBrowserStore(
       'time-repair.v1',
       storage,

@@ -12,7 +12,8 @@
     <h1 id="available-projects-title">What will you create?</h1>
     <p class="library-introduction">
       Explore project types and how students demonstrate learning. Each demo’s name and image show
-      one way to bring the project to life.
+      one way to bring the project to life. Grade labels identify the primary placement of each current
+      demo. Grade 7–8 placements are provisional pending the Forge standards for those grades.
     </p>
     <div class="project-grid">
       @for (project of cards(); track project.id) {
@@ -39,6 +40,9 @@
               }
             </div>
             <div class="project-content">
+              @if (project.grade) {
+                <p class="project-grade">{{ project.grade }}</p>
+              }
               <h2>{{ project.projectType }}</h2>
               <p>{{ project.description }}</p>
               <span class="project-status" [attr.data-release-status]="project.status">{{

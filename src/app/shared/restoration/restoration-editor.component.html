@@ -1,57 +1,220 @@
 <div class="studio-grid">
   <section class="easel" aria-label="Painting workspace">
-    <div class="canvas-tools">
-      <button type="button" [attr.aria-pressed]="compare()" (click)="compare.set(!compare())">{{ compare() ? 'Show my painting' : 'Compare before / after' }}</button>
-      <button type="button" [attr.aria-pressed]="guides()" (click)="guides.set(!guides())">{{ guides() ? 'Hide' : 'Show' }} detail outlines</button>
-      <button type="button" [disabled]="readOnly() || !state().undo.length" (click)="undo()">Undo repair</button>
-    </div>
+    <details class="canvas-options">
+      <summary>View options</summary>
+      <div class="canvas-tools">
+        <button type="button" [attr.aria-pressed]="compare()" (click)="compare.set(!compare())">
+          {{ compare() ? 'Show my painting' : 'Compare before / after' }}
+        </button>
+        <button type="button" [attr.aria-pressed]="guides()" (click)="guides.set(!guides())">
+          {{ guides() ? 'Hide' : 'Show' }} detail outlines
+        </button>
+        <button type="button" [disabled]="readOnly() || !state().undo.length" (click)="undo()">
+          Undo repair
+        </button>
+      </div>
+    </details>
     @if (compare()) {
       <div class="comparison">
-        <figure><figcaption>Original forged study</figcaption><app-restoration-canvas [definition]="definition()" [state]="state()" [original]="true" [interactive]="false" (mediaFailed)="failedMedia.set(true)" /></figure>
-        <figure><figcaption>Your reconstruction</figcaption><app-restoration-canvas [definition]="definition()" [state]="state()" [interactive]="false" (mediaFailed)="failedMedia.set(true)" /></figure>
+        <figure>
+          <figcaption>Original forged study</figcaption>
+          <app-restoration-canvas
+            [definition]="definition()"
+            [state]="state()"
+            [original]="true"
+            [interactive]="false"
+            (mediaFailed)="failedMedia.set(true)"
+          />
+        </figure>
+        <figure>
+          <figcaption>Your reconstruction</figcaption>
+          <app-restoration-canvas
+            [definition]="definition()"
+            [state]="state()"
+            [interactive]="false"
+            (mediaFailed)="failedMedia.set(true)"
+          />
+        </figure>
       </div>
     } @else {
-      <div class="frame"><app-restoration-canvas [definition]="definition()" [state]="state()" [guides]="guides()" [interactive]="!readOnly()" (select)="inspect($event)" (mediaFailed)="failedMedia.set(true)" /></div>
+      <div class="frame">
+        <app-restoration-canvas
+          [definition]="definition()"
+          [state]="state()"
+          [guides]="guides()"
+          [interactive]="!readOnly()"
+          (select)="inspect($event)"
+          (mediaFailed)="failedMedia.set(true)"
+        />
+      </div>
     }
-    <p class="caption">{{ definition().location }} · {{ definition().date }}<br>The assigned place and time stay fixed while you restore the image.</p>
-    @if (failedMedia()) { <p role="alert" class="warning">A painting layer could not load. Reload this page to retry before checking the restoration. Your saved work is preserved.</p> }
-    <div class="detail-list" aria-label="Painting details">
-      @for (r of definition().regions; track r.id; let i = $index) {
-        <button [disabled]="readOnly()" [attr.aria-pressed]="region()?.id === r.id" (click)="inspect(r.id)"><span>{{ i + 1 }}</span>{{ r.title }}<small>{{ state().notes[r.id]?.explanation ? 'Reasoning saved' : state().inspected.includes(r.id) ? 'Inspected' : 'Inspect this detail' }}</small></button>
-      }
-    </div>
-    <details><summary>About this reconstruction</summary><p>{{ definition().attribution }}</p></details>
+    <p class="caption">{{ definition().location }} · {{ definition().date }}</p>
+    @if (failedMedia()) {
+      <p role="alert" class="warning">
+        A painting layer could not load. Reload this page to retry before checking the restoration.
+        Your saved work is preserved.
+      </p>
+    }
+    <details>
+      <summary>Painting details</summary>
+      <div class="detail-list" aria-label="Painting details">
+        @for (r of definition().regions; track r.id; let i = $index) {
+          <button
+            [disabled]="readOnly()"
+            [attr.aria-pressed]="region()?.id === r.id"
+            (click)="inspect(r.id)"
+          >
+            <span>{{ i + 1 }}</span
+            >{{ r.title
+            }}<small>{{
+              state().notes[r.id]?.explanation
+                ? 'Reasoning saved'
+                : state().inspected.includes(r.id)
+                  ? 'Inspected'
+                  : 'Inspect this detail'
+            }}</small>
+          </button>
+        }
+      </div>
+    </details>
+    <details>
+      <summary>About this reconstruction</summary>
+      <p>{{ definition().attribution }}</p>
+    </details>
   </section>
   <section class="repair-desk" aria-label="Restoration desk">
     @if (region(); as r) {
-      <p class="eyebrow">Inspect → Research → Repair → Explain</p>
       <h3 #detailHeading tabindex="-1">{{ r.title }}</h3>
       <blockquote><small>The original claim</small>{{ r.claim }}</blockquote>
-      <p>{{ r.instruction }}</p>
+      <details>
+        <summary>Detail notes</summary>
+        <p>{{ r.instruction }}</p>
+      </details>
       <button class="research" (click)="consult()">Open the research desk ↗</button>
-      <div class="mobile-preview" aria-label="Live painting preview"><app-restoration-canvas [definition]="definition()" [state]="state()" [interactive]="false" /><span>Your painting updates as you choose.</span></div>
-      <fieldset [disabled]="readOnly()"><legend>1. Choose what stays on the painting</legend>
-        @for (option of r.options; track option.id) {
-          <button type="button" class="repair-option" [attr.aria-pressed]="choice() === option.id" (click)="edit(option.id)"><strong>{{ option.label }}</strong><span>{{ option.description }}</span></button>
+      <div class="mobile-preview" aria-label="Live painting preview">
+        <app-restoration-canvas
+          [definition]="definition()"
+          [state]="state()"
+          [interactive]="false"
+        /><span>Your painting updates as you choose.</span>
+      </div>
+      @if (step() === 'repair') {
+        <fieldset [disabled]="readOnly()">
+          <legend>What belongs in this picture?</legend>
+          @for (option of r.options; track option.id) {
+            <button
+              type="button"
+              class="repair-option"
+              [attr.aria-pressed]="choice() === option.id"
+              (click)="edit(option.id)"
+            >
+              <strong>{{ option.label }}</strong
+              ><span>{{ option.description }}</span>
+            </button>
+          }
+        </fieldset>
+      }
+      @if (step() !== 'repair') {
+        <fieldset [disabled]="readOnly()">
+          <legend class="sr-only">Evidence note</legend>
+          @if (step() === 'source') {
+            <label
+              >Which reference helps you decide?<select
+                [ngModel]="evidenceId()"
+                (ngModelChange)="evidenceId.set($event)"
+                (blur)="save()"
+              >
+                <option value="">Choose a reference</option>
+                @for (s of references(); track s.id) {
+                  <option [value]="s.id">{{ s.title }}</option>
+                }
+              </select></label
+            >
+          }
+          @if (chosenSource(); as s) {
+            <aside class="source-excerpt">
+              <p>{{ s.text }}</p>
+              <a [href]="s.sourceUrl" target="_blank" rel="noopener noreferrer"
+                >{{ s.sourceTitle }} ↗</a
+              >
+            </aside>
+          }
+          @if (step() === 'relationship') {
+            <label
+              >How does this source relate to the original claim?<select
+                [ngModel]="relationship()"
+                (ngModelChange)="relationship.set($event)"
+                (blur)="save()"
+              >
+                <option value="">Choose a relationship</option>
+                <option value="supports">Supports the original claim</option>
+                <option value="contradicts">Contradicts the original claim</option>
+                <option value="does-not-establish">Does not establish the claim</option>
+              </select></label
+            >
+          }
+          @if (step() === 'explanation') {
+            <label
+              >Explain your decision<textarea
+                rows="4"
+                maxlength="1500"
+                [ngModel]="explanation()"
+                (ngModelChange)="explanation.set($event)"
+                (blur)="save()"
+                placeholder="I changed / kept ___ because the source says ___. This fits the place and time because ___."
+              ></textarea>
+            </label>
+          }
+        </fieldset>
+      }
+      <div class="focus-step-actions">
+        @if (step() !== 'repair') {
+          <button (click)="previousStep()">← Back</button>
         }
-      </fieldset>
-      <fieldset [disabled]="readOnly()"><legend>2. Build your evidence note</legend>
-        <label>Which reference helps you decide?<select [ngModel]="evidenceId()" (ngModelChange)="evidenceId.set($event)" (blur)="save()"><option value="">Choose a reference</option>@for (s of references(); track s.id) { <option [value]="s.id">{{ s.title }}</option> }</select></label>
-        @if (chosenSource(); as s) { <aside class="source-excerpt"><p>{{ s.text }}</p><a [href]="s.sourceUrl" target="_blank" rel="noopener noreferrer">{{ s.sourceTitle }} ↗</a></aside> }
-        <label>How does this source relate to the original claim?<select [ngModel]="relationship()" (ngModelChange)="relationship.set($event)" (blur)="save()"><option value="">Choose a relationship</option><option value="supports">Supports the original claim</option><option value="contradicts">Contradicts the original claim</option><option value="does-not-establish">Does not establish the claim</option></select></label>
-        <label>Explain your decision<textarea rows="4" maxlength="1500" [ngModel]="explanation()" (ngModelChange)="explanation.set($event)" (blur)="save()" placeholder="I changed / kept ___ because the source says ___. This fits the place and time because ___."></textarea></label>
-        <small>{{ explanation().length }}/1500 characters. Explain in your own words; at least 20 characters.</small>
-        <button class="save-note" (click)="save()">Save explanation</button>
-      </fieldset>
+        @if (step() === 'explanation') {
+          <button
+            class="save-note"
+            [disabled]="readOnly() || explanation().trim().length < 20"
+            (click)="save()"
+          >
+            Save explanation
+          </button>
+        } @else {
+          <button class="save-note" [disabled]="readOnly() || !canContinue()" (click)="nextStep()">
+            Continue →
+          </button>
+        }
+      </div>
     } @else {
-      <p class="eyebrow">Your first move</p><h3>Look closely.</h3><p>Click a numbered area on the painting, or choose a detail below it. Read what the forgery claims before making a change.</p><p>You are rebuilding an image and its record. Some details should stay.</p><button class="research" (click)="inspect(definition().regions[0].id)">Inspect the first detail →</button>
+      <h3>What doesn't belong?</h3>
+      <p>Choose a numbered detail on the painting.</p>
     }
-    <div class="check-panel">
-      <strong>{{ state().verified ? '✓ Evidence check passed' : '3. Check the whole restoration' }}</strong>
-      <p>Inspect and justify every marked detail, including the detail you keep.</p>
-      <button class="primary" [disabled]="readOnly() || state().verified || failedMedia()" (click)="check()">Check my restoration</button>
-      <div aria-live="polite">@if (state().feedback) { <p>{{ state().feedback }}</p> } @for (issue of state().issues; track $index) { <p class="issue">{{ issue }}</p> }</div>
-      <small>The check compares your choices, source, and relationship with the reference key. Your written reasoning is saved for teacher review.</small>
-    </div>
+    @if (readyForCheck() || state().feedback || state().verified) {
+      <div class="check-panel">
+        <strong>{{
+          state().verified ? '✓ Evidence check passed' : '3. Check the whole restoration'
+        }}</strong>
+        <p>Inspect and justify every marked detail, including the detail you keep.</p>
+        <button
+          class="primary"
+          [disabled]="readOnly() || state().verified || failedMedia()"
+          (click)="check()"
+        >
+          Check my restoration
+        </button>
+        <div aria-live="polite">
+          @if (state().feedback) {
+            <p>{{ state().feedback }}</p>
+          }
+          @for (issue of state().issues; track $index) {
+            <p class="issue">{{ issue }}</p>
+          }
+        </div>
+        <small
+          >The check compares your choices, source, and relationship with the reference key. Your
+          written reasoning is saved for teacher review.</small
+        >
+      </div>
+    }
   </section>
 </div>

@@ -234,12 +234,35 @@ export function validateMachine(value: unknown): asserts value is MachineDefinit
   )
     fail('art/title');
   rows(d.stages, 1, 3);
+  if (d.presentation !== undefined &&
+      (d.presentation?.kind !== 'bridge-cage' || !int(d.presentation.rabbits, 1, 6) ||
+       d.stages.length !== 2 || d.stages[0].kind !== 'coordinate' || d.stages[1].kind !== 'cable'))
+    fail('bridge-cage presentation');
   ids(d.stages);
   for (const s of d.stages) {
     if (!Object.hasOwn(machineRules, s.kind)) fail('capability');
     for (const key of ['title', 'instruction', 'hint', 'success'] as const)
       if (!text(s[key])) fail(`stage.${key}`);
     if (!validators[s.kind](s)) fail(`${s.kind} configuration or reachability`);
+    if (s.kind === 'reflection' && s.presentation !== undefined &&
+        (s.presentation?.kind !== 'optics-cage' || !int(s.presentation.owls, 1, 2) || d.stages.length !== 1))
+      fail('optics-cage presentation');
+    if (s.kind === 'fraction-gear' && s.presentation !== undefined &&
+        (s.presentation?.kind !== 'fraction-cage' || !int(s.presentation.rabbits, 1, 6) || d.stages.length !== 1))
+      fail('fraction-cage presentation');
+    if (s.kind === 'timing-wheels' && s.presentation !== undefined) {
+      const p = s.presentation,
+        a = p?.animal;
+      if (
+        p?.kind !== 'timing-cage' ||
+        !a ||
+        ![a.label, a.idle, a.walk, a.run].every(text) ||
+        !/^\/projects\/[a-zA-Z0-9/_-]+\.glb$/.test(a.model) ||
+        !/^\/projects\/[a-zA-Z0-9/_-]+\.html$/.test(a.credits) ||
+        d.stages.length !== 1
+      )
+        fail('timing-cage presentation');
+    }
   }
 }
 /** Test/authoring helper searches bounded spaces; not used to disclose student answers. */

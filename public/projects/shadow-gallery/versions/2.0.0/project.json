@@ -4124,5 +4124,779 @@
     "vault-exchange",
     "vault-nation",
     "market-capacity"
-  ]
+  ],
+  "previewWeeks": {
+    "capability": "restoration.preview-weeks.v1",
+    "weeks": [
+      {
+        "week": 1,
+        "title": "Look inside the picture",
+        "setting": "A Caribbean shore. Separate what you can see from what the image claims.",
+        "sessions": [
+          {
+            "title": "Enter the painting: a morning on the shore",
+            "workId": "shore-painting-0-restoration",
+            "activity": "inspect",
+            "steps": [
+              "Look at the painting, then enter its historical world.",
+              "Look around for place markers. Visit the canoe workshop and harvest garden, explore each close-up panorama, and inspect sources.",
+              "Return to the painting. Investigate and repair three inconsistent details."
+            ],
+            "product": "A restored coastal picture with three independent repairs and sources gathered while exploring the 360° world.",
+            "film": {
+              "src": "/projects/shadow-gallery/weekly/scene-1.mp4",
+              "captions": "/projects/shadow-gallery/weekly/scene-1.vtt",
+              "cues": [
+                {
+                  "at": 0,
+                  "regionId": "detail",
+                  "label": "the disputed detail",
+                  "transcript": "Look at the added horse herd on the shore. The assigned scene is before European arrival. Can a picture establish when an animal arrived?"
+                },
+                {
+                  "at": 6,
+                  "regionId": "context",
+                  "label": "the surrounding context",
+                  "transcript": "Now look at the island-community caption. Investigate what belongs as well as what might need repair. Use the linked sources to check the claims."
+                }
+              ]
+            }
+          },
+          {
+            "title": "Whose island story?",
+            "workId": "shore-painting-2-restoration",
+            "activity": "inspect",
+            "steps": [
+              "Watch the island film and inspect its caption.",
+              "Use place evidence to choose an inscription.",
+              "Keep supported context and save your image."
+            ],
+            "product": "A relabeled island picture that preserves supported context.",
+            "film": {
+              "src": "/projects/shadow-gallery/weekly/scene-2.mp4",
+              "captions": "/projects/shadow-gallery/weekly/scene-2.vtt",
+              "cues": [
+                {
+                  "at": 0,
+                  "regionId": "detail",
+                  "label": "the disputed detail",
+                  "transcript": "Read the inscription naming a community and a place. The painting cannot establish identity from a person’s appearance."
+                },
+                {
+                  "at": 6,
+                  "regionId": "context",
+                  "label": "the surrounding context",
+                  "transcript": "Inspect the maize caption. A repair should preserve details that the evidence supports. Compare source claims before editing."
+                }
+              ]
+            }
+          }
+        ],
+        "questions": [
+          "What is directly visible, and what is only claimed by the inscription?",
+          "Which source establishes the time and place? What can it not establish?",
+          "Whose perspective is absent from this classroom reconstruction?"
+        ],
+        "evidence": [
+          "Inspected regions, removed or retained image layers, and pinned sources.",
+          "Before-and-after image versions and changes to the island inscription."
+        ],
+        "controls": [
+          "Select any commission, region, guide outlines, zoom, or film cue.",
+          "Choose evidence cards and available repair layers; change the comparison position."
+        ]
+      },
+      {
+        "week": 2,
+        "title": "The time detective’s workshop",
+        "setting": "A navigator’s desk in 1500. Test objects against the period, then rebuild the scene.",
+        "sessions": [
+          {
+            "title": "An instrument out of time",
+            "workId": "workshop-painting-0-restoration",
+            "activity": "compare",
+            "steps": [
+              "Inspect the instrument and its dated reference.",
+              "Try the compass layer; slide before / after.",
+              "Save two versions to compare your choices."
+            ],
+            "product": "An instrument comparison with two saved image trials.",
+            "film": {
+              "src": "/projects/shadow-gallery/weekly/scene-3.mp4",
+              "captions": "/projects/shadow-gallery/weekly/scene-3.vtt",
+              "cues": [
+                {
+                  "at": 0,
+                  "regionId": "detail",
+                  "label": "the disputed detail",
+                  "transcript": "The navigator’s desk contains an added reflecting sextant. The target year is 1500. Inspect the object, then check when this technology was available."
+                },
+                {
+                  "at": 6,
+                  "regionId": "context",
+                  "label": "the surrounding context",
+                  "transcript": "A magnetic-compass caption supplies another claim to check. Compare the source with both the object and the surrounding context."
+                }
+              ]
+            }
+          },
+          {
+            "title": "The clock that arrived early",
+            "workId": "workshop-painting-1-restoration",
+            "activity": "compare",
+            "steps": [
+              "Pause the film at the clock and inspect it.",
+              "Try removal or replacement; use Undo to compare.",
+              "Pin a useful source and save a picture version."
+            ],
+            "product": "A restored workshop scene and a replayable sequence of repair trials.",
+            "film": {
+              "src": "/projects/shadow-gallery/weekly/scene-4.mp4",
+              "captions": "/projects/shadow-gallery/weekly/scene-4.vtt",
+              "cues": [
+                {
+                  "at": 0,
+                  "regionId": "detail",
+                  "label": "the disputed detail",
+                  "transcript": "A marine timekeeper has been added to a workshop assigned to 1500. Its polished appearance is not evidence that it belongs in that century."
+                },
+                {
+                  "at": 6,
+                  "regionId": "context",
+                  "label": "the surrounding context",
+                  "transcript": "Inspect the surrounding navigation context. Use the date of a technology to evaluate the scene, keeping independently supported details."
+                }
+              ]
+            }
+          }
+        ],
+        "questions": [
+          "What makes an object an anachronism in this assigned setting?",
+          "Does removing a doubtful object establish what actually occupied that space?",
+          "Why keep one navigation detail while changing another?"
+        ],
+        "evidence": [
+          "Original and replacement objects, image wipe comparisons, and undo history.",
+          "Pinned dated sources and saved versions before and after revision."
+        ],
+        "controls": [
+          "Select object layers, keep/remove/replace tools, source cards, and hotspot visibility.",
+          "Control zoom, film inspection points, comparison wipe and saved-version replay."
+        ]
+      },
+      {
+        "week": 3,
+        "title": "Repair the historical record",
+        "setting": "Harbor registers and market cargo. Inspect the date, origin and destination inside each image.",
+        "sessions": [
+          {
+            "title": "Repair the departure register",
+            "workId": "port-painting-1-restoration",
+            "activity": "restore",
+            "steps": [
+              "Inspect the date written in the harbor picture.",
+              "Compare the voyage source; choose a new inscription.",
+              "Preserve the port context and save the record."
+            ],
+            "product": "A corrected departure-register image with its source pinned.",
+            "film": {
+              "src": "/projects/shadow-gallery/weekly/scene-5.mp4",
+              "captions": "/projects/shadow-gallery/weekly/scene-5.vtt",
+              "cues": [
+                {
+                  "at": 0,
+                  "regionId": "detail",
+                  "label": "the disputed detail",
+                  "transcript": "The harbor register labels the departure of a particular voyage. Read the date painted into the scene; separate departure from arrival."
+                },
+                {
+                  "at": 6,
+                  "regionId": "context",
+                  "label": "the surrounding context",
+                  "transcript": "Inspect the port caption. A useful source must match the voyage, event and location named by the picture."
+                }
+              ]
+            }
+          },
+          {
+            "title": "Where did the cargo begin?",
+            "workId": "market-painting-0-restoration",
+            "activity": "restore",
+            "steps": [
+              "Inspect the crate’s origin label in the market.",
+              "Use the exchange source to revise the inscription.",
+              "Compare the wheat detail; save the complete image."
+            ],
+            "product": "A revised cargo image distinguishing origin from later trade.",
+            "film": {
+              "src": "/projects/shadow-gallery/weekly/scene-6.mp4",
+              "captions": "/projects/shadow-gallery/weekly/scene-6.vtt",
+              "cues": [
+                {
+                  "at": 0,
+                  "regionId": "detail",
+                  "label": "the disputed detail",
+                  "transcript": "A potato crate carries an origin claim. A crop being sold in a place does not establish that it originated there."
+                },
+                {
+                  "at": 6,
+                  "regionId": "context",
+                  "label": "the surrounding context",
+                  "transcript": "Inspect the wheat caption beside it. Compare both crop origins using the reference before deciding what to keep."
+                }
+              ]
+            }
+          }
+        ],
+        "questions": [
+          "How do departure and arrival differ when authenticating a date?",
+          "How is a crop’s origin different from where it is later traded?",
+          "Which part of a source supports this exact inscription, and which remains uncertain?"
+        ],
+        "evidence": [
+          "Edited inscription layers, preserved context, and selected source cards.",
+          "Saved harbor and cargo versions showing which claims changed."
+        ],
+        "controls": [
+          "Select harbor, market or other commissions; switch evidence and inscription choices.",
+          "Set guide visibility, picture zoom, comparison position and film cue."
+        ]
+      },
+      {
+        "week": 4,
+        "title": "Curate the recovered gallery",
+        "setting": "One final picture, then a visitor-ready exhibition of your reconstructions.",
+        "sessions": [
+          {
+            "title": "Restore the final coastal picture",
+            "workId": "vault-painting-0-restoration",
+            "activity": "restore",
+            "steps": [
+              "Inspect the coastal clock against the target date.",
+              "Repair the image and pin a supporting source.",
+              "Save a version and add the picture to your exhibition."
+            ],
+            "product": "A final coastal reconstruction with a saved comparison image.",
+            "film": {
+              "src": "/projects/shadow-gallery/weekly/scene-7.mp4",
+              "captions": "/projects/shadow-gallery/weekly/scene-7.vtt",
+              "cues": [
+                {
+                  "at": 0,
+                  "regionId": "detail",
+                  "label": "the disputed detail",
+                  "transcript": "This coastal scene is assigned to 1492, but an added marine clock invites investigation. Transfer your workshop method to a new setting."
+                },
+                {
+                  "at": 6,
+                  "regionId": "context",
+                  "label": "the surrounding context",
+                  "transcript": "Look beyond the clock to the crop-origin caption. Do not change every detail simply because one layer is doubtful."
+                }
+              ]
+            }
+          },
+          {
+            "title": "Build the recovered gallery",
+            "workId": "vault-painting-1-restoration",
+            "activity": "exhibit",
+            "steps": [
+              "Inspect the sample gallery; add or remove pictures.",
+              "Arrange the images and edit their museum captions.",
+              "Preview the exhibition and download an illustrated copy."
+            ],
+            "product": "An illustrated before-and-after exhibition with editable captions and pinned references.",
+            "film": {
+              "src": "/projects/shadow-gallery/weekly/scene-8.mp4",
+              "captions": "/projects/shadow-gallery/weekly/scene-8.vtt",
+              "cues": [
+                {
+                  "at": 0,
+                  "regionId": "detail",
+                  "label": "the disputed detail",
+                  "transcript": "The final coastal inscription links a named community with a place. Your exhibition should make a visible repair understandable to a visitor."
+                },
+                {
+                  "at": 6,
+                  "regionId": "context",
+                  "label": "the surrounding context",
+                  "transcript": "Look at the second geographic claim. Keep the original and the student reconstruction together, so visitors can compare changes and uncertainties."
+                }
+              ]
+            }
+          }
+        ],
+        "questions": [
+          "How do your image changes and source choices support the museum caption?",
+          "Which supported detail did you preserve, and what uncertainty remains?",
+          "How will a visitor distinguish an illustrative reconstruction from historical evidence?"
+        ],
+        "evidence": [
+          "Exhibition image selection and order, captions, pinned sources and comparisons.",
+          "Final picture versions, revisions and preserved historical context."
+        ],
+        "controls": [
+          "Choose all sixteen paintings, image layers, evidence, zoom and comparison.",
+          "Control exhibition selection/order, captions, preview, film cues and saved-version replay."
+        ]
+      }
+    ],
+    "sampleExhibit": [
+      {
+        "workId": "shore-painting-0-restoration",
+        "choices": {
+          "detail": "remove"
+        },
+        "caption": "Sample caption — The added European horse herd has been removed from this pre-contact shore reconstruction. Compare the original with the revision and consult the exchange reference. The illustration is not a surviving record of this scene."
+      },
+      {
+        "workId": "workshop-painting-0-restoration",
+        "choices": {
+          "detail": "compass"
+        },
+        "caption": "Sample caption — A magnetic compass replaces the added reflecting sextant in this classroom reconstruction of a workshop in 1500. The original remains alongside the revision so visitors can inspect the change."
+      }
+    ],
+    "scenes": [
+      {
+        "capability": "panorama.encounter.v1",
+        "id": "coastal-morning",
+        "version": 1,
+        "workId": "shore-painting-0-restoration",
+        "title": "A morning on the shore",
+        "setting": "Hispaniola · early 1492 · before European arrival here",
+        "invitation": "Three details in this painting do not belong. Step inside the historical world, meet the people, and gather evidence before deciding what to repair.",
+        "panorama": "/projects/shadow-gallery/coastal-v1/panorama.png",
+        "forgery": "/projects/shadow-gallery/coastal-v1/forgery.png",
+        "imageAlt": "A coastal community with a canoe maker at the shore, a central clearing, and a food grower sorting a harvest.",
+        "attribution": "AI-generated teaching reconstruction. Fictional characters and English dialogue; clothing and scene layout are illustrative. Historical sources identify what is supported and uncertain. Taíno peoples and their descendants continue today.",
+        "sources": [
+          {
+            "id": "canoe-construction",
+            "title": "Inside a dugout canoe",
+            "text": "A dugout hull is shaped from one trunk. Historical research describes pre-1492 Caribbean canoe builders using stone axes, shell gouges and fire. Metal-fastened plank repairs should not be assumed for this setting.",
+            "provenance": "Historical synthesis: Past & Present, volume 271. The article also covers later centuries; its later techniques are not automatically evidence for 1492.",
+            "url": "https://academic.oup.com/past/article/271/1/52/8231030",
+            "rect": {
+              "x": 0,
+              "y": 47,
+              "width": 30,
+              "height": 48
+            }
+          },
+          {
+            "id": "canoe-tools",
+            "title": "A stone blade and a paddle",
+            "text": "Surviving Caribbean artifacts include woodworking tools and paddles. A stone or shell blade could be attached to a wooden handle; a paddle moved the canoe without being fixed to its side.",
+            "provenance": "Oxford SIBA artifact study. The examples are Lucayan/Bahamian comparative evidence, not objects excavated at this fictional Hispaniola location.",
+            "url": "https://siba.web.ox.ac.uk/material-culture-and-cultural-practices",
+            "rect": {
+              "x": 15,
+              "y": 43,
+              "width": 8,
+              "height": 18
+            }
+          },
+          {
+            "id": "local-harvest",
+            "title": "What grew in the gardens?",
+            "text": "Archaeologists at En Bas Saline in Haiti identified manioc, maize, peppers, beans and other plants. This evidence supports the manioc and maize shown in the reconstructed work area. A picture alone cannot establish every crop present or absent.",
+            "provenance": "Florida Museum of Natural History: archaeological plant remains from a Taíno site in Haiti, on Hispaniola.",
+            "url": "https://www.floridamuseum.ufl.edu/histarch/research/haiti/en-bas-saline/material-remains/",
+            "rect": {
+              "x": 63,
+              "y": 69,
+              "width": 30,
+              "height": 25
+            }
+          },
+          {
+            "id": "exchange-record",
+            "title": "Plants and animals across the Atlantic",
+            "text": "Horses and wheat came to the Americas from the Old World through the Columbian Exchange after contact. An established horse herd and a local wheat harvest do not fit this early-1492 setting. Sweet potatoes, however, were already grown in the Caribbean; they are not the same plant as wheat or Andean potatoes.",
+            "provenance": "OpenStax U.S. History: Columbian Exchange overview, cross-checked with the National Park Service’s Taíno Settlement guide. A later historical source, consulted from your notebook, not a record possessed by the characters.",
+            "url": "https://openstax.org/books/us-history/pages/2-4-new-worlds-in-the-americas-labor-commerce-and-the-columbian-exchange"
+          },
+          {
+            "id": "island-travel",
+            "title": "Travel between communities",
+            "text": "Taíno people traveled between islands in dugout canoes, carrying foods, tools and other goods. Canoes connected communities across water. A lack of horses in this illustration is an observation, not sufficient historical proof on its own.",
+            "provenance": "National Park Service, Taíno Settlement: modern educational account of travel and cultivated crops.",
+            "url": "https://www.nps.gov/places/taino-settlement.htm",
+            "rect": {
+              "x": 0,
+              "y": 32,
+              "width": 34,
+              "height": 61
+            }
+          }
+        ],
+        "people": [
+          {
+            "id": "canoe-maker",
+            "name": "Canoe maker",
+            "activity": "Shaping the inside of a dugout canoe",
+            "rect": {
+              "x": 16,
+              "y": 25,
+              "width": 18,
+              "height": 62
+            },
+            "welcome": "Welcome. I am working on this canoe. What would you like to know?",
+            "topics": [
+              {
+                "id": "construction",
+                "question": "How did you make this canoe?",
+                "keywords": [
+                  "make",
+                  "made",
+                  "build",
+                  "built",
+                  "construction",
+                  "trunk",
+                  "tree",
+                  "hollow"
+                ],
+                "reply": "The hull begins as one tree trunk. We shape and hollow the wood with stone tools, shell tools and carefully controlled fire. Look along the inside: it is one shaped hull, not a row of joined planks.",
+                "sourceIds": [
+                  "canoe-construction",
+                  "canoe-tools"
+                ]
+              },
+              {
+                "id": "repair",
+                "question": "How do you repair the boat?",
+                "keywords": [
+                  "repair",
+                  "fix",
+                  "crack",
+                  "broken",
+                  "nail",
+                  "nails",
+                  "screw",
+                  "screws",
+                  "iron",
+                  "metal"
+                ],
+                "reply": "First I examine the wood and the damage. I work with a stone blade and a shell scraper, not iron nails or screws. This hull was shaped from one trunk. Come closer and look at the tools beside me.",
+                "sourceIds": [
+                  "canoe-construction",
+                  "canoe-tools"
+                ]
+              },
+              {
+                "id": "tools",
+                "question": "Can you show me your tools?",
+                "keywords": [
+                  "tool",
+                  "tools",
+                  "stone",
+                  "shell",
+                  "axe",
+                  "blade",
+                  "show"
+                ],
+                "reply": "Here is a shaped blade and its wooden handle. The material and the edge matter for the work. Open the object view to examine them, then compare with the surviving artifacts in the source.",
+                "sourceIds": [
+                  "canoe-tools"
+                ]
+              },
+              {
+                "id": "travel",
+                "question": "How do people and goods travel?",
+                "keywords": [
+                  "travel",
+                  "carry",
+                  "goods",
+                  "transport",
+                  "paddle",
+                  "horse",
+                  "horses",
+                  "ride",
+                  "animal",
+                  "animals"
+                ],
+                "reply": "We paddle canoes along the coast and between islands, carrying people and goods. Moving over water is part of our lives. I can tell you about our canoe, but I cannot know what people will bring here in the future.",
+                "sourceIds": [
+                  "island-travel"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "food-grower",
+            "name": "Food grower",
+            "activity": "Sorting manioc roots and maize from the harvest",
+            "rect": {
+              "x": 75,
+              "y": 28,
+              "width": 17,
+              "height": 54
+            },
+            "welcome": "Welcome. I am sorting the harvest. What would you like to ask?",
+            "topics": [
+              {
+                "id": "harvest",
+                "question": "What are you growing and gathering?",
+                "keywords": [
+                  "grow",
+                  "growing",
+                  "grown",
+                  "gather",
+                  "harvest",
+                  "crop",
+                  "crops",
+                  "food",
+                  "eat",
+                  "maize",
+                  "corn",
+                  "wheat",
+                  "potato",
+                  "potatoes"
+                ],
+                "reply": "Here are manioc roots and maize. Look closely: the long roots and the ears of maize are different parts of different plants. We also cultivate other foods. The archaeological source can help you compare this work area with evidence from Hispaniola.",
+                "sourceIds": [
+                  "local-harvest"
+                ]
+              },
+              {
+                "id": "basket",
+                "question": "May I look inside the basket?",
+                "keywords": [
+                  "basket",
+                  "look",
+                  "inside",
+                  "show",
+                  "root",
+                  "roots"
+                ],
+                "reply": "Come closer. Compare the maize in the basket with the manioc roots beside it. Save an observation if it helps you remember their shapes.",
+                "sourceIds": [
+                  "local-harvest"
+                ]
+              },
+              {
+                "id": "journeys",
+                "question": "How do you carry the harvest?",
+                "keywords": [
+                  "carry",
+                  "travel",
+                  "transport",
+                  "horse",
+                  "horses",
+                  "animal",
+                  "animals",
+                  "trade"
+                ],
+                "reply": "Baskets help us carry foods. Canoes carry people and goods over water. The canoe maker can explain that work better than I can.",
+                "sourceIds": [
+                  "island-travel"
+                ]
+              }
+            ]
+          }
+        ],
+        "repairs": [
+          {
+            "id": "herd",
+            "title": "The clearing",
+            "rect": {
+              "x": 45,
+              "y": 37,
+              "width": 12,
+              "height": 24
+            },
+            "action": "Restore the open clearing",
+            "sourceIds": [
+              "island-travel",
+              "exchange-record"
+            ]
+          },
+          {
+            "id": "fasteners",
+            "title": "The canoe repair",
+            "rect": {
+              "x": 3,
+              "y": 59,
+              "width": 14,
+              "height": 31
+            },
+            "action": "Restore the dugout hull",
+            "sourceIds": [
+              "canoe-construction",
+              "canoe-tools"
+            ]
+          },
+          {
+            "id": "harvest",
+            "title": "The harvest basket",
+            "rect": {
+              "x": 79,
+              "y": 65,
+              "width": 14,
+              "height": 24
+            },
+            "action": "Restore the maize harvest",
+            "sourceIds": [
+              "local-harvest",
+              "exchange-record"
+            ]
+          }
+        ],
+        "questionOwner": "tutor",
+        "viewpoints": [
+          {
+            "id": "village",
+            "title": "Village clearing",
+            "image": "/projects/shadow-gallery/coastal-360-v1/village.png",
+            "yaw": -75,
+            "pitch": -8,
+            "people": [
+              {
+                "personId": "canoe-maker",
+                "rect": {
+                  "x": 18,
+                  "y": 44,
+                  "width": 3,
+                  "height": 10
+                }
+              },
+              {
+                "personId": "food-grower",
+                "rect": {
+                  "x": 79,
+                  "y": 44,
+                  "width": 4,
+                  "height": 11
+                }
+              }
+            ],
+            "places": [
+              {
+                "targetId": "canoe",
+                "label": "Explore canoe workshop",
+                "yaw": -108,
+                "pitch": -9
+              },
+              {
+                "targetId": "harvest",
+                "label": "Explore harvest garden",
+                "yaw": 108,
+                "pitch": -9
+              }
+            ]
+          },
+          {
+            "id": "canoe",
+            "title": "Canoe workshop",
+            "image": "/projects/shadow-gallery/coastal-360-v1/canoe.png",
+            "yaw": -43,
+            "pitch": -8,
+            "people": [
+              {
+                "personId": "canoe-maker",
+                "rect": {
+                  "x": 32,
+                  "y": 38,
+                  "width": 10,
+                  "height": 33
+                }
+              }
+            ],
+            "places": [
+              {
+                "targetId": "village",
+                "label": "Back to village",
+                "yaw": 5,
+                "pitch": -12
+              }
+            ],
+            "inspection": {
+              "asset": {
+                "version": 1,
+                "src": "/projects/shadow-gallery/coastal-3d-v1/workshop.glb",
+                "nodes": [
+                  {
+                    "name": "INT_hull",
+                    "kind": "target"
+                  },
+                  {
+                    "name": "INT_rim",
+                    "kind": "target"
+                  },
+                  {
+                    "name": "INT_stone",
+                    "kind": "target"
+                  },
+                  {
+                    "name": "SOCKET_overview",
+                    "kind": "socket"
+                  }
+                ],
+                "clips": []
+              },
+              "targets": [
+                {
+                  "name": "INT_hull",
+                  "label": "Hollowed interior",
+                  "focus": [
+                    0,
+                    0.6,
+                    0
+                  ],
+                  "distance": 2.9
+                },
+                {
+                  "name": "INT_rim",
+                  "label": "Wooden rim",
+                  "focus": [
+                    0.6,
+                    0.9,
+                    0
+                  ],
+                  "distance": 1.6
+                },
+                {
+                  "name": "INT_stone",
+                  "label": "Stone tool",
+                  "focus": [
+                    1.8,
+                    0.42,
+                    0.4
+                  ],
+                  "distance": 1.1
+                }
+              ]
+            }
+          },
+          {
+            "id": "harvest",
+            "title": "Harvest garden",
+            "image": "/projects/shadow-gallery/coastal-360-v1/harvest.png",
+            "yaw": 8,
+            "pitch": -16,
+            "people": [
+              {
+                "personId": "food-grower",
+                "rect": {
+                  "x": 46,
+                  "y": 46,
+                  "width": 10,
+                  "height": 24
+                }
+              }
+            ],
+            "places": [
+              {
+                "targetId": "village",
+                "label": "Back to village",
+                "yaw": -38,
+                "pitch": -12
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

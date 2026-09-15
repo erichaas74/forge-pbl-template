@@ -2,6 +2,9 @@ import { Injectable, InjectionToken, inject, signal } from '@angular/core';
 import type { ProjectSessionContext } from '../../../../core/context/project-session-context';
 import { EscapeEngine } from '../domain/escape.engine';
 import type { EscapeCommand, EscapeEnvelope, EscapeMission } from '../domain/escape.models';
+import { acceptsGearCageUpgrade } from '../gear-lock/gear-cage/gear-cage.migration';
+import { acceptsBridgeCageUpgrade } from '../locks/bridge-cage/bridge-cage.migration';
+import { acceptsOpticsCageUpgrade } from '../locks/optics-cage/optics-cage.migration';
 
 export const ESCAPE_MISSION = new InjectionToken<EscapeMission>('ESCAPE_MISSION');
 export interface EscapePersistence {
@@ -24,7 +27,8 @@ export class LocalEscapeAdapter implements EscapePersistence {
         session.teamId,
         session.attemptId,
       ]);
-    this.fingerprint = JSON.stringify(mission);
+    // Authoring plans do not change gameplay or invalidate existing rescue saves.
+    this.fingerprint = JSON.stringify({ ...mission, previewWeeks: undefined });
   }
   load(): readonly EscapeEnvelope[] {
     const raw = localStorage.getItem(this.key);
@@ -34,7 +38,8 @@ export class LocalEscapeAdapter implements EscapePersistence {
       !saved ||
       typeof saved !== 'object' ||
       !('fingerprint' in saved) ||
-      saved.fingerprint !== this.fingerprint ||
+      typeof saved.fingerprint !== 'string' ||
+      (saved.fingerprint !== this.fingerprint && !acceptsGearCageUpgrade(saved.fingerprint, this.fingerprint) && !acceptsOpticsCageUpgrade(saved.fingerprint, this.fingerprint) && !acceptsBridgeCageUpgrade(saved.fingerprint, this.fingerprint)) ||
       !('history' in saved) ||
       !Array.isArray(saved.history) ||
       saved.history.length > 1600

@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig.spec.json",
+  "compilerOptions": { "outDir": "./solar-week-spec" },
+  "include": [
+    "../src/**/*.d.ts",
+    "../src/app/templates/engineering-design/**/*.spec.ts",
+    "../src/app/plugins/simulations/solar-monument/*.spec.ts"
+  ]
+}

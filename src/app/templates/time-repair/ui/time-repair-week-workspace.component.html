@@ -1,0 +1,143 @@
+<main class="repair-week" [attr.data-week]="r.week().week" [attr.data-session]="r.session().id">
+  <section class="activity-column" aria-label="Time Repair interactive workspace">
+    <header class="mission-heading">
+      <div>
+        <p class="eyebrow">TIME REPAIR AGENCY · WEEK {{ r.week().week }}</p>
+        <h1>{{ r.week().title }}</h1>
+        <p class="session-label">
+          {{
+            r.example
+              ? 'Illustrated sample exhibit'
+              : (r.lesson() % 2 === 1 ? 'Individual learning' : 'Group activity · local test') +
+                ' · Session ' +
+                r.lesson()
+          }}
+        </p>
+      </div>
+      <span class="mode-label">{{
+        r.example ? 'Read-only example' : 'Testing · all sessions open'
+      }}</span>
+    </header>
+    @if (standalone && !r.example) {
+      <nav class="local-weeks" aria-label="Choose week">
+        @for (week of r.weeks; track week.week) {
+          <button
+            [attr.aria-pressed]="r.week().week === week.week"
+            (click)="r.open(week.week * 2 - 1)"
+          >
+            Week {{ week.week }}
+          </button>
+        }
+      </nav>
+    }
+    @if (!r.example) {
+      <div class="session-tabs" aria-label="This week’s sessions">
+        @for (session of r.week().sessions; track session.id; let i = $index) {
+          <a
+            [routerLink]="['/projects', r.config.projectId, 'lessons']"
+            [queryParams]="{ lesson: r.week().week * 2 - 1 + i }"
+            [attr.aria-current]="r.session().id === session.id ? 'step' : null"
+            >{{ i + 1 }} · {{ session.title }}</a
+          >
+        }
+      </div>
+      <section class="next-action" aria-label="Action and success criteria">
+        <div class="step-number" aria-hidden="true">0{{ r.lesson() }}</div>
+        <div>
+          <h2>{{ r.session().title }}</h2>
+          <strong>Do this now</strong>
+          <p>{{ r.session().action }}</p>
+          <p class="check-copy"><strong>How to check</strong> · {{ r.session().check }}</p>
+        </div>
+        <details>
+          <summary>What will change</summary>
+          <p>{{ r.session().change }}</p>
+        </details>
+      </section>
+    }
+    <div class="work-surface">
+      @switch (r.session().mode) {
+        @case ('inspect') {
+          <app-repair-scene-workbench />
+        }
+        @case ('repair') {
+          <app-repair-scene-workbench />
+        }
+        @case ('sequence') {
+          <app-repair-timeline-workbench />
+        }
+        @case ('sources') {
+          <app-repair-timeline-workbench />
+        }
+        @case ('ripple') {
+          <app-repair-ripple-workbench />
+        }
+        @case ('compare') {
+          <app-repair-ripple-workbench />
+        }
+        @case ('exhibit') {
+          <app-repair-exhibit-workbench />
+        }
+        @case ('tour') {
+          <app-repair-exhibit-workbench />
+        }
+      }
+    </div>
+    <footer class="workspace-note">
+      {{
+        r.example
+          ? 'Sample content for inspiration. Open a session to make your own local draft.'
+          : r.saveStatus() || 'Sample starting content · edits stay in this session until saved'
+      }}<span>No assessment, completion, or shared work is recorded.</span>
+    </footer>
+  </section>
+  <aside class="planning" aria-label="Weekly products and future tutor">
+    <details class="plan-card products" open>
+      <summary>
+        <span class="eyebrow">WEEK {{ r.week().week }}</span>
+        <h2>Proposed weekly products</h2>
+      </summary>
+      <p class="muted">Potential work · no required submission</p>
+      <ol>
+        @for (session of r.week().sessions; track session.id; let i = $index) {
+          <li [class.current]="session.id === r.session().id">
+            <strong>Session {{ i + 1 }} · {{ i === 0 ? 'Individual' : 'Group activity' }}</strong>
+            <p>{{ session.product }}</p>
+          </li>
+        }
+      </ol>
+      <a class="example-link" [routerLink]="['/projects', r.config.projectId, 'final-demo']"
+        >View illustrated sample exhibit ↗</a
+      >
+    </details>
+    <details class="plan-card tutor" open>
+      <summary>
+        <span class="eyebrow">BUILD PLANNING</span>
+        <h2>AI Tutor</h2>
+        <span class="offline">Not connected</span>
+      </summary>
+      <h3>Questions to explore</h3>
+      <ul>
+        @for (q of r.week().questions; track q) {
+          <li>{{ q }}</li>
+        }
+      </ul>
+      <h3>Evidence it will inspect</h3>
+      <ul>
+        @for (e of r.week().evidence; track e) {
+          <li>{{ e }}</li>
+        }
+      </ul>
+      <h3>Future model controls</h3>
+      <ul>
+        @for (c of r.week().controls; track c) {
+          <li>{{ c }}</li>
+        }
+      </ul>
+      <p class="muted">
+        Planning only. The future tutor will guide, adjust the model, and review standards alignment
+        before completion is recorded.
+      </p>
+    </details>
+  </aside>
+</main>

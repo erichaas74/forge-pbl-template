@@ -113,6 +113,18 @@ export function validateAutomationConfig(config: AutomationProjectConfig): void 
     throw new Error('CONFIG_INVALID: Robot measurements must be positive.');
   if (Math.abs(Object.values(config.scoring).reduce((a, b) => a + b, 0) - 100) > 0.001)
     throw new Error('CONFIG_INVALID: Scoring weights must add to 100.');
+  if (config.previewWeeks) {
+    if (config.previewWeeks.length !== 4 || config.previewWeeks.some((week, index) =>
+      week.week !== index + 1 || !week.title?.trim() || !week.setting?.trim() ||
+      week.sessions?.length !== 2 ||
+      [week.questions, week.evidence, week.adjustments].some(items => !Array.isArray(items) || !items.length || items.some(item => !item?.trim())) ||
+      week.sessions.some(session => {
+        const challenge = config.challenges.find(item => item.id === session.challengeId);
+        return !challenge || !session.product?.trim() || (session.starterCommands !== undefined &&
+          compileProgram({ id: 'preview-starter', version: 0, commands: session.starterCommands,
+            variables: session.starterVariables ?? [] }, config.robot, challenge, []).issues.some(issue => issue.severity === 'error'));
+      }))) throw new Error('CONFIG_INVALID: Preview weeks need four ordered weeks, two valid sessions, runnable starters, and tutor planning lists.');
+  }
   for (const challenge of config.challenges as readonly RobotChallenge[]) {
     if (!config.courses.some((course) => course.id === challenge.courseId))
       throw new Error('CONFIG_INVALID: Unknown course.');

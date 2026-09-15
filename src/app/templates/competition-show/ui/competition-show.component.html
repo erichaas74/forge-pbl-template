@@ -1,5 +1,5 @@
 <div class="competition" [class.projector]="projector()" [style.--broadcast-accent]="theme().palette.accent" [style.--broadcast-secondary]="theme().palette.secondary">
-  <header>
+  <app-workspace-tools><header>
     @if (!projector()) { <a routerLink="/projects">← Projects</a> }
     <div><small>THE FINAL · CHAMPIONSHIP REHEARSAL</small><h1>{{ show.config.title }}</h1></div>
     <div class="header-actions">
@@ -7,7 +7,7 @@
         <a class="button-link" [routerLink]="['/projects', show.config.projectId, 'final-demo']">▶ Preview the final</a>
       }
     </div>
-  </header>
+  </header></app-workspace-tools>
 
   @if (show.error()) { <p role="alert" class="error">{{ show.error() }}</p> }
 
@@ -61,7 +61,7 @@
       @if (show.state().phase === 'setup') {
         <section class="play"><h2>Ready when you are.</h2><p>{{ show.config.description }}</p>
           <button class="primary" [disabled]="show.blocked()" (click)="seed()">Start the championship</button>
-          <p class="hint">New to this? <strong>Preview the final</strong> up top plays a fictional championship end to end — how a question is asked, answered and scored — without touching this rehearsal.</p>
+
         </section>
       } @else if (show.state().phase === 'ready' && show.round().kind === 'wager') {
         <section class="play"><h2>How much will you risk?</h2>

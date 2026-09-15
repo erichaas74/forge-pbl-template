@@ -1,4 +1,6 @@
 import { TaskGuideComponent } from '../../shared/learning/task-guide.component';
+import { PROJECT_LESSON_FOCUS } from '../../shared/project-lessons/project-lesson-focus';
+import { WorkspaceToolsComponent } from '../../shared/project-lessons/workspace-tools.component';
 import {
   Component,
   computed,
@@ -9,6 +11,7 @@ import {
   ElementRef,
   afterNextRender,
   Injector,
+  untracked,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
@@ -210,6 +213,7 @@ const requiredFinalActivityIds = [
 @Component({
   selector: 'app-mystery-investigation',
   imports: [
+    WorkspaceToolsComponent,
     TaskGuideComponent,
     FormsModule,
     InvestigationFinalCaseComponent,
@@ -222,9 +226,15 @@ const requiredFinalActivityIds = [
     WorkbenchEvidenceComponent,
   ],
   templateUrl: './mystery-investigation.component.html',
-  styleUrls: ['./mystery-investigation.component.scss', './workbench.scss'],
+  styleUrls: [
+    './mystery-investigation.component.scss',
+    './workbench.scss',
+    './focused-workbench.scss',
+  ],
 })
 export class MysteryInvestigationComponent {
+  readonly lessonFocus = inject(PROJECT_LESSON_FOCUS, { optional: true });
+  private appliedFocus: string | undefined;
   readonly investigation = inject(MysteryInvestigationService);
   readonly observationTags = mysteryObservationTags;
   readonly vials = mysteryVials;
@@ -538,6 +548,22 @@ export class MysteryInvestigationComponent {
   });
 
   constructor() {
+    effect(() => {
+      const target = this.lessonFocus?.()?.focusTarget;
+      if (!target || this.investigation.loading() || this.selectionBusy()) return;
+      if (target === this.appliedFocus) return;
+      this.appliedFocus = target;
+      untracked(() => {
+        this.openBench();
+        this.evidenceDockOpen.set(false);
+        if (target === 'theory') this.selectWorkspace('analysis-theory');
+        else if (target === 'final') void this.openFinalInvestigation();
+        else {
+          const station = stationCatalogue.find((item) => item.key === target);
+          if (station) void this.launchActivity(station.activityId);
+        }
+      });
+    });
     persistWorkspaceDraft(
       'investigation-workbench',
       () => ({

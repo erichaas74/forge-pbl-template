@@ -1,3 +1,4 @@
+import { isInquiryState } from '../../../shared/inquiry/inquiry.models';
 import type { HistoryLiveRuntimeState } from '../domain/history-live.models';
 import { isStoryReportingSnapshot } from '../reporting/story-reporting.validation';
 
@@ -88,7 +89,7 @@ export function isHistoryLiveSnapshot(value: unknown): value is HistoryLiveRunti
     return false;
   if (
     !['student', 'producer'].includes(String(value['role'])) ||
-    ![undefined, 'patriot', 'british'].includes(value['selectedSide'] as string | undefined)
+    !(value['selectedSide'] === undefined || (typeof value['selectedSide'] === 'string' && /^[a-z0-9][a-z0-9-]*$/.test(value['selectedSide'])))
   )
     return false;
   if (
@@ -130,7 +131,7 @@ export function isHistoryLiveSnapshot(value: unknown): value is HistoryLiveRunti
           'startLabel',
           'visualLabel',
         ]) &&
-        ['patriot', 'british'].includes(String(item['side'])) &&
+        typeof item['side'] === 'string' && /^[a-z0-9][a-z0-9-]*$/.test(item['side']) &&
         typeof item['ready'] === 'boolean' &&
         Number.isFinite(item['durationSeconds']) &&
         Number(item['durationSeconds']) >= 0 &&
@@ -200,5 +201,6 @@ export function isHistoryLiveSnapshot(value: unknown): value is HistoryLiveRunti
       !evidence(draft['evidence']))
   )
     return false;
+  if (value['inquiry'] !== undefined && !isInquiryState(value['inquiry'])) return false;
   return value['reporting'] === undefined || isStoryReportingSnapshot(value['reporting']);
 }

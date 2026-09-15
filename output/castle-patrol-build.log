@@ -1,0 +1,90 @@
+> Building...
+√ Building...
+Initial chunk files | Names                               |  Raw size | Estimated transfer size
+chunk-BJblw9Vk.js   | -                                   | 169.79 kB |                50.34 kB
+main-PO6MOWZ5.js    | main                                | 108.97 kB |                27.67 kB
+chunk-C0MS4Ike.js   | -                                   |  13.73 kB |                 4.20 kB
+styles-PWEBVAZL.css | styles                              | 865 bytes |               865 bytes
+chunk-Da4-SChG.js   | -                                   | 633 bytes |               633 bytes
+
+                    | Initial total                       | 293.98 kB |                83.71 kB
+
+Lazy chunk files    | Names                               |  Raw size | Estimated transfer size
+chunk-CPHmOIK-.js   | -                                   |   1.38 MB |               295.65 kB
+chunk-jC0YxMuV2.js  | -                                   | 711.93 kB |               148.54 kB
+chunk-BxcE7v6v.js   | simulation-decision-shell-component | 426.45 kB |                77.50 kB
+chunk-DWIkX7D9.js   | model-viewer                        | 381.87 kB |               107.16 kB
+chunk-ivaLyHw2.js   | crisis-center-component             | 257.28 kB |                46.19 kB
+chunk-BIn_sBrc2.js  | -                                   | 228.59 kB |                39.67 kB
+chunk-D0fCuK03.js   | -                                   | 162.26 kB |                34.52 kB
+chunk-EAMlCD862.js  | time-repair-page-component          | 154.98 kB |                22.92 kB
+chunk-C9OWiQid.js   | project-host-component              | 150.55 kB |                33.51 kB
+chunk-CQ_UDRj6.js   | history-live-page-component         | 148.15 kB |                28.20 kB
+chunk-BpSFPzIS2.js  | exhibit-hall-page-component         | 147.77 kB |                29.07 kB
+chunk-HMY5AgUC.js   | debate-studio-page-component        | 138.52 kB |                27.05 kB
+chunk-mrgkqX3o2.js  | journey-shell-component             | 124.50 kB |                25.45 kB
+chunk-BtXWEsDP2.js  | index                               | 119.91 kB |                24.65 kB
+chunk-DMFcFJQI.js   | project-intro-component             | 106.82 kB |                24.03 kB
+...and 173 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [35.530 seconds] - 2026-09-15T14:31:36.419Z
+
+▲ [WARNING] src/app/projects/mystery-substance/station-workspaces.scss exceeded maximum budget. Budget 14.00 kB was not met by 3.99 kB with a total of 17.99 kB.
+
+
+▲ [WARNING] src/app/templates/simulation-decision/ui/simulation-decision-shell.component.scss exceeded maximum budget. Budget 14.00 kB was not met by 140 bytes with a total of 14.14 kB.
+
+
+▲ [WARNING] src/app/projects/mystery-substance/reaction-bench.component.scss exceeded maximum budget. Budget 14.00 kB was not met by 8.79 kB with a total of 22.79 kB.
+
+
+▲ [WARNING] src/app/templates/heist/escape/expedition/expedition.component.scss exceeded maximum budget. Budget 14.00 kB was not met by 650 bytes with a total of 14.65 kB.
+
+
+▲ [WARNING] src/app/templates/crisis-operations/ui/crisis-center.component.scss exceeded maximum budget. Budget 14.00 kB was not met by 3.83 kB with a total of 17.82 kB.
+
+
+▲ [WARNING] src/app/templates/narrative-studio/ui/narrative-studio-page.component.scss exceeded maximum budget. Budget 14.00 kB was not met by 379 bytes with a total of 14.38 kB.
+
+
+▲ [WARNING] src/app/templates/exhibit-hall/ui/artifact-composer.component.scss exceeded maximum budget. Budget 14.00 kB was not met by 5.50 kB with a total of 19.50 kB.
+
+
+▲ [WARNING] src/app/templates/history-live/ui/history-live-page.component.scss exceeded maximum budget. Budget 14.00 kB was not met by 1.52 kB with a total of 15.52 kB.
+
+
+▲ [WARNING] src/app/templates/heist/gallery/ui/gallery.component.scss exceeded maximum budget. Budget 14.00 kB was not met by 632 bytes with a total of 14.63 kB.
+
+
+▲ [WARNING] src/app/templates/simulation-decision/ui/pages/event-decision.component.scss exceeded maximum budget. Budget 14.00 kB was not met by 336 bytes with a total of 14.34 kB.
+
+
+▲ [WARNING] src/app/templates/debate-studio/ui/debate-studio-page.component.scss exceeded maximum budget. Budget 14.00 kB was not met by 331 bytes with a total of 14.33 kB.
+
+
+▲ [WARNING] src/app/templates/simulation-decision/ui/pages/route-map.component.scss exceeded maximum budget. Budget 14.00 kB was not met by 452 bytes with a total of 14.45 kB.
+
+
+▲ [WARNING] src/app/templates/journey-replay/ui/journey-shell.scss exceeded maximum budget. Budget 14.00 kB was not met by 1.18 kB with a total of 15.18 kB.
+
+
+▲ [WARNING] src/app/templates/simulation-decision/ui/map/route-atlas.component.scss exceeded maximum budget. Budget 14.00 kB was not met by 1.24 kB with a total of 15.24 kB.
+
+
+▲ [WARNING] src/app/features/mystery-investigation/mystery-investigation.component.scss exceeded maximum budget. Budget 14.00 kB was not met by 2.18 kB with a total of 16.18 kB.
+
+
+▲ [WARNING] src/app/projects/mystery-substance/properties-lab.component.scss exceeded maximum budget. Budget 14.00 kB was not met by 1.99 kB with a total of 15.99 kB.
+
+
+▲ [WARNING] src/app/templates/simulation-decision/ui/pages/market-view.component.scss exceeded maximum budget. Budget 14.00 kB was not met by 9.10 kB with a total of 23.10 kB.
+
+
+▲ [WARNING] src/app/templates/simulation-decision/ui/pages/final-showcase.component.scss exceeded maximum budget. Budget 14.00 kB was not met by 300 bytes with a total of 14.30 kB.
+
+
+▲ [WARNING] src/app/templates/exhibit-hall/ui/exhibit-hall-page.component.scss exceeded maximum budget. Budget 14.00 kB was not met by 260 bytes with a total of 14.26 kB.
+
+
+Output location: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\output\castle-week-production-build
+

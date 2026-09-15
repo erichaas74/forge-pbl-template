@@ -1,0 +1,443 @@
+<section
+  class="press-scene"
+  [class.pressing]="pressDown()"
+  [class.has-proof]="r.state().trials.length > 0"
+  [attr.data-mode]="r.session().mode"
+  aria-label="Operable printing press and proof workbench"
+>
+  <svg class="workshop-art" viewBox="0 0 1100 820" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <linearGradient id="press-wall" x2="0" y2="1">
+        <stop stop-color="#445153" />
+        <stop offset="1" stop-color="#202c2e" />
+      </linearGradient>
+      <linearGradient id="press-floor" x2="0" y2="1">
+        <stop stop-color="#635343" />
+        <stop offset="1" stop-color="#302c29" />
+      </linearGradient>
+      <linearGradient id="press-wood">
+        <stop stop-color="#50352c" />
+        <stop offset=".24" stop-color="#b98c59" />
+        <stop offset=".55" stop-color="#926c46" />
+        <stop offset="1" stop-color="#463128" />
+      </linearGradient>
+      <linearGradient id="press-crossbeam" x2="0" y2="1">
+        <stop stop-color="#d0a36a" />
+        <stop offset=".2" stop-color="#aa8051" />
+        <stop offset="1" stop-color="#674a35" />
+      </linearGradient>
+      <linearGradient id="press-table" x2=".2" y2="1">
+        <stop stop-color="#bd9566" />
+        <stop offset="1" stop-color="#6f4b34" />
+      </linearGradient>
+      <radialGradient id="press-light">
+        <stop stop-color="#fff2cc" stop-opacity=".2" />
+        <stop offset="1" stop-color="#fff2cc" stop-opacity="0" />
+      </radialGradient>
+      <linearGradient id="press-metal">
+        <stop stop-color="#bbc0bb" />
+        <stop offset=".5" stop-color="#5f6967" />
+        <stop offset="1" stop-color="#30393a" />
+      </linearGradient>
+      <pattern id="press-plaster" width="94" height="52" patternUnits="userSpaceOnUse">
+        <path d="M0 51h94M43 0v52" stroke="#d7d2b4" stroke-opacity=".035" fill="none" />
+      </pattern>
+    </defs>
+    <rect width="1100" height="820" fill="url(#press-wall)" />
+    <rect width="1100" height="520" fill="url(#press-plaster)" />
+    <path d="M0 0h1100v30H0zM0 0h45v543H0zM1042 0h58v559h-58zM395 0h27v280h-27z" fill="#19292b" />
+    <path d="M0 32L398 0M1043 32L724 0" stroke="#8a7152" stroke-width="8" opacity=".25" />
+    <path d="M0 523L1100 481V820H0Z" fill="url(#press-floor)" />
+    @for (i of floorLines; track i) {
+      <path
+        [attr.d]="'M550 478L' + (i * 115 - 270) + ' 820'"
+        stroke="#211f1e"
+        stroke-width="2"
+        opacity=".42"
+      />
+    }
+    <path
+      d="M0 584L1100 553M0 663L1100 635M0 769L1100 748"
+      stroke="#261f1d"
+      stroke-width="3"
+      opacity=".4"
+    />
+    <!-- Leaded window, scattered light, and stored supplies are part of the workshop. -->
+    <path
+      d="M67 359V143Q67 63 186 53Q305 63 305 143V359Z"
+      fill="#171f21"
+      stroke="#82705b"
+      stroke-width="10"
+    />
+    <path d="M82 343V144Q82 77 186 68Q290 77 290 144V343Z" fill="#a7bcb0" />
+    <path
+      d="M82 211h208M185 68v276M84 145l205 157M84 216l164 127M126 87l164 127M86 302l202-157M84 219l149-127M144 343l145-116"
+      stroke="#566f6b"
+      stroke-width="5"
+    />
+    <path d="M83 342L275 110L847 552L280 671Z" fill="#eed9a8" opacity=".05" />
+    <ellipse cx="372" cy="383" rx="439" ry="388" fill="url(#press-light)" />
+    <path
+      d="M53 425h243v20H53zM76 446v87M272 446v62"
+      fill="#362d28"
+      stroke="#332b26"
+      stroke-width="11"
+    />
+    <g fill="#d6c5a1" stroke="#b5a27f" stroke-width="2">
+      <path d="M78 416v-59q0-9 9-9h53v68z" />
+      <path d="M145 416v-72h30v72zM183 416v-64h54v64z" />
+    </g>
+    <path d="M82 359h52M150 354h19M188 366h43" stroke="#8d7153" stroke-width="4" />
+    <g opacity=".8">
+      <path
+        d="M829 120h205v18H829zM848 137v36M1015 137v36"
+        stroke="#8d7153"
+        fill="#6b503b"
+        stroke-width="9"
+      />
+      <path
+        d="M859 116V72h38v44M910 117V57h27v60M948 117V71h54v46"
+        fill="#b29f7b"
+        stroke="#705c43"
+        stroke-width="4"
+      />
+      <path d="M866 84h23M916 70h15M955 85h40" stroke="#6a5943" stroke-width="4" />
+    </g>
+    <!-- The press is drawn as individual moving machine parts. -->
+    <ellipse cx="623" cy="600" rx="297" ry="39" fill="#121e21" opacity=".5" />
+    <path d="M392 173L800 158L836 180L426 200Z" fill="#c29a65" />
+    <path
+      d="M391 175h65v405l-65 20zM744 164h62v416l-62-14z"
+      fill="url(#press-wood)"
+      stroke="#4c352a"
+      stroke-width="3"
+    />
+    <path d="M805 164l31 17v382l-30 17Z" fill="#49372b" />
+    <path
+      d="M386 218L808 204V270L386 284Z"
+      fill="url(#press-crossbeam)"
+      stroke="#50382b"
+      stroke-width="3"
+    />
+    <path d="M401 236L791 224M401 261L791 248" stroke="#d5b081" opacity=".4" />
+    <path d="M386 534L806 524V558L386 571Z" fill="#795039" stroke="#402b24" stroke-width="3" />
+    <path
+      d="M367 589l121-16v28l-132 17zM720 575l127 7v27l-127-4z"
+      fill="url(#press-crossbeam)"
+      stroke="#4b3329"
+      stroke-width="3"
+    />
+    <g fill="#282b2b" stroke="#afa68b">
+      <circle cx="421" cy="250" r="8" />
+      <circle cx="771" cy="238" r="8" />
+      <circle cx="421" cy="546" r="7" />
+      <circle cx="775" cy="540" r="7" />
+    </g>
+    <path d="M596 103h34v247h-34z" fill="url(#press-wood)" stroke="#432e26" stroke-width="3" />
+    @for (i of stitches; track i) {
+      <path [attr.d]="'M592 ' + (115 + i * 14) + 'l42-10'" stroke="#442f26" stroke-width="5" />
+    }
+    <path d="M572 99h83v24h-83z" fill="#9d784d" stroke="#4b3429" stroke-width="3" />
+    <g class="platen">
+      <path d="M493 364l201-8 48 40-225 15z" fill="#b8905d" stroke="#483729" stroke-width="3" />
+      <path d="M517 411l225-15v29l-225 15z" fill="#5d4432" />
+      <path d="M494 364v32l23 44v-29z" fill="#765239" />
+      <path d="M596 341h34v31h-34z" fill="#6f5037" />
+    </g>
+    <path d="M486 478l218-15 72 48-237 17z" fill="#262e30" stroke="#aeb2a6" stroke-width="3" />
+    <path d="M501 482l196-12 49 32-208 14z" fill="#c6c4b5" />
+    <path
+      d="M509 483l184-11 37 26-191 11z"
+      [attr.fill]="
+        r.session().mode !== 'reference' || r.state().preparation.inked ? '#252a2b' : '#8b9991'
+      "
+    />
+    @for (letter of r.settings().type; track $index; let i = $index) {
+      <g [attr.transform]="'translate(' + (541 + i * 34) + ' 494) skewX(44) scale(-.9 .4)'">
+        <text
+          x="0"
+          y="0"
+          fill="#b2b9a9"
+          font-family="Georgia,serif"
+          font-weight="700"
+          font-size="30"
+        >
+          {{ letter }}
+        </text>
+      </g>
+    }
+    <path d="M454 518l329-18v23l-329 22z" fill="url(#press-metal)" />
+    <path
+      d="M491 420l212-13 65 43-233 17z"
+      fill="#eadbb8"
+      [attr.opacity]="
+        r.session().mode !== 'reference' || r.state().preparation.paperLoaded ? 0.95 : 0
+      "
+    />
+    <g class="lever">
+      <path d="M611 334L869 261" stroke="#493429" stroke-width="18" stroke-linecap="round" />
+      <path d="M612 330L860 260" stroke="#bb9160" stroke-width="8" stroke-linecap="round" />
+      <path d="M843 264l47-15" stroke="#d2b888" stroke-width="23" stroke-linecap="round" />
+      <circle cx="611" cy="334" r="16" fill="#767364" stroke="#252c2c" stroke-width="5" />
+    </g>
+    <!-- A workshop collaborator watches the impression and helps at the bench. -->
+    <g class="workshop-collaborator">
+      <ellipse cx="964" cy="586" rx="78" ry="18" fill="#132324" opacity=".5" />
+      <path
+        d="M919 539l7-141q22-29 50-22q42 12 53 150l-56 33z"
+        fill="#526962"
+        stroke="#354d47"
+        stroke-width="3"
+      />
+      <path d="M940 406l-11 131 58 13-18-145z" fill="#b5a47b" />
+      <path d="M940 353q-7-40 22-43q31-4 31 31l-8 43-21 12-23-21z" fill="#c59872" />
+      <path d="M931 334q4-34 40-34q33 4 28 34l-34-10-29 14z" fill="#604938" />
+      <path d="M942 365l8 29 19 12 20-25-2-20-20 17z" fill="#bcb7a2" />
+      <path
+        d="M929 442l-20 41-25-7M995 444l16 41-31 17"
+        fill="none"
+        stroke="#708277"
+        stroke-width="22"
+        stroke-linecap="round"
+      />
+      <path
+        d="M884 476l-12-3M980 501l-16 7"
+        stroke="#cba37d"
+        stroke-width="11"
+        stroke-linecap="round"
+      />
+      @if (r.proof()) {
+        <g [class.usable-sheet]="r.proof()!.usable">
+          <path d="M875 453l81 18-16 82-78-24z" fill="#dfd1ac" stroke="#9d8762" stroke-width="2" />
+          <path
+            d="M884 479l46 12M880 491l49 12M878 503l45 12"
+            stroke="#4d554b"
+            [attr.opacity]="r.proof()!.usable ? 0.8 : 0.22"
+            stroke-width="3"
+          />
+        </g>
+      }
+    </g>
+    <!-- Foreground bench: proofs, specimens, and removable type sit on the surface. -->
+    <path
+      d="M0 611L911 577L1100 663L1100 820H0Z"
+      fill="url(#press-table)"
+      stroke="#503528"
+      stroke-width="4"
+    />
+    <path d="M0 756l1100-10v24L0 785Z" fill="#503629" />
+    <path d="M0 785h1100v35H0z" fill="#372c26" />
+    <path
+      d="M10 638l937-22M10 673l1021-22M13 723l1063-11"
+      stroke="#442f24"
+      stroke-width="2"
+      opacity=".28"
+    />
+    <path
+      d="M37 690q97-6 189 0M442 734q124-12 235-3"
+      stroke="#dec096"
+      stroke-width="2"
+      opacity=".3"
+      fill="none"
+    />
+  </svg>
+
+  <button
+    class="press-handle object-action"
+    (click)="pull()"
+    aria-label="Pull the press and inspect a new proof"
+    title="Pull the press"
+  >
+    <span aria-hidden="true">↙</span><small>Pull</small>
+  </button>
+
+  @if (r.session().mode === 'reference') {
+    <button
+      class="reference-ink"
+      (click)="r.prepare('ink')"
+      [attr.aria-pressed]="r.state().preparation.inked"
+      aria-label="Apply ink to the raised type"
+    >
+      <span aria-hidden="true">●</span><small>Ink type</small>
+    </button>
+    <button
+      class="reference-paper"
+      (click)="r.prepare('paper')"
+      [attr.aria-pressed]="r.state().preparation.paperLoaded"
+      [attr.aria-label]="
+        r.state().preparation.paperLoaded
+          ? 'Lift the paper from the type'
+          : 'Place a sheet over the type'
+      "
+    >
+      <span aria-hidden="true">▤</span
+      ><small>{{ r.state().preparation.paperLoaded ? 'Lift sheet' : 'Place sheet' }}</small>
+    </button>
+  }
+
+  @if (pressureEditable()) {
+    <div class="pressure-control" role="group" aria-label="Press pressure">
+      @for (level of marks; track level) {
+        <button
+          [attr.aria-label]="['Low pressure', 'Medium pressure', 'High pressure'][level]"
+          [attr.aria-pressed]="r.settings().pressure === level"
+          (click)="r.configure({ pressure: level })"
+        >
+          <span [style.height.px]="8 + level * 5"></span>
+        </button>
+      }
+      <small>Pressure</small>
+    </div>
+  }
+
+  <button
+    class="fresh-proof"
+    (click)="lens.showModal()"
+    [disabled]="!r.proof()"
+    aria-label="Magnify the current proof"
+  >
+    <app-press-proof [proof]="r.proof()" /><span class="magnify-mark" aria-hidden="true">⌕</span>
+  </button>
+  @if (r.proof()) {
+    <span class="proof-stamp" aria-hidden="true"
+      >{{ r.goodCount() }}/{{ r.session().batchSize }} <span>◈</span></span
+    >
+  }
+
+  @if (typesEditable()) {
+    <div
+      class="type-case"
+      role="group"
+      aria-label="Moveable type. Select one block, then another to exchange them."
+    >
+      @for (letter of r.settings().type; track $index; let i = $index) {
+        <button
+          class="type-block"
+          [attr.aria-label]="
+            'Type block ' +
+            (i + 1) +
+            ', reversed ' +
+            letter +
+            (r.selectedType() === null
+              ? '. Select to lift.'
+              : '. Select to swap with lifted block.')
+          "
+          [attr.aria-pressed]="r.selectedType() === i"
+          (click)="r.swapType(i)"
+        >
+          <b>{{ letter }}</b
+          ><span>{{ i + 1 }}</span>
+        </button>
+      }
+    </div>
+    <div class="specimen" aria-label="Reference impression">
+      <small>SPECIMEN</small><span>{{ r.session().target }}</span>
+    </div>
+  }
+
+  @if (inkEditable()) {
+    <div class="ink-pots" role="group" aria-label="Select an ink sample">
+      @for (ink of r.content.inks; track ink.id) {
+        <button
+          class="ink-pot"
+          [attr.aria-label]="'Ink ' + ink.mark + ': ' + ink.name"
+          [attr.aria-pressed]="r.settings().ink === ink.id"
+          (click)="r.configure({ ink: ink.id })"
+        >
+          <span class="ink-well" [style.background]="ink.color"></span><b>{{ ink.mark }}</b>
+        </button>
+      }
+    </div>
+  }
+
+  @if (r.session().mode === 'ink') {
+    <div class="material-bench">
+      <div class="sample-surfaces" role="group" aria-label="Choose a material for the ink test">
+        <button
+          [attr.aria-pressed]="r.materialSurface() === 'paper'"
+          (click)="r.materialSurface.set('paper')"
+        >
+          Paper</button
+        ><button
+          [attr.aria-pressed]="r.materialSurface() === 'metal'"
+          (click)="r.materialSurface.set('metal')"
+        >
+          Metal
+        </button>
+      </div>
+      <button
+        class="ink-dabber"
+        (click)="r.sample()"
+        aria-label="Test selected ink on selected material"
+      >
+        <span aria-hidden="true">●</span><small>Dab</small>
+      </button>
+      <div class="material-samples" aria-label="Material test impressions">
+        @for (sample of r.state().samples.slice(-4); track $index) {
+          <div
+            class="sample"
+            [class.metal]="sample.surface === 'metal'"
+            [attr.aria-label]="sample.ink + ' on ' + sample.surface"
+          >
+            <span
+              [style.opacity]="sample.adhesion"
+              [class.broken]="sample.adhesion < 0.5"
+              [class.spread]="sample.spread > 0.2"
+              >✣</span
+            ><small>{{ sample.surface === 'paper' ? 'P' : 'M' }} · {{ inkMark(sample.ink) }}</small>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  @if (packingEditable()) {
+    <div
+      class="packing-bench"
+      role="group"
+      aria-label="Packing beneath the left, middle and right of the forme"
+    >
+      @for (region of marks; track region) {
+        <button
+          [attr.aria-label]="
+            ['Left', 'Middle', 'Right'][region] +
+            ' packing: ' +
+            r.settings().packing[region] +
+            ' layers. Change packing.'
+          "
+          (click)="r.cyclePacking(region)"
+        >
+          <span class="pad-stack">
+            @for (layer of marks; track layer) {
+              <i [class.present]="r.settings().packing[region] > layer"></i>
+            }</span
+          ><small>{{ ['L', 'M', 'R'][region] }}</small>
+        </button>
+      }
+    </div>
+  }
+
+  <div class="proof-line" aria-label="Earlier proofs">
+    @for (trial of visibleTrials(); track trial.id) {
+      <button
+        [attr.aria-label]="'Inspect proof ' + trial.id"
+        [attr.aria-pressed]="r.proof()?.id === trial.id"
+        (click)="r.selectedProof.set(trial.id); lens.showModal()"
+      >
+        <app-press-proof [proof]="trial" />
+      </button>
+    }
+  </div>
+
+  <dialog #lens class="proof-lens" aria-label="Magnified proof">
+    <button class="close-lens" (click)="lens.close()" aria-label="Close magnified proof">×</button>
+    <app-press-proof [proof]="r.proof()" />
+    @if (r.proof(); as p) {
+      <div class="proof-settings">
+        <span>Ink {{ inkMark(p.settings.ink) }}</span
+        ><span>Pressure {{ p.settings.pressure + 1 }}</span
+        ><span>Packing {{ p.settings.packing.join(' / ') }}</span>
+      </div>
+    }
+  </dialog>
+</section>

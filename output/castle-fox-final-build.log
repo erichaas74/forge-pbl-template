@@ -1,0 +1,39 @@
+> Building...
+√ Building...
+Application bundle generation failed. [26.331 seconds] - 2026-09-15T17:27:59.883Z
+
+X [ERROR] TS2550: Property 'findLast' does not exist on type 'JourneyPathChoice[]'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2023' or later. [plugin angular-compiler]
+
+    src/app/templates/journey-replay/core/journey-path.engine.ts:33:27:
+      33 │     const nextId = choices.findLast(choice => choice.nextNodeId)?....
+         ╵                            ~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'choice' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/journey-replay/core/journey-path.engine.ts:33:36:
+      33 │ ...st nextId = choices.findLast(choice => choice.nextNodeId)?.next...
+         ╵                                 ~~~~~~
+
+
+X [ERROR] TS2571: Object is of type 'unknown'. [plugin angular-compiler]
+
+    src/app/templates/journey-replay/package/journey-path.validation.ts:28:256:
+      28 │ ...y'].every(key => typeof event['object'][key] === 'number' && Nu...
+         ╵                            ~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2571: Object is of type 'unknown'. [plugin angular-compiler]
+
+    src/app/templates/journey-replay/package/journey-path.validation.ts:28:300:
+      28 │ ... === 'number' && Number(event['object'][key]) >= 0 && Number(ev...
+         ╵                            ~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2571: Object is of type 'unknown'. [plugin angular-compiler]
+
+    src/app/templates/journey-replay/package/journey-path.validation.ts:28:337:
+      28 │ ...'][key]) >= 0 && Number(event['object'][key]) <= 100) || !['com...
+         ╵                            ~~~~~~~~~~~~~~~
+
+

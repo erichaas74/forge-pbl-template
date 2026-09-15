@@ -1,0 +1,14 @@
+> Building...
+× Building... [FAILED: spawn EPERM]
+An exception occurred while creating the test executor:
+Error: spawn EPERM
+    at ChildProcess.spawn (node:internal/child_process:458:11)
+    at Object.spawn (node:child_process:813:9)
+    at ensureServiceIsRunning (C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\node_modules\esbuild\lib\main.js:2272:29)
+    at context (C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\node_modules\esbuild\lib\main.js:2171:33)
+    at #performBundle (C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\node_modules\@angular\build\src\tools\esbuild\bundler-context.js:170:68)
+    at BundlerContext.bundle (C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\node_modules\@angular\build\src\tools\esbuild\bundler-context.js:137:50)
+    at C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\node_modules\@angular\build\src\tools\esbuild\bundler-context.js:63:28
+    at Array.map (<anonymous>)
+    at BundlerContext.bundleAll (C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\node_modules\@angular\build\src\tools\esbuild\bundler-context.js:59:67)
+    at executeBuild (C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\node_modules\@angular\build\src\builders\application\execute-build.js:121:69)

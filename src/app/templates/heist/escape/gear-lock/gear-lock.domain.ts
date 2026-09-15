@@ -4,6 +4,17 @@ export interface GearFraction {
   readonly denominator: number;
 }
 export interface GearLockDefinition {
+  readonly presentation?: {
+    readonly kind: 'gear-cage';
+    readonly foxes: number;
+    readonly animal: {
+      readonly model: string;
+      readonly credits: string;
+      readonly idle: string;
+      readonly walk: string;
+      readonly run: string;
+    };
+  };
   readonly backdrop: string;
   readonly title: string;
   readonly instruction: string;
@@ -118,6 +129,14 @@ export function validateGearLock(value: unknown): asserts value is GearLockDefin
   };
   if (!value || typeof value !== 'object' || Array.isArray(value)) fail('definition');
   const d = value as GearLockDefinition;
+  if (d.presentation !== undefined) {
+    const p = d.presentation, a = p?.animal;
+    if (p?.kind !== 'gear-cage' || !Number.isInteger(p.foxes) || p.foxes < 1 || p.foxes > 4 || !a ||
+      !/^\/projects\/[a-zA-Z0-9/_-]+\.glb$/.test(a.model) ||
+      !/^\/projects\/[a-zA-Z0-9/_-]+\.html$/.test(a.credits) ||
+      ![a.idle,a.walk,a.run].every(s => typeof s === 'string' && s.trim().length > 0 && s.length < 80))
+      fail('gear-cage presentation');
+  }
   for (const key of ['title', 'instruction', 'success'] as const)
     if (typeof d[key] !== 'string' || !d[key].trim() || d[key].length > 1000) fail(key);
   if (

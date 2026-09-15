@@ -1,0 +1,22 @@
+> Building...
+√ Building...
+Initial chunk files | Names              |  Raw size | Estimated transfer size
+main-YWIIKZA3.js    | main               | 534.26 kB |               122.29 kB
+styles-PWEBVAZL.css | styles             | 865 bytes |               865 bytes
+
+                    | Initial total      | 535.13 kB |               123.16 kB
+
+Lazy chunk files    | Names              |  Raw size | Estimated transfer size
+chunk-DG6q0_72.js   | -                  |   1.44 MB |               308.80 kB
+chunk-CmtU1jIL.js   | -                  | 596.90 kB |               126.58 kB
+chunk-DzLHaCLZ.js   | machine-scene      |  76.73 kB |                24.40 kB
+chunk-BcBiuXPH.js   | gear-lock-scene    |  45.52 kB |                15.38 kB
+chunk-C9C8Stng.js   | balance-lock-scene |  19.60 kB |                 6.88 kB
+
+Application bundle generation complete. [17.303 seconds] - 2026-09-15T17:33:36.051Z
+
+▲ [WARNING] bundle initial exceeded maximum budget. Budget 500.00 kB was not met by 35.13 kB with a total of 535.13 kB.
+
+
+Output location: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\output\castle-fox-code-build
+

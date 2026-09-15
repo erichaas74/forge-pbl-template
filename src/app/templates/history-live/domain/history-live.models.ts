@@ -1,8 +1,10 @@
+import type { InquiryConfig, InquiryState } from '../../../shared/inquiry/inquiry.models';
 import type { RuntimeScope } from '../../../core/state/runtime-state-contracts';
 import type { HistoryLiveResearchLibrary } from './history-live-research';
 import type { StoryReportingConfig, StoryReportingState } from '../reporting/story-reporting.models';
 
-export type HistoryLiveSide = 'patriot' | 'british';
+/** Stable network key; validated against configuration at launch. */
+export type HistoryLiveSide = string;
 
 export type HistoryLiveRole = 'student' | 'producer';
 
@@ -193,6 +195,12 @@ export interface HistoryLiveViewer {
 }
 
 export interface HistoryLiveProjectConfig {
+  readonly inquiry?: InquiryConfig;
+  readonly fieldStudio?: {
+    readonly capabilityId: 'history-live.field-studio'; readonly version: '1.0';
+    readonly recordingGateId: string; readonly finalGateId: string;
+    readonly networkSide: string; readonly visualSourceIds: readonly string[];
+  };
   readonly researchLibrary?: HistoryLiveResearchLibrary;
   readonly reporting?: StoryReportingConfig;
   readonly schemaVersion: '1.0';
@@ -227,6 +235,7 @@ export interface HistoryLiveProjectConfig {
 }
 
 export interface HistoryLiveRuntimeState {
+  readonly inquiry?: InquiryState;
   readonly reporting?: StoryReportingState;
   readonly runtimeScope?: RuntimeScope;
   readonly packageStatus?: StoryPitchStatus;

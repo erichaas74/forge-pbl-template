@@ -1,5 +1,5 @@
 <div class="studio-shell">
-  <header class="studio-header">
+  <app-workspace-tools [error]="runtime.saveStatus() === 'error' ? 'Your story could not be saved. Keep this page open.' : undefined"><header class="studio-header">
     <a class="brand" routerLink="/projects" aria-label="Return to project catalog">
       <span aria-hidden="true">SI</span>
       <div>
@@ -53,22 +53,11 @@
         stay yours.
       </p></app-task-guide
     >
-  </header>
+  </header></app-workspace-tools>
 
   <main class="story-workspace" [class.overlay-active]="runtime.state().stage !== 'map'">
     <section class="story-map-backdrop">
-      <header class="map-heading">
-        <span>CHOOSE YOUR OWN ADVENTURE</span>
-        <h2>Your story, one choice at a time</h2>
-        <p>
-          Write an opening. Fill in two choices. Write what happens on each branch, then keep going
-          or end that path.
-        </p>
-        <small
-          >{{ runtime.storyConfig().nodes.length }} scenes ·
-          {{ runtime.completedSceneCount() }} drafted</small
-        >
-      </header>
+
       <app-narrative-story-map
         [config]="runtime.state().stage === 'playtest' ? readerConfig() : runtime.storyConfig()"
         [scenes]="

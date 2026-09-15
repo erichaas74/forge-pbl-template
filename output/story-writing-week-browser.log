@@ -1,0 +1,138 @@
+{
+  "sessions": [
+    {
+      "week": "1",
+      "tool": "Scene writer",
+      "title": "Write the opening",
+      "storageKeys": []
+    },
+    {
+      "week": "1",
+      "tool": "Scene writer",
+      "title": "Let the characters disagree",
+      "storageKeys": []
+    },
+    {
+      "week": "2",
+      "tool": "Branch map",
+      "title": "Build the consequence map",
+      "storageKeys": []
+    },
+    {
+      "week": "2",
+      "tool": "Play story",
+      "title": "Try the other route",
+      "storageKeys": []
+    },
+    {
+      "week": "3",
+      "tool": "Compare & revise",
+      "title": "Repair the shared scene",
+      "storageKeys": []
+    },
+    {
+      "week": "3",
+      "tool": "Play story",
+      "title": "Test every ending",
+      "storageKeys": []
+    },
+    {
+      "week": "4",
+      "tool": "Scene writer",
+      "title": "Shape the final decision",
+      "storageKeys": []
+    },
+    {
+      "week": "4",
+      "tool": "Play story",
+      "title": "Play the story",
+      "storageKeys": []
+    }
+  ],
+  "layouts": [
+    {
+      "name": "laptop",
+      "width": 1366,
+      "scrollWidth": 1351,
+      "activityWidth": 898.09375,
+      "planningWidth": 384.90625,
+      "planningTop": 136,
+      "activityTop": 136,
+      "primaryTop": 544.234375,
+      "keyboardCollapse": true
+    },
+    {
+      "name": "tablet",
+      "width": 820,
+      "scrollWidth": 805,
+      "activityWidth": 773,
+      "planningWidth": 773,
+      "planningTop": 1434.015625,
+      "activityTop": 174,
+      "primaryTop": 589.953125,
+      "keyboardCollapse": true
+    },
+    {
+      "name": "phone",
+      "width": 390,
+      "scrollWidth": 375,
+      "activityWidth": 355,
+      "planningWidth": 355,
+      "planningTop": 2199.5625,
+      "activityTop": 265.984375,
+      "primaryTop": 877.078125,
+      "keyboardCollapse": true
+    }
+  ],
+  "errors": [],
+  "lessonLinks": [
+    {
+      "href": "/projects",
+      "text": "← Return to projects"
+    },
+    {
+      "href": "/projects/survival-island-story-lab/lessons?lesson=1",
+      "text": "IndividualLesson 1✓ Selected"
+    },
+    {
+      "href": "/projects/survival-island-story-lab/lessons?lesson=2",
+      "text": "GroupLesson 2"
+    },
+    {
+      "href": "/projects/survival-island-story-lab/lessons?lesson=3",
+      "text": "IndividualLesson 3"
+    },
+    {
+      "href": "/projects/survival-island-story-lab/lessons?lesson=4",
+      "text": "GroupLesson 4"
+    },
+    {
+      "href": "/projects/survival-island-story-lab/lessons?lesson=5",
+      "text": "IndividualLesson 5"
+    },
+    {
+      "href": "/projects/survival-island-story-lab/lessons?lesson=6",
+      "text": "GroupLesson 6"
+    },
+    {
+      "href": "/projects/survival-island-story-lab/lessons?lesson=7",
+      "text": "IndividualLesson 7"
+    },
+    {
+      "href": "/projects/survival-island-story-lab/lessons?lesson=8",
+      "text": "GroupLesson 8"
+    },
+    {
+      "href": "/projects/survival-island-story-lab/final-demo",
+      "text": "Final example ↗"
+    }
+  ],
+  "emptyDraftRetained": true,
+  "reloadRestoresSample": true,
+  "finalPathPlayed": true,
+  "finalExample": {
+    "title": "Survival Island Story Lab | Forge PBL",
+    "text": "←\nReturn to projects\nWeek 1\nIndividual\nLesson 1\nGroup\nLesson 2\nWeek 2\nIndividual\nLesson 3\nGroup\nLesson 4\nWeek 3\nIndividual\nLesson 5\nGroup\nLesson 6\nWeek 4\nIndividual\nLesson 7\nGroup\nLesson 8\nFinal example\n↗\nWeek 1 standards\n\nEvidence reviewed: 0 / 2\n\nFull breakdown & curriculum connections\nLesson 1 · Individual\nSelected lesson\n\nWrite the opening\n\nFF.G5.ELA.20 — Craft effective narratives\n\nLesson 2 · Group\n\nLet the characters disagree\n\nFF.G5.ELA.21 — Plan, revise, edit, and publish coherent writing\n\n← Project launch\nFORGE PBL\n\nCOMPLETED EXAMPLE • FICTIONAL STUDENT WORK\n\nThe Fire Above the Cove\nAbout this example\nSee the learning behind it ↗\n↺ Restart sample\n\nCOMPLETED GRADE 5 SAMPLE · PLAYABLE HISTORICAL FICTION\n\nThe Fire Above the Cove\nby Maya R. · Fictional Grade 5 author\nHistorical setting and source\nTHE COMPLETE ADVENTURE\nEvery choice opens a new path\n\n11 scenes · 5 endings. Two choices lead to the character’s death; other paths continue toward survival. Select any scene to read it.\n\n1\n2\n1\n2\n1\n2\n1\n2\n1\n2\n1\n2\nSTART HERE\nThe Man in Goatskins\n1\nClimb toward the stranger and learn what he is warning them about.\n2\nChase the loose rope before the waves carry away the landing boat.\n122 wo",
+    "weeklyWorkspace": false
+  }
+}

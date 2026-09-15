@@ -8,6 +8,7 @@ import {
   DESIGN_CAPTURE,
   DESIGN_CHROME,
   type DesignChrome,
+  DESIGN_QUEST_PROGRESS,
 } from '../../../shared/engineering/design-simulation.registry';
 import { calendarMonumentConfig } from '../../../projects/calendar-monument/calendar-monument.config';
 import type { BlockDesign } from '../../../shared/engineering/block-design';
@@ -20,9 +21,11 @@ describe('solar monument demonstration bridge', () => {
   const views: unknown[] = [];
   const designs: unknown[] = [],
     captures: unknown[] = [];
+  const quests: unknown[] = [];
   beforeEach(() => {
     batches.length = changes.length = views.length = 0;
     designs.length = captures.length = 0;
+    quests.length = 0;
     TestBed.configureTestingModule({
       providers: [
         { provide: DESIGN_CAPTURE_BATCH, useValue: (value: unknown) => batches.push(value) },
@@ -30,6 +33,7 @@ describe('solar monument demonstration bridge', () => {
         { provide: DESIGN_VIEW_REQUEST, useValue: (value: unknown) => views.push(value) },
         { provide: DESIGN_CHANGE, useValue: (value: unknown) => designs.push(value) },
         { provide: DESIGN_CAPTURE, useValue: (value: unknown) => captures.push(value) },
+        { provide: DESIGN_QUEST_PROGRESS, useValue: (value: unknown) => quests.push(value) },
       ],
     });
   });
@@ -72,6 +76,67 @@ describe('solar monument demonstration bridge', () => {
     });
     return { fixture, component: fixture.componentInstance, sent, receive, latest, response };
   }
+  it('sends level data to the lab and forwards only valid progress for the active level', () => {
+    const test = setup();
+    const quest = calendarMonumentConfig.previewWeeks![1].sessions[0].quest!;
+    test.fixture.componentRef.setInput('quest', quest);
+    test.fixture.detectChanges();
+    const lastQuest = () => [...test.sent].reverse().find((m) => m['type'] === 'quest')!;
+    expect(lastQuest()['quest']).toEqual(quest);
+    expect(lastQuest()['completed']).toBe(false);
+    const progress = [{ id: 'summer-sun-gem', label: 'Summer sun gem', done: true }];
+    test.receive({ type: 'quest-state', questId: quest.id, complete: true, progress });
+    test.receive({ type: 'quest-state', questId: 'another-level', complete: true, progress: [] });
+    test.receive({ type: 'quest-state', questId: quest.id, complete: 'yes', progress: [] });
+    test.receive({ type: 'quest-state', questId: quest.id, complete: true, progress: [{ id: 1 }] });
+    test.receive(
+      { type: 'quest-state', questId: quest.id, complete: true, progress: [] },
+      'https://other.example',
+    );
+    expect(quests).toEqual([{ questId: quest.id, complete: true, progress }]);
+    test.fixture.componentRef.setInput('questCompleted', true);
+    test.fixture.detectChanges();
+    expect(lastQuest()['completed']).toBe(true);
+    test.fixture.destroy();
+  });
+  it('shows only the tools a level needs and no date controls in the weekly toolbar', () => {
+    const fixture = TestBed.createComponent(SolarMonumentComponent);
+    fixture.componentRef.setInput('design', calendarMonumentConfig.starterDesign);
+    fixture.componentRef.setInput('weeklyControls', true);
+    fixture.componentRef.setInput('activity', 'monument');
+    fixture.detectChanges();
+    const week = () => fixture.nativeElement.querySelector('.week-controls') as HTMLElement;
+    const actions = () =>
+      fixture.nativeElement.querySelector('.week-actions') as HTMLElement | null;
+    expect(week()).not.toBeNull();
+    expect(actions()).toBeNull();
+    for (const text of ['Save test', 'Mark shadow tip', 'Jump to', 'Place & date', 'A week before'])
+      expect(week().textContent).not.toContain(text);
+    expect(week().querySelector('[aria-label="Seasonal date"]')).toBeNull();
+    expect(week().querySelector('app-solar-time-dial')).not.toBeNull();
+    expect(week().firstElementChild?.tagName).toBe('APP-SOLAR-TIME-DIAL');
+    fixture.componentRef.setInput(
+      'quest',
+      calendarMonumentConfig.previewWeeks![1].sessions[0].quest!,
+    );
+    fixture.detectChanges();
+    expect(actions()?.textContent).toContain('Edit build');
+    expect(actions()?.textContent).not.toContain('Markers');
+    fixture.componentRef.setInput(
+      'quest',
+      calendarMonumentConfig.previewWeeks![3].sessions[0].quest!,
+    );
+    fixture.detectChanges();
+    expect(actions()?.textContent).toContain('Markers');
+    expect(actions()?.textContent).not.toContain('Edit build');
+    fixture.componentRef.setInput(
+      'quest',
+      calendarMonumentConfig.previewWeeks![2].sessions[0].quest!,
+    );
+    fixture.detectChanges();
+    expect(actions()).toBeNull();
+    fixture.destroy();
+  });
   it('replays each seasonal result and records the complete comparison once', () => {
     const test = setup();
     test.receive(test.response(test.latest()));

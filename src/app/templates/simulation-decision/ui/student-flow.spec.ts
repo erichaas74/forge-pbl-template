@@ -42,7 +42,7 @@ describe('simple student trading flow', () => {
     ).toBe(true);
   }
 
-  it('consolidates navigation, next action, map and world tools in one project header', () => {
+  it('keeps task instruments on the canvas and secondary navigation in a closed tools menu', () => {
     const fixture = TestBed.createComponent(SimulationDecisionShellComponent);
     fixture.detectChanges();
     const element: HTMLElement = fixture.nativeElement;
@@ -50,15 +50,17 @@ describe('simple student trading flow', () => {
     expect(primary.map((button) => button.textContent?.trim())).toEqual(['⌁ Map', '▦ Shop']);
     expect(element.querySelector('.header-menu summary')?.textContent).toBe('Project');
     expect(element.querySelector('.header-menu')?.textContent).toContain('Teacher controls');
-    expect(element.querySelectorAll('.unified-project-header')).toHaveLength(1);
+    expect(element.querySelector('.unified-project-header')).toBeNull();
+    expect(element.querySelector<HTMLDetailsElement>('app-workspace-tools details')?.open).toBe(false);
+    expect(element.querySelector('app-workspace-tools .project-tools')).not.toBeNull();
     expect(element.querySelector('.next-step')).toBeNull();
     expect(element.querySelector('.game-footer')).toBeNull();
     expect(element.querySelector('.next-action')?.getAttribute('aria-label')).toContain(
       'Next: Choose a town',
     );
-    expect(element.querySelector('.unified-project-header .map-tools')).not.toBeNull();
+    expect(element.querySelector('.field-controls .map-tools')).not.toBeNull();
     expect(element.querySelector('.map-card .map-tools')).toBeNull();
-    expect(element.querySelector('.unified-project-header .world-menu')).not.toBeNull();
+    expect(element.querySelector('.field-controls .world-menu')).not.toBeNull();
     expect(element.querySelector('.world-menu > summary')?.textContent).toContain('Turn 0');
     expect(element.querySelectorAll('.world-controls button')).toHaveLength(0);
     expect(element.querySelector('.world-brief')?.textContent).toContain(
@@ -66,7 +68,7 @@ describe('simple student trading flow', () => {
     );
     expect(element.querySelector('.route-sidebar app-route-economy-panel')).not.toBeNull();
     expect(element.querySelector('.town-market')).toBeNull();
-    const prices = Array.from(element.querySelectorAll('.unified-project-header button')).find(
+    const prices = Array.from(element.querySelectorAll('.field-controls button')).find(
       (button) => button.textContent?.trim() === 'Show prices',
     ) as HTMLButtonElement;
     prices.click();

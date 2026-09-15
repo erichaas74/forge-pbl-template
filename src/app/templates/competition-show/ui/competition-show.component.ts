@@ -1,3 +1,4 @@
+import { WorkspaceToolsComponent } from '../../../shared/project-lessons/workspace-tools.component';
 import { afterNextRender, Component, computed, effect, ElementRef, inject, Injector, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -14,7 +15,7 @@ import { studioProjection } from '../broadcast/studio-projection';
 
 @Component({
   selector: 'app-competition-show', standalone: true,
-  imports: [FormsModule, RouterLink, CompetitionBracketComponent, TelevisionStageComponent, ShowRailComponent, TeacherGuideComponent, ScoreboardComponent],
+  imports: [WorkspaceToolsComponent,FormsModule, RouterLink, CompetitionBracketComponent, TelevisionStageComponent, ShowRailComponent, TeacherGuideComponent, ScoreboardComponent],
   providers: [BroadcastDirectorService],
   templateUrl: './competition-show.component.html', styleUrl: './competition-show.component.scss',
 })

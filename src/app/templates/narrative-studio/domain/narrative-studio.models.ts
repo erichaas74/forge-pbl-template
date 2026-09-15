@@ -1,4 +1,5 @@
 import type { RuntimeScope } from '../../../core/state/runtime-state-contracts';
+import type { NarrativePreviewWeek } from './narrative-preview.models';
 
 export type NarrativeStudioStage =
   'conversation' | 'bible' | 'map' | 'write' | 'playtest' | 'publish';
@@ -57,6 +58,8 @@ export interface NarrativePlanningQuestion {
 }
 
 export interface NarrativeStudioProjectConfig {
+  /** Optional, memory-only local authoring test. Never used for assessed or published work. */
+  readonly previewWeeks?: readonly NarrativePreviewWeek[];
   readonly schemaVersion: '1.0';
   readonly template: {
     readonly id: 'narrative-studio';

@@ -1,0 +1,47 @@
+> Building...
+√ Building...
+Application bundle generation complete. [136.241 seconds] - 2026-09-14T22:09:01.896Z
+
+
+ RUN  v4.1.11 C:/Users/erich/Desktop/pbl-lms/forge-pbl-template
+
+ ❯ |forge-pbl-template| src/app/features/mystery-investigation/mystery-workbench.spec.ts (5 tests | 2 failed) 5325ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |forge-pbl-template| src/app/features/mystery-investigation/mystery-workbench.spec.ts > Mystery Substance workbench > opens the native lesson task, keeps its draft across lesson changes, and does not bypass the final gate
+AssertionError: expected 'conservation' to be 'restoration' // Object.is equality
+
+Expected: "restoration"
+Received: "conservation"
+
+ ❯ src/app/features/mystery-investigation/mystery-workbench.spec.ts:96:38
+     94|   it('opens the native lesson task, keeps its draft across lesson chan…
+     95|     const { fixture, shell, focus, plan, service } = await open(6);
+     96|     expect(shell.activeStationKey()).toBe('restoration');
+       |                                      ^
+     97|     const station = fixture.debugElement.query(By.directive(Restoratio…
+     98|       .componentInstance as RestorationWorkspaceComponent;
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  |forge-pbl-template| src/app/features/mystery-investigation/mystery-workbench.spec.ts > Mystery Substance workbench > requires the current choice before continuing and captures only a complete reasoned draft
+TypeError: Cannot read properties of null (reading 'componentInstance')
+ ❯ src/app/features/mystery-investigation/mystery-workbench.spec.ts:130:91
+    128|   it('requires the current choice before continuing and captures only …
+    129|     const { fixture } = await open(6);
+    130|     const station = fixture.debugElement.query(By.directive(Restoratio…
+       |                                                                                           ^
+    131|       .componentInstance as RestorationWorkspaceComponent;
+    132|     const capture = vi.fn();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+     × opens the native lesson task, keeps its draft across lesson changes, and does not bypass the final gate 309ms
+     × requires the current choice before continuing and captures only a complete reasoned draft 207ms
+
+ Test Files  1 failed | 6 passed (7)
+      Tests  2 failed | 48 passed (50)
+   Start at  16:09:08
+   Duration  25.57s (transform 11.24s, setup 21.98s, import 12.98s, tests 19.40s, environment 68.81s)
+

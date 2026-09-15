@@ -1,0 +1,32 @@
+Using Vitest configuration file: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\output\mystery-week\vitest.config.mjs
+> Building...
+√ Building...
+Application bundle generation complete. [28.504 seconds] - 2026-09-14T23:13:11.837Z
+
+
+ RUN  v4.1.11 C:/Users/erich/Desktop/pbl-lms/forge-pbl-template
+
+ ❯ |forge-pbl-template| src/app/features/mystery-investigation/mystery-workbench.spec.ts (5 tests | 1 failed) 7706ms
+     × keeps the same instrument, selected test and draft when evidence or another station is opened 5251ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |forge-pbl-template| src/app/features/mystery-investigation/mystery-workbench.spec.ts > Mystery Substance workbench > keeps the same instrument, selected test and draft when evidence or another station is opened
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/app/features/mystery-investigation/mystery-workbench.spec.ts:37:3
+     35|   }
+     36|
+     37|   it('keeps the same instrument, selected test and draft when evidence…
+       |   ^
+     38|     const { fixture, shell } = await open();
+     39|     await shell.launchActivity('activity-property-comparison');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 7 passed (8)
+      Tests  1 failed | 64 passed (65)
+   Start at  17:13:14
+   Duration  34.79s (transform 6.76s, setup 2.55s, import 8.14s, tests 19.60s, environment 3.71s)
+

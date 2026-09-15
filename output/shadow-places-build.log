@@ -1,0 +1,32 @@
+> Building...
+√ Building...
+Application bundle generation failed. [24.859 seconds] - 2026-09-15T04:22:52.477Z
+
+X [ERROR] TS2307: Cannot find module './calendar-monument.quests' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/projects/calendar-monument/calendar-monument.weeks.ts:6:49:
+      6 │ ...lendarMonumentQuests as quests } from './calendar-monument.quests';
+        ╵                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2353: Object literal may only specify known properties, and 'focus' does not exist in type 'BalanceSceneCallbacks'. [plugin angular-compiler]
+
+    src/app/templates/heist/escape/balance-lock/balance-lock.component.ts:148:10:
+      148 │           focus: (index) => this.changeScale(index),
+          ╵           ~~~~~
+
+
+X [ERROR] TS7006: Parameter 'index' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/heist/escape/balance-lock/balance-lock.component.ts:148:18:
+      148 │           focus: (index) => this.changeScale(index),
+          ╵                   ~~~~~
+
+
+X [ERROR] Could not resolve "./calendar-monument.quests"
+
+    src/app/projects/calendar-monument/calendar-monument.weeks.ts:6:49:
+      6 │ ...lendarMonumentQuests as quests } from './calendar-monument.quests';
+        ╵                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+

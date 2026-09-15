@@ -2,6 +2,7 @@ import type { GearLockDefinition } from '../gear-lock/gear-lock.domain';
 import type { MachineAnswer, MachineDefinition, MathGrade } from '../locks/machine.models';
 import type { BalanceLockDefinition } from '../balance-lock/balance-lock.domain';
 import type { ExpeditionWorldDefinition } from './expedition.models';
+import type { ExpeditionPreviewWeek } from '../weekly/expedition-preview.models';
 
 export interface EscapeAnimal {
   readonly id: string;
@@ -102,6 +103,8 @@ export interface EscapeMission {
   readonly steps: readonly EscapeStep[];
   readonly world?: ExpeditionWorldDefinition;
   readonly mathGrades?: readonly MathGrade[];
+  /** Optional local authoring sequence; does not alter rescue progression. */
+  readonly previewWeeks?: readonly ExpeditionPreviewWeek[];
 }
 export function stepForGrade(step: EscapeStep, grade: MathGrade): EscapeStep {
   return step?.gradePuzzles?.[grade] ? { ...step, puzzle: step.gradePuzzles[grade]! } : step;
@@ -110,6 +113,7 @@ export type EscapeAnswer = number | string | readonly number[] | MachineAnswer;
 export type EscapeCommand =
   | { readonly type: 'start' }
   | { readonly type: 'select-grade'; readonly grade: MathGrade }
+  | { readonly type: 'visit'; readonly stepId: string }
   | { readonly type: 'checkpoint'; readonly stepId: string; readonly answer: MachineAnswer }
   | { readonly type: 'submit'; readonly stepId: string; readonly answer: EscapeAnswer }
   | { readonly type: 'continue'; readonly stepId: string };

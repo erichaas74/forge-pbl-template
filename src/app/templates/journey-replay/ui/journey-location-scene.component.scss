@@ -1,0 +1,30 @@
+:host { display: block; height: 100%; min-height: 0; }
+* { box-sizing: border-box; }
+.location-scene { height: 100%; min-height: 390px; position: relative; overflow: hidden; background: #356b72; isolation: isolate; }
+.scene-art { position: absolute; inset: 0; width: 100%; height: 100%; }
+.storm .scene-art { filter: saturate(.8) brightness(.85); }
+.place-label { position: absolute; top: 26px; left: 28px; max-width: calc(100% - 100px); color: #173b40; font: 600 clamp(18px, 2.1vw, 29px)/1.25 Georgia, serif; text-shadow: 0 1px 12px #e0dfc780; }
+.place-label small { display: block; margin-top: 8px; font: 10px/1.3 Arial,sans-serif; letter-spacing: .15em; text-transform: uppercase; }
+.storm .place-label { color: #f4e5bd; }
+.object-marker { position: absolute; z-index: 3; display: flex; gap: 9px; align-items: center; transform: translate(-50%,-50%); border: 1px solid #e9d293; border-radius: 24px; min-width: 46px; min-height: 46px; padding: 6px 14px 6px 7px; background: #142f36ed; color: #f4e3b9; box-shadow: 0 5px 16px #05283050; cursor: pointer; font: 12px/1.2 Arial,sans-serif; }
+.object-marker span { display: grid; place-items: center; font-size: 20px; width: 30px; height: 30px; border-radius: 50%; background: #28494b; }
+.object-marker b { max-width: 125px; text-align: left; }
+.object-marker:hover,.object-marker.active { background: #e8c580; color: #173436; }
+.object-marker.active span { background: #f3deaf; }
+.observation { position: absolute; bottom: 22px; right: 22px; width: min(300px,48%); padding: 14px 17px; background: #142e35eb; color: #eff0dc; border-left: 2px solid #e8c580; border-radius: 3px; font: 12px/1.55 Arial,sans-serif; }
+.observation span { display: block; color: #e8c580; margin-bottom: 6px; font-weight: 700; }
+.motion-control { position: absolute; right: 18px; top: 18px; width: 44px; height: 44px; border: 1px solid #b8ccc2; border-radius: 50%; background: #183c42c7; color: #fff0c7; cursor: pointer; }
+button:focus-visible { outline: 3px solid #f4e5ad; outline-offset: 4px; }
+.ship { transform-origin: 400px 565px; animation: vessel 8s ease-in-out infinite alternate; }
+.small-boat { transition: transform 1.4s ease; }
+.small-boat.exchanged { transform: translate(-117px,47px); }
+.resting .canvas { transform: scaleY(.62); transform-origin: 385px 429px; }
+.canvas { transition: transform 1s; }
+.sea-lines { animation: water 11s ease-in-out infinite alternate; }
+.rain { animation: rainfall 1.7s linear infinite; }
+.paused * { animation-play-state: paused !important; }
+@keyframes vessel { from { transform: rotate(-.8deg) translateY(-3px); } to { transform: rotate(.8deg) translateY(4px); } }
+@keyframes water { to { transform: translateX(32px); } }
+@keyframes rainfall { to { transform: translate(-20px,35px); } }
+@media(max-width:700px) { .place-label { top: 18px; left: 18px; font-size: 19px; } .place-label small { font-size: 9px; } .object-marker { padding: 4px; } .object-marker b { position: absolute; bottom: calc(100% + 7px); left: 50%; transform: translateX(-50%); width: 110px; padding: 5px; border-radius: 4px; background: #16343bee; color: #f4e3b9; font-size: 10px; text-align: center; } .observation { right: 12px; bottom: 12px; width: 56%; font-size: 10px; padding: 9px 11px; } }
+@media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation: none !important; transition: none !important; } }

@@ -1,0 +1,36 @@
+❯ Building...
+✔ Building...
+Initial chunk files | Names                               |  Raw size
+chunk-E2VJWGUE.js   | -                                   | 924.37 kB | 
+chunk-X5IBMLI3.js   | -                                   | 214.14 kB | 
+chunk-ENCFJY7U.js   | -                                   | 169.44 kB | 
+chunk-SKMWBOWD.js   | -                                   |  45.76 kB | 
+chunk-RWJ4AKQ3.js   | -                                   |  24.16 kB | 
+main.js             | main                                |   3.53 kB | 
+chunk-GOMI4DH3.js   | -                                   |   1.42 kB | 
+styles.css          | styles                              |   1.12 kB | 
+
+                    | Initial total                       |   1.38 MB
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-A4CF3BB3.js   | -                                   |   5.82 MB | 
+chunk-NSVIFUI4.js   | -                                   |   1.34 MB | 
+chunk-GVBW6QBO.js   | simulation-decision-shell-component |   1.14 MB | 
+chunk-QA7UG5OP.js   | model-viewer                        | 789.91 kB | 
+chunk-NMWYD2ZM.js   | crisis-center-component             | 685.88 kB | 
+chunk-TNCQS45K.js   | -                                   | 643.45 kB | 
+chunk-MF7OT3VK.js   | -                                   | 479.34 kB | 
+chunk-L4JCDRWR.js   | time-repair-page-component          | 426.29 kB | 
+chunk-4TDJL6QC.js   | exhibit-hall-page-component         | 414.22 kB | 
+chunk-BFUYFWMQ.js   | history-live-page-component         | 410.53 kB | 
+chunk-RSPU7QWT.js   | debate-studio-page-component        | 398.71 kB | 
+chunk-UBKNBA74.js   | journey-shell-component             | 361.50 kB | 
+chunk-DYQEEUBM.js   | index                               | 330.71 kB | 
+chunk-WA5NCBSO.js   | project-intro-component             | 291.89 kB | 
+chunk-LPAAJZQQ.js   | project-host-component              | 221.64 kB | 
+...and 182 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [19.244 seconds] - 2026-09-15T02:48:37.180Z
+
+Output location: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\dist\forge-pbl-template
+

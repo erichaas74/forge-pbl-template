@@ -1,0 +1,52 @@
+> Building...
+√ Building...
+Application bundle generation complete. [193.134 seconds] - 2026-09-14T23:08:38.153Z
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:24:141:
+      24 │ ...startTime]="runtime.state().filmTimes[lesson()] ?? 0" (position...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:492:
+      60 │ ...ria-pressed]="(runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:609:
+      60 │ ...ource.id)">{{ (runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+ RUN  v4.1.11 C:/Users/erich/Desktop/pbl-lms/forge-pbl-template
+
+
+ Test Files  1 passed (1)
+      Tests  15 passed (15)
+   Start at  17:09:19
+   Duration  103.11s (transform 24.39s, setup 9.91s, import 38.45s, tests 4.21s, environment 38.24s)
+

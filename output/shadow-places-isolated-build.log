@@ -1,0 +1,16 @@
+> Building...
+√ Building...
+Initial chunk files | Names         |  Raw size | Estimated transfer size
+main-ZVOUMOPI.js    | main          | 265.81 kB |                60.20 kB
+styles-PWEBVAZL.css | styles        | 865 bytes |               865 bytes
+chunk-2NFLSA4Y.js   | -             | 449 bytes |               449 bytes
+
+                    | Initial total | 267.12 kB |                61.51 kB
+
+Lazy chunk files    | Names         |  Raw size | Estimated transfer size
+chunk-K3LOY6SY.js   | three-module  | 715.31 kB |               150.69 kB
+
+Application bundle generation complete. [5.475 seconds] - 2026-09-15T04:24:10.952Z
+
+Output location: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\output\shadow-coastal-build
+

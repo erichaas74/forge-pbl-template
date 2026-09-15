@@ -1,0 +1,234 @@
+
+> forge-pbl-template@0.0.0 test
+> ng test --watch=false
+
+> Building...
+√ Building...
+Application bundle generation complete. [35.028 seconds] - 2026-09-14T21:41:37.015Z
+
+
+ RUN  v4.1.11 C:/Users/erich/Desktop/pbl-lms/forge-pbl-template
+
+ ❯ |forge-pbl-template| src/app/runtime/project-launch/project-intro.registry.spec.ts (4 tests | 1 failed) 327ms
+     × resolves every launch destination to its existing activity and providers 305ms
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+ ❯ |forge-pbl-template| src/app/runtime/project-showcase/completed-samples.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/features/project-intro/project-intro.component.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/competition-show/broadcast/broadcast.spec.ts (9 tests | 5 failed) 75ms
+   × finishes camera travel and question reveal before firing the open command exactly once 13ms
+   × cancels pending question openings when a manual camera shot interrupts 3ms
+   × supports an immediate skip, reduced-motion cuts, and manual direction without changing rules 2ms
+   × does not open a question when the director is destroyed mid-reveal 2ms
+   × keeps the game in ready state until the reveal completes, and preserves answer time on skip/cancel 44ms
+ ❯ |forge-pbl-template| src/app/features/project-home/project-home.component.spec.ts (1 test | 1 failed) 321ms
+     × renders demo links and leaves unbuilt project types inactive 320ms
+ ❯ |forge-pbl-template| src/app/templates/competition-show/showcase/final-showcase.spec.ts (11 tests | 5 failed) 370ms
+   × autostarts and advances every four seconds, revealing results before leaving each round without accessing a rehearsal 127ms
+   × cancels chapter timers and hidden question reveals when the viewer navigates or pauses 19ms
+   × keeps the four-second cadence for a recap video and its failed-media storyboard fallback 15ms
+   × keeps navigation in the header and teacher controls behind an explicitly opened dialog 17ms
+   × keeps the director off the audience stage and places game selection only in the header 16ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |forge-pbl-template| src/app/features/project-intro/project-intro.component.spec.ts [ src/app/features/project-intro/project-intro.component.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/runtime/project-showcase/completed-samples.spec.ts [ src/app/runtime/project-showcase/completed-samples.spec.ts ]
+TypeError: Cannot set properties of null (setting 'fillStyle')
+ ❯ checkInverseAlpha node_modules/phaser/dist/phaser.esm.js:24598:23
+    24596|     var context = canvas.getContext('2d', { willReadFrequently: true }…
+    24597|
+    24598|     context.fillStyle = 'rgba(10, 20, 30, 0.5)';
+       |                       ^
+    24599|
+    24600|     //  Draw a single pixel
+ ❯ init node_modules/phaser/dist/phaser.esm.js:24630:46
+ ❯ Object.89289 node_modules/phaser/dist/phaser.esm.js:24636:18
+ ❯ __webpack_require__ node_modules/phaser/dist/phaser.esm.js:268334:40
+ ❯ Object.82264 node_modules/phaser/dist/phaser.esm.js:25424:21
+ ❯ __webpack_require__ node_modules/phaser/dist/phaser.esm.js:268334:40
+ ❯ Object.19186 node_modules/phaser/dist/phaser.esm.js:265940:14
+ ❯ __webpack_require__ node_modules/phaser/dist/phaser.esm.js:268334:40
+ ❯ Object.37105 node_modules/phaser/dist/phaser.esm.js:266219:17
+ ❯ __webpack_require__ node_modules/phaser/dist/phaser.esm.js:268334:40
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/14]⎯
+
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 12 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |forge-pbl-template| src/app/features/project-home/project-home.component.spec.ts > ProjectHomeComponent > renders demo links and leaves unbuilt project types inactive
+AssertionError: expected [ …(18) ] to deeply equal [ …(16) ]
+
+- Expected
++ Received
+
+@@ -1,6 +1,8 @@
+  [
++   "/projects/expedition-news-network",
++   "/projects/hammurabi-on-trial",
+    "/projects/exploration-time-repair",
+    "/projects/community-story-network",
+    "/projects/shadow-gallery",
+    "/projects/castle-archive-rescue",
+    "/projects/championship-show",
+
+ ❯ src/app/features/project-home/project-home.component.spec.ts:18:58
+     16|
+     17|     const links = fixture.debugElement.queryAll(By.css('.project-card …
+     18|     expect(links.map((link) => link.attributes['href'])).toEqual([
+       |                                                          ^
+     19|       '/projects/exploration-time-repair',
+     20|       '/projects/community-story-network',
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/14]⎯
+
+ FAIL  |forge-pbl-template| src/app/runtime/project-launch/project-intro.registry.spec.ts > project opening registration > resolves every launch destination to its existing activity and providers
+Error: Unexpected package request: /projects/shadow-gallery/versions/2.0.0/project.json
+ ❯ src/app/runtime/project-launch/project-intro.registry.spec.ts:67:15
+     65|       const url = String(input);
+     66|       if (!/^\/projects\/[a-z0-9-]+\/project\.json$/.test(url))
+     67|         throw new Error('Unexpected package request: ' + url);
+       |               ^
+     68|       return new Response(readFileSync('public' + url, 'utf8'), { stat…
+     69|     });
+ ❯ LocalProjectDefinitionSource.loadStaticPackage src/app/runtime/project-launch/local-project-definition.source.ts:52:28
+ ❯ LocalProjectDefinitionSource.load src/app/runtime/project-launch/local-project-definition.source.ts:46:21
+ ❯ src/app/runtime/project-launch/project-intro.registry.spec.ts:74:41
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/14]⎯
+
+ FAIL  |forge-pbl-template| src/app/templates/competition-show/broadcast/broadcast.spec.ts > finishes camera travel and question reveal before firing the open command exactly once
+TypeError: this.media?.addEventListener is not a function
+ ❯ new _BroadcastDirectorService src/app/templates/competition-show/broadcast/broadcast-director.service.ts:21:31
+ ❯ Object.BroadcastDirectorService_Factory [as factory] src/app/templates/competition-show/broadcast/broadcast.spec.ts:1526:10
+     96|   expect(rosterRotation([...ids].reverse())).not.toBe(rotation);
+     97|   for (const interest of assigned) expect(interestLabel(interest).leng…
+     98| });
+       |     ^
+     99|
+ ❯ ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/di/r3_injector.ts:535:34
+ ❯ runInInjectorProfilerContext ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/render3/debug/injector_profiler.ts:387:4
+ ❯ R3Injector.hydrate ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/di/r3_injector.ts:533:10
+ ❯ R3Injector.get ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/di/r3_injector.ts:370:22
+ ❯ TestBedImpl.inject ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/testing/src/test_bed.ts:616:47
+ ❯ TestBedImpl.inject ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/testing/src/test_bed.ts:404:32
+ ❯ director src/app/templates/competition-show/broadcast/broadcast.spec.ts:19:21
+ ❯ src/app/templates/competition-show/broadcast/broadcast.spec.ts:22:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/14]⎯
+
+ FAIL  |forge-pbl-template| src/app/templates/competition-show/broadcast/broadcast.spec.ts > cancels pending question openings when a manual camera shot interrupts
+TypeError: this.media?.addEventListener is not a function
+ ❯ new _BroadcastDirectorService src/app/templates/competition-show/broadcast/broadcast-director.service.ts:21:31
+ ❯ Object.BroadcastDirectorService_Factory [as factory] src/app/templates/competition-show/broadcast/broadcast.spec.ts:1526:10
+     96|   expect(rosterRotation([...ids].reverse())).not.toBe(rotation);
+     97|   for (const interest of assigned) expect(interestLabel(interest).leng…
+     98| });
+       |     ^
+     99|
+ ❯ ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/di/r3_injector.ts:535:34
+ ❯ runInInjectorProfilerContext ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/render3/debug/injector_profiler.ts:387:4
+ ❯ R3Injector.hydrate ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/di/r3_injector.ts:533:10
+ ❯ R3Injector.get ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/di/r3_injector.ts:370:22
+ ❯ TestBedImpl.inject ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/testing/src/test_bed.ts:616:47
+ ❯ TestBedImpl.inject ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/testing/src/test_bed.ts:404:32
+ ❯ director src/app/templates/competition-show/broadcast/broadcast.spec.ts:19:21
+ ❯ src/app/templates/competition-show/broadcast/broadcast.spec.ts:31:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/14]⎯
+
+ FAIL  |forge-pbl-template| src/app/templates/competition-show/broadcast/broadcast.spec.ts > supports an immediate skip, reduced-motion cuts, and manual direction without changing rules
+TypeError: this.media?.addEventListener is not a function
+ ❯ new _BroadcastDirectorService src/app/templates/competition-show/broadcast/broadcast-director.service.ts:21:31
+ ❯ Object.BroadcastDirectorService_Factory [as factory] src/app/templates/competition-show/broadcast/broadcast.spec.ts:1526:10
+     96|   expect(rosterRotation([...ids].reverse())).not.toBe(rotation);
+     97|   for (const interest of assigned) expect(interestLabel(interest).leng…
+     98| });
+       |     ^
+     99|
+ ❯ ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/di/r3_injector.ts:535:34
+ ❯ runInInjectorProfilerContext ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/render3/debug/injector_profiler.ts:387:4
+ ❯ R3Injector.hydrate ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/di/r3_injector.ts:533:10
+ ❯ R3Injector.get ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/di/r3_injector.ts:370:22
+ ❯ TestBedImpl.inject ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/testing/src/test_bed.ts:616:47
+ ❯ TestBedImpl.inject ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/testing/src/test_bed.ts:404:32
+ ❯ director src/app/templates/competition-show/broadcast/broadcast.spec.ts:19:21
+ ❯ src/app/templates/competition-show/broadcast/broadcast.spec.ts:35:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/14]⎯
+
+ FAIL  |forge-pbl-template| src/app/templates/competition-show/broadcast/broadcast.spec.ts > does not open a question when the director is destroyed mid-reveal
+TypeError: this.media?.addEventListener is not a function
+ ❯ new _BroadcastDirectorService src/app/templates/competition-show/broadcast/broadcast-director.service.ts:21:31
+ ❯ Object.BroadcastDirectorService_Factory [as factory] src/app/templates/competition-show/broadcast/broadcast.spec.ts:1526:10
+     96|   expect(rosterRotation([...ids].reverse())).not.toBe(rotation);
+     97|   for (const interest of assigned) expect(interestLabel(interest).leng…
+     98| });
+       |     ^
+     99|
+ ❯ ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/di/r3_injector.ts:535:34
+ ❯ runInInjectorProfilerContext ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/render3/debug/injector_profiler.ts:387:4
+ ❯ R3Injector.hydrate ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/di/r3_injector.ts:533:10
+ ❯ R3Injector.get ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/di/r3_injector.ts:370:22
+ ❯ TestBedImpl.inject ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/testing/src/test_bed.ts:616:47
+ ❯ TestBedImpl.inject ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/testing/src/test_bed.ts:404:32
+ ❯ director src/app/templates/competition-show/broadcast/broadcast.spec.ts:19:21
+ ❯ src/app/templates/competition-show/broadcast/broadcast.spec.ts:41:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/14]⎯
+
+ FAIL  |forge-pbl-template| src/app/templates/competition-show/broadcast/broadcast.spec.ts > keeps the game in ready state until the reveal completes, and preserves answer time on skip/cancel
+TypeError: this.media?.addEventListener is not a function
+ ❯ new _BroadcastDirectorService src/app/templates/competition-show/broadcast/broadcast-director.service.ts:21:31
+ ❯ NodeInjectorFactory.BroadcastDirectorService_Factory [as factory] src/app/templates/competition-show/broadcast/broadcast.spec.ts:1526:10
+     96|   expect(rosterRotation([...ids].reverse())).not.toBe(rotation);
+     97|   for (const interest of assigned) expect(interestLabel(interest).leng…
+     98| });
+       |     ^
+     99|
+ ❯ getNodeInjectable ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/render3/di.ts:785:37
+ ❯ searchTokensOnInjector ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/render3/di.ts:669:11
+ ❯ lookupTokenUsingNodeInjector ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/render3/di.ts:589:40
+ ❯ getOrCreateInjectable ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/render3/di.ts:486:18
+ ❯ ɵɵdirectiveInject ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/render3/instructions/di.ts:58:16
+ ❯ ɵɵinject ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/di/injector_compatibility.ts:145:4
+ ❯ inject ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/di/injector_compatibility.ts:296:9
+ ❯ _CompetitionShowComponent.<instance_members_initializer> src/app/templates/competition-show/ui/competition-show.component.ts:25:23
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/14]⎯
+
+ FAIL  |forge-pbl-template| src/app/templates/competition-show/showcase/final-showcase.spec.ts > autostarts and advances every four seconds, revealing results before leaving each round without accessing a rehearsal
+ FAIL  |forge-pbl-template| src/app/templates/competition-show/showcase/final-showcase.spec.ts > cancels chapter timers and hidden question reveals when the viewer navigates or pauses
+ FAIL  |forge-pbl-template| src/app/templates/competition-show/showcase/final-showcase.spec.ts > keeps the four-second cadence for a recap video and its failed-media storyboard fallback
+ FAIL  |forge-pbl-template| src/app/templates/competition-show/showcase/final-showcase.spec.ts > keeps navigation in the header and teacher controls behind an explicitly opened dialog
+ FAIL  |forge-pbl-template| src/app/templates/competition-show/showcase/final-showcase.spec.ts > keeps the director off the audience stage and places game selection only in the header
+TypeError: this.media?.addEventListener is not a function
+ ❯ new _BroadcastDirectorService src/app/templates/competition-show/broadcast/broadcast-director.service.ts:21:31
+ ❯ NodeInjectorFactory.BroadcastDirectorService_Factory [as factory] src/app/templates/competition-show/showcase/final-showcase.spec.ts:2269:10
+    163|   c.selectGame('wrong'); fixture.detectChanges(); expect(root.querySel…
+    164|   fixture.destroy();
+    165| });
+       |     ^
+    166|
+ ❯ getNodeInjectable ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/render3/di.ts:785:37
+ ❯ searchTokensOnInjector ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/render3/di.ts:669:11
+ ❯ lookupTokenUsingNodeInjector ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/render3/di.ts:589:40
+ ❯ getOrCreateInjectable ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/render3/di.ts:486:18
+ ❯ ɵɵdirectiveInject ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/render3/instructions/di.ts:58:16
+ ❯ ɵɵinject ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/di/injector_compatibility.ts:145:4
+ ❯ inject ../darwin_arm64-fastbuild-ST-fdfa778d11ba/bin/packages/core/src/di/injector_compatibility.ts:296:9
+ ❯ _FinalShowcaseComponent.<instance_members_initializer> src/app/templates/competition-show/showcase/final-showcase.component.ts:21:110
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/14]⎯
+
+
+ Test Files  6 failed | 168 passed (174)
+      Tests  12 failed | 939 passed (951)
+   Start at  15:41:38
+   Duration  92.22s (transform 225.60s, setup 31.88s, import 215.00s, tests 70.19s, environment 666.68s)
+

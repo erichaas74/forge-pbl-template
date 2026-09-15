@@ -1,0 +1,139 @@
+:host {
+  display: block;
+  margin: 22px 0 28px;
+}
+.worked-example {
+  padding: clamp(16px, 2.2vw, 28px);
+  border: 1px solid #a8bbb2;
+  border-radius: 14px;
+  background: #edf4ef;
+  color: #153b43;
+}
+.example-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.eyebrow {
+  font:
+    800 12px/1.5 system-ui,
+    sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.duration {
+  font:
+    600 13px/1.5 system-ui,
+    sans-serif;
+  color: #466268;
+}
+h3 {
+  font:
+    600 clamp(24px, 2.4vw, 32px)/1.2 Georgia,
+    serif;
+  margin: 12px 0;
+}
+.intro {
+  font:
+    18px/1.55 system-ui,
+    sans-serif;
+  max-width: 900px;
+  margin-bottom: 20px;
+}
+.example-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(220px, 1fr);
+  gap: 24px;
+}
+video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: 10px;
+  background: #102c35;
+}
+aside {
+  font:
+    16px/1.65 system-ui,
+    sans-serif;
+}
+ul {
+  padding-left: 22px;
+}
+li {
+  margin: 10px 0;
+}
+.small {
+  font:
+    13px/1.6 system-ui,
+    sans-serif;
+  color: #466168;
+}
+a {
+  color: #135b6b;
+  font:
+    600 15px/1.6 system-ui,
+    sans-serif;
+  display: inline-block;
+  padding: 8px 0;
+  min-height: 44px;
+}
+details {
+  border-top: 1px solid #bdcdc3;
+  margin-top: 20px;
+  padding-top: 10px;
+}
+summary,
+button {
+  cursor: pointer;
+  font:
+    700 16px/1.5 system-ui,
+    sans-serif;
+  min-height: 48px;
+}
+summary {
+  padding: 12px 0;
+}
+button {
+  border: 1px solid #9cb4b0;
+  background: #fffdf4;
+  color: #183e46;
+  border-radius: 8px;
+  padding: 10px 14px;
+  text-align: left;
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.transcript-section {
+  margin: 16px 0 24px;
+}
+.transcript-section p {
+  font:
+    18px/1.7 Georgia,
+    serif;
+  max-width: 900px;
+}
+.example-sources {
+  font:
+    14px/1.6 system-ui,
+    sans-serif;
+  border-top: 1px solid #bdcdc3;
+  padding-top: 20px;
+}
+:is(a, button, summary, video):focus-visible {
+  outline: 3px solid #a56d20;
+  outline-offset: 4px;
+}
+@media (max-width: 760px) {
+  .example-columns {
+    grid-template-columns: 1fr;
+  }
+  aside {
+    border-top: 1px solid #bdcdc3;
+    padding-top: 18px;
+  }
+}

@@ -1,0 +1,84 @@
+Using Vitest configuration file: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\output\castle-week-vitest.config.mjs
+> Building...
+√ Building...
+Application bundle generation complete. [30.832 seconds] - 2026-09-15T17:21:06.776Z
+
+
+ RUN  v4.1.11 C:/Users/erich/Desktop/pbl-lms/forge-pbl-template
+
+ ❯ |forge-pbl-template| src/app/templates/heist/ui/heist.component.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/escape/gear-lock/gear-lock.component.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/escape/expedition/expedition.component.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/gallery/ui/gallery-encounter.component.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/escape/ui/escape.component.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/escape/balance-lock/balance-lock.component.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/escape/balance-lock/balance-lock.3d-scene.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/escape/gear-lock/gear-lock.domain.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/escape/domain/expedition.navigation.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/domain/heist.engine.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/domain/heist-guided.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/escape/expedition/expedition-example.component.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/escape/runtime/expedition-runtime.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/gallery/domain/gallery.engine.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/runtime/heist-runtime.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/game/presentation-state.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/escape/locks/timing-cage/timing-cage.migration.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/escape/locks/machine.rules.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/escape/locks/machine-runtime.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/restoration/weekly/restoration-preview.validation.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/restoration/restoration-collection.engine.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/gallery/domain/gallery-audit.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/escape/balance-lock/balance-lock.migration.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/restoration/restoration-collection.runtime.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/gallery/runtime/gallery-runtime.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/restoration/weekly/restoration-preview.launcher.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/escape/runtime/escape-runtime.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/gallery/domain/gallery-encounter.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/escape/balance-lock/balance-lock.domain.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/escape/domain/escape.engine.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/escape/locks/timing-cage/timing-cage.motion.spec.ts (0 test)
+ ❯ |forge-pbl-template| src/app/templates/heist/escape/locks/timing-cage/timing-cage.validation.spec.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 32 ⎯⎯⎯⎯⎯⎯
+
+ FAIL  |forge-pbl-template| src/app/templates/heist/domain/heist-guided.spec.ts [ src/app/templates/heist/domain/heist-guided.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/domain/heist.engine.spec.ts [ src/app/templates/heist/domain/heist.engine.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/game/presentation-state.spec.ts [ src/app/templates/heist/game/presentation-state.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/restoration/restoration-collection.engine.spec.ts [ src/app/templates/heist/restoration/restoration-collection.engine.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/restoration/restoration-collection.runtime.spec.ts [ src/app/templates/heist/restoration/restoration-collection.runtime.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/runtime/heist-runtime.spec.ts [ src/app/templates/heist/runtime/heist-runtime.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/ui/heist.component.spec.ts [ src/app/templates/heist/ui/heist.component.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/escape/balance-lock/balance-lock.3d-scene.spec.ts [ src/app/templates/heist/escape/balance-lock/balance-lock.3d-scene.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/escape/balance-lock/balance-lock.component.spec.ts [ src/app/templates/heist/escape/balance-lock/balance-lock.component.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/escape/balance-lock/balance-lock.domain.spec.ts [ src/app/templates/heist/escape/balance-lock/balance-lock.domain.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/escape/balance-lock/balance-lock.migration.spec.ts [ src/app/templates/heist/escape/balance-lock/balance-lock.migration.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/escape/domain/escape.engine.spec.ts [ src/app/templates/heist/escape/domain/escape.engine.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/escape/domain/expedition.navigation.spec.ts [ src/app/templates/heist/escape/domain/expedition.navigation.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/escape/expedition/expedition-example.component.spec.ts [ src/app/templates/heist/escape/expedition/expedition-example.component.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/escape/expedition/expedition.component.spec.ts [ src/app/templates/heist/escape/expedition/expedition.component.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/escape/gear-lock/gear-lock.component.spec.ts [ src/app/templates/heist/escape/gear-lock/gear-lock.component.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/escape/gear-lock/gear-lock.domain.spec.ts [ src/app/templates/heist/escape/gear-lock/gear-lock.domain.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/escape/locks/machine-runtime.spec.ts [ src/app/templates/heist/escape/locks/machine-runtime.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/escape/locks/machine.rules.spec.ts [ src/app/templates/heist/escape/locks/machine.rules.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/escape/runtime/escape-runtime.spec.ts [ src/app/templates/heist/escape/runtime/escape-runtime.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/escape/runtime/expedition-runtime.spec.ts [ src/app/templates/heist/escape/runtime/expedition-runtime.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/escape/ui/escape.component.spec.ts [ src/app/templates/heist/escape/ui/escape.component.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/gallery/domain/gallery-audit.spec.ts [ src/app/templates/heist/gallery/domain/gallery-audit.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/gallery/domain/gallery-encounter.spec.ts [ src/app/templates/heist/gallery/domain/gallery-encounter.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/gallery/domain/gallery.engine.spec.ts [ src/app/templates/heist/gallery/domain/gallery.engine.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/gallery/runtime/gallery-runtime.spec.ts [ src/app/templates/heist/gallery/runtime/gallery-runtime.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/gallery/ui/gallery-encounter.component.spec.ts [ src/app/templates/heist/gallery/ui/gallery-encounter.component.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/restoration/weekly/restoration-preview.launcher.spec.ts [ src/app/templates/heist/restoration/weekly/restoration-preview.launcher.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/restoration/weekly/restoration-preview.validation.spec.ts [ src/app/templates/heist/restoration/weekly/restoration-preview.validation.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/escape/locks/timing-cage/timing-cage.migration.spec.ts [ src/app/templates/heist/escape/locks/timing-cage/timing-cage.migration.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/escape/locks/timing-cage/timing-cage.motion.spec.ts [ src/app/templates/heist/escape/locks/timing-cage/timing-cage.motion.spec.ts ]
+ FAIL  |forge-pbl-template| src/app/templates/heist/escape/locks/timing-cage/timing-cage.validation.spec.ts [ src/app/templates/heist/escape/locks/timing-cage/timing-cage.validation.spec.ts ]
+Error: ENOSPC: no space left on device, write
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/32]⎯
+
+
+ Test Files  32 failed | 9 passed (41)
+      Tests  78 passed (78)
+   Start at  11:21:07
+   Duration  42.36s (transform 13.59s, setup 1.26s, import 15.94s, tests 12.25s, environment 2.21s)
+

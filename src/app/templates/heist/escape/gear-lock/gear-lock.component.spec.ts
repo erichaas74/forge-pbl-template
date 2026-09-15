@@ -99,4 +99,15 @@ describe('Independent gear workshop', () => {
     expect(c.controls()).toBe(true);
     expect(solved).toHaveBeenCalledOnce();
   });
+  it('routes the diorama crank through one preview trial and replays without a trial or rescue award', async () => {
+    const f = await create(), c = f.componentInstance, tested = vi.fn(), solved = vi.fn(), pause = vi.fn();
+    f.componentRef.setInput('authoringPreview', true);
+    c.tested.subscribe(tested); c.solved.subscribe(solved); c.pauseRequested.subscribe(pause);
+    callbacks.place(2,0); callbacks.place(1,1); callbacks.crank?.(2); callbacks.test?.();
+    expect(c.running()).toBe(true); expect(tested).toHaveBeenCalledOnce();
+    callbacks.finished(); callbacks.replay?.(); callbacks.finished();
+    expect(tested).toHaveBeenCalledOnce(); expect(solved).not.toHaveBeenCalled();
+    callbacks.pause?.(); expect(pause).toHaveBeenCalledOnce();
+    callbacks.reset?.(); expect(c.positions()).toEqual([-1,-1,1]);
+  });
 });

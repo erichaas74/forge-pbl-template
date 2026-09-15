@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig.spec.json",
+  "compilerOptions": { "outDir": "./castle-week-test-tsc" },
+  "include": [
+    "../src/**/*.d.ts",
+    "../src/app/templates/heist/**/*.spec.ts",
+    "../src/app/runtime/project-launch/template-launchers/heist.launcher.spec.ts"
+  ]
+}

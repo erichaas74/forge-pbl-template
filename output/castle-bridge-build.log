@@ -1,0 +1,22 @@
+> Building...
+√ Building...
+Initial chunk files | Names              |  Raw size | Estimated transfer size
+main-A7HCPOLF.js    | main               | 545.56 kB |               122.62 kB
+styles-PWEBVAZL.css | styles             | 865 bytes |               865 bytes
+
+                    | Initial total      | 546.42 kB |               123.48 kB
+
+Lazy chunk files    | Names              |  Raw size | Estimated transfer size
+chunk-DTUybznV.js   | -                  |   1.44 MB |               309.14 kB
+chunk-V7CsywOs.js   | -                  | 603.91 kB |               128.28 kB
+chunk-DLUtN5_p.js   | machine-scene      | 125.79 kB |                36.49 kB
+chunk-K7xC4ahz.js   | gear-lock-scene    |  40.58 kB |                14.04 kB
+chunk-C0v0KQ0K.js   | balance-lock-scene |  21.01 kB |                 7.33 kB
+
+Application bundle generation complete. [48.791 seconds] - 2026-09-15T19:16:31.297Z
+
+▲ [WARNING] bundle initial exceeded maximum budget. Budget 500.00 kB was not met by 46.42 kB with a total of 546.42 kB.
+
+
+Output location: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\output\castle-bridge-code-build
+

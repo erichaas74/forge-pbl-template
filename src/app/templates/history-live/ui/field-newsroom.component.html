@@ -1,0 +1,208 @@
+<main class="field-newsroom" [style.--newsroom-image]="'url(' + network.deskImageUrl + ')'">
+  @if (!studioOpen()) {
+    <app-inquiry-workspace (hearingRequested)="openStudio()" />
+  } @else {
+    <section class="recording-desk" aria-labelledby="recording-title">
+      <header>
+        <button type="button" (click)="closeStudio()">← Back to my lesson</button>
+        <span class="eyebrow">{{ network.shortName }} · My recording desk</span>
+        <h1 id="recording-title">Bring your report to life</h1>
+        <p>One clear section. A useful visual. Your voice.</p>
+        <p class="small" role="status">
+          Local preview ·
+          {{
+            runtime.saveState() === 'error'
+              ? 'Not saved — download a backup and keep this page open'
+              : runtime.saveState() === 'saved'
+                ? 'Saved on this device'
+                : 'Saving…'
+          }}
+        </p>
+      </header>
+      @if (!mayRecord()) {
+        <p class="notice">
+          Your report checkpoint needs another review before recording. Return to your lesson for a
+          fresh check.
+        </p>
+      }
+      <div class="studio-columns">
+        <section class="paper" aria-label="My report script">
+          <span class="step">1 · My report</span>
+          <label for="studio-headline">Headline</label>
+          <input
+            id="studio-headline"
+            [disabled]="!mayRecord()"
+            [ngModel]="draft('studio-headline')"
+            (ngModelChange)="runtime.updateInquiryDraft('studio-headline', $event)"
+            (blur)="runtime.flushDrafts()"
+          />
+          <label for="studio-transcript">My spoken script and readable transcript</label>
+          <p class="small">
+            Keep the source credits. This is your section of the team’s 3–5 minute broadcast.
+          </p>
+          <button type="button" [disabled]="!mayRecord()" (click)="copyReport()">
+            Use my latest report
+          </button>
+          <textarea
+            id="studio-transcript"
+            rows="12"
+            [disabled]="!mayRecord()"
+            [ngModel]="runtime.state().transcript || ''"
+            (ngModelChange)="runtime.updateTranscript($event)"
+            (blur)="runtime.flushDrafts()"
+          ></textarea>
+          <p class="small">
+            {{ wordCount() }} words · length helps planning; it does not award a standard.
+          </p>
+          <label for="studio-order">Team running order · my copy</label>
+          <textarea
+            id="studio-order"
+            rows="3"
+            [ngModel]="draft('studio-order')"
+            (ngModelChange)="runtime.updateInquiryDraft('studio-order', $event)"
+            (blur)="runtime.flushDrafts()"
+            placeholder="Opening → each reporter’s section → closing. Name who speaks and when."
+          ></textarea>
+        </section>
+        <section class="paper" aria-label="My visual and recording">
+          <span class="step">2 · A helpful visual</span>
+          <label for="studio-visual">Choose a credited source</label>
+          <select
+            id="studio-visual"
+            [disabled]="!mayRecord()"
+            [ngModel]="draft('studio-visual')"
+            (ngModelChange)="runtime.updateInquiryDraft('studio-visual', $event)"
+          >
+            <option value="">Choose one…</option>
+            @for (source of visuals; track source.id) {
+              <option [value]="source.id">{{ source.title }}</option>
+            }
+          </select>
+          @if (selectedVisual(); as source) {
+            <figure>
+              @if (source.imageUrl) {
+                <img [src]="source.imageUrl" [alt]="source.imageAlt || source.title" />
+              } @else {
+                <p class="source-text">{{ source.excerpt }}</p>
+              }
+              <figcaption>{{ source.citation }}</figcaption>
+            </figure>
+          }
+          <label for="studio-media-reason">What will this help listeners understand?</label>
+          <textarea
+            id="studio-media-reason"
+            rows="2"
+            [disabled]="!mayRecord()"
+            [ngModel]="draft('studio-media-reason')"
+            (ngModelChange)="runtime.updateInquiryDraft('studio-media-reason', $event)"
+            (blur)="runtime.flushDrafts()"
+          ></textarea>
+          <span class="step">3 · Rehearse and record</span>
+          <div class="actions">
+            @if (runtime.recordingState() === 'recording') {
+              <button type="button" class="primary" (click)="runtime.stopRecording()">
+                Stop recording
+              </button>
+              <span role="status">Recording your microphone…</span>
+            } @else {
+              <button
+                type="button"
+                class="primary"
+                [disabled]="!mayRecord() || runtime.recordingState() === 'requesting'"
+                (click)="runtime.startRecording('audio')"
+              >
+                {{
+                  runtime.recordingState() === 'requesting'
+                    ? 'Waiting for microphone…'
+                    : 'Record my voice'
+                }}
+              </button>
+            }
+          </div>
+          <label for="studio-upload">Or choose a recording from this device</label>
+          <input
+            id="studio-upload"
+            type="file"
+            accept="audio/*,video/*"
+            [disabled]="
+              !mayRecord() ||
+              runtime.recordingState() === 'recording' ||
+              runtime.recordingState() === 'requesting'
+            "
+            (change)="upload($event)"
+          />
+          <p class="small">
+            Audio or video, up to 100 MB. Replacing a recording changes your current take; download
+            it first if you want to keep it.
+          </p>
+          @if (runtime.recordingUrl(); as url) {
+            <video [src]="url" controls preload="metadata" aria-label="My recorded report"></video>
+            <a [href]="url" download="my-report-recording">Download my recording</a>
+          }
+          <details>
+            <summary>Presenting live or using an approved equivalent?</summary>
+            <label for="studio-performance">My presentation plan</label>
+            <textarea
+              id="studio-performance"
+              rows="3"
+              [ngModel]="draft('studio-performance')"
+              (ngModelChange)="runtime.updateInquiryDraft('studio-performance', $event)"
+              (blur)="runtime.flushDrafts()"
+              placeholder="Explain when you will present, or record the equivalent your teacher approved. The teacher still observes the assessed skills."
+            ></textarea>
+          </details>
+        </section>
+      </div>
+      <footer class="paper">
+        <h2>Ready to share with your team?</h2>
+        <p>
+          {{
+            mayRelease()
+              ? 'Your final checkpoint is reviewed in this demo. Prepare your section, then present together in class.'
+              : 'Keep rehearsing. The lesson 7 personal defense (E-C) must be reviewed before final preparation.'
+          }}
+        </p>
+        <div class="actions">
+          <button
+            class="primary"
+            type="button"
+            [disabled]="
+              !mayRelease() ||
+              runtime.recordingState() === 'recording' ||
+              runtime.recordingState() === 'requesting'
+            "
+            (click)="runtime.prepareInquirySegment()"
+          >
+            Prepare my final section
+          </button>
+          <button type="button" (click)="runtime.flushDrafts()">Save my work</button>
+          <button type="button" (click)="runtime.exportWork()">Download work backup</button>
+        </div>
+        @if (segment(); as item) {
+          <section class="preview" aria-label="Prepared broadcast section">
+            <span class="eyebrow">Prepared on this device · {{ item.reporter }}</span>
+            <h3>{{ item.headline }}</h3>
+            <p>
+              {{ item.visualLabel }} · about {{ item.durationSeconds }} seconds at a typical
+              speaking pace
+            </p>
+            <details>
+              <summary>Read my prepared section</summary>
+              <p class="source-text">{{ item.transcript }}</p>
+            </details>
+            <p class="small">
+              Edits return this section to draft. Preparation does not confirm presentation skills
+              or publish to a classroom.
+            </p>
+          </section>
+        }
+      </footer>
+    </section>
+  }
+  @if (runtime.error()) {
+    <p class="runtime-message error" role="alert">{{ runtime.error() }}</p>
+  }
+  @if (runtime.notification()) {
+    <p class="runtime-message" role="status">{{ runtime.notification() }}</p>
+  }
+</main>

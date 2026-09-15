@@ -1,0 +1,2209 @@
+{
+  "schemaVersion": "1.1",
+  "experience": "gallery",
+  "projectId": "shadow-gallery",
+  "projectVersion": "1.0.0",
+  "template": {
+    "id": "heist",
+    "version": "1.0"
+  },
+  "title": "The Cartographer’s Vault",
+  "subtitle": "An Age of Exploration art heist",
+  "subject": "hybrid",
+  "briefing": "A collection of historical scenes has been mixed with convincing frauds. Recover the authentic records. Follow the evidence through eight galleries, operate the mechanisms, and bring the collection safely home.",
+  "environment": "/projects/shadow-gallery/gallery-v1.webp",
+  "entry": "shore",
+  "chambers": [
+    {
+      "id": "shore",
+      "title": "The first encounter",
+      "date": "1492",
+      "location": "Hispaniola · Caribbean",
+      "briefing": "Three reconstructions tell a different story of the same shore. Find the scene whose details fit the place and time.",
+      "layout": "gallery",
+      "paintings": [
+        {
+          "id": "shore-painting-0",
+          "title": "The morning study",
+          "image": "/projects/shadow-gallery/frauds-v1.webp",
+          "artFrame": 0,
+          "caption": "Hispaniola · Caribbean · 1492. A settlement and its livestock.",
+          "authentic": false,
+          "hotspots": [
+            {
+              "id": "shore-detail-0",
+              "label": "Established horse herds",
+              "detail": "The scene detail shows horse herds already kept by the island community before European arrival.",
+              "symbol": "♞",
+              "x": 65,
+              "y": 62
+            },
+            {
+              "id": "shore-context-0",
+              "label": "Setting inscription",
+              "detail": "This reconstruction claims to depict Hispaniola · Caribbean in 1492. Inspect the scene details against the field notes.",
+              "symbol": "⌖",
+              "x": 24,
+              "y": 25
+            }
+          ],
+          "fraud": {
+            "category": "animal-plant",
+            "hotspotId": "shore-detail-0",
+            "recoveryLockId": "shore-recovery-0",
+            "explanation": "Horses were introduced from the Old World after contact. Established pre-contact European horse herds cannot belong in this scene."
+          }
+        },
+        {
+          "id": "shore-painting-1",
+          "title": "The collector’s scene",
+          "image": "/projects/shadow-gallery/paintings-v1.webp",
+          "artFrame": 0,
+          "caption": "Hispaniola · Caribbean · 1492. A canoe beside local gardens.",
+          "authentic": true,
+          "hotspots": [
+            {
+              "id": "shore-detail-1",
+              "label": "Maize and a dugout canoe",
+              "detail": "The scene detail shows maize from the Americas and a dugout canoe used by an island community.",
+              "symbol": "✦",
+              "x": 65,
+              "y": 62
+            },
+            {
+              "id": "shore-context-1",
+              "label": "Setting inscription",
+              "detail": "This reconstruction claims to depict Hispaniola · Caribbean in 1492. Inspect the scene details against the field notes.",
+              "symbol": "⌖",
+              "x": 24,
+              "y": 25
+            }
+          ]
+        },
+        {
+          "id": "shore-painting-2",
+          "title": "The light beyond",
+          "image": "/projects/shadow-gallery/paintings-v1.webp",
+          "artFrame": 5,
+          "caption": "Hispaniola · Caribbean · 1492. A community named on the frame.",
+          "authentic": false,
+          "hotspots": [
+            {
+              "id": "shore-detail-2",
+              "label": "Inca island settlement",
+              "detail": "The inscription identifies this Hispaniola community as the Inca of the Andes.",
+              "symbol": "⌂",
+              "x": 65,
+              "y": 62
+            },
+            {
+              "id": "shore-context-2",
+              "label": "Setting inscription",
+              "detail": "This reconstruction claims to depict Hispaniola · Caribbean in 1492. Inspect the scene details against the field notes.",
+              "symbol": "⌖",
+              "x": 24,
+              "y": 25
+            }
+          ],
+          "fraud": {
+            "category": "people",
+            "hotspotId": "shore-detail-2",
+            "recoveryLockId": "shore-recovery-2",
+            "explanation": "The Inca belonged to the Andes; a label identifying Hispaniola’s community as an Inca settlement misplaces the group."
+          }
+        }
+      ],
+      "lockIds": [
+        "shore-crates",
+        "shore-angle"
+      ],
+      "factIds": [
+        "first-contact",
+        "island-people",
+        "exchange-origins"
+      ],
+      "next": "workshop"
+    },
+    {
+      "id": "workshop",
+      "title": "The navigator’s workshop",
+      "date": "1500",
+      "location": "Portugal",
+      "briefing": "A convincing instrument can still be centuries too early. Inspect the instrument study attached to each painting.",
+      "layout": "workshop",
+      "paintings": [
+        {
+          "id": "workshop-painting-0",
+          "title": "The morning study",
+          "image": "/projects/shadow-gallery/frauds-v1.webp",
+          "artFrame": 1,
+          "caption": "Portugal · 1500. A navigator checks an instrument.",
+          "authentic": false,
+          "hotspots": [
+            {
+              "id": "workshop-detail-0",
+              "label": "Reflecting sextant",
+              "detail": "The instrument study labels the navigator’s device as a reflecting sextant.",
+              "symbol": "◔",
+              "x": 65,
+              "y": 62
+            },
+            {
+              "id": "workshop-context-0",
+              "label": "Setting inscription",
+              "detail": "This reconstruction claims to depict Portugal in 1500. Inspect the scene details against the field notes.",
+              "symbol": "⌖",
+              "x": 24,
+              "y": 25
+            }
+          ],
+          "fraud": {
+            "category": "technology",
+            "hotspotId": "workshop-detail-0",
+            "recoveryLockId": "workshop-recovery-0",
+            "explanation": "The reflecting sextant belongs to the eighteenth century, not a workshop in 1500."
+          }
+        },
+        {
+          "id": "workshop-painting-1",
+          "title": "The collector’s scene",
+          "image": "/projects/shadow-gallery/frauds-v1.webp",
+          "artFrame": 2,
+          "caption": "Portugal · 1500. A device keeps time at sea.",
+          "authentic": false,
+          "hotspots": [
+            {
+              "id": "workshop-detail-1",
+              "label": "Harrison marine timekeeper",
+              "detail": "A Harrison-style marine timekeeper is catalogued on the desk.",
+              "symbol": "◷",
+              "x": 65,
+              "y": 62
+            },
+            {
+              "id": "workshop-context-1",
+              "label": "Setting inscription",
+              "detail": "This reconstruction claims to depict Portugal in 1500. Inspect the scene details against the field notes.",
+              "symbol": "⌖",
+              "x": 24,
+              "y": 25
+            }
+          ],
+          "fraud": {
+            "category": "technology",
+            "hotspotId": "workshop-detail-1",
+            "recoveryLockId": "workshop-recovery-1",
+            "explanation": "Harrison’s marine timekeepers were eighteenth-century developments and cannot belong on this desk in 1500."
+          }
+        },
+        {
+          "id": "workshop-painting-2",
+          "title": "The light beyond",
+          "image": "/projects/shadow-gallery/paintings-v1.webp",
+          "artFrame": 1,
+          "caption": "Portugal · 1500. The tools of an ocean voyage.",
+          "authentic": true,
+          "hotspots": [
+            {
+              "id": "workshop-detail-2",
+              "label": "Compass and astrolabe",
+              "detail": "The instrument study identifies a magnetic compass and a mariner’s astrolabe.",
+              "symbol": "⊕",
+              "x": 65,
+              "y": 62
+            },
+            {
+              "id": "workshop-context-2",
+              "label": "Setting inscription",
+              "detail": "This reconstruction claims to depict Portugal in 1500. Inspect the scene details against the field notes.",
+              "symbol": "⌖",
+              "x": 24,
+              "y": 25
+            }
+          ]
+        }
+      ],
+      "lockIds": [
+        "workshop-tools",
+        "workshop-bearing"
+      ],
+      "factIds": [
+        "navigation-tools",
+        "marine-clock"
+      ],
+      "next": "port"
+    },
+    {
+      "id": "port",
+      "title": "Departure from the port",
+      "date": "1497",
+      "location": "Lisbon",
+      "briefing": "The port register identifies da Gama’s departure. Compare the labels with the expedition record.",
+      "layout": "port",
+      "paintings": [
+        {
+          "id": "port-painting-0",
+          "title": "The morning study",
+          "image": "/projects/shadow-gallery/paintings-v1.webp",
+          "artFrame": 2,
+          "caption": "Lisbon · 1497. An outward-bound expedition.",
+          "authentic": true,
+          "hotspots": [
+            {
+              "id": "port-detail-0",
+              "label": "Portuguese expedition · 1497",
+              "detail": "The register identifies da Gama’s Portuguese expedition departing Lisbon in 1497.",
+              "symbol": "⚑",
+              "x": 65,
+              "y": 62
+            },
+            {
+              "id": "port-context-0",
+              "label": "Setting inscription",
+              "detail": "This reconstruction claims to depict Lisbon in 1497. Inspect the scene details against the field notes.",
+              "symbol": "⌖",
+              "x": 24,
+              "y": 25
+            }
+          ]
+        },
+        {
+          "id": "port-painting-1",
+          "title": "The collector’s scene",
+          "image": "/projects/shadow-gallery/paintings-v1.webp",
+          "artFrame": 2,
+          "caption": "Lisbon · 1497. A date in the departure register.",
+          "authentic": false,
+          "hotspots": [
+            {
+              "id": "port-detail-1",
+              "label": "Departure dated 1607",
+              "detail": "The attached register says this is da Gama’s first departure for India in 1607.",
+              "symbol": "◷",
+              "x": 65,
+              "y": 62
+            },
+            {
+              "id": "port-context-1",
+              "label": "Setting inscription",
+              "detail": "This reconstruction claims to depict Lisbon in 1497. Inspect the scene details against the field notes.",
+              "symbol": "⌖",
+              "x": 24,
+              "y": 25
+            }
+          ],
+          "fraud": {
+            "category": "timeline",
+            "hotspotId": "port-detail-1",
+            "recoveryLockId": "port-recovery-1",
+            "explanation": "Da Gama departed for his first voyage to India in 1497. A register dating that same departure to 1607 is false."
+          }
+        },
+        {
+          "id": "port-painting-2",
+          "title": "The light beyond",
+          "image": "/projects/shadow-gallery/paintings-v1.webp",
+          "artFrame": 2,
+          "caption": "Lisbon · 1497. A sponsor named on the manifest.",
+          "authentic": false,
+          "hotspots": [
+            {
+              "id": "port-detail-2",
+              "label": "French-sponsored fleet",
+              "detail": "The manifest calls da Gama’s first India expedition a French-sponsored fleet.",
+              "symbol": "⚑",
+              "x": 65,
+              "y": 62
+            },
+            {
+              "id": "port-context-2",
+              "label": "Setting inscription",
+              "detail": "This reconstruction claims to depict Lisbon in 1497. Inspect the scene details against the field notes.",
+              "symbol": "⌖",
+              "x": 24,
+              "y": 25
+            }
+          ],
+          "fraud": {
+            "category": "people",
+            "hotspotId": "port-detail-2",
+            "recoveryLockId": "port-recovery-2",
+            "explanation": "Da Gama’s expedition was sponsored by Portugal, not France; the manifest identifies the wrong national group."
+          }
+        }
+      ],
+      "lockIds": [
+        "port-timeline"
+      ],
+      "factIds": [
+        "port-voyage",
+        "first-contact",
+        "treaty-date"
+      ],
+      "next": "market"
+    },
+    {
+      "id": "market",
+      "title": "Cargo across the Atlantic",
+      "date": "After 1492",
+      "location": "Atlantic exchange market",
+      "briefing": "The crates carry origin labels. Separate where goods began from where they later travelled. Then respond to a damaged recovery cart.",
+      "layout": "cargo",
+      "paintings": [
+        {
+          "id": "market-painting-0",
+          "title": "The morning study",
+          "image": "/projects/shadow-gallery/paintings-v1.webp",
+          "artFrame": 3,
+          "caption": "Atlantic exchange market · After 1492. An origin tag on a crate.",
+          "authentic": false,
+          "hotspots": [
+            {
+              "id": "market-detail-0",
+              "label": "Potatoes · European origin",
+              "detail": "The potato crate is labelled as a European-origin crop introduced to the Americas.",
+              "symbol": "✦",
+              "x": 65,
+              "y": 62
+            },
+            {
+              "id": "market-context-0",
+              "label": "Setting inscription",
+              "detail": "This reconstruction claims to depict Atlantic exchange market in After 1492. Inspect the scene details against the field notes.",
+              "symbol": "⌖",
+              "x": 24,
+              "y": 25
+            }
+          ],
+          "fraud": {
+            "category": "animal-plant",
+            "hotspotId": "market-detail-0",
+            "recoveryLockId": "market-recovery-0",
+            "explanation": "Potatoes originated in the Americas. This crate reverses their origin and exchange direction."
+          }
+        },
+        {
+          "id": "market-painting-1",
+          "title": "The collector’s scene",
+          "image": "/projects/shadow-gallery/paintings-v1.webp",
+          "artFrame": 3,
+          "caption": "Atlantic exchange market · After 1492. Two carefully labelled shipments.",
+          "authentic": true,
+          "hotspots": [
+            {
+              "id": "market-detail-1",
+              "label": "Maize from Americas · wheat from Old World",
+              "detail": "The cargo labels place maize in the Americas and wheat in the Old World before exchange.",
+              "symbol": "✦",
+              "x": 65,
+              "y": 62
+            },
+            {
+              "id": "market-context-1",
+              "label": "Setting inscription",
+              "detail": "This reconstruction claims to depict Atlantic exchange market in After 1492. Inspect the scene details against the field notes.",
+              "symbol": "⌖",
+              "x": 24,
+              "y": 25
+            }
+          ]
+        },
+        {
+          "id": "market-painting-2",
+          "title": "The light beyond",
+          "image": "/projects/shadow-gallery/paintings-v1.webp",
+          "artFrame": 3,
+          "caption": "Atlantic exchange market · After 1492. A livestock origin record.",
+          "authentic": false,
+          "hotspots": [
+            {
+              "id": "market-detail-2",
+              "label": "Horses · pre-contact Caribbean origin",
+              "detail": "The shipment label identifies European horses as native to pre-contact Caribbean communities.",
+              "symbol": "♞",
+              "x": 65,
+              "y": 62
+            },
+            {
+              "id": "market-context-2",
+              "label": "Setting inscription",
+              "detail": "This reconstruction claims to depict Atlantic exchange market in After 1492. Inspect the scene details against the field notes.",
+              "symbol": "⌖",
+              "x": 24,
+              "y": 25
+            }
+          ],
+          "fraud": {
+            "category": "animal-plant",
+            "hotspotId": "market-detail-2",
+            "recoveryLockId": "market-recovery-2",
+            "explanation": "The horse record is false: European horses reached the Americas from the Old World after contact."
+          }
+        }
+      ],
+      "lockIds": [
+        "market-origins",
+        "market-capacity"
+      ],
+      "factIds": [
+        "exchange-origins"
+      ],
+      "next": "voyage"
+    },
+    {
+      "id": "voyage",
+      "title": "The explorer’s route hall",
+      "date": "1497–1498",
+      "location": "Lisbon to India",
+      "briefing": "The route is part of the evidence. Inspect the voyage annotation before committing to a sea lane.",
+      "layout": "map",
+      "paintings": [
+        {
+          "id": "voyage-painting-0",
+          "title": "The morning study",
+          "image": "/projects/shadow-gallery/paintings-v1.webp",
+          "artFrame": 4,
+          "caption": "Lisbon to India · 1497–1498. A date annotation on the map.",
+          "authentic": false,
+          "hotspots": [
+            {
+              "id": "voyage-detail-0",
+              "label": "India arrival · 1492",
+              "detail": "The map dates da Gama’s first arrival in India to 1492.",
+              "symbol": "◷",
+              "x": 65,
+              "y": 62
+            },
+            {
+              "id": "voyage-context-0",
+              "label": "Setting inscription",
+              "detail": "This reconstruction claims to depict Lisbon to India in 1497–1498. Inspect the scene details against the field notes.",
+              "symbol": "⌖",
+              "x": 24,
+              "y": 25
+            }
+          ],
+          "fraud": {
+            "category": "timeline",
+            "hotspotId": "voyage-detail-0",
+            "recoveryLockId": "voyage-recovery-0",
+            "explanation": "Da Gama’s first arrival in India was in 1498, so the 1492 annotation does not fit this voyage."
+          }
+        },
+        {
+          "id": "voyage-painting-1",
+          "title": "The collector’s scene",
+          "image": "/projects/shadow-gallery/paintings-v1.webp",
+          "artFrame": 4,
+          "caption": "Lisbon to India · 1497–1498. A national seal on the route.",
+          "authentic": false,
+          "hotspots": [
+            {
+              "id": "voyage-detail-1",
+              "label": "English expedition",
+              "detail": "The map attributes da Gama’s expedition to an English-sponsored crew.",
+              "symbol": "⚑",
+              "x": 65,
+              "y": 62
+            },
+            {
+              "id": "voyage-context-1",
+              "label": "Setting inscription",
+              "detail": "This reconstruction claims to depict Lisbon to India in 1497–1498. Inspect the scene details against the field notes.",
+              "symbol": "⌖",
+              "x": 24,
+              "y": 25
+            }
+          ],
+          "fraud": {
+            "category": "people",
+            "hotspotId": "voyage-detail-1",
+            "recoveryLockId": "voyage-recovery-1",
+            "explanation": "This was a Portuguese expedition; the national attribution is incorrect."
+          }
+        },
+        {
+          "id": "voyage-painting-2",
+          "title": "The light beyond",
+          "image": "/projects/shadow-gallery/paintings-v1.webp",
+          "artFrame": 4,
+          "caption": "Lisbon to India · 1497–1498. The expedition’s route annotation.",
+          "authentic": true,
+          "hotspots": [
+            {
+              "id": "voyage-detail-2",
+              "label": "Portugal · around Africa · India 1498",
+              "detail": "The map identifies the Portuguese voyage from Lisbon around southern Africa to India in 1498.",
+              "symbol": "⌖",
+              "x": 65,
+              "y": 62
+            },
+            {
+              "id": "voyage-context-2",
+              "label": "Setting inscription",
+              "detail": "This reconstruction claims to depict Lisbon to India in 1497–1498. Inspect the scene details against the field notes.",
+              "symbol": "⌖",
+              "x": 24,
+              "y": 25
+            }
+          ]
+        }
+      ],
+      "lockIds": [
+        "voyage-route",
+        "voyage-sponsor",
+        "voyage-scale"
+      ],
+      "factIds": [
+        "port-voyage"
+      ],
+      "next": "archive"
+    },
+    {
+      "id": "archive",
+      "title": "The Indigenous encounter archive",
+      "date": "Before European contact",
+      "location": "Andes · South America",
+      "briefing": "Read the place and community labels carefully. Historical identity comes from evidence, not a guess about how people look.",
+      "layout": "archive",
+      "paintings": [
+        {
+          "id": "archive-painting-0",
+          "title": "The morning study",
+          "image": "/projects/shadow-gallery/paintings-v1.webp",
+          "artFrame": 5,
+          "caption": "Andes · South America · Before European contact. An Andean community and its animals.",
+          "authentic": true,
+          "hotspots": [
+            {
+              "id": "archive-detail-0",
+              "label": "Inca terraces and llamas",
+              "detail": "The catalogue identifies Inca stone terraces and Andean llamas.",
+              "symbol": "⌂",
+              "x": 65,
+              "y": 62
+            },
+            {
+              "id": "archive-context-0",
+              "label": "Setting inscription",
+              "detail": "This reconstruction claims to depict Andes · South America in Before European contact. Inspect the scene details against the field notes.",
+              "symbol": "⌖",
+              "x": 24,
+              "y": 25
+            }
+          ]
+        },
+        {
+          "id": "archive-painting-1",
+          "title": "The collector’s scene",
+          "image": "/projects/shadow-gallery/paintings-v1.webp",
+          "artFrame": 0,
+          "caption": "Andes · South America · Before European contact. A community named in the catalogue.",
+          "authentic": false,
+          "hotspots": [
+            {
+              "id": "archive-detail-1",
+              "label": "Taíno Caribbean settlement",
+              "detail": "The catalogue identifies the Andean mountain settlement as a Taíno Caribbean island community.",
+              "symbol": "⌂",
+              "x": 65,
+              "y": 62
+            },
+            {
+              "id": "archive-context-1",
+              "label": "Setting inscription",
+              "detail": "This reconstruction claims to depict Andes · South America in Before European contact. Inspect the scene details against the field notes.",
+              "symbol": "⌖",
+              "x": 24,
+              "y": 25
+            }
+          ],
+          "fraud": {
+            "category": "people",
+            "hotspotId": "archive-detail-1",
+            "recoveryLockId": "archive-recovery-1",
+            "explanation": "The catalogue confuses an Andean Inca setting with a Caribbean Taíno community."
+          }
+        },
+        {
+          "id": "archive-painting-2",
+          "title": "The light beyond",
+          "image": "/projects/shadow-gallery/frauds-v1.webp",
+          "artFrame": 3,
+          "caption": "Andes · South America · Before European contact. A livestock detail in the record.",
+          "authentic": false,
+          "hotspots": [
+            {
+              "id": "archive-detail-2",
+              "label": "European horses before contact",
+              "detail": "The detail study lists established European horse herds in this pre-contact Andean settlement.",
+              "symbol": "♞",
+              "x": 65,
+              "y": 62
+            },
+            {
+              "id": "archive-context-2",
+              "label": "Setting inscription",
+              "detail": "This reconstruction claims to depict Andes · South America in Before European contact. Inspect the scene details against the field notes.",
+              "symbol": "⌖",
+              "x": 24,
+              "y": 25
+            }
+          ],
+          "fraud": {
+            "category": "animal-plant",
+            "hotspotId": "archive-detail-2",
+            "recoveryLockId": "archive-recovery-2",
+            "explanation": "European horses were introduced after contact; they cannot already be established in this pre-contact setting."
+          }
+        }
+      ],
+      "lockIds": [
+        "archive-people"
+      ],
+      "factIds": [
+        "andean-people",
+        "island-people"
+      ],
+      "next": "treaty"
+    },
+    {
+      "id": "treaty",
+      "title": "The treaty and empire room",
+      "date": "1494",
+      "location": "Tordesillas",
+      "briefing": "Test the treaty date and the parties named on its seals. A European claim was not consent from the people who already lived in the claimed lands.",
+      "layout": "treaty",
+      "paintings": [
+        {
+          "id": "treaty-painting-0",
+          "title": "The morning study",
+          "image": "/projects/shadow-gallery/paintings-v1.webp",
+          "artFrame": 6,
+          "caption": "Tordesillas · 1494. A date below the signatures.",
+          "authentic": false,
+          "hotspots": [
+            {
+              "id": "treaty-detail-0",
+              "label": "Treaty signed · 1607",
+              "detail": "The date plaque identifies the Treaty of Tordesillas as signed in 1607.",
+              "symbol": "◷",
+              "x": 65,
+              "y": 62
+            },
+            {
+              "id": "treaty-context-0",
+              "label": "Setting inscription",
+              "detail": "This reconstruction claims to depict Tordesillas in 1494. Inspect the scene details against the field notes.",
+              "symbol": "⌖",
+              "x": 24,
+              "y": 25
+            }
+          ],
+          "fraud": {
+            "category": "timeline",
+            "hotspotId": "treaty-detail-0",
+            "recoveryLockId": "treaty-recovery-0",
+            "explanation": "The Treaty of Tordesillas was signed in 1494, not 1607."
+          }
+        },
+        {
+          "id": "treaty-painting-1",
+          "title": "The collector’s scene",
+          "image": "/projects/shadow-gallery/paintings-v1.webp",
+          "artFrame": 6,
+          "caption": "Tordesillas · 1494. Two crowns on the document.",
+          "authentic": true,
+          "hotspots": [
+            {
+              "id": "treaty-detail-1",
+              "label": "Spain and Portugal · 1494",
+              "detail": "The document identifies the agreement between Spain and Portugal in 1494.",
+              "symbol": "⚑",
+              "x": 65,
+              "y": 62
+            },
+            {
+              "id": "treaty-context-1",
+              "label": "Setting inscription",
+              "detail": "This reconstruction claims to depict Tordesillas in 1494. Inspect the scene details against the field notes.",
+              "symbol": "⌖",
+              "x": 24,
+              "y": 25
+            }
+          ]
+        },
+        {
+          "id": "treaty-painting-2",
+          "title": "The light beyond",
+          "image": "/projects/shadow-gallery/paintings-v1.webp",
+          "artFrame": 6,
+          "caption": "Tordesillas · 1494. The other signatory’s seal.",
+          "authentic": false,
+          "hotspots": [
+            {
+              "id": "treaty-detail-2",
+              "label": "Spain and France",
+              "detail": "The signatory label names Spain and France as the parties to this treaty.",
+              "symbol": "⚑",
+              "x": 65,
+              "y": 62
+            },
+            {
+              "id": "treaty-context-2",
+              "label": "Setting inscription",
+              "detail": "This reconstruction claims to depict Tordesillas in 1494. Inspect the scene details against the field notes.",
+              "symbol": "⌖",
+              "x": 24,
+              "y": 25
+            }
+          ],
+          "fraud": {
+            "category": "people",
+            "hotspotId": "treaty-detail-2",
+            "recoveryLockId": "treaty-recovery-2",
+            "explanation": "Portugal, not France, was the other party alongside Spain in the Treaty of Tordesillas."
+          }
+        }
+      ],
+      "lockIds": [
+        "treaty-cylinders",
+        "treaty-evidence"
+      ],
+      "factIds": [
+        "treaty-date"
+      ],
+      "next": "vault"
+    },
+    {
+      "id": "vault",
+      "title": "The cartographer’s vault",
+      "date": "1492",
+      "location": "Caribbean collection",
+      "briefing": "One last composite scene. Authenticate it, then combine the date, compass, cargo and treaty evidence to release the collection.",
+      "layout": "vault",
+      "paintings": [
+        {
+          "id": "vault-painting-0",
+          "title": "The morning study",
+          "image": "/projects/shadow-gallery/frauds-v1.webp",
+          "artFrame": 8,
+          "caption": "Caribbean collection · 1492. An instrument catalogued beside the coast.",
+          "authentic": false,
+          "hotspots": [
+            {
+              "id": "vault-detail-0",
+              "label": "Marine timekeeper in 1492",
+              "detail": "The composite catalogue includes a Harrison-style marine timekeeper in the 1492 scene.",
+              "symbol": "◷",
+              "x": 65,
+              "y": 62
+            },
+            {
+              "id": "vault-context-0",
+              "label": "Setting inscription",
+              "detail": "This reconstruction claims to depict Caribbean collection in 1492. Inspect the scene details against the field notes.",
+              "symbol": "⌖",
+              "x": 24,
+              "y": 25
+            }
+          ],
+          "fraud": {
+            "category": "technology",
+            "hotspotId": "vault-detail-0",
+            "recoveryLockId": "vault-recovery-0",
+            "explanation": "A Harrison-style marine timekeeper is centuries too late for the scene’s 1492 date."
+          }
+        },
+        {
+          "id": "vault-painting-1",
+          "title": "The collector’s scene",
+          "image": "/projects/shadow-gallery/paintings-v1.webp",
+          "artFrame": 5,
+          "caption": "Caribbean collection · 1492. A community named on the coastal record.",
+          "authentic": false,
+          "hotspots": [
+            {
+              "id": "vault-detail-1",
+              "label": "Inca Caribbean village",
+              "detail": "The coastal community in the Caribbean is identified as an Inca settlement.",
+              "symbol": "⌂",
+              "x": 65,
+              "y": 62
+            },
+            {
+              "id": "vault-context-1",
+              "label": "Setting inscription",
+              "detail": "This reconstruction claims to depict Caribbean collection in 1492. Inspect the scene details against the field notes.",
+              "symbol": "⌖",
+              "x": 24,
+              "y": 25
+            }
+          ],
+          "fraud": {
+            "category": "people",
+            "hotspotId": "vault-detail-1",
+            "recoveryLockId": "vault-recovery-1",
+            "explanation": "This attribution moves the Inca from the Andes into a Caribbean island community."
+          }
+        },
+        {
+          "id": "vault-painting-2",
+          "title": "The light beyond",
+          "image": "/projects/shadow-gallery/paintings-v1.webp",
+          "artFrame": 7,
+          "caption": "Caribbean collection · 1492. A scene with compatible details.",
+          "authentic": true,
+          "hotspots": [
+            {
+              "id": "vault-detail-2",
+              "label": "Caribbean canoe · maize · 1492",
+              "detail": "A Caribbean canoe, maize from the Americas and the arrival date 1492 fit together without the other records’ anachronisms.",
+              "symbol": "✦",
+              "x": 65,
+              "y": 62
+            },
+            {
+              "id": "vault-context-2",
+              "label": "Setting inscription",
+              "detail": "This reconstruction claims to depict Caribbean collection in 1492. Inspect the scene details against the field notes.",
+              "symbol": "⌖",
+              "x": 24,
+              "y": 25
+            }
+          ]
+        }
+      ],
+      "lockIds": [
+        "vault-date",
+        "vault-compass",
+        "vault-exchange",
+        "vault-nation"
+      ],
+      "factIds": [
+        "first-contact",
+        "exchange-origins",
+        "island-people"
+      ]
+    }
+  ],
+  "locks": [
+    {
+      "id": "shore-crates",
+      "type": "sorting",
+      "title": "The exchange crates",
+      "prompt": "Sort these goods by their origin before the Columbian Exchange.",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "exchange-origins"
+      ],
+      "hint": "An item’s origin is different from where it is grown today. Read “Where the cargo began.”",
+      "consequence": "The correctly sorted crates roll onto the trade platform.",
+      "items": [
+        {
+          "id": "horse",
+          "label": "Horse"
+        },
+        {
+          "id": "maize",
+          "label": "Maize"
+        },
+        {
+          "id": "wheat",
+          "label": "Wheat"
+        },
+        {
+          "id": "potato",
+          "label": "Potato"
+        }
+      ],
+      "zones": [
+        {
+          "id": "old",
+          "label": "Old World · Africa, Asia, Europe"
+        },
+        {
+          "id": "new",
+          "label": "Americas"
+        }
+      ],
+      "matches": {
+        "horse": "old",
+        "maize": "new",
+        "wheat": "old",
+        "potato": "new"
+      }
+    },
+    {
+      "id": "shore-angle",
+      "type": "rotation",
+      "title": "The compass mechanism",
+      "prompt": "The gate drive requires 3/8 of one clockwise turn from north. Calculate the angle, then rotate the arm to that angle.",
+      "domain": "math",
+      "standard": "Grades 4–8 · Applied mathematics",
+      "evidenceIds": [
+        "rotation-rule"
+      ],
+      "hint": "One full turn is 360°. North is 0° and the bearing increases clockwise.",
+      "consequence": "The compass arm rotates to your bearing and drives the passage gear.",
+      "target": 135,
+      "min": 0,
+      "max": 360,
+      "step": 1,
+      "tolerance": 2,
+      "wrap": true,
+      "unit": "degrees"
+    },
+    {
+      "id": "workshop-tools",
+      "type": "technology-sort",
+      "title": "The navigator’s cabinet",
+      "prompt": "Put every instrument in the correct drawer for a workshop in 1500.",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "navigation-tools",
+        "marine-clock"
+      ],
+      "hint": "Both the reflecting sextant and Harrison’s timekeepers were developed after 1500.",
+      "consequence": "The instrument drawers slide into place and release the brass latch.",
+      "items": [
+        {
+          "id": "clock",
+          "label": "Harrison marine timekeeper"
+        },
+        {
+          "id": "compass",
+          "label": "Magnetic compass"
+        },
+        {
+          "id": "sextant",
+          "label": "Reflecting sextant"
+        },
+        {
+          "id": "astrolabe",
+          "label": "Mariner’s astrolabe"
+        }
+      ],
+      "zones": [
+        {
+          "id": "available",
+          "label": "Belongs around 1500"
+        },
+        {
+          "id": "later",
+          "label": "Invented later"
+        }
+      ],
+      "matches": {
+        "clock": "later",
+        "compass": "available",
+        "sextant": "later",
+        "astrolabe": "available"
+      }
+    },
+    {
+      "id": "workshop-bearing",
+      "type": "rotation",
+      "title": "The compass mechanism",
+      "prompt": "The passage faces west. Determine its clockwise bearing from north, then align the compass arm.",
+      "domain": "math",
+      "standard": "Grades 4–8 · Applied mathematics",
+      "evidenceIds": [
+        "rotation-rule"
+      ],
+      "hint": "One full turn is 360°. North is 0° and the bearing increases clockwise.",
+      "consequence": "The compass arm rotates to your bearing and drives the passage gear.",
+      "target": 270,
+      "min": 0,
+      "max": 360,
+      "step": 1,
+      "tolerance": 2,
+      "wrap": true,
+      "unit": "degrees"
+    },
+    {
+      "id": "port-timeline",
+      "type": "timeline",
+      "title": "The chronological rail",
+      "prompt": "Arrange the events from earliest to latest to engage the archive gears.",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "first-contact",
+        "treaty-date",
+        "port-voyage"
+      ],
+      "hint": "Compare the four years. Move the earliest event to the first position.",
+      "consequence": "The timeline plaques align and the rail slides open.",
+      "items": [
+        {
+          "id": "arrival-india",
+          "label": "Da Gama reaches India · 1498"
+        },
+        {
+          "id": "caribbean",
+          "label": "Columbus reaches the Caribbean · 1492"
+        },
+        {
+          "id": "depart",
+          "label": "Da Gama leaves Lisbon · 1497"
+        },
+        {
+          "id": "treaty",
+          "label": "Treaty of Tordesillas · 1494"
+        }
+      ],
+      "solution": [
+        "caribbean",
+        "treaty",
+        "depart",
+        "arrival-india"
+      ]
+    },
+    {
+      "id": "market-origins",
+      "type": "sorting",
+      "title": "The exchange crates",
+      "prompt": "Sort these goods by their origin before the Columbian Exchange.",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "exchange-origins"
+      ],
+      "hint": "An item’s origin is different from where it is grown today. Read “Where the cargo began.”",
+      "consequence": "The correctly sorted crates roll onto the trade platform.",
+      "items": [
+        {
+          "id": "horse",
+          "label": "Horse"
+        },
+        {
+          "id": "maize",
+          "label": "Maize"
+        },
+        {
+          "id": "wheat",
+          "label": "Wheat"
+        },
+        {
+          "id": "potato",
+          "label": "Potato"
+        }
+      ],
+      "zones": [
+        {
+          "id": "old",
+          "label": "Old World · Africa, Asia, Europe"
+        },
+        {
+          "id": "new",
+          "label": "Americas"
+        }
+      ],
+      "matches": {
+        "horse": "old",
+        "maize": "new",
+        "wheat": "old",
+        "potato": "new"
+      }
+    },
+    {
+      "id": "market-capacity",
+      "type": "cargo",
+      "title": "Crisis · a damaged recovery cart",
+      "prompt": "The cart held 240 kg. Damage reduces capacity by 25%. Calculate its new limit, then load the 62 kg operative and the 78 kg archive case. Choose which optional supplies can come along.",
+      "domain": "math",
+      "standard": "Grades 4–8 · Applied mathematics",
+      "evidenceIds": [
+        "capacity-rule"
+      ],
+      "hint": "First find 75% of 240. Both the operative and archive case must cross; supplies are optional.",
+      "consequence": "The balanced recovery cart rolls onto the bridge with your chosen load.",
+      "capacity": 180,
+      "unit": "kg",
+      "items": [
+        {
+          "id": "operative",
+          "label": "Operative",
+          "mass": 62
+        },
+        {
+          "id": "archive",
+          "label": "Archive case",
+          "mass": 78
+        },
+        {
+          "id": "tools",
+          "label": "Repair tools",
+          "mass": 25
+        },
+        {
+          "id": "spare",
+          "label": "Spare equipment",
+          "mass": 40
+        }
+      ],
+      "requiredItems": [
+        "operative",
+        "archive"
+      ]
+    },
+    {
+      "id": "voyage-route",
+      "type": "map-route",
+      "title": "Trace the expedition",
+      "prompt": "Place the main waypoints of da Gama’s outward voyage in order: start in Lisbon, round southern Africa, and finish in India.",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "port-voyage"
+      ],
+      "hint": "This is a schematic route map. The expedition rounded Africa on its way to India.",
+      "consequence": "Your plotted route lights the sea lane and pulls the map-room gate open.",
+      "items": [
+        {
+          "id": "lisbon",
+          "label": "Lisbon",
+          "x": 51,
+          "y": 18
+        },
+        {
+          "id": "caribbean",
+          "label": "Caribbean",
+          "x": 19,
+          "y": 45
+        },
+        {
+          "id": "cape",
+          "label": "Southern Africa",
+          "x": 62,
+          "y": 80
+        },
+        {
+          "id": "india",
+          "label": "India",
+          "x": 88,
+          "y": 43
+        }
+      ],
+      "solution": [
+        "lisbon",
+        "cape",
+        "india"
+      ]
+    },
+    {
+      "id": "voyage-sponsor",
+      "type": "lever",
+      "title": "The sponsor lever",
+      "prompt": "Which nation sponsored Vasco da Gama’s 1497–1498 voyage?",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "port-voyage"
+      ],
+      "hint": "Consult the matching treaty or voyage field note.",
+      "consequence": "The selected nation’s lever lowers and engages the route gear.",
+      "items": [
+        {
+          "id": "spain",
+          "label": "Spain"
+        },
+        {
+          "id": "france",
+          "label": "France"
+        },
+        {
+          "id": "portugal",
+          "label": "Portugal"
+        }
+      ],
+      "solution": [
+        "portugal"
+      ]
+    },
+    {
+      "id": "voyage-scale",
+      "type": "measurement",
+      "title": "Measure the hidden passage",
+      "prompt": "The recovery blueprint measures 7.5 cm. Its scale is 1 cm : 4 m. Calculate the real distance, then extend the route to that length.",
+      "domain": "math",
+      "standard": "Grades 4–8 · Applied mathematics",
+      "evidenceIds": [
+        "scale-rule"
+      ],
+      "hint": "Multiply blueprint centimetres by metres per centimetre.",
+      "consequence": "The route extends to your measured distance and the team crosses the passage.",
+      "target": 30,
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "tolerance": 0,
+      "unit": "m"
+    },
+    {
+      "id": "archive-people",
+      "type": "people-placement",
+      "title": "Place the communities",
+      "prompt": "Place each community in its historical region. Use location evidence, not clothing or appearance.",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "island-people",
+        "andean-people"
+      ],
+      "hint": "Consult “People of the Caribbean” and “An Andean archive.”",
+      "consequence": "The region pedestals settle into their map sockets.",
+      "items": [
+        {
+          "id": "inca",
+          "label": "Inca"
+        },
+        {
+          "id": "taino",
+          "label": "Taíno"
+        }
+      ],
+      "zones": [
+        {
+          "id": "caribbean",
+          "label": "Caribbean islands"
+        },
+        {
+          "id": "andes",
+          "label": "Andes · South America"
+        }
+      ],
+      "matches": {
+        "inca": "andes",
+        "taino": "caribbean"
+      }
+    },
+    {
+      "id": "treaty-cylinders",
+      "type": "combo",
+      "title": "The date cylinders",
+      "prompt": "Determine the year the Treaty of Tordesillas was signed. Then set all four cylinders.",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "treaty-date"
+      ],
+      "hint": "Use the notebook’s timeline evidence. The calculation field and the cylinders must agree.",
+      "consequence": "The date cylinders align and the archive bolt retracts.",
+      "target": 1494,
+      "min": 0,
+      "max": 9999,
+      "step": 1,
+      "tolerance": 0,
+      "digits": 4,
+      "unit": "year"
+    },
+    {
+      "id": "treaty-evidence",
+      "type": "evidence-board",
+      "title": "Build the evidence board",
+      "prompt": "Connect each confirmed detail to the kind of historical claim it can test.",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "treaty-date",
+        "marine-clock",
+        "exchange-origins",
+        "andean-people"
+      ],
+      "hint": "Decide what each concrete detail tells you: when, what tool, where a crop began, or who lived in a region.",
+      "consequence": "The evidence links pull four seals into alignment.",
+      "items": [
+        {
+          "id": "date",
+          "label": "Signed in 1494"
+        },
+        {
+          "id": "instrument",
+          "label": "Harrison marine timekeeper"
+        },
+        {
+          "id": "crop",
+          "label": "Maize origin"
+        },
+        {
+          "id": "group",
+          "label": "Inca in the Andes"
+        }
+      ],
+      "zones": [
+        {
+          "id": "timeline",
+          "label": "Timeline"
+        },
+        {
+          "id": "technology",
+          "label": "Technology"
+        },
+        {
+          "id": "exchange",
+          "label": "Animals / plants"
+        },
+        {
+          "id": "people",
+          "label": "People / place"
+        }
+      ],
+      "matches": {
+        "date": "timeline",
+        "instrument": "technology",
+        "crop": "exchange",
+        "group": "people"
+      }
+    },
+    {
+      "id": "vault-date",
+      "type": "combo",
+      "title": "The date cylinders",
+      "prompt": "Determine the year of Columbus’s first Caribbean arrival. Then set all four cylinders.",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "first-contact"
+      ],
+      "hint": "Use the notebook’s timeline evidence. The calculation field and the cylinders must agree.",
+      "consequence": "The date cylinders align and the archive bolt retracts.",
+      "target": 1492,
+      "min": 0,
+      "max": 9999,
+      "step": 1,
+      "tolerance": 0,
+      "digits": 4,
+      "unit": "year"
+    },
+    {
+      "id": "vault-compass",
+      "type": "rotation",
+      "title": "The compass mechanism",
+      "prompt": "The passage faces west. Determine its clockwise bearing from north, then align the compass arm.",
+      "domain": "math",
+      "standard": "Grades 4–8 · Applied mathematics",
+      "evidenceIds": [
+        "rotation-rule"
+      ],
+      "hint": "One full turn is 360°. North is 0° and the bearing increases clockwise.",
+      "consequence": "The compass arm rotates to your bearing and drives the passage gear.",
+      "target": 270,
+      "min": 0,
+      "max": 360,
+      "step": 1,
+      "tolerance": 2,
+      "wrap": true,
+      "unit": "degrees"
+    },
+    {
+      "id": "vault-exchange",
+      "type": "sorting",
+      "title": "The exchange crates",
+      "prompt": "Sort these goods by their origin before the Columbian Exchange.",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "exchange-origins"
+      ],
+      "hint": "An item’s origin is different from where it is grown today. Read “Where the cargo began.”",
+      "consequence": "The correctly sorted crates roll onto the trade platform.",
+      "items": [
+        {
+          "id": "horse",
+          "label": "Horse"
+        },
+        {
+          "id": "maize",
+          "label": "Maize"
+        },
+        {
+          "id": "wheat",
+          "label": "Wheat"
+        },
+        {
+          "id": "potato",
+          "label": "Potato"
+        }
+      ],
+      "zones": [
+        {
+          "id": "old",
+          "label": "Old World · Africa, Asia, Europe"
+        },
+        {
+          "id": "new",
+          "label": "Americas"
+        }
+      ],
+      "matches": {
+        "horse": "old",
+        "maize": "new",
+        "wheat": "old",
+        "potato": "new"
+      }
+    },
+    {
+      "id": "vault-nation",
+      "type": "lever",
+      "title": "The final treaty lever",
+      "prompt": "Select the crown that signed the Treaty of Tordesillas alongside Portugal.",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "treaty-date"
+      ],
+      "hint": "Use the treaty evidence you confirmed in the previous room.",
+      "consequence": "The final lever lowers. Concentric rings align and the recovery vault opens.",
+      "items": [
+        {
+          "id": "england",
+          "label": "England"
+        },
+        {
+          "id": "spain",
+          "label": "Spain"
+        },
+        {
+          "id": "france",
+          "label": "France"
+        }
+      ],
+      "solution": [
+        "spain"
+      ]
+    },
+    {
+      "id": "shore-recovery-0",
+      "type": "sorting",
+      "title": "The exchange crates",
+      "prompt": "Sort these goods by their origin before the Columbian Exchange.",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "exchange-origins"
+      ],
+      "hint": "An item’s origin is different from where it is grown today. Read “Where the cargo began.”",
+      "consequence": "The correctly sorted crates roll onto the trade platform.",
+      "items": [
+        {
+          "id": "horse",
+          "label": "Horse"
+        },
+        {
+          "id": "maize",
+          "label": "Maize"
+        },
+        {
+          "id": "wheat",
+          "label": "Wheat"
+        },
+        {
+          "id": "potato",
+          "label": "Potato"
+        }
+      ],
+      "zones": [
+        {
+          "id": "old",
+          "label": "Old World · Africa, Asia, Europe"
+        },
+        {
+          "id": "new",
+          "label": "Americas"
+        }
+      ],
+      "matches": {
+        "horse": "old",
+        "maize": "new",
+        "wheat": "old",
+        "potato": "new"
+      }
+    },
+    {
+      "id": "shore-recovery-2",
+      "type": "people-placement",
+      "title": "Place the communities",
+      "prompt": "Place each community in its historical region. Use location evidence, not clothing or appearance.",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "island-people",
+        "andean-people"
+      ],
+      "hint": "Consult “People of the Caribbean” and “An Andean archive.”",
+      "consequence": "The region pedestals settle into their map sockets.",
+      "items": [
+        {
+          "id": "inca",
+          "label": "Inca"
+        },
+        {
+          "id": "taino",
+          "label": "Taíno"
+        }
+      ],
+      "zones": [
+        {
+          "id": "caribbean",
+          "label": "Caribbean islands"
+        },
+        {
+          "id": "andes",
+          "label": "Andes · South America"
+        }
+      ],
+      "matches": {
+        "inca": "andes",
+        "taino": "caribbean"
+      }
+    },
+    {
+      "id": "workshop-recovery-0",
+      "type": "technology-sort",
+      "title": "The navigator’s cabinet",
+      "prompt": "Put every instrument in the correct drawer for a workshop in 1500.",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "navigation-tools",
+        "marine-clock"
+      ],
+      "hint": "Both the reflecting sextant and Harrison’s timekeepers were developed after 1500.",
+      "consequence": "The instrument drawers slide into place and release the brass latch.",
+      "items": [
+        {
+          "id": "clock",
+          "label": "Harrison marine timekeeper"
+        },
+        {
+          "id": "compass",
+          "label": "Magnetic compass"
+        },
+        {
+          "id": "sextant",
+          "label": "Reflecting sextant"
+        },
+        {
+          "id": "astrolabe",
+          "label": "Mariner’s astrolabe"
+        }
+      ],
+      "zones": [
+        {
+          "id": "available",
+          "label": "Belongs around 1500"
+        },
+        {
+          "id": "later",
+          "label": "Invented later"
+        }
+      ],
+      "matches": {
+        "clock": "later",
+        "compass": "available",
+        "sextant": "later",
+        "astrolabe": "available"
+      }
+    },
+    {
+      "id": "workshop-recovery-1",
+      "type": "technology-sort",
+      "title": "The navigator’s cabinet",
+      "prompt": "Put every instrument in the correct drawer for a workshop in 1500.",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "navigation-tools",
+        "marine-clock"
+      ],
+      "hint": "Both the reflecting sextant and Harrison’s timekeepers were developed after 1500.",
+      "consequence": "The instrument drawers slide into place and release the brass latch.",
+      "items": [
+        {
+          "id": "clock",
+          "label": "Harrison marine timekeeper"
+        },
+        {
+          "id": "compass",
+          "label": "Magnetic compass"
+        },
+        {
+          "id": "sextant",
+          "label": "Reflecting sextant"
+        },
+        {
+          "id": "astrolabe",
+          "label": "Mariner’s astrolabe"
+        }
+      ],
+      "zones": [
+        {
+          "id": "available",
+          "label": "Belongs around 1500"
+        },
+        {
+          "id": "later",
+          "label": "Invented later"
+        }
+      ],
+      "matches": {
+        "clock": "later",
+        "compass": "available",
+        "sextant": "later",
+        "astrolabe": "available"
+      }
+    },
+    {
+      "id": "port-recovery-1",
+      "type": "timeline",
+      "title": "The chronological rail",
+      "prompt": "Arrange the events from earliest to latest to engage the archive gears.",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "first-contact",
+        "treaty-date",
+        "port-voyage"
+      ],
+      "hint": "Compare the four years. Move the earliest event to the first position.",
+      "consequence": "The timeline plaques align and the rail slides open.",
+      "items": [
+        {
+          "id": "arrival-india",
+          "label": "Da Gama reaches India · 1498"
+        },
+        {
+          "id": "caribbean",
+          "label": "Columbus reaches the Caribbean · 1492"
+        },
+        {
+          "id": "depart",
+          "label": "Da Gama leaves Lisbon · 1497"
+        },
+        {
+          "id": "treaty",
+          "label": "Treaty of Tordesillas · 1494"
+        }
+      ],
+      "solution": [
+        "caribbean",
+        "treaty",
+        "depart",
+        "arrival-india"
+      ]
+    },
+    {
+      "id": "port-recovery-2",
+      "type": "lever",
+      "title": "The sponsor lever",
+      "prompt": "Which nation sponsored Vasco da Gama’s 1497–1498 voyage?",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "port-voyage"
+      ],
+      "hint": "Consult the matching treaty or voyage field note.",
+      "consequence": "The selected nation’s lever lowers and engages the route gear.",
+      "items": [
+        {
+          "id": "spain",
+          "label": "Spain"
+        },
+        {
+          "id": "france",
+          "label": "France"
+        },
+        {
+          "id": "portugal",
+          "label": "Portugal"
+        }
+      ],
+      "solution": [
+        "portugal"
+      ]
+    },
+    {
+      "id": "market-recovery-0",
+      "type": "sorting",
+      "title": "The exchange crates",
+      "prompt": "Sort these goods by their origin before the Columbian Exchange.",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "exchange-origins"
+      ],
+      "hint": "An item’s origin is different from where it is grown today. Read “Where the cargo began.”",
+      "consequence": "The correctly sorted crates roll onto the trade platform.",
+      "items": [
+        {
+          "id": "horse",
+          "label": "Horse"
+        },
+        {
+          "id": "maize",
+          "label": "Maize"
+        },
+        {
+          "id": "wheat",
+          "label": "Wheat"
+        },
+        {
+          "id": "potato",
+          "label": "Potato"
+        }
+      ],
+      "zones": [
+        {
+          "id": "old",
+          "label": "Old World · Africa, Asia, Europe"
+        },
+        {
+          "id": "new",
+          "label": "Americas"
+        }
+      ],
+      "matches": {
+        "horse": "old",
+        "maize": "new",
+        "wheat": "old",
+        "potato": "new"
+      }
+    },
+    {
+      "id": "market-recovery-2",
+      "type": "sorting",
+      "title": "The exchange crates",
+      "prompt": "Sort these goods by their origin before the Columbian Exchange.",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "exchange-origins"
+      ],
+      "hint": "An item’s origin is different from where it is grown today. Read “Where the cargo began.”",
+      "consequence": "The correctly sorted crates roll onto the trade platform.",
+      "items": [
+        {
+          "id": "horse",
+          "label": "Horse"
+        },
+        {
+          "id": "maize",
+          "label": "Maize"
+        },
+        {
+          "id": "wheat",
+          "label": "Wheat"
+        },
+        {
+          "id": "potato",
+          "label": "Potato"
+        }
+      ],
+      "zones": [
+        {
+          "id": "old",
+          "label": "Old World · Africa, Asia, Europe"
+        },
+        {
+          "id": "new",
+          "label": "Americas"
+        }
+      ],
+      "matches": {
+        "horse": "old",
+        "maize": "new",
+        "wheat": "old",
+        "potato": "new"
+      }
+    },
+    {
+      "id": "voyage-recovery-0",
+      "type": "timeline",
+      "title": "The chronological rail",
+      "prompt": "Arrange the events from earliest to latest to engage the archive gears.",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "first-contact",
+        "treaty-date",
+        "port-voyage"
+      ],
+      "hint": "Compare the four years. Move the earliest event to the first position.",
+      "consequence": "The timeline plaques align and the rail slides open.",
+      "items": [
+        {
+          "id": "arrival-india",
+          "label": "Da Gama reaches India · 1498"
+        },
+        {
+          "id": "caribbean",
+          "label": "Columbus reaches the Caribbean · 1492"
+        },
+        {
+          "id": "depart",
+          "label": "Da Gama leaves Lisbon · 1497"
+        },
+        {
+          "id": "treaty",
+          "label": "Treaty of Tordesillas · 1494"
+        }
+      ],
+      "solution": [
+        "caribbean",
+        "treaty",
+        "depart",
+        "arrival-india"
+      ]
+    },
+    {
+      "id": "voyage-recovery-1",
+      "type": "lever",
+      "title": "The sponsor lever",
+      "prompt": "Which nation sponsored Vasco da Gama’s 1497–1498 voyage?",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "port-voyage"
+      ],
+      "hint": "Consult the matching treaty or voyage field note.",
+      "consequence": "The selected nation’s lever lowers and engages the route gear.",
+      "items": [
+        {
+          "id": "spain",
+          "label": "Spain"
+        },
+        {
+          "id": "france",
+          "label": "France"
+        },
+        {
+          "id": "portugal",
+          "label": "Portugal"
+        }
+      ],
+      "solution": [
+        "portugal"
+      ]
+    },
+    {
+      "id": "archive-recovery-1",
+      "type": "people-placement",
+      "title": "Place the communities",
+      "prompt": "Place each community in its historical region. Use location evidence, not clothing or appearance.",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "island-people",
+        "andean-people"
+      ],
+      "hint": "Consult “People of the Caribbean” and “An Andean archive.”",
+      "consequence": "The region pedestals settle into their map sockets.",
+      "items": [
+        {
+          "id": "inca",
+          "label": "Inca"
+        },
+        {
+          "id": "taino",
+          "label": "Taíno"
+        }
+      ],
+      "zones": [
+        {
+          "id": "caribbean",
+          "label": "Caribbean islands"
+        },
+        {
+          "id": "andes",
+          "label": "Andes · South America"
+        }
+      ],
+      "matches": {
+        "inca": "andes",
+        "taino": "caribbean"
+      }
+    },
+    {
+      "id": "archive-recovery-2",
+      "type": "sorting",
+      "title": "The exchange crates",
+      "prompt": "Sort these goods by their origin before the Columbian Exchange.",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "exchange-origins"
+      ],
+      "hint": "An item’s origin is different from where it is grown today. Read “Where the cargo began.”",
+      "consequence": "The correctly sorted crates roll onto the trade platform.",
+      "items": [
+        {
+          "id": "horse",
+          "label": "Horse"
+        },
+        {
+          "id": "maize",
+          "label": "Maize"
+        },
+        {
+          "id": "wheat",
+          "label": "Wheat"
+        },
+        {
+          "id": "potato",
+          "label": "Potato"
+        }
+      ],
+      "zones": [
+        {
+          "id": "old",
+          "label": "Old World · Africa, Asia, Europe"
+        },
+        {
+          "id": "new",
+          "label": "Americas"
+        }
+      ],
+      "matches": {
+        "horse": "old",
+        "maize": "new",
+        "wheat": "old",
+        "potato": "new"
+      }
+    },
+    {
+      "id": "treaty-recovery-0",
+      "type": "combo",
+      "title": "The date cylinders",
+      "prompt": "Determine the year the Treaty of Tordesillas was signed. Then set all four cylinders.",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "treaty-date"
+      ],
+      "hint": "Use the notebook’s timeline evidence. The calculation field and the cylinders must agree.",
+      "consequence": "The date cylinders align and the archive bolt retracts.",
+      "target": 1494,
+      "min": 0,
+      "max": 9999,
+      "step": 1,
+      "tolerance": 0,
+      "digits": 4,
+      "unit": "year"
+    },
+    {
+      "id": "treaty-recovery-2",
+      "type": "lever",
+      "title": "The sponsor lever",
+      "prompt": "Which crown joined Spain in signing the Treaty of Tordesillas?",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "treaty-date"
+      ],
+      "hint": "Consult the matching treaty or voyage field note.",
+      "consequence": "The selected nation’s lever lowers and engages the route gear.",
+      "items": [
+        {
+          "id": "spain",
+          "label": "Spain"
+        },
+        {
+          "id": "france",
+          "label": "France"
+        },
+        {
+          "id": "portugal",
+          "label": "Portugal"
+        }
+      ],
+      "solution": [
+        "portugal"
+      ]
+    },
+    {
+      "id": "vault-recovery-0",
+      "type": "technology-sort",
+      "title": "The navigator’s cabinet",
+      "prompt": "Put every instrument in the correct drawer for a workshop in 1500.",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "navigation-tools",
+        "marine-clock"
+      ],
+      "hint": "Both the reflecting sextant and Harrison’s timekeepers were developed after 1500.",
+      "consequence": "The instrument drawers slide into place and release the brass latch.",
+      "items": [
+        {
+          "id": "clock",
+          "label": "Harrison marine timekeeper"
+        },
+        {
+          "id": "compass",
+          "label": "Magnetic compass"
+        },
+        {
+          "id": "sextant",
+          "label": "Reflecting sextant"
+        },
+        {
+          "id": "astrolabe",
+          "label": "Mariner’s astrolabe"
+        }
+      ],
+      "zones": [
+        {
+          "id": "available",
+          "label": "Belongs around 1500"
+        },
+        {
+          "id": "later",
+          "label": "Invented later"
+        }
+      ],
+      "matches": {
+        "clock": "later",
+        "compass": "available",
+        "sextant": "later",
+        "astrolabe": "available"
+      }
+    },
+    {
+      "id": "vault-recovery-1",
+      "type": "people-placement",
+      "title": "Place the communities",
+      "prompt": "Place each community in its historical region. Use location evidence, not clothing or appearance.",
+      "domain": "history",
+      "standard": "Historical evidence",
+      "evidenceIds": [
+        "island-people",
+        "andean-people"
+      ],
+      "hint": "Consult “People of the Caribbean” and “An Andean archive.”",
+      "consequence": "The region pedestals settle into their map sockets.",
+      "items": [
+        {
+          "id": "inca",
+          "label": "Inca"
+        },
+        {
+          "id": "taino",
+          "label": "Taíno"
+        }
+      ],
+      "zones": [
+        {
+          "id": "caribbean",
+          "label": "Caribbean islands"
+        },
+        {
+          "id": "andes",
+          "label": "Andes · South America"
+        }
+      ],
+      "matches": {
+        "inca": "andes",
+        "taino": "caribbean"
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "id": "first-contact",
+      "category": "Timeline",
+      "title": "A date on the shore",
+      "text": "Columbus’s first Caribbean voyage reached the islands in 1492. This date describes European arrival, not the beginning of Caribbean history.",
+      "sourceTitle": "Smithsonian · Mesoamerica / Caribbean",
+      "sourceUrl": "https://americanindian.si.edu/exhibitions/infinityofnations/mesoamerica-caribbean.html"
+    },
+    {
+      "id": "island-people",
+      "category": "People",
+      "title": "People of the Caribbean",
+      "text": "Taíno communities lived across much of the Caribbean, including Hispaniola. Inca communities belonged to the Andes of South America. Regional identity must be established with place and evidence, not appearance.",
+      "sourceTitle": "Smithsonian · Mesoamerica / Caribbean",
+      "sourceUrl": "https://americanindian.si.edu/exhibitions/infinityofnations/mesoamerica-caribbean.html"
+    },
+    {
+      "id": "andean-people",
+      "category": "People",
+      "title": "An Andean archive",
+      "text": "The Inca empire was centered in the Andes. Llamas were part of Andean life. A label calling an Andean Inca settlement a Taíno Caribbean island settlement misidentifies its people and place.",
+      "sourceTitle": "Smithsonian · Andes",
+      "sourceUrl": "https://americanindian.si.edu/exhibitions/infinityofnations/andes.html"
+    },
+    {
+      "id": "exchange-origins",
+      "category": "Exchange",
+      "title": "Where the cargo began",
+      "text": "Maize, potatoes, tomatoes and cacao originated in the Americas. Horses, cattle, wheat and sugarcane reached the Americas from the Old World after contact. A pre-contact island cannot already have established European horse herds.",
+      "sourceTitle": "National Park Service · Columbian Exchange",
+      "sourceUrl": "https://home.nps.gov/casa/learn/historyculture/columbian-exchange.htm"
+    },
+    {
+      "id": "navigation-tools",
+      "category": "Technology",
+      "title": "Tools across the centuries",
+      "text": "A magnetic compass and mariner’s astrolabe fit the navigation setting around 1500. The reflecting sextant belongs to the eighteenth century, so it cannot be on a navigator’s desk in 1500.",
+      "sourceTitle": "Royal Museums Greenwich · Navigation instruments",
+      "sourceUrl": "https://www.rmg.co.uk/collections/objects/rmgc-object-43438"
+    },
+    {
+      "id": "marine-clock",
+      "category": "Technology",
+      "title": "A clock that came later",
+      "text": "John Harrison developed his marine timekeepers in the eighteenth century; H1 went to sea in 1736. A Harrison-style marine timekeeper does not belong on a desk in 1500.",
+      "sourceTitle": "Royal Museums Greenwich · Harrison’s timekeepers",
+      "sourceUrl": "https://www.rmg.co.uk/stories/time/harrisons-clocks-longitude-problem"
+    },
+    {
+      "id": "port-voyage",
+      "category": "Routes",
+      "title": "From Lisbon to India",
+      "text": "Vasco da Gama’s Portuguese expedition departed Lisbon in 1497 and reached Calicut (Kozhikode), India, in 1498, sailing around Africa. The destination already had established communities and trade networks.",
+      "sourceTitle": "Portuguese Ports Association · Vasco da Gama’s voyage",
+      "sourceUrl": "https://www.portosdeportugal.pt/detail.php?nID=8235"
+    },
+    {
+      "id": "treaty-date",
+      "category": "Timeline",
+      "title": "The treaty on the table",
+      "text": "The Treaty of Tordesillas was signed on 7 June 1494 between the crowns of Spain and Portugal. Their claims did not erase the sovereignty or presence of Indigenous peoples.",
+      "sourceTitle": "UNESCO · Treaty of Tordesillas",
+      "sourceUrl": "https://www.unesco.org/fr/memory-world/treaty-tordesillas"
+    },
+    {
+      "id": "rotation-rule",
+      "category": "Mathematics",
+      "title": "A circle is 360 degrees",
+      "text": "A full turn is 360°. Multiply the fraction of a turn by 360 to find an angle. Compass bearings start at north and increase clockwise: east 90°, south 180°, west 270°.",
+      "sourceTitle": "OpenStax · Prealgebra 2e",
+      "sourceUrl": "https://openstax.org/details/books/prealgebra-2e"
+    },
+    {
+      "id": "scale-rule",
+      "category": "Mathematics",
+      "title": "From blueprint to passage",
+      "text": "For a map scale of 1 cm : 4 m, multiply the measured length in centimetres by 4 to determine the real distance in metres.",
+      "sourceTitle": "OpenStax · Prealgebra 2e",
+      "sourceUrl": "https://openstax.org/details/books/prealgebra-2e"
+    },
+    {
+      "id": "capacity-rule",
+      "category": "Mathematics",
+      "title": "When the cart is damaged",
+      "text": "A capacity reduced by 25% retains 75% of its original capacity. Multiply the original limit by 0.75; add the masses of everything you plan to carry and compare the sum with the new limit.",
+      "sourceTitle": "OpenStax · Prealgebra 2e",
+      "sourceUrl": "https://openstax.org/details/books/prealgebra-2e"
+    }
+  ],
+  "defensePrompts": [
+    "Which concrete clue was most useful for exposing a fraud? Explain the evidence.",
+    "Which historical mistake was easiest to miss, and how did you resolve it?",
+    "How can a convincing image or caption misrepresent history?"
+  ]
+}

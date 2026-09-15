@@ -15,6 +15,7 @@ import {
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { SolarTimeDialComponent } from './solar-time-dial.component';
 import type {
   DesignWalkthroughAction,
   DesignWalkthroughSetup,
@@ -37,6 +38,7 @@ import {
   DESIGN_VIEW_REQUEST,
   DESIGN_CHANGE,
   DESIGN_CHROME,
+  DESIGN_QUEST_PROGRESS,
 } from '../../../shared/engineering/design-simulation.registry';
 import {
   isDesignCapture,
@@ -49,7 +51,7 @@ import {
 
 @Component({
   selector: 'app-solar-monument',
-  imports: [FormsModule, NgTemplateOutlet],
+  imports: [FormsModule, NgTemplateOutlet, SolarTimeDialComponent],
   templateUrl: './solar-monument.component.html',
   styleUrl: './solar-monument.component.scss',
 })
@@ -65,7 +67,22 @@ export class SolarMonumentComponent {
   readonly readOnly = input(false);
   readonly building = input(false);
   readonly activity = input('');
+  readonly weeklyControls = input(false);
+  readonly workspaceKey = input('');
   readonly walkthrough = input<DesignWalkthroughSetup>();
+  /** Simulation-owned level challenge data for a weekly session. */
+  readonly quest = input<Readonly<Record<string, unknown>>>();
+  readonly questCompleted = input(false);
+  /** Weekly tools appear only when the current level needs them to be solved. */
+  readonly questTools = computed(() => {
+    const tools = this.quest()?.['tools'];
+    return Array.isArray(tools)
+      ? tools.filter(
+          (tool: unknown): tool is string =>
+            typeof tool === 'string' && ['post', 'build', 'markers'].includes(tool),
+        )
+      : [];
+  });
   readonly walkthroughReadings = signal<readonly { label: string; value: string }[]>([]);
   readonly walkthroughReady = signal(false);
   private walkthroughId = '';
@@ -140,6 +157,7 @@ export class SolarMonumentComponent {
   private readonly onChecks = inject(DESIGN_CHECKS_CHANGE, { optional: true });
   private readonly onView = inject(DESIGN_VIEW_REQUEST, { optional: true });
   private readonly onDesign = inject(DESIGN_CHANGE, { optional: true });
+  private readonly onQuest = inject(DESIGN_QUEST_PROGRESS, { optional: true });
   private readonly frame = viewChild<ElementRef<HTMLIFrameElement>>('frame');
   readonly ready = signal(false);
   private readonly connection = signal(0);
@@ -204,6 +222,10 @@ export class SolarMonumentComponent {
       if (this.connected()) this.send({ type: 'hosted-chrome', active: true });
     });
     effect(() => {
+      const active = this.weeklyControls();
+      if (this.connected()) this.send({ type: 'weekly-preview', active });
+    });
+    effect(() => {
       if (!this.editor) return;
       const ids = this.editor.selection(),
         snap = this.editor.snap(),
@@ -243,6 +265,7 @@ export class SolarMonumentComponent {
     });
     effect(() => {
       const activity = this.activity();
+      this.workspaceKey();
       untracked(() => {
         this.closeMarkers();
         this.removedMarker.set(undefined);
@@ -289,6 +312,11 @@ export class SolarMonumentComponent {
       if (presenting) untracked(() => this.cancelMarkerDraft());
       if (ready) this.send({ type: 'presentation', active: presenting });
       if (presenting && ready) this.runReview();
+    });
+    effect(() => {
+      const quest = this.quest(),
+        completed = this.questCompleted();
+      if (this.connected()) this.send({ type: 'quest', quest: quest ?? null, completed });
     });
     effect(() => {
       const setup = this.walkthrough();
@@ -706,6 +734,29 @@ export class SolarMonumentComponent {
         this.walkthroughReadings.set(readings);
         this.walkthroughReady.set(true);
       }
+      return;
+    }
+    if (data['type'] === 'quest-state') {
+      const quest = this.quest(),
+        progress = data['progress'];
+      if (
+        quest &&
+        data['questId'] === quest['id'] &&
+        typeof data['complete'] === 'boolean' &&
+        Array.isArray(progress) &&
+        progress.length <= 8 &&
+        progress.every(
+          (p) =>
+            !!p &&
+            typeof p === 'object' &&
+            typeof p.id === 'string' &&
+            p.id.length <= 80 &&
+            typeof p.label === 'string' &&
+            p.label.length <= 120 &&
+            typeof p.done === 'boolean',
+        )
+      )
+        this.onQuest?.({ questId: String(quest['id']), complete: data['complete'], progress });
       return;
     }
     if (data['type'] === 'marker-selected' && !this.activity().startsWith('sundial-')) {

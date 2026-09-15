@@ -7,6 +7,7 @@ import {
 } from './gear-lock.domain';
 import { createGearTexture, gearRadius, plate } from './gear-lock.art';
 import { GearReleaseRig } from './gear-release.scene';
+import { mountGearCage } from './gear-cage/gear-cage.scene';
 
 export interface GearView {
   readonly answer: readonly number[];
@@ -19,6 +20,11 @@ export interface GearView {
   readonly reducedMotion: boolean;
 }
 export interface GearSceneCallbacks {
+  crank?(delta: number): void;
+  test?(): void;
+  replay?(): void;
+  reset?(): void;
+  pause?(): void;
   select(index: number): void;
   place(index: number, socket: -1 | 0 | 1): void;
   ready(): void;
@@ -38,6 +44,7 @@ export function mountGearScene(
   snapshot: () => GearView,
   callbacks: GearSceneCallbacks,
 ): GearSceneHandle {
+  if (lock.presentation?.kind === 'gear-cage') return mountGearCage(parent, lock, snapshot, callbacks);
   class Workshop extends Phaser.Scene {
     private rig!: GearReleaseRig;
     private lines!: Phaser.GameObjects.Graphics;

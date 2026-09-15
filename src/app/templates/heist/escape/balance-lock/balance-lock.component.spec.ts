@@ -47,8 +47,9 @@ describe('Balance lock workshop controls', () => {
     expect(c.positions().slice(0, 2)).toEqual([2, 2]);
     c.controls.set(true);
     f.detectChanges();
-    expect(f.nativeElement.textContent).toContain('Place on right pan');
-    expect(f.nativeElement.textContent).toContain('3/4 = 1/2 + 1/4');
+    expect(f.nativeElement.textContent).toContain('Place on weight pan');
+    expect(f.nativeElement.textContent).not.toContain('Place on left pan');
+    expect(f.nativeElement.textContent).toContain('1/2 + 1/4 = 3/4');
     c.select(0);
     c.placeSelected(0);
     f.detectChanges();
@@ -58,6 +59,22 @@ describe('Balance lock workshop controls', () => {
     expect(c.positions()).toEqual(emptyBalance(lock));
     f.destroy();
     expect(destroy).toHaveBeenCalled();
+  });
+  it('returns former fixed-pan additions to the tray and rejects new piston-side placement', async () => {
+    const f = await create(),
+      c = f.componentInstance;
+    const saved = emptyBalance(lock);
+    saved[0] = 2;
+    saved[1] = 1;
+    f.componentRef.setInput('placements', saved);
+    f.detectChanges();
+    expect(c.positions().slice(0, 2)).toEqual([2, 0]);
+    callbacks.place(1, 1);
+    expect(c.positions().slice(0, 2)).toEqual([2, 0]);
+    callbacks.place(1, 2);
+    f.detectChanges();
+    expect(c.reading().balanced).toBe(true);
+    expect(c.positions().slice(0, 2)).toEqual([2, 2]);
   });
   it('releases all seals before completing, preserves other scales, and respects pause', async () => {
     const f = await create(),
@@ -91,5 +108,92 @@ describe('Balance lock workshop controls', () => {
     c.changeScale(0);
     expect(c.positions()[10]).toBe(0);
     expect(c.active()).toBe(2);
+  });
+  it('automatically releases only when all three scales balance simultaneously', async () => {
+    const f = await create(),
+      c = f.componentInstance,
+      solved = vi.fn();
+    c.solved.subscribe(solved);
+    for (const [scale, indices] of [
+      [0, [0, 1]],
+      [1, [5, 6, 7]],
+      [2, [10, 11]],
+    ] as const) {
+      c.changeScale(scale);
+      indices.forEach((index) => c.place(index, 2));
+      f.detectChanges();
+      expect(c.sealed()).toHaveLength(scale + 1);
+      expect(solved).toHaveBeenCalledTimes(scale === 2 ? 1 : 0);
+    }
+    expect(c.released()).toBe(true);
+    f.detectChanges();
+    c.engage();
+    expect(solved).toHaveBeenCalledOnce();
+    expect(f.nativeElement.textContent).not.toContain('Engage release pin');
+  });
+  it('releases and relocks the preview without awarding completion, and preserves other scales', async () => {
+    const f = await create(),
+      c = f.componentInstance,
+      solved = vi.fn(),
+      tested = vi.fn();
+    f.componentRef.setInput('authoringPreview', true);
+    c.solved.subscribe(solved);
+    c.tested.subscribe(tested);
+    for (const [scale, indices] of [
+      [0, [0, 1]],
+      [1, [5, 6, 7]],
+      [2, [10, 11]],
+    ] as const) {
+      c.changeScale(scale);
+      indices.forEach((index) => c.place(index, 2));
+      f.detectChanges();
+    }
+    expect(c.released()).toBe(true);
+    expect(tested.mock.calls).toEqual([[0], [1], [2]]);
+    expect(c.locked()).toBe(false);
+    c.changeScale(0);
+    c.place(0, 0);
+    f.detectChanges();
+    expect(c.released()).toBe(false);
+    expect(c.sealed()).toEqual([1, 2]);
+    c.place(0, 2);
+    f.detectChanges();
+    expect(c.released()).toBe(true);
+    c.retrySave();
+    expect(solved).not.toHaveBeenCalled();
+  });
+  it('defers automatic release while paused and does not create trials from restored work', async () => {
+    const f = await create(),
+      c = f.componentInstance,
+      tested = vi.fn();
+    f.componentRef.setInput('authoringPreview', true);
+    f.componentRef.setInput('paused', true);
+    c.tested.subscribe(tested);
+    const answer = emptyBalance(lock);
+    [0, 1, 5, 6, 7, 10, 11].forEach((i) => (answer[i] = 2));
+    f.componentRef.setInput('placements', answer);
+    f.detectChanges();
+    expect(c.released()).toBe(false);
+    f.componentRef.setInput('paused', false);
+    f.detectChanges();
+    expect(c.released()).toBe(true);
+    expect(tested).not.toHaveBeenCalled();
+  });
+  it('opens an expanded workshop and restores the control focus on Escape without changing weights', async () => {
+    const fixture = await create(),
+      component = fixture.componentInstance;
+    component.place(0, 2);
+    component.toggleExpanded();
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('[role="dialog"][aria-modal="true"]'),
+    ).not.toBeNull();
+    const event = new KeyboardEvent('keydown', { key: 'Escape', cancelable: true });
+    component.workshopKey(event);
+    fixture.detectChanges();
+    expect(component.expanded()).toBe(false);
+    expect(event.defaultPrevented).toBe(true);
+    expect(component.positions()[0]).toBe(2);
+    expect(fixture.nativeElement.querySelector('[aria-modal="true"]')).toBeNull();
   });
 });

@@ -1,6 +1,7 @@
 import { requireGalleryMission } from '../gallery/domain/gallery.validation';
 import { requireRestorations } from '../../../shared/restoration/restoration.validation';
 import type { RestorationMission } from './restoration-collection.models';
+import { requireRestorationPreview } from './weekly/restoration-preview.validation';
 export function requireRestorationMission(value: unknown): RestorationMission {
   const fail = (message: string): never => { throw new Error(`INVALID_RESTORATION_COLLECTION: ${message}`); };
   if (!value || typeof value !== 'object' || Array.isArray(value)) fail('mission');
@@ -17,5 +18,6 @@ export function requireRestorationMission(value: unknown): RestorationMission {
     if (work.encounterId && !gallery.encounters?.some(e => e.id === work.encounterId && e.chamberIds.includes(work.chamberId))) fail('encounter reference');
   }
   if (!Array.isArray(mission.finalLockIds) || !mission.finalLockIds.length || mission.finalLockIds.length > 10 || new Set(mission.finalLockIds).size !== mission.finalLockIds.length || mission.finalLockIds.some(id => !gallery.locks.some(l => l.id === id))) fail('final locks');
+  if (mission.previewWeeks !== undefined) requireRestorationPreview(mission.previewWeeks, mission);
   return mission;
 }

@@ -26,8 +26,8 @@ export const investigationTemplateImplementationVersion = '1.0.0';
 export const simulationDecisionTemplateImplementationVersion = '1.0.0';
 export const exhibitHallTemplateImplementationVersion = '1.0.0';
 export const journeyReplayTemplateImplementationVersion = '1.0.0';
-export const historyLiveTemplateImplementationVersion = '1.1.0';
-export const debateStudioTemplateImplementationVersion = '2.0.0';
+export const historyLiveTemplateImplementationVersion = '1.3.1';
+export const debateStudioTemplateImplementationVersion = '2.2.0';
 export const narrativeStudioTemplateImplementationVersion = '1.2.0';
 
 export function createInvestigationTemplateRegistration(

@@ -1,0 +1,183 @@
+X [ERROR] NG5002: Unexpected closing tag "article". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags [plugin angular-compiler]
+
+    src/app/projects/mystery-substance/emergency-response.component.html:47:6:
+      47 │       </article>
+         ╵       ~~~~~~~~~~
+
+  Error occurs in the template of component EmergencyResponseComponent.
+
+    src/app/projects/mystery-substance/emergency-response.component.ts:62:15:
+      62 │   templateUrl: './emergency-response.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Unexpected closing tag "div". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags [plugin angular-compiler]
+
+    src/app/projects/mystery-substance/emergency-response.component.html:48:4:
+      48 │     </div>
+         ╵     ~~~~~~
+
+  Error occurs in the template of component EmergencyResponseComponent.
+
+    src/app/projects/mystery-substance/emergency-response.component.ts:62:15:
+      62 │   templateUrl: './emergency-response.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Unexpected closing block. The block may have been closed earlier. If you meant to write the `}` character, you should use the "&#125;" HTML entity instead. [plugin angular-compiler]
+
+    src/app/projects/mystery-substance/emergency-response.component.html:49:2:
+      49 │   }
+         ╵   ^
+
+  Error occurs in the template of component EmergencyResponseComponent.
+
+    src/app/projects/mystery-substance/emergency-response.component.ts:62:15:
+      62 │   templateUrl: './emergency-response.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2345: Argument of type '{ design: BlockDesign; id: string; pluginId: string; capturedAt: string; settings: Readonly<Record<string, string | number>>; measurements: readonly { readonly label: string; readonly value: string; }[]; } | { ...; }' is not assignable to parameter of type 'DesignCapture | undefined'.
+  Object literal may only specify known properties, and 'timestamp' does not exist in type 'DesignCapture'. [plugin angular-compiler]
+
+    src/app/templates/engineering-design/ui/engineering-week-workspace.component.ts:61:6:
+      61 │       timestamp: new Date().toISOString(), design: this.design(),
+         ╵       ~~~~~~~~~
+
+
+X [ERROR] NG5002: Unexpected closing tag "article". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags [plugin angular-compiler]
+
+    src/app/projects/mystery-substance/emergency-response.component.html:47:6:
+      47 │       </article>
+         ╵       ~~~~~~~~~~
+
+  Error occurs in the template of component EmergencyResponseComponent.
+
+    src/app/projects/mystery-substance/emergency-response.component.ts:62:15:
+      62 │   templateUrl: './emergency-response.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Unexpected closing tag "div". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags [plugin angular-compiler]
+
+    src/app/projects/mystery-substance/emergency-response.component.html:48:4:
+      48 │     </div>
+         ╵     ~~~~~~
+
+  Error occurs in the template of component EmergencyResponseComponent.
+
+    src/app/projects/mystery-substance/emergency-response.component.ts:62:15:
+      62 │   templateUrl: './emergency-response.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Unexpected closing block. The block may have been closed earlier. If you meant to write the `}` character, you should use the "&#125;" HTML entity instead. [plugin angular-compiler]
+
+    src/app/projects/mystery-substance/emergency-response.component.html:49:2:
+      49 │   }
+         ╵   ^
+
+  Error occurs in the template of component EmergencyResponseComponent.
+
+    src/app/projects/mystery-substance/emergency-response.component.ts:62:15:
+      62 │   templateUrl: './emergency-response.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2345: Argument of type '{ design: BlockDesign; id: string; pluginId: string; capturedAt: string; settings: Readonly<Record<string, string | number>>; measurements: readonly { readonly label: string; readonly value: string; }[]; } | { ...; }' is not assignable to parameter of type 'DesignCapture | undefined'.
+  Object literal may only specify known properties, and 'timestamp' does not exist in type 'DesignCapture'. [plugin angular-compiler]
+
+    src/app/templates/engineering-design/ui/engineering-week-workspace.component.ts:61:6:
+      61 │       timestamp: new Date().toISOString(), design: this.design(),
+         ╵       ~~~~~~~~~
+
+
+X [ERROR] TS2345: Argument of type '{ design: BlockDesign; id: string; pluginId: string; capturedAt: string; settings: Readonly<Record<string, string | number>>; measurements: readonly { readonly label: string; readonly value: string; }[]; } | { ...; }' is not assignable to parameter of type 'DesignCapture | undefined'.
+  Object literal may only specify known properties, and 'timestamp' does not exist in type 'DesignCapture'. [plugin angular-compiler]
+
+    src/app/templates/engineering-design/ui/engineering-week-workspace.component.ts:61:6:
+      61 │       timestamp: new Date().toISOString(), design: this.design(),
+         ╵       ~~~~~~~~~
+
+
+X [ERROR] TS2345: Argument of type '{ design: BlockDesign; id: string; pluginId: string; capturedAt: string; settings: Readonly<Record<string, string | number>>; measurements: readonly { readonly label: string; readonly value: string; }[]; } | { ...; }' is not assignable to parameter of type 'DesignCapture | undefined'.
+  Object literal may only specify known properties, and 'timestamp' does not exist in type 'DesignCapture'. [plugin angular-compiler]
+
+    src/app/templates/engineering-design/ui/engineering-week-workspace.component.ts:61:6:
+      61 │       timestamp: new Date().toISOString(), design: this.design(),
+         ╵       ~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find template file './narrative-week-workspace.component.html'. [plugin angular-compiler]
+
+    src/app/templates/narrative-studio/ui/narrative-week-workspace.component.ts:20:15:
+      20 │   templateUrl: './narrative-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2345: Argument of type '{ design: BlockDesign; id: string; pluginId: string; capturedAt: string; settings: Readonly<Record<string, string | number>>; measurements: readonly { readonly label: string; readonly value: string; }[]; } | { ...; }' is not assignable to parameter of type 'DesignCapture | undefined'.
+  Object literal may only specify known properties, and 'timestamp' does not exist in type 'DesignCapture'. [plugin angular-compiler]
+
+    src/app/templates/engineering-design/ui/engineering-week-workspace.component.ts:61:6:
+      61 │       timestamp: new Date().toISOString(), design: this.design(),
+         ╵       ~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find template file './narrative-week-workspace.component.html'. [plugin angular-compiler]
+
+    src/app/templates/narrative-studio/ui/narrative-week-workspace.component.ts:20:15:
+      20 │   templateUrl: './narrative-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find template file './narrative-week-workspace.component.html'. [plugin angular-compiler]
+
+    src/app/templates/narrative-studio/ui/narrative-week-workspace.component.ts:20:15:
+      20 │   templateUrl: './narrative-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find template file './narrative-week-workspace.component.html'. [plugin angular-compiler]
+
+    src/app/templates/narrative-studio/ui/narrative-week-workspace.component.ts:20:15:
+      20 │   templateUrl: './narrative-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find template file './narrative-week-workspace.component.html'. [plugin angular-compiler]
+
+    src/app/templates/narrative-studio/ui/narrative-week-workspace.component.ts:20:15:
+      20 │   templateUrl: './narrative-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find template file './narrative-week-workspace.component.html'. [plugin angular-compiler]
+
+    src/app/templates/narrative-studio/ui/narrative-week-workspace.component.ts:20:15:
+      20 │   templateUrl: './narrative-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module '../../../projects/mystery-substance/lab-week-workspace.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/runtime/project-launch/template-launchers/investigation.launcher.ts:13:59:
+      13 │ ...it import('../../../projects/mystery-substance/lab-week-workspa...
+         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find template file './narrative-week-workspace.component.html'. [plugin angular-compiler]
+
+    src/app/templates/narrative-studio/ui/narrative-week-workspace.component.ts:20:15:
+      20 │   templateUrl: './narrative-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] Could not resolve "../../../projects/mystery-substance/lab-week-workspace.component"
+
+    src/app/runtime/project-launch/template-launchers/investigation.launcher.ts:13:59:
+      13 │ ...it import('../../../projects/mystery-substance/lab-week-workspa...
+         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+An unhandled exception occurred: Port 4326 is already in use
+See "C:\Users\erich\AppData\Local\Temp\ng-z0tV3A\angular-errors.log" for further details.

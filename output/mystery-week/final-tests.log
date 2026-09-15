@@ -1,0 +1,49 @@
+Using Vitest configuration file: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\output\mystery-week\vitest.config.mjs
+> Building...
+
+<--- Last few GCs --->
+
+[25004:0000024524B29000]    56465 ms: Scavenge 30.0 (40.1) -> 24.2 (40.6) MB, pooled: 0 MB, 11.28 / 0.00 ms  (average mu = 0.999, current mu = 0.998) allocation failure; 
+
+FATAL ERROR: MarkCompactCollector: young object promotion failed Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+
+<--- Last few GCs --->
+
+[25004:0000024524B29000]    56465 ms: Scavenge 30.0 (40.1) -> 24.2 (40.6) MB, pooled: 0 MB, 11.28 / 0.00 ms  (average mu = 0.999, current mu = 0.998) allocation failure; 
+
+FATAL ERROR: MarkCompactCollector: young object promotion failed Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 00007FF74B6150BF 
+ 2: 00007FF74A23DD27 
+ 3: 00007FF74A03E567 
+ 4: 00007FF74A01DC5E 
+ 5: 00007FF74A01331D 
+ 6: 00007FF74A012FCC 
+ 7: 00007FF74A012C11 
+ 8: 00007FF74A024EF8 
+ 9: 00007FF74AA2EA7D 
+10: 00007FF74AA2EF22 
+11: 00007FF74A015C54 
+12: 00007FF749FFD37D 
+13: 00007FF749FF73F4 
+14: 00007FF74A04096A 
+15: 00007FF74A03FF96 
+16: 00007FF74A050EF2 
+17: 00007FF74A050A1B 
+18: 00007FF74B937DED 
+19: 00007FF74A03C030 
+20: 00007FF74A035194 
+21: 00007FF74B55BB65 
+22: 00007FF74B559ED0 
+23: 00007FF74A2A42AB 
+24: 00007FF74A2A3E1F 
+25: 00007FF74B72E37F 
+26: 00007FF74B5A3AA6 
+27: 00007FF74B677939 
+28: 00007FF74B731552 
+29: 00007FF74B9414F4 
+30: 00007FFCBD16CD87 
+31: 00007FFCBDDECAEC 

@@ -2,6 +2,15 @@
 
 # PBL LMS Engineering Rules for Codex
 
+## Standing student-experience requirements
+
+Before planning an existing-project fix or a new project build, read
+[Project activity rules](docs/PROJECT_ACTIVITY_RULES.md). These user-approved
+requirements apply to every week and session. They supersede earlier UI guidance
+where it permits text-entry workspaces, extra content above or below the activity,
+or proceeding through multiple projects without user review. Keep the engineering
+architecture below while meeting these product requirements.
+
 This repository is building a reusable **Project-Based Learning LMS runtime** and a configurable **Investigation Project Template** in Angular 22.
 
 These instructions are permanent engineering guardrails for Codex and human contributors.

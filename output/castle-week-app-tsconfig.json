@@ -1,0 +1,6 @@
+{
+  "extends": "../tsconfig.app.json",
+  "compilerOptions": { "outDir": "./castle-week-app-tsc" },
+  "include": ["./castle-week-bootstrap.ts"],
+  "exclude": []
+}

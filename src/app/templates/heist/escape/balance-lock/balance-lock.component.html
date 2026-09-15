@@ -1,20 +1,42 @@
 <section
-  class="chamber"
+  class="chamber hanging-pin-chamber"
   aria-label="Balance lock workshop"
-  [class.is-complete]="completed()"
+  [class.is-complete]="released() || completed()"
   [class.reduced-motion]="reducedMotion()"
+  [class.has-renderer]="ready() && !error()"
+  [attr.role]="expanded() ? 'dialog' : null"
+  [attr.aria-modal]="expanded() ? 'true' : null"
+  (keydown)="workshopKey($event)"
 >
   <header class="workshop-header">
-    <button class="back" (click)="leave.emit()" [disabled]="paused()">← Back to castle</button>
+    @if (!authoringPreview()) {
+      <button class="back" (click)="leave.emit()" [disabled]="paused()">← Back to castle</button>
+    }
     <div>
       <p class="eyebrow">THE KEEPER’S WORKSHOP</p>
       <h1 #heading tabindex="-1">{{ title() }}</h1>
     </div>
     <div class="header-tools">
-      <button class="help" (click)="pauseRequested.emit()">Pause</button
-      ><button class="help" (click)="help.set(!help())" [attr.aria-expanded]="help()">
+      <button
+        #expandButton
+        class="help expand-workshop"
+        (click)="toggleExpanded()"
+        [attr.aria-expanded]="expanded()"
+        [attr.aria-label]="expanded() ? 'Close expanded view' : 'Expand workshop'"
+      >
+        {{ expanded() ? 'Close' : 'Expand' }}
+      </button>
+      @if (!authoringPreview() || expanded()) {
+        <button class="help" (click)="pauseRequested.emit()" [attr.aria-label]="paused() ? 'Resume machine' : 'Pause machine'">
+          {{ paused() ? 'Resume' : 'Pause' }}
+        </button>
+      }
+      <button class="help" (click)="help.set(!help())" [attr.aria-expanded]="help()">
         How it works
       </button>
+      @if (authoringPreview()) {
+        <button class="help" (click)="engage()" [disabled]="paused()" aria-label="Record this setup">Save trial</button>
+      }
     </div>
   </header>
   <nav class="seals" aria-label="Connected balance seals">
@@ -23,14 +45,18 @@
         (click)="changeScale(i)"
         [disabled]="paused()"
         [class.active]="active() === i"
-        [class.sealed]="sealed().includes(i) || completed()"
+        [class.sealed]="readings()[i].balanced"
         [attr.aria-current]="active() === i ? 'step' : null"
       >
-        <span class="seal-medal">{{ sealed().includes(i) || completed() ? '✓' : i + 1 }}</span
+        <span class="seal-medal">{{ readings()[i].balanced ? '✓' : i + 1 }}</span
         ><span
           >{{ scale.title
           }}<small>{{
-            sealed().includes(i) || completed() ? 'RELEASED' : 'AWAITING BALANCE'
+            readings()[i].balanced
+              ? 'PIN ALIGNED'
+              : readings()[i].difference < 0
+                ? 'PIN TOO HIGH'
+                : 'PIN TOO LOW'
           }}</small></span
         >
       </button>
@@ -38,37 +64,52 @@
   </nav>
   @if (help()) {
     <aside class="instructions">
-      <strong>Equal mass opens the lock.</strong> Drag a weight onto either pan; drag it back to the
-      tray to remove it. Larger block faces mean more mass: 1/2 has twice the face area of 1/4.
-      Fixed blocks stay put. The heavier side drops. Match both loads, then engage the pin. You can
-      also select a block below and use the pan buttons.
+      @if (piston()) {
+        <strong>The piston is the counterweight.</strong> Add weights to the left pan to match the
+        mass printed on the hanging piston. A light pan lets the piston drop; a heavy pan lifts it.
+        Equal mass levels the beam and lines up the piston cutout. Match all three pistons and the
+        shared bolt opens automatically. Drag weights back to the tray to remove them.
+      } @else {
+        <strong>Equal mass opens the lock.</strong> Drag a weight onto either pan; drag it back to
+        the tray to remove it. Each scale has its own rope and hanging brass pin. The heavier pan
+        drops, moving that pin's middle cutout up or down. When every scale balances, the cutouts
+        line up and the steel master bolt opens automatically. You can also select a block and tap a
+        pan.
+      }
+      @if (authoringPreview()) {
+        <div class="preview-reset"><button (click)="resetScale()" [disabled]="paused() || locked()">Reset this scale</button></div>
+      }
+    </aside>
+  }
+  <div class="mechanism-brief">
+    <p>{{ scale().instruction }}</p>
+    <span role="status" [class.aligned]="allBalanced()">{{
+      allBalanced()
+        ? 'ALL PINS ALIGNED · AUTO UNLOCK'
+        : sealed().length + ' / ' + definition().scales.length + ' PINS ALIGNED'
+    }}</span>
+  </div>
+  @if (piston() && placements().includes(1)) {
+    <aside class="instructions">
+      Weights previously added beside the fixed load have returned to the tray.
     </aside>
   }
   <div class="stage-shell">
     <div #stage class="stage"></div>
-    <p class="stage-instruction">
-      {{ completed() ? 'ALL SEALS RELEASED · THE WAY IS OPEN' : scale().instruction }}
-    </p>
     @if (!ready() || error()) {
       <p class="loading" role="status">
         {{
           error()
-            ? 'The chamber artwork could not load. The accessible weight controls below still work.'
-            : 'Winding the balance mechanism…'
+            ? 'The mechanism could not load. The accessible weight controls below still work.'
+            : 'Lighting the 3D workshop…'
         }}
       </p>
-    }
-    @if (completed()) {
-      <div class="release-banner">
-        <span>✦</span><strong>Perfect equilibrium.</strong>
-        <p>Chains tighten. Bolts withdraw. The way is open.</p>
-      </div>
     }
   </div>
   <footer class="workbench">
     <div class="equilibrium">
       <div>
-        <p class="eyebrow">{{ locked() ? 'SEAL RELEASED' : 'LIVE BALANCE' }}</p>
+        <p class="eyebrow">{{ released() ? 'MASTER BOLT RELEASED' : 'LIVE BALANCE' }}</p>
         <p class="equation" [class.equal]="reading().balanced">{{ reading().equation }}</p>
       </div>
       <p class="status" role="status" aria-live="polite">{{ notice() }}</p>
@@ -76,15 +117,9 @@
         <button class="primary" (click)="continued.emit()" [disabled]="paused()">
           Return to the rescue →
         </button>
-      } @else if (locked() && sealed().length < definition().scales.length) {
-        <button class="primary" (click)="nextSeal()" [disabled]="paused()">Next seal →</button>
-      } @else if (sealed().length === definition().scales.length) {
-        <button class="primary" (click)="retrySave()" [disabled]="paused()">
-          Retry opening lock
-        </button>
       } @else {
-        <button class="primary" (click)="engage()" [disabled]="paused()">
-          Engage release pin <span>↗</span>
+        <button class="record-trial" (click)="engage()" [disabled]="paused()">
+          Record this setup
         </button>
       }
     </div>
@@ -95,8 +130,15 @@
       <button (click)="controls.set(!controls())" [attr.aria-expanded]="controls()">
         {{ controls() ? 'Hide' : 'Show' }} keyboard / tap controls
       </button>
-      <span>Drag between either pan and the tray · {{ scale().unit }}</span>
-      <button (click)="resetScale()" [disabled]="paused() || completed()">Reset this scale</button>
+      <span
+        >{{
+          piston()
+            ? 'Match the piston mass using the weight pan'
+            : 'Drag between either pan and the tray'
+        }}
+        · {{ scale().unit }}</span
+      >
+      <button (click)="resetScale()" [disabled]="paused() || locked()">Reset this scale</button>
     </div>
     @if (controls() || error()) {
       <div class="accessible-controls" aria-label="Weight placement controls">
@@ -112,22 +154,31 @@
             >
               {{ format(block.piece)
               }}<small>{{
-                block.side === 1 ? 'LEFT PAN' : block.side === 2 ? 'RIGHT PAN' : 'TRAY'
+                block.side === 1
+                  ? 'LEFT PAN'
+                  : block.side === 2
+                    ? piston()
+                      ? 'WEIGHT PAN'
+                      : 'RIGHT PAN'
+                    : 'TRAY'
               }}</small>
             </button>
           }
         </div>
         <div class="pan-buttons">
+          @if (!piston()) {
+            <button
+              (click)="placeSelected(1)"
+              [disabled]="selected() === null || locked() || paused()"
+            >
+              Place on left pan
+            </button>
+          }
           <button
-            (click)="placeSelected(1)"
-            [disabled]="selected() === null || locked() || paused()"
-          >
-            Place on left pan</button
-          ><button
             (click)="placeSelected(2)"
             [disabled]="selected() === null || locked() || paused()"
           >
-            Place on right pan</button
+            {{ piston() ? 'Place on weight pan' : 'Place on right pan' }}</button
           ><button
             (click)="placeSelected(0)"
             [disabled]="selected() === null || locked() || paused()"

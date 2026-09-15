@@ -1,0 +1,181 @@
+{
+  "version": "1.0.0",
+  "artwork": "/history-live/expedition-newsroom-v1.png",
+  "attribution": "Created classroom example with synthetic narration and illustrative graphics. It is not a student submission or archival footage.",
+  "items": [
+    {
+      "id": "launch-news-piece",
+      "lesson": 1,
+      "title": "A mission changed by ice",
+      "summary": "Watch a short model news piece, then notice its main idea, source credit, and clear conclusion.",
+      "lookFors": [
+        "A headline that matches the facts",
+        "A source named in the report",
+        "An explanation of why the mission changed"
+      ],
+      "sourceIds": ["primary-preparation", "chronology"],
+      "scenes": [
+        {
+          "label": "Anchor · the lead",
+          "voice": "Microsoft Zira Desktop",
+          "visual": "studio",
+          "title": "A mission changed by ice",
+          "headline": "ENDURANCE SPECIAL REPORT",
+          "points": ["The goal: cross Antarctica", "The obstacle: a ship trapped in ice"],
+          "credit": "Sources: Shackleton, South (1919); Royal Museums Greenwich chronology",
+          "narration": [
+            "This is Expedition News Network, with a classroom report looking back at the Endurance expedition.",
+            "In 1914, Ernest Shackleton set out to cross Antarctica, but ice trapped his ship before that crossing could begin.",
+            "As the ice damaged Endurance, the goal changed from exploring a continent to bringing people home."
+          ]
+        },
+        {
+          "label": "Reporter · evidence and conclusion",
+          "voice": "Microsoft David Desktop",
+          "visual": "route",
+          "title": "A route toward help",
+          "headline": "CHANGING CONDITIONS. CHANGING PLANS.",
+          "points": ["Weddell Sea", "Elephant Island", "South Georgia"],
+          "credit": "Route schematic, not to scale · based on South, chapters VIII–IX",
+          "narration": [
+            "Shackleton's later account, South, describes supplies being prepared to move before the ship was abandoned.",
+            "The party eventually reached Elephant Island, and six men sailed the James Caird toward South Georgia to seek help.",
+            "All twenty-eight members of the Endurance party survived, although the wider expedition's separate Ross Sea party suffered losses.",
+            "The original crossing was not completed, but preparation and cooperation helped make rescue possible."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "final-news-broadcast",
+      "lesson": 8,
+      "title": "Endurance: from crossing a continent to bringing people home",
+      "summary": "A complete model broadcast with anchor and reporter sections, evidence, a route visual, source limits, and a closing explanation. Your final portfolio also needs your own report, source log, and revision memo.",
+      "lookFors": [
+        "Two central ideas: adapting plans and working together",
+        "Evidence explained and credited, including its limits",
+        "A useful visual and a clear handoff between speakers"
+      ],
+      "sourceIds": ["primary-preparation", "chronology", "route", "archive-photo"],
+      "scenes": [
+        {
+          "label": "Anchor · opening",
+          "voice": "Microsoft Zira Desktop",
+          "visual": "studio",
+          "title": "When the mission changed",
+          "headline": "ENDURANCE SPECIAL REPORT · 1914–1916",
+          "points": ["How did the plan change?", "How did people respond?"],
+          "credit": "A present-day classroom report looking back at historical evidence",
+          "narration": [
+            "Welcome to Expedition News Network. Today we are looking back at the Endurance expedition, from 1914 to 1916.",
+            "Our question is: how did a plan to cross Antarctica become a mission to bring people home?",
+            "Two ideas help explain the story: changing conditions required new plans, and people with different skills had to work together.",
+            "First, our research desk explains the original goal."
+          ]
+        },
+        {
+          "label": "Research reporter · the changing goal",
+          "voice": "Microsoft David Desktop",
+          "visual": "timeline",
+          "title": "The ice changed the plan",
+          "headline": "THE PLANNED CROSSING DID NOT BEGIN",
+          "points": [
+            "1914 · Depart for Antarctica",
+            "1915 · Ship trapped, then damaged",
+            "New priority · Keep the party safe"
+          ],
+          "credit": "Royal Museums Greenwich chronology; Scott Polar Research Institute",
+          "narration": [
+            "Shackleton planned to cross Antarctica. Endurance carried his party toward the Weddell Sea, but the ship became trapped in pack ice.",
+            "Pack ice is floating sea ice crowded together. The ship drifted with it instead of following the planned route.",
+            "When pressure damaged the ship in 1915, the party had to leave it.",
+            "That connects a condition to a decision: the damaged ship could no longer provide a safe base for the original mission."
+          ]
+        },
+        {
+          "label": "Research reporter · a primary source",
+          "voice": "Microsoft David Desktop",
+          "visual": "quote",
+          "title": "Prepared to move",
+          "headline": "READ THE WORDS. EXPLAIN THE EVIDENCE.",
+          "points": [
+            "Stores, dogs, sledges, and equipment were ready to be moved from the ship at a moment’s notice."
+          ],
+          "credit": "Ernest Shackleton, South (1919), chapter IV · October 25, 1915 entry",
+          "narration": [
+            "Here is a short quotation from Shackleton's book South: Stores, dogs, sledges, and equipment were ready to be moved from the ship at a moment's notice.",
+            "This detail supports the idea that the group prepared for a change before it happened.",
+            "However, this is the leader's account, written after the journey. It helps explain his preparations, but does not tell us what every person thought."
+          ]
+        },
+        {
+          "label": "Field reporter · a route toward help",
+          "voice": "Microsoft Zira Desktop",
+          "visual": "route",
+          "title": "A route toward help",
+          "headline": "FROM THE ICE TO ELEPHANT ISLAND",
+          "points": ["Weddell Sea", "Elephant Island", "South Georgia"],
+          "credit": "Classroom schematic · not to scale · South, chapters VIII–IX",
+          "narration": [
+            "Now look at the route diagram. It begins at the Weddell Sea ice camp, then moves to Elephant Island, then to South Georgia.",
+            "In April 1916, the party reached Elephant Island in three small boats.",
+            "Six men then took the James Caird toward South Georgia to seek help for those who remained.",
+            "The arrows show the order of destinations. They are not exact sailing tracks or a measure of distance."
+          ]
+        },
+        {
+          "label": "Field reporter · people and purpose",
+          "voice": "Microsoft Zira Desktop",
+          "visual": "team",
+          "title": "Different skills. A shared purpose.",
+          "headline": "PREPARATION CONNECTED PEOPLE’S WORK",
+          "points": ["Prepare the boat", "Organize supplies", "Navigate toward help"],
+          "credit": "Shackleton, South, chapter IX · The Boat Journey",
+          "narration": [
+            "The James Caird needed preparation. Carpenter Harry McNish worked on the boat, supplies had to fit into limited space, and Frank Worsley's navigation helped guide the crew.",
+            "These were different jobs connected to the same purpose: reaching help.",
+            "Preparation could reduce some risks, but it could not make the voyage certain to succeed.",
+            "This is why our report explains people's work as well as naming the places they reached."
+          ]
+        },
+        {
+          "label": "Research reporter · checking our sources",
+          "voice": "Microsoft David Desktop",
+          "visual": "sources",
+          "title": "What can each source tell us?",
+          "headline": "A STRONG REPORT CHECKS MORE THAN ONE SOURCE",
+          "points": [
+            "Memoir · decisions and experience",
+            "Chronology · sequence of events",
+            "Photograph · one visible moment"
+          ],
+          "credit": "South; Royal Museums Greenwich chronology and Frank Hurley photo catalog",
+          "narration": [
+            "We compared Shackleton's memoir with a museum chronology to check the order of events.",
+            "A Frank Hurley photograph, cataloged by Royal Museums Greenwich, is another kind of evidence about the ship and ice.",
+            "A photograph records a visible moment. It cannot prove every cause or tell us what someone felt.",
+            "Our newsroom background is an illustration, so we do not use it as historical evidence."
+          ]
+        },
+        {
+          "label": "Anchor · conclusion",
+          "voice": "Microsoft Zira Desktop",
+          "visual": "closing",
+          "title": "The crossing failed. The party survived.",
+          "headline": "TWO IDEAS EXPLAIN THE STORY",
+          "points": [
+            "Adapt plans when conditions change",
+            "Connect people’s skills to a shared goal"
+          ],
+          "credit": "Scope: the 28-person Endurance party · the separate Ross Sea party suffered losses",
+          "narration": [
+            "The remaining Endurance party was rescued from Elephant Island in August 1916. All twenty-eight members of that party survived.",
+            "The wider expedition also included a separate Ross Sea party, which suffered losses, so we must be precise about whom we mean.",
+            "The planned crossing was not completed. The rescue was a different achievement.",
+            "Our evidence shows how changing plans and working together shaped the outcome. Thank you for watching Expedition News Network."
+          ]
+        }
+      ]
+    }
+  ]
+}

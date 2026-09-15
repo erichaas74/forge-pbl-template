@@ -1,0 +1,143 @@
+> Building...
+√ Building...
+Application bundle generation complete. [62.855 seconds] - 2026-09-14T22:20:10.364Z
+
+
+ RUN  v4.1.11 C:/Users/erich/Desktop/pbl-lms/forge-pbl-template
+
+ ❯ |forge-pbl-template| src/app/projects/mystery-substance/conservation-chamber.component.spec.ts (6 tests | 3 failed) 33011ms
+     × restores a settled open-chamber result and note after comparing the sealed chamber 17483ms
+     × keeps every particle and the whole mass inside a sealed chamber 5015ms
+     × loses exactly five particles through the open lid, and the mass follows 5010ms
+ ❯ |forge-pbl-template| src/app/projects/mystery-substance/properties-lab.component.spec.ts (7 tests | 2 failed) 35050ms
+     × restores the observation and settled result for each vial and test 19962ms
+     × drives the meter and lamp from the conductivity reading 5592ms
+stderr | src/app/features/mystery-investigation/lab-week-workspace.component.spec.ts > science lab weekly authoring preview > opens all eight intended activities immediately from lesson context with week-specific planning
+NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 3. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 3. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+
+ ❯ |forge-pbl-template| src/app/projects/mystery-substance/reaction-bench.component.spec.ts (14 tests | 1 failed) 41375ms
+     × keeps the globally selected vial loaded when restarting a procedure 23138ms
+ ❯ |forge-pbl-template| src/app/features/mystery-investigation/mystery-workbench.spec.ts (5 tests | 1 failed) 42677ms
+     × keeps the same instrument, selected test and draft when evidence or another station is opened 33792ms
+ ❯ |forge-pbl-template| src/app/features/mystery-investigation/lab-week-workspace.component.spec.ts (15 tests | 1 failed) 38275ms
+     × opens all eight intended activities immediately from lesson context with week-specific planning 28407ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |forge-pbl-template| src/app/features/mystery-investigation/lab-week-workspace.component.spec.ts > science lab weekly authoring preview > opens all eight intended activities immediately from lesson context with week-specific planning
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/app/features/mystery-investigation/lab-week-workspace.component.spec.ts:54:3
+     52|   afterEach(() => { TestBed.resetTestingModule(); vi.useRealTimers(); …
+     53|
+     54|   it('opens all eight intended activities immediately from lesson cont…
+       |   ^
+     55|     const { fixture, focus, workspace, root } = await setup();
+     56|     const expected = ['properties', 'properties', 'properties', 'react…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  |forge-pbl-template| src/app/features/mystery-investigation/mystery-workbench.spec.ts > Mystery Substance workbench > keeps the same instrument, selected test and draft when evidence or another station is opened
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/app/features/mystery-investigation/mystery-workbench.spec.ts:37:3
+     35|   }
+     36|
+     37|   it('keeps the same instrument, selected test and draft when evidence…
+       |   ^
+     38|     const { fixture, shell } = await open();
+     39|     await shell.launchActivity('activity-property-comparison');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  |forge-pbl-template| src/app/projects/mystery-substance/conservation-chamber.component.spec.ts > ConservationChamberComponent > restores a settled open-chamber result and note after comparing the sealed chamber
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/app/projects/mystery-substance/conservation-chamber.component.spec.ts:25:3
+     23|
+     24| describe('ConservationChamberComponent', () => {
+     25|   it('restores a settled open-chamber result and note after comparing …
+       |   ^
+     26|     const chamber = await createChamber();
+     27|     chamber.selectTrial('open');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  |forge-pbl-template| src/app/projects/mystery-substance/conservation-chamber.component.spec.ts > ConservationChamberComponent > keeps every particle and the whole mass inside a sealed chamber
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/app/projects/mystery-substance/conservation-chamber.component.spec.ts:37:3
+     35|     expect(chamber.canCapture()).toBe(true);
+     36|   });
+     37|   it('keeps every particle and the whole mass inside a sealed chamber'…
+       |   ^
+     38|     const chamber = await createChamber();
+     39|     chamber.selectTrial('closed');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  |forge-pbl-template| src/app/projects/mystery-substance/conservation-chamber.component.spec.ts > ConservationChamberComponent > loses exactly five particles through the open lid, and the mass follows
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/app/projects/mystery-substance/conservation-chamber.component.spec.ts:48:3
+     46|   });
+     47|
+     48|   it('loses exactly five particles through the open lid, and the mass …
+       |   ^
+     49|     const chamber = await createChamber();
+     50|     chamber.selectTrial('open');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  |forge-pbl-template| src/app/projects/mystery-substance/properties-lab.component.spec.ts > PropertiesLabComponent > restores the observation and settled result for each vial and test
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/app/projects/mystery-substance/properties-lab.component.spec.ts:23:3
+     21|
+     22| describe('PropertiesLabComponent', () => {
+     23|   it('restores the observation and settled result for each vial and te…
+       |   ^
+     24|     const lab = await createLab();
+     25|     lab.selectTest('solubility');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  |forge-pbl-template| src/app/projects/mystery-substance/properties-lab.component.spec.ts > PropertiesLabComponent > drives the meter and lamp from the conductivity reading
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/app/projects/mystery-substance/properties-lab.component.spec.ts:38:3
+     36|     expect(lab.canCapture()).toBe(true);
+     37|   });
+     38|   it('drives the meter and lamp from the conductivity reading', async …
+       |   ^
+     39|     const lab = await createLab();
+     40|     lab.selectTest('conductivity');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  |forge-pbl-template| src/app/projects/mystery-substance/reaction-bench.component.spec.ts > ReactionBenchComponent > keeps the globally selected vial loaded when restarting a procedure
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/app/projects/mystery-substance/reaction-bench.component.spec.ts:74:3
+     72|
+     73| describe('ReactionBenchComponent', () => {
+     74|   it('keeps the globally selected vial loaded when restarting a proced…
+       |   ^
+     75|     await TestBed.configureTestingModule({ imports: [ReactionBenchComp…
+     76|     const fixture = TestBed.createComponent(ReactionBenchComponent);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  5 failed | 3 passed (8)
+      Tests  8 failed | 57 passed (65)
+   Start at  16:20:23
+   Duration  139.61s (transform 110.44s, setup 91.56s, import 157.50s, tests 190.77s, environment 233.31s)
+

@@ -1,3 +1,4 @@
+import { emptyInquiryState, inquiryGateReady, type InquiryReview } from '../../../shared/inquiry/inquiry.models';
 import {
   historyLiveEvents,
   historyLiveCommands,
@@ -684,6 +685,85 @@ export class HistoryLiveRuntimeService implements OnDestroy {
     });
   }
 
+  readonly inquiryState = computed(() => this.state().inquiry ?? emptyInquiryState());
+  inquiryGate(id: string): boolean {
+    return !!this.config.inquiry && inquiryGateReady(this.config.inquiry, this.inquiryState(), id);
+  }
+  updateInquiryDraft(key: string, value: string): void {
+    if (!this.config.inquiry || !this.isDemo || this.inquiryState().drafts[key] === value) return;
+    this.commit('inquiry.draftChanged', state => ({ ...state, inquiry: {
+      ...this.inquiryState(), drafts: { ...this.inquiryState().drafts, [key]: value },
+    } }), 'student', undefined, false);
+  }
+  submitInquiryAttempt(lesson: number, prompt: string, response: string, targetId?: string): boolean {
+    const def = this.config.inquiry?.lessons.find(l => l.number === lesson);
+    if (!this.isDemo || this.busy() || !def || !prompt.trim() || !response.trim() || (def.requiresGate && !this.inquiryGate(def.requiresGate))) return false;
+    if (targetId && !this.config.inquiry?.targets.some(t => t.id === targetId)) return false;
+    if (!targetId && def.fields.some(f => !this.inquiryState().drafts[`lesson-${lesson}-${f.id}`]?.trim())) {
+      this.error.set('Save each part of today’s work before sending your independent check for review.'); return false;
+    }
+    const attempt = { id: crypto.randomUUID(), lesson, prompt, response: response.trim(), mode: 'independent' as const, targetId, createdAt: new Date().toISOString(), evidenceDrafts: { ...this.inquiryState().drafts } };
+    this.error.set(undefined);
+    this.commit('inquiry.attemptSubmitted', state => ({ ...state, inquiry: {
+      ...this.inquiryState(), attempts: [...this.inquiryState().attempts, attempt],
+    } }));
+    return true;
+  }
+  reviewInquiryAttempt(id: string, decision: 'ready' | 'revise', feedback: string, performanceEvidence?: string): void {
+    const attempt = this.inquiryState().attempts.find(a => a.id === id);
+    if (!this.isDemo || !this.canProduce() || !attempt || !feedback.trim()) return;
+    const target = this.config.inquiry?.targets.find(t => t.id === attempt.targetId);
+    if (decision === 'ready' && target?.requiresPerformanceEvidence && !performanceEvidence?.trim()) {
+      this.error.set('Record observed speaking or listening evidence before reviewing this target as ready.'); return;
+    }
+    const review: InquiryReview = { attemptId: id, decision, feedback: feedback.trim(), performanceEvidence: performanceEvidence?.trim(), reviewerId: this.viewer.teacherDisplayName, createdAt: new Date().toISOString(), authority: 'demo' };
+    this.error.set(undefined);
+    this.commit('inquiry.reviewed', state => ({ ...state, inquiry: {
+      ...this.inquiryState(), reviews: { ...this.inquiryState().reviews, [id]: review }, reviewHistory: [...(this.inquiryState().reviewHistory ?? []), review],
+    } }), 'teacher');
+  }
+  private canRecordInquiry(): boolean {
+    const studio = this.config.fieldStudio;
+    if (studio && (!this.isDemo || !this.inquiryGate(studio.recordingGateId))) {
+      this.error.set('Complete the individual source-supported report checkpoint before recording.'); return false;
+    }
+    return true;
+  }
+  prepareInquirySegment(): boolean {
+    const studio = this.config.fieldStudio;
+    const drafts = this.inquiryState().drafts;
+    const visual = this.config.sources.find(s => s.id === drafts['studio-visual']);
+    if (!studio || !this.isDemo || this.busy() || !this.inquiryGate(studio.finalGateId)) {
+      this.error.set('The final individual checkpoint needs teacher review first.'); return false;
+    }
+    if (!this.state().transcript?.trim() || !drafts['studio-headline']?.trim() || !drafts['studio-media-reason']?.trim() || !visual || !studio.visualSourceIds.includes(visual.id)) {
+      this.error.set('Add a headline, transcript, and credited visual with an explanation of its purpose.'); return false;
+    }
+    if (!this.state().recordingAssetId && !drafts['studio-performance']?.trim()) {
+      this.error.set('Add a recording or describe the planned live presentation or teacher-approved equivalent. A script alone does not demonstrate speaking.'); return false;
+    }
+    this.flushDrafts();
+    if (this.saveState() === 'error') return false;
+    const network = this.config.networks.find(n => n.side === studio.networkSide)!;
+    const transcript = this.state().transcript!;
+    const segment: BroadcastSegment = {
+      id: this.currentStudentSegmentId, reporter: this.viewer.studentDisplayName, side: network.side,
+      networkName: network.name, headline: drafts['studio-headline'], desk: network.deskLabel,
+      durationSeconds: Math.max(1, Math.round(transcript.trim().split(/\s+/).length / 130 * 60)),
+      startLabel: 'My section · estimated time', ready: true, visualLabel: visual.title,
+      transcript, recordingAssetId: this.state().recordingAssetId,
+      script: [{ id: 'field-report', type: 'VOICEOVER', text: transcript, sourceId: visual.id }],
+      scenes: [{ id: 'field-visual', camera: 'media-wall', mediaType: visual.imageUrl ? 'historical-map' : 'quote', label: visual.title, sourceId: visual.id, caption: visual.citation }],
+    };
+    const previous = this.state().schedule.find(s => s.id === segment.id);
+    if (previous && JSON.stringify(previous) === JSON.stringify(segment)) return true;
+    this.error.set(undefined);
+    this.commit('inquiry.segmentPrepared', state => ({ ...state, studentSegmentReady: true, schedule: [...state.schedule.filter(s => s.id !== segment.id), segment] }));
+    this.notification.set(this.saveState() === 'error' ? 'Preview is on this page but could not be saved. Download a backup.' : 'Your section is prepared on this device. Present with your team in class; no school submission or standard completion was recorded.');
+    return this.saveState() !== 'error';
+  }
+
+
   updateTranscript(text: string): void {
     this.commit(
       'transcript.draftChanged',
@@ -857,7 +937,8 @@ export class HistoryLiveRuntimeService implements OnDestroy {
     this.notification.set(`${reaction} reaction sent.`);
   }
 
-  async startRecording(): Promise<void> {
+  async startRecording(kind: 'audio' | 'video' = 'video'): Promise<void> {
+    if (!this.canRecordInquiry()) return;
     if (this.recordingState() === 'recording' || this.recordingState() === 'requesting') return;
     if (
       !this.media ||
@@ -871,7 +952,7 @@ export class HistoryLiveRuntimeService implements OnDestroy {
     this.recordingState.set('requesting');
     this.error.set(undefined);
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({ video: kind === 'video', audio: true });
       if (this.disposed || generation !== this.recordingGeneration) {
         stream.getTracks().forEach((track) => track.stop());
         return;
@@ -909,9 +990,18 @@ export class HistoryLiveRuntimeService implements OnDestroy {
 
   stopRecording(): void {
     if (this.mediaRecorder?.state === 'recording') this.mediaRecorder.stop();
+    else if (this.recordingState() === 'requesting') {
+      this.recordingGeneration += 1;
+      this.stopMediaTracks();
+      this.recordingState.set(this.recordingUrl() ? 'ready' : 'idle');
+    }
   }
 
   async storeRecording(blob: Blob): Promise<void> {
+    if (!this.canRecordInquiry()) { this.stopMediaTracks(); this.recordingState.set('idle'); return; }
+    if (this.config.fieldStudio && (!/^(audio|video)\//.test(blob.type) || blob.size === 0 || blob.size > 100 * 1024 * 1024)) {
+      this.error.set('Choose a nonempty audio or video file smaller than 100 MB.'); return;
+    }
     if (!this.media) {
       this.error.set('CAPABILITY_NOT_INSTALLED: Media storage is unavailable.');
       return;
@@ -935,7 +1025,7 @@ export class HistoryLiveRuntimeService implements OnDestroy {
       this.commit('recording.saved', (state) => ({ ...state, recordingAssetId: asset.id }));
       await this.restoreRecording(asset.id);
       this.notification.set(
-        this.isDemo
+        this.saveState() === 'error' ? 'Recording exists on this page, but its workspace reference could not be saved. Download the recording before leaving.' : this.isDemo
           ? 'Recording saved on this device. Download a backup before clearing browser data.'
           : 'Recording uploaded. Add an accurate transcript before submitting.',
       );
@@ -1046,12 +1136,12 @@ export class HistoryLiveRuntimeService implements OnDestroy {
     const reduced = reducer(current);
     const draft = !persist;
     const affectsPackage =
-      /^(pitch\.(draft|format)|source\.(saved|removed)|claim\.(created|removed)|script\.|production\.|recording\.saved|transcript\.)/.test(
+      /^(pitch\.(draft|format)|source\.(saved|removed)|claim\.(created|removed)|script\.|inquiry\.(draftChanged|attemptSubmitted|reviewed)|production\.|recording\.saved|transcript\.)/.test(
         eventType,
       );
     const invalidate =
       affectsPackage &&
-      (current.packageStatus === 'approved' || current.packageStatus === 'submitted');
+      (current.packageStatus === 'approved' || current.packageStatus === 'submitted' || (!!this.config.fieldStudio && current.studentSegmentReady));
     const next: HistoryLiveRuntimeState = {
       ...reduced,
       ...(invalidate
@@ -1195,6 +1285,8 @@ export class HistoryLiveRuntimeService implements OnDestroy {
     try {
       const loaded = this.persistence.load(this.config.projectId, this.config.projectVersion);
       if (!loaded) return this.initial;
+      const sides = this.config.networks.map(n => n.side);
+      if ((loaded.selectedSide && !sides.includes(loaded.selectedSide)) || loaded.schedule.some(s => !sides.includes(s.side))) throw new Error('SAVE_INVALID: Unknown reporting network. Export or restore a valid workspace.');
       return {
         ...this.initial,
         ...loaded,

@@ -1,8 +1,10 @@
 import type { RestorationAction, RestorationDefinition, RestorationState } from '../../../shared/restoration/restoration.models';
 import type { EncounterAction, EncounterState } from '../../../shared/encounters/encounter.models';
 import type { GalleryMission, LockAnswer } from '../gallery/domain/gallery.models';
+import type { RestorationPreviewConfig } from './weekly/restoration-preview.models';
 export interface RestorationCommission extends RestorationDefinition { readonly paintingId: string; readonly chamberId: string; readonly encounterId?: string }
 export interface RestorationMission {
+  readonly previewWeeks?: RestorationPreviewConfig;
   readonly schemaVersion: '1.0'; readonly experience: 'restoration'; readonly projectId: string; readonly projectVersion: string;
   readonly template: { readonly id: 'heist'; readonly version: '1.0' };
   readonly title: string; readonly subtitle: string; readonly briefing: string; readonly heistBriefing: string;

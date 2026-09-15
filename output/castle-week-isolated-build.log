@@ -1,0 +1,21 @@
+> Building...
+√ Building...
+Initial chunk files | Names              |  Raw size | Estimated transfer size
+main-GSOWLFCQ.js    | main               | 502.31 kB |               116.22 kB
+styles-PWEBVAZL.css | styles             | 865 bytes |               865 bytes
+
+                    | Initial total      | 503.18 kB |               117.08 kB
+
+Lazy chunk files    | Names              |  Raw size | Estimated transfer size
+chunk-BcVssz5C.js   | -                  |   1.38 MB |               295.44 kB
+chunk-DxcoDWUo.js   | machine-scene      |  21.94 kB |                 8.07 kB
+chunk-O-9bl5CM.js   | gear-lock-scene    |  11.06 kB |                 4.24 kB
+chunk-BBI-qLpu.js   | balance-lock-scene |  10.84 kB |                 4.05 kB
+
+Application bundle generation complete. [12.311 seconds] - 2026-09-14T22:11:52.029Z
+
+▲ [WARNING] bundle initial exceeded maximum budget. Budget 500.00 kB was not met by 3.18 kB with a total of 503.18 kB.
+
+
+Output location: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\output\castle-week-isolated-build
+

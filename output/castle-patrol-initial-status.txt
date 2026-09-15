@@ -1,0 +1,316 @@
+ M AGENTS.md
+ M docs/build/13_ENGINEERING_DESIGN_TEMPLATE.md
+ M docs/build/14_TIME_REPAIR_TEMPLATE.md
+ M docs/heist/build-math-workshops.py
+ M docs/programming-automation/IMPLEMENTATION_NOTE.md
+ M public/projects/castle-archive-rescue/project.json
+ M public/projects/community-story-network/launch.html
+ M public/projects/exploration-time-repair/project.json
+ M public/projects/shadow-gallery/versions/2.0.0/project.json
+ M public/simulations/solar-monument/game.js
+ M public/simulations/solar-monument/index.html
+ M public/simulations/solar-monument/style.css
+ M scripts/check-solar-scene.cjs
+ M src/app/features/mystery-investigation/mystery-investigation.component.html
+ M src/app/features/mystery-investigation/mystery-investigation.component.ts
+ M src/app/features/mystery-investigation/mystery-workbench.spec.ts
+ M src/app/features/project-home/project-home.component.html
+ M src/app/features/project-home/project-home.component.scss
+ M src/app/features/project-home/project-home.component.spec.ts
+ M src/app/plugins/simulations/solar-monument/solar-monument.component.html
+ M src/app/plugins/simulations/solar-monument/solar-monument.component.scss
+ M src/app/plugins/simulations/solar-monument/solar-monument.component.spec.ts
+ M src/app/plugins/simulations/solar-monument/solar-monument.component.ts
+ M src/app/projects/calendar-monument/calendar-monument.config.ts
+ M src/app/projects/completed-samples/broadcast.sample-data.ts
+ M src/app/projects/completed-samples/debate.sample-data.ts
+ M src/app/projects/completed-samples/exhibit.sample-data.ts
+ M src/app/projects/completed-samples/journey.sample-data.ts
+ M src/app/projects/completed-samples/simulation.sample-data.ts
+ M src/app/projects/frontier-trading/frontier-trading.config.ts
+ M src/app/projects/mystery-substance/conservation-chamber.component.html
+ M src/app/projects/mystery-substance/conservation-chamber.component.scss
+ M src/app/projects/mystery-substance/conservation-chamber.component.ts
+ M src/app/projects/mystery-substance/emergency-response.component.html
+ M src/app/projects/mystery-substance/emergency-response.component.scss
+ M src/app/projects/mystery-substance/emergency-response.component.ts
+ M src/app/projects/mystery-substance/properties-lab.component.html
+ M src/app/projects/mystery-substance/properties-lab.component.scss
+ M src/app/projects/mystery-substance/properties-lab.component.ts
+ M src/app/projects/mystery-substance/reaction-bench.component.html
+ M src/app/projects/mystery-substance/reaction-bench.component.scss
+ M src/app/projects/mystery-substance/reaction-bench.component.ts
+ M src/app/projects/mystery-substance/station-workspaces.scss
+ M src/app/projects/mystery-substance/station-workspaces.ts
+ M src/app/projects/project-catalog.spec.ts
+ M src/app/projects/project-catalog.ts
+ M src/app/projects/project-home-catalog.ts
+ M src/app/projects/robot-delivery/robot-delivery.config.ts
+ M src/app/projects/survival-island-story-lab/survival-island.config.ts
+ M src/app/runtime/local-template-registry.ts
+ M src/app/runtime/project-launch/local-project-definition.source.ts
+ M src/app/runtime/project-launch/project-host.component.html
+ M src/app/runtime/project-launch/project-host.component.scss
+ M src/app/runtime/project-launch/project-host.component.spec.ts
+ M src/app/runtime/project-launch/project-host.component.ts
+ M src/app/runtime/project-launch/template-launchers/debate-studio.launcher.ts
+ M src/app/runtime/project-launch/template-launchers/engineering-design.launcher.ts
+ M src/app/runtime/project-launch/template-launchers/heist.launcher.ts
+ M src/app/runtime/project-launch/template-launchers/history-live.launcher.ts
+ M src/app/runtime/project-launch/template-launchers/investigation.launcher.ts
+ M src/app/runtime/project-launch/template-launchers/narrative-studio.launcher.ts
+ M src/app/runtime/project-launch/template-launchers/time-repair.launcher.ts
+ M src/app/shared/engineering/design-simulation.registry.ts
+ M src/app/shared/restoration/restoration-editor.component.html
+ M src/app/shared/restoration/restoration-editor.component.scss
+ M src/app/shared/restoration/restoration-editor.component.spec.ts
+ M src/app/shared/restoration/restoration-editor.component.ts
+ M src/app/templates/competition-show/ui/competition-show.component.html
+ M src/app/templates/competition-show/ui/competition-show.component.ts
+ M src/app/templates/crisis-operations/ui/crisis-center.component.html
+ M src/app/templates/crisis-operations/ui/crisis-center.component.ts
+ M src/app/templates/debate-studio/core/debate-studio-state.ts
+ M src/app/templates/debate-studio/domain/debate-studio.models.ts
+ M src/app/templates/debate-studio/persistence/debate-studio.persistence.ts
+ M src/app/templates/debate-studio/runtime/debate-studio-runtime.service.ts
+ M src/app/templates/debate-studio/ui/debate-faction-rail.component.html
+ M src/app/templates/debate-studio/ui/debate-showcase.component.html
+ M src/app/templates/debate-studio/ui/debate-studio-page.component.html
+ M src/app/templates/debate-studio/ui/debate-studio-page.component.scss
+ M src/app/templates/debate-studio/ui/debate-studio-page.component.ts
+ M src/app/templates/debate-studio/ui/debate-workbench.component.html
+ M src/app/templates/engineering-design/domain/engineering-design.models.ts
+ M src/app/templates/engineering-design/runtime/engineering-design.runtime.ts
+ M src/app/templates/engineering-design/ui/engineering-design-page.component.html
+ M src/app/templates/engineering-design/ui/engineering-design-page.component.scss
+ M src/app/templates/engineering-design/ui/engineering-design-page.component.ts
+ M src/app/templates/engineering-design/ui/engineering-final-demo.component.ts
+ M src/app/templates/exhibit-hall/rooms/student-room-workspace.component.html
+ M src/app/templates/exhibit-hall/rooms/student-room-workspace.component.ts
+ M src/app/templates/exhibit-hall/ui/exhibit-hall-page.component.html
+ M src/app/templates/exhibit-hall/ui/exhibit-hall-page.component.ts
+ M src/app/templates/heist/escape/balance-lock/balance-lock.component.html
+ M src/app/templates/heist/escape/balance-lock/balance-lock.component.scss
+ M src/app/templates/heist/escape/balance-lock/balance-lock.component.spec.ts
+ M src/app/templates/heist/escape/balance-lock/balance-lock.component.ts
+ M src/app/templates/heist/escape/balance-lock/balance-lock.domain.spec.ts
+ M src/app/templates/heist/escape/balance-lock/balance-lock.domain.ts
+ M src/app/templates/heist/escape/balance-lock/balance-lock.scene.ts
+ M src/app/templates/heist/escape/domain/escape.engine.ts
+ M src/app/templates/heist/escape/domain/escape.models.ts
+ M src/app/templates/heist/escape/domain/escape.validation.ts
+ M src/app/templates/heist/escape/domain/expedition.navigation.ts
+ M src/app/templates/heist/escape/expedition/expedition.component.html
+ M src/app/templates/heist/escape/expedition/expedition.component.scss
+ M src/app/templates/heist/escape/expedition/expedition.component.spec.ts
+ M src/app/templates/heist/escape/expedition/expedition.component.ts
+ M src/app/templates/heist/escape/gear-lock/gear-lock.component.html
+ M src/app/templates/heist/escape/gear-lock/gear-lock.component.scss
+ M src/app/templates/heist/escape/gear-lock/gear-lock.component.ts
+ M src/app/templates/heist/escape/locks/machine-workshop.component.html
+ M src/app/templates/heist/escape/locks/machine-workshop.component.scss
+ M src/app/templates/heist/escape/locks/machine-workshop.component.ts
+ M src/app/templates/heist/escape/runtime/escape-runtime.ts
+ M src/app/templates/heist/escape/runtime/expedition-runtime.spec.ts
+ M src/app/templates/heist/escape/runtime/expedition-runtime.ts
+ M src/app/templates/heist/restoration/restoration-collection.component.html
+ M src/app/templates/heist/restoration/restoration-collection.component.scss
+ M src/app/templates/heist/restoration/restoration-collection.component.ts
+ M src/app/templates/heist/restoration/restoration-collection.models.ts
+ M src/app/templates/heist/restoration/restoration-collection.runtime.ts
+ M src/app/templates/heist/restoration/restoration-collection.validation.ts
+ M src/app/templates/heist/ui/heist.component.html
+ M src/app/templates/heist/ui/heist.component.ts
+ M src/app/templates/history-live/core/history-live-quality.ts
+ M src/app/templates/history-live/core/history-live-snapshot.ts
+ M src/app/templates/history-live/core/history-live-state.ts
+ M src/app/templates/history-live/domain/history-live.models.ts
+ M src/app/templates/history-live/runtime/history-live-capabilities.ts
+ M src/app/templates/history-live/runtime/history-live-runtime.service.ts
+ M src/app/templates/history-live/ui/history-live-page.component.html
+ M src/app/templates/history-live/ui/history-live-page.component.ts
+ M src/app/templates/journey-replay/ui/journey-shell.component.ts
+ M src/app/templates/journey-replay/ui/journey-shell.html
+ M src/app/templates/live-strategy-league/ui/league-shell.component.html
+ M src/app/templates/live-strategy-league/ui/league-shell.component.scss
+ M src/app/templates/live-strategy-league/ui/league-shell.component.spec.ts
+ M src/app/templates/live-strategy-league/ui/league-shell.component.ts
+ M src/app/templates/narrative-studio/domain/narrative-studio.models.ts
+ M src/app/templates/narrative-studio/ui/narrative-studio-page.component.html
+ M src/app/templates/narrative-studio/ui/narrative-studio-page.component.ts
+ M src/app/templates/programming-automation/core/automation-state.ts
+ M src/app/templates/programming-automation/domain/automation.models.ts
+ M src/app/templates/programming-automation/runtime/automation-runtime.service.spec.ts
+ M src/app/templates/programming-automation/runtime/automation-runtime.service.ts
+ M src/app/templates/programming-automation/ui/automation-evidence.component.ts
+ M src/app/templates/programming-automation/ui/automation-lab.component.css
+ M src/app/templates/programming-automation/ui/automation-lab.component.html
+ M src/app/templates/programming-automation/ui/automation-lab.component.spec.ts
+ M src/app/templates/programming-automation/ui/automation-lab.component.ts
+ M src/app/templates/programming-automation/ui/automation-panels.css
+ M src/app/templates/programming-automation/ui/championship-panel.component.ts
+ M src/app/templates/programming-automation/ui/command-editor.component.css
+ M src/app/templates/programming-automation/ui/command-editor.component.html
+ M src/app/templates/programming-automation/ui/command-editor.component.ts
+ M src/app/templates/programming-automation/ui/command-palette.component.html
+ M src/app/templates/programming-automation/ui/math-workbench.component.ts
+ M src/app/templates/programming-automation/ui/robot-course.component.html
+ M src/app/templates/simulation-decision/ui/simulation-decision-shell.component.html
+ M src/app/templates/simulation-decision/ui/simulation-decision-shell.component.scss
+ M src/app/templates/simulation-decision/ui/simulation-decision-shell.component.ts
+ M src/app/templates/simulation-decision/ui/student-flow.spec.ts
+ M src/app/templates/time-repair/domain/time-repair.models.ts
+ M src/app/templates/time-repair/domain/time-repair.validation.ts
+ M src/app/templates/time-repair/runtime/time-repair.persistence.ts
+ M src/app/templates/time-repair/time-repair.spec.ts
+ M src/app/templates/time-repair/ui/time-repair-page.component.html
+ M src/app/templates/time-repair/ui/time-repair-page.component.spec.ts
+ M src/app/templates/time-repair/ui/time-repair-page.component.ts
+ M src/styles.scss
+?? docs/4-8_Possible_project_map/
+?? docs/AI_TUTOR_FOUR_WEEK_LESSON_PLAN.md
+?? docs/EIGHT_LESSON_PROJECT_AUDIT.md
+?? docs/EXISTING_16_PROJECT_GRADE_PLACEMENTS.md
+?? docs/EXPEDITION_NEWS_NETWORK_BUILD_PLAN.md
+?? docs/EXPEDITION_NEWS_NETWORK_IMPLEMENTATION.md
+?? docs/FIRST_FOUR_PROJECT_PILOT.md
+?? docs/FORGE_GRADES_4-6_PROJECT_ALIGNMENT_REVIEW.md
+?? docs/Forge_School_Master_Standards_Frameworks/
+?? docs/HAMMURABI_ON_TRIAL_BUILD_PLAN.md
+?? docs/HAMMURABI_ON_TRIAL_IMPLEMENTATION.md
+?? docs/INTERACTIVE_WEEK_IMPLEMENTATION_HANDOFF.md
+?? docs/INTERACTIVE_WEEK_REDESIGN.md
+?? docs/LESSON_STANDARDS_REVIEW_OVERLAY.md
+?? docs/PROJECT_ACTIVITY_RULES.md
+?? docs/PROJECT_NAVIGATION_HEADER.md
+?? docs/TWO_PROJECT_EIGHT_LESSON_PILOT_PLAN.md
+?? docs/book-repair/
+?? docs/engineering-design/SOLAR_MONUMENT_INTERACTIVE_WEEK_REDESIGN.md
+?? docs/engineering-design/SOLAR_MONUMENT_WEEKLY_SUN_EVIDENCE_AUDIT.md
+?? docs/heist/CASTLE_2_5D_ART_DIRECTION.md
+?? docs/heist/CASTLE_BALANCE_3D_WORKSHOP.md
+?? docs/heist/CASTLE_BALANCE_LOCK_REBUILD.md
+?? docs/heist/CASTLE_INTERACTIVE_WEEK_REDESIGN.md
+?? docs/heist/CASTLE_PISTON_COUNTERWEIGHTS.md
+?? docs/heist/CASTLE_REMAINING_LOCK_CONCEPTS.md
+?? docs/heist/COASTAL_360_VIEWER.md
+?? docs/heist/COASTAL_PANORAMA_IMPLEMENTATION.md
+?? docs/heist/SHADOW_GALLERY_INTERACTIVE_WEEK_REDESIGN.md
+?? docs/heist/configure-coastal-panorama.mjs
+?? docs/heist/configure-shadow-weeks.mjs
+?? docs/heist/preview-coastal-scene.mjs
+?? docs/heist/preview-shadow-weeks.mjs
+?? docs/heist/render-shadow-week-films.mjs
+?? docs/mystery-substance/
+?? docs/narrative-studio/SURVIVAL_ISLAND_INTERACTIVE_WEEK_REDESIGN.md
+?? docs/programming-automation/FOCUSED_WORKSPACE.md
+?? docs/time-repair/CONTENT_REBUILD_PROPOSAL.md
+?? docs/time-repair/INTERACTIVE_WEEK_REDESIGN.md
+?? docs/time-repair/WEEK_IMAGE_PROMPTS.md
+?? output/
+?? public/debate-studio/babylon-hearing-v1.png
+?? public/history-live/expedition-examples/
+?? public/history-live/expedition-newsroom-v1.png
+?? public/history-live/expedition-route.svg
+?? public/projects/exploration-time-repair/andean-terraces-v1.png
+?? public/projects/exploration-time-repair/archive-desk-v1.png
+?? public/projects/shadow-gallery/coastal-360-v1/
+?? public/projects/shadow-gallery/coastal-v1/
+?? public/projects/shadow-gallery/weekly/
+?? public/simulations/solar-monument/quest-levels.js
+?? scripts/check-lesson-standards.mjs
+?? scripts/check-solar-quests.cjs
+?? scripts/generate-example-narration.ps1
+?? scripts/render-news-examples.mjs
+?? scripts/serve-time-repair-weeks.mjs
+?? scripts/time-repair-vitest.config.ts
+?? src/app/features/mystery-investigation/focused-workbench.scss
+?? src/app/features/mystery-investigation/lab-week-workspace.component.html
+?? src/app/features/mystery-investigation/lab-week-workspace.component.scss
+?? src/app/features/mystery-investigation/lab-week-workspace.component.spec.ts
+?? src/app/features/mystery-investigation/lab-week-workspace.component.ts
+?? src/app/plugins/simulations/solar-monument/solar-time-dial.component.spec.ts
+?? src/app/plugins/simulations/solar-monument/solar-time-dial.component.ts
+?? src/app/projects/calendar-monument/calendar-monument.quests.ts
+?? src/app/projects/calendar-monument/calendar-monument.weeks.ts
+?? src/app/projects/expedition-news-network/
+?? src/app/projects/forge-review-standards.json
+?? src/app/projects/hammurabi-on-trial/
+?? src/app/projects/mystery-substance/_lab-preview.scss
+?? src/app/projects/mystery-substance/lab-week.models.ts
+?? src/app/projects/mystery-substance/mystery-substance-weeks.ts
+?? src/app/projects/project-lesson-plans.json
+?? src/app/projects/project-lesson-standards.ts
+?? src/app/projects/robot-delivery/robot-delivery-weeks.ts
+?? src/app/projects/survival-island-story-lab/survival-island.weeks.ts
+?? src/app/runtime/project-launch/project-lesson.registry.spec.ts
+?? src/app/runtime/project-launch/project-lesson.registry.ts
+?? src/app/runtime/project-launch/project-lessons.spec.ts
+?? src/app/runtime/project-launch/project-standards.registry.spec.ts
+?? src/app/runtime/project-launch/project-standards.registry.ts
+?? src/app/shared/inquiry/
+?? src/app/shared/panorama/
+?? src/app/shared/project-lessons/
+?? src/app/templates/debate-studio/domain/debate-inquiry.models.spec.ts
+?? src/app/templates/debate-studio/domain/debate-inquiry.models.ts
+?? src/app/templates/debate-studio/ui/debate-inquiry.component.spec.ts
+?? src/app/templates/debate-studio/ui/debate-inquiry.component.ts
+?? src/app/templates/engineering-design/domain/engineering-preview.models.ts
+?? src/app/templates/engineering-design/ui/engineering-week-workspace.component.html
+?? src/app/templates/engineering-design/ui/engineering-week-workspace.component.scss
+?? src/app/templates/engineering-design/ui/engineering-week-workspace.component.spec.ts
+?? src/app/templates/engineering-design/ui/engineering-week-workspace.component.ts
+?? src/app/templates/heist/escape/balance-lock/balance-lock.3d-layout.ts
+?? src/app/templates/heist/escape/balance-lock/balance-lock.3d-materials.ts
+?? src/app/templates/heist/escape/balance-lock/balance-lock.3d-model.spec.ts
+?? src/app/templates/heist/escape/balance-lock/balance-lock.3d-model.ts
+?? src/app/templates/heist/escape/balance-lock/balance-lock.3d-scene.spec.ts
+?? src/app/templates/heist/escape/balance-lock/balance-lock.3d-scene.ts
+?? src/app/templates/heist/escape/balance-lock/balance-lock.migration.spec.ts
+?? src/app/templates/heist/escape/balance-lock/balance-lock.migration.ts
+?? src/app/templates/heist/escape/balance-lock/balance-lock.motion.ts
+?? src/app/templates/heist/escape/balance-lock/balance-lock.rebuild.scss
+?? src/app/templates/heist/escape/balance-lock/balance-lock.scene-contract.ts
+?? src/app/templates/heist/escape/domain/expedition-tour.ts
+?? src/app/templates/heist/escape/expedition/expedition-example.component.html
+?? src/app/templates/heist/escape/expedition/expedition-example.component.scss
+?? src/app/templates/heist/escape/expedition/expedition-example.component.spec.ts
+?? src/app/templates/heist/escape/expedition/expedition-example.component.ts
+?? src/app/templates/heist/escape/weekly/
+?? src/app/templates/heist/restoration/weekly/
+?? src/app/templates/history-live/core/field-studio.validation.ts
+?? src/app/templates/history-live/runtime/field-studio.spec.ts
+?? src/app/templates/history-live/ui/field-newsroom.component.html
+?? src/app/templates/history-live/ui/field-newsroom.component.scss
+?? src/app/templates/history-live/ui/field-newsroom.component.ts
+?? src/app/templates/narrative-studio/core/narrative-preview.ts
+?? src/app/templates/narrative-studio/domain/narrative-preview.models.ts
+?? src/app/templates/narrative-studio/runtime/narrative-week-runtime.service.ts
+?? src/app/templates/narrative-studio/ui/narrative-week-workspace.component.html
+?? src/app/templates/narrative-studio/ui/narrative-week-workspace.component.scss
+?? src/app/templates/narrative-studio/ui/narrative-week-workspace.component.spec.ts
+?? src/app/templates/narrative-studio/ui/narrative-week-workspace.component.ts
+?? src/app/templates/programming-automation/ui/automation-evidence.component.html
+?? src/app/templates/programming-automation/ui/automation-review.component.spec.ts
+?? src/app/templates/programming-automation/ui/automation-week-workspace.component.css
+?? src/app/templates/programming-automation/ui/automation-week-workspace.component.html
+?? src/app/templates/programming-automation/ui/automation-week-workspace.component.spec.ts
+?? src/app/templates/programming-automation/ui/automation-week-workspace.component.ts
+?? src/app/templates/programming-automation/ui/championship-panel.component.html
+?? src/app/templates/time-repair/domain/time-repair-preview.models.ts
+?? src/app/templates/time-repair/domain/time-repair-preview.validation.ts
+?? src/app/templates/time-repair/runtime/time-repair-preview.persistence.ts
+?? src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts
+?? src/app/templates/time-repair/ui/time-repair-week-activity.scss
+?? src/app/templates/time-repair/ui/time-repair-week-exhibit.component.html
+?? src/app/templates/time-repair/ui/time-repair-week-exhibit.component.ts
+?? src/app/templates/time-repair/ui/time-repair-week-ripple.component.html
+?? src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts
+?? src/app/templates/time-repair/ui/time-repair-week-scene.component.html
+?? src/app/templates/time-repair/ui/time-repair-week-scene.component.ts
+?? src/app/templates/time-repair/ui/time-repair-week-source.component.ts
+?? src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts
+?? src/app/templates/time-repair/ui/time-repair-week-workspace.component.html
+?? src/app/templates/time-repair/ui/time-repair-week-workspace.component.scss
+?? src/app/templates/time-repair/ui/time-repair-week-workspace.component.spec.ts
+?? src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts

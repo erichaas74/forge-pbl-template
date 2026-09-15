@@ -1,10 +1,3 @@
-﻿<div class="section-top">
-  <div>
-    <small>BUILD</small>
-    <h2>Your program</h2>
-  </div>
-  <span class="tag">v{{ program().version }}</span>
-</div>
 @if (readOnly()) {
   <p class="notice">
     {{ snapshot() ? 'Recorded program · replay only' : 'This program is locked.' }}
@@ -53,30 +46,43 @@
     @if (
       !issue.commandId &&
       issue.code !== 'PROGRAM_EMPTY' &&
-      (runtime.reasoningOpened() || issue.code !== 'MATH_EVIDENCE')
+      ((assessmentLinks() && runtime.reasoningOpened()) || issue.code !== 'MATH_EVIDENCE')
     ) {
       <p class="issue" [class.error]="issue.severity === 'error'">{{ issue.message }}</p>
     }
   }
 }
 <p class="addition-status" role="status" aria-live="polite">{{ addedMessage() }}</p>
-<div class="editor-layout">
-<div class="program-column">
-<div class="script-canvas">
-  <div class="start-block">
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 4v16l12-8z" /></svg>
-    <span>When <strong class="start-slot">Run program</strong> clicked</span>
+<div class="editor-layout" [class.choosing-block]="paletteOpen()">
+  <div class="program-column" [hidden]="paletteOpen()">
+    <div class="script-canvas">
+      <div class="start-block">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M8 4v16l12-8z" />
+        </svg>
+        <span>When <strong class="start-slot">Run program</strong> clicked</span>
+      </div>
+      <ng-container *ngTemplateOutlet="list; context: { $implicit: program().commands }" />
+      @if (!readOnly()) {
+        <button type="button" class="add" (click)="focusPalette()">+ Add block</button>
+      }
+    </div>
+    @if (!readOnly() && !runtime.challenge().requiresVariable) {
+      <details class="program-options">
+        <summary>Program options</summary>
+        <button class="secondary" (click)="addVariable()">+ Named variable</button>
+      </details>
+    }
   </div>
-  <ng-container *ngTemplateOutlet="list; context: { $implicit: program().commands }" />
-  @if (!readOnly()) {
-    <button type="button" class="add" (click)="focusPalette()">+ Add block <span>Choose from the block library →</span></button>
-  }
-</div>
-@if (!readOnly() && !runtime.challenge().requiresVariable) {
-  <button class="secondary" (click)="addVariable()">+ Named variable</button>
-}
-</div>
-  <div #paletteHost class="palette-host" tabindex="-1" aria-label="Choose a code block">
+  <div
+    #paletteHost
+    class="palette-host"
+    tabindex="-1"
+    aria-label="Choose a code block"
+    [hidden]="!paletteOpen()"
+    (keydown.escape)="closePalette(); $event.stopPropagation()"
+  >
+    <button class="secondary" (click)="closePalette()">← Back to program</button>
     <app-command-palette
       [allowed]="runtime.challenge().allowedCommands"
       [moveMath]="runtime.challenge().moveMath"
@@ -149,18 +155,38 @@
             <span class="move-equation" role="group" aria-label="Move math problem">
               <span class="given-number">
                 <small>Given</small>
-                <strong [attr.aria-label]="'Given number: ' + problem.given">{{ problem.given }}</strong>
+                <strong [attr.aria-label]="'Given number: ' + problem.given">{{
+                  problem.given
+                }}</strong>
               </span>
-              <span class="math-operation" [attr.aria-label]="mathOperation(problem.operation).label">{{ mathOperation(problem.operation).symbol }}</span>
+              <span
+                class="math-operation"
+                [attr.aria-label]="mathOperation(problem.operation).label"
+                >{{ mathOperation(problem.operation).symbol }}</span
+              >
               <label class="student-number">
                 <small>Your number</small>
-                <input class="block-input" inputmode="decimal" autocomplete="off"
-                  [attr.aria-label]="label(command.type) + ' your number'" placeholder="?"
-                  [style.width.ch]="valueWidth(command.value)" [value]="command.value" [disabled]="readOnly()"
+                <input
+                  class="block-input"
+                  inputmode="decimal"
+                  autocomplete="off"
+                  [attr.aria-label]="label(command.type) + ' your number'"
+                  placeholder="?"
+                  [style.width.ch]="valueWidth(command.value)"
+                  [value]="command.value"
+                  [disabled]="readOnly()"
                   (focus)="runtime.selectCommand(command.id)"
-                  (input)="edit(command.id, { value: $any($event.target).value, mathEvidenceId: undefined })" />
+                  (input)="
+                    edit(command.id, {
+                      value: $any($event.target).value,
+                      mathEvidenceId: undefined,
+                    })
+                  "
+                />
               </label>
-              <span class="math-unit">{{ command.type === 'move-distance' ? 'cm' : 'rotations' }}</span>
+              <span class="math-unit">{{
+                command.type === 'move-distance' ? 'cm' : 'rotations'
+              }}</span>
             </span>
           } @else {
             <span class="value-slot">
@@ -205,7 +231,7 @@
               !runtime.reasoningOpened() &&
               command.id === runtime.challenge().discovery?.focusCommandId
             ) {
-              <span class="guess-label">Your guess · edit the white slot</span>
+              <span class="guess-label">Change the white slot</span>
             }
             @if (activeId() === command.id) {
               <span>▶ Replay step</span>
@@ -216,12 +242,12 @@
           </div>
         }
         @if (
-          runtime.reasoningOpened() &&
+          assessmentLinks() && runtime.reasoningOpened() &&
           command.type !== 'repeat' &&
           command.type !== 'pick-up' &&
           command.type !== 'drop-off'
         ) {
-          <button class="math-link" (click)="runtime.selectCommand(command.id)">
+          <button class="math-link" (click)="runtime.selectCommand(command.id); reasoning.emit()">
             {{ mathLabel(command) }}
           </button>
         }
@@ -283,7 +309,7 @@
           @if (
             !snapshot() &&
             issue.commandId === command.id &&
-            (runtime.reasoningOpened() || issue.code !== 'MATH_EVIDENCE')
+            issue.code !== 'MATH_EVIDENCE'
           ) {
             <p class="issue" [class.error]="issue.severity === 'error'">{{ issue.message }}</p>
           }
@@ -305,7 +331,14 @@
                 "
               />
               @if (!readOnly()) {
-                <button type="button" class="add loop-add" aria-label="Add command inside loop" (click)="focusPalette(command.id)">+ Add inside loop <span>Choose from the block library →</span></button>
+                <button
+                  type="button"
+                  class="add loop-add"
+                  aria-label="Add command inside loop"
+                  (click)="focusPalette(command.id)"
+                >
+                  + Add inside loop
+                </button>
               }
             </div>
           }
@@ -313,7 +346,7 @@
         }
       </li>
     } @empty {
-      <li class="empty">Your route starts here. Click a block in the library to add it.</li>
+      <li class="empty">Add a block to start your route.</li>
     }
   </ol>
 </ng-template>

@@ -1,0 +1,18 @@
+❯ Building...
+✔ Building...
+Application bundle generation failed. [30.041 seconds] - 2026-09-15T03:12:22.898Z
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2008: Could not find template file './panorama-encounter.component.html'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/panorama/panorama-encounter.component.ts:10:15:
+[37m      10 │   templateUrl: [32m'./panorama-encounter.component.html'[37m, styleUrl: '....
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2345: Argument of type 'string' is not assignable to parameter of type 'never'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/panorama/panorama.engine.ts:6:166:
+[37m      6 │ ...() ? 100 : topic.keywords.filter(k => words.includes([32mk[37m)).length }))
+        ╵                                                         [32m^[0m
+
+

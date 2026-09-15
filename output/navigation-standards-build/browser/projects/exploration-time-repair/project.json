@@ -1,0 +1,258 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "exploration-time-repair",
+  "projectVersion": "1.0.0",
+  "template": {
+    "id": "time-repair",
+    "version": "1.0"
+  },
+  "title": "Time Repair",
+  "subtitle": "The cargo that arrived too soon",
+  "subject": "history",
+  "briefing": "An archive signal places a cargo of potatoes in a European harbor in 1490. Trace where the crop came from, build an evidence-backed claim, then enter the harbor and decide what to change. Your job is to restore the historical record, not redesign history.",
+  "stages": [
+    {
+      "title": "Detect the breach",
+      "description": "Establish the baseline, investigate a suspicious cargo, and earn your first jump. This pilot contains one complete repair."
+    },
+    {
+      "title": "Repair the timeline",
+      "description": "The next content phase adds conflicting sources, missing perspectives, and connected repairs."
+    },
+    {
+      "title": "Timeline collapse",
+      "description": "The final classroom phase will challenge teams to distinguish real corruptions from decoys using limited charges."
+    }
+  ],
+  "settings": {
+    "repairCharges": 3,
+    "initialStability": 42,
+    "wrongRepairPenalty": 12,
+    "minReasoningLength": 40
+  },
+  "nodes": [
+    {
+      "id": "andean-farming",
+      "title": "A world already connected",
+      "dateLabel": "Before 1490",
+      "order": 0,
+      "summary": "Indigenous communities in the Andes cultivated potatoes long before Europeans crossed the Atlantic. Their farming knowledge is the beginning of this story.",
+      "initialStatus": "stable"
+    },
+    {
+      "id": "harbor-market",
+      "title": "The impossible cargo",
+      "dateLabel": "1490",
+      "order": 1,
+      "summary": "An archive scan reports a suspicious crop on a European market dock.",
+      "initialStatus": "uncertain"
+    },
+    {
+      "id": "atlantic-contact",
+      "title": "Atlantic encounter",
+      "dateLabel": "1492",
+      "order": 2,
+      "summary": "Columbus's voyage reached Caribbean islands already inhabited by Indigenous peoples. This encounter was part of the beginning of sustained contact across the Atlantic.",
+      "initialStatus": "stable"
+    },
+    {
+      "id": "exchange",
+      "title": "Crops cross oceans",
+      "dateLabel": "After 1492",
+      "order": 3,
+      "summary": "Sustained Atlantic contact reshaped the movement of plants, animals, people, and disease.",
+      "initialStatus": "uncertain"
+    },
+    {
+      "id": "potato-record",
+      "title": "A trace in the archive",
+      "dateLabel": "1565",
+      "order": 4,
+      "summary": "A dated cultivation record helps test when potatoes could appear across the Atlantic.",
+      "initialStatus": "uncertain"
+    },
+    {
+      "id": "changing-diets",
+      "title": "Changing foodways",
+      "dateLabel": "Later centuries",
+      "order": 5,
+      "summary": "The potato's adoption varied by place and unfolded over generations.",
+      "initialStatus": "uncertain"
+    },
+    {
+      "id": "living-legacies",
+      "title": "Living legacies",
+      "dateLabel": "Today",
+      "order": 6,
+      "summary": "Andean agricultural knowledge continues in living communities. Following a crop's journey helps us recognize the people behind it.",
+      "initialStatus": "stable"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "andean-origin",
+      "title": "A crop with Andean roots",
+      "kind": "secondary",
+      "content": "Andean communities domesticated native crops over thousands of years. The Inka built on that knowledge, improving the quality and variety of potatoes and other foods. Potato farming did not begin with a European voyage.",
+      "citation": "Adapted from Smithsonian National Museum of the American Indian, The Inka Empire: Food Diversification.",
+      "url": "https://americanindian.si.edu/nk360/inka-water/food-diversification/food",
+      "perspective": "Centers Indigenous agricultural knowledge. This modern museum explanation is a secondary source."
+    },
+    {
+      "id": "dated-cultivation",
+      "title": "Follow the dated record",
+      "kind": "secondary",
+      "content": "The Smithsonian describes potatoes being cultivated in the Canary Islands from 1565, followed by mainland Spain. Early European accounts can confuse potatoes with sweet potatoes. This evidence supports a sixteenth-century transfer; it does not identify one certain first arrival date.",
+      "citation": "Adapted from Smithsonian Libraries, “Celebrate the Potato,” September 12, 2016.",
+      "url": "https://blog.library.si.edu/blog/2016/09/12/celebrate-the-potato/",
+      "perspective": "A modern library history that points out uncertainty in early accounts. Treat the date as a documented trace, not an exact first landing."
+    },
+    {
+      "id": "first-encounter",
+      "title": "Whose world was encountered?",
+      "kind": "secondary",
+      "content": "When Columbus reached Guanahani in 1492, Taíno people already lived there. A European account of an encounter offers one viewpoint; it cannot stand for all of the people who experienced it.",
+      "citation": "Adapted from Library of Congress, Exploring the Early Americas: Columbus and the Taíno.",
+      "url": "https://www.loc.gov/exhibits/exploring-the-early-americas/columbus-and-the-taino.html",
+      "perspective": "The exhibition discusses European accounts. Ask which Indigenous experiences those accounts leave out."
+    },
+    {
+      "id": "gradual-adoption",
+      "title": "Arrival is not the same as adoption",
+      "kind": "secondary",
+      "content": "The potato became widely promoted in parts of Europe much later than its first documented cultivation there. A crop can arrive in one place without immediately changing everyone's diet. Do not treat an early cargo as proof of instant population growth.",
+      "citation": "Adapted from Smithsonian Libraries, “Celebrate the Potato,” September 12, 2016.",
+      "url": "https://blog.library.si.edu/blog/2016/09/12/celebrate-the-potato/",
+      "perspective": "A long-view account of food history. It helps separate an immediate event from a gradual consequence."
+    }
+  ],
+  "scenes": [
+    {
+      "id": "harbor",
+      "title": "European harbor · 1490",
+      "image": "/projects/exploration-time-repair/harbor.png",
+      "imageAlt": "Imagined late-medieval harbor with a sailing ship, dockside cargo and a market counter. Teaching illustration, not historical evidence.",
+      "views": [
+        {
+          "id": "wide",
+          "label": "Harbor overview",
+          "position": "50% 50%"
+        },
+        {
+          "id": "cargo",
+          "label": "Cargo close-up",
+          "position": "85% 75%"
+        }
+      ],
+      "hotspots": [
+        {
+          "id": "ship",
+          "label": "Sailing ship",
+          "description": "Wind fills the ship's sails. No engine is visible. A sailing vessel alone does not establish where a crop originated.",
+          "x": 27,
+          "y": 40
+        },
+        {
+          "id": "ledger",
+          "label": "Dock record",
+          "description": "Scene prop: the dock record reads 1490. This is the date of the damaged scene, not an independent historical source.",
+          "x": 12,
+          "y": 73
+        },
+        {
+          "id": "cargo",
+          "label": "Flagged cargo",
+          "description": "The corrupted archive labels this cargo “potatoes for the European market, 1490.” Compare both the place and the date with your evidence.",
+          "x": 86,
+          "y": 72,
+          "objectImage": "/projects/exploration-time-repair/cargo.svg",
+          "restoredObjectImage": "/projects/exploration-time-repair/cargo-restored.svg"
+        },
+        {
+          "id": "merchant",
+          "label": "Merchant's account",
+          "description": "Fictional scene dialogue: “If the crate is here, surely it belongs here?” A character's confidence is not evidence. Test that assumption against the archive.",
+          "x": 90,
+          "y": 41
+        }
+      ]
+    }
+  ],
+  "missions": [
+    {
+      "id": "early-cargo",
+      "nodeId": "harbor-market",
+      "sceneId": "harbor",
+      "signal": "Potatoes are being sold at a European harbor market in 1490.",
+      "canonicalSummary": "Remove the premature European potato cargo from the 1490 record. Preserve the crop's Indigenous Andean history and its later documented Atlantic journey.",
+      "prerequisiteMissionIds": [],
+      "evidenceRequired": ["andean-origin", "dated-cultivation"],
+      "categories": ["Chronology error", "Wrong person", "Missing perspective", "Changed decision"],
+      "defense": {
+        "prompt": "What can you responsibly conclude from the Andean origin and the dated cultivation record?",
+        "options": [
+          {
+            "id": "exact-arrival",
+            "label": "Every potato first arrived in Europe on one known day in 1492."
+          },
+          {
+            "id": "too-early",
+            "label": "The 1490 European cargo is too early; the evidence supports a later transfer without an exact first-arrival date."
+          },
+          {
+            "id": "european-origin",
+            "label": "Potatoes originated in Europe because later European diets included them."
+          }
+        ]
+      },
+      "repair": {
+        "capability": "replace-object",
+        "targetHotspotId": "cargo",
+        "options": [
+          {
+            "id": "quarantine",
+            "label": "Remove the premature cargo",
+            "description": "Quarantine this cargo from the 1490 European record. Keep Andean cultivation and later Atlantic transfer intact.",
+            "objectLabel": "Premature cargo removed"
+          },
+          {
+            "id": "relabel",
+            "label": "Change the dock's date",
+            "description": "Relabel the entire harbor 1565 so that this one crate appears to fit.",
+            "objectLabel": "Dock relabeled 1565"
+          },
+          {
+            "id": "keep",
+            "label": "Leave the cargo in place",
+            "description": "Accept the merchant's confidence and keep the potatoes in the 1490 European market.",
+            "objectLabel": "Potatoes · 1490"
+          }
+        ]
+      },
+      "ripples": [
+        {
+          "nodeId": "exchange",
+          "before": "The damaged model implies the crop was already traded in Europe before the sustained Atlantic contacts of 1492.",
+          "after": "The sequence again allows a later Atlantic transfer from an existing Indigenous crop tradition."
+        },
+        {
+          "nodeId": "potato-record",
+          "before": "The 1565 cultivation trace looks like a much later detail in an already-established European crop history.",
+          "after": "The 1565 trace fits a sixteenth-century transfer. It still does not establish an exact first arrival."
+        },
+        {
+          "nodeId": "changing-diets",
+          "before": "The damaged model invites an unsupported story of earlier widespread adoption.",
+          "after": "Arrival and gradual adoption remain separate. Later changes in diets need their own evidence."
+        }
+      ],
+      "verificationPrompt": "Trace one ripple: explain how removing the early cargo changes a later interpretation. Cite a connected source and name something the evidence still cannot tell us.",
+      "stabilityValue": 58,
+      "evaluation": {
+        "category": "Chronology error",
+        "defenseOptionId": "too-early",
+        "repairOptionId": "quarantine"
+      }
+    }
+  ]
+}

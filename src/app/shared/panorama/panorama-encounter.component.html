@@ -1,0 +1,74 @@
+<section class="scene-shell" aria-label="Living picture investigation">
+  <div class="scene-heading"><div><span class="eyebrow">A WORLD BEHIND THE FRAME</span><h2>{{ scene().title }}</h2><p>{{ scene().setting }}</p></div><button [attr.aria-expanded]="notebook()" (click)="notebook.set(!notebook())">Field notebook · {{ state().collected.length }}</button></div>
+  <div class="scene-view" #view tabindex="-1" (keydown)="key($event)">
+    @if (mode() === 'painting') {
+      <p class="invitation">{{ scene().invitation }}</p>
+      <div class="framed-picture">
+        <app-panorama-painting [scene]="scene()" [state]="state()" [original]="original()" />
+        @if (!repairMode()) { <button class="enter-surface" aria-label="Enter the painting" (click)="enter()"><span>Enter the painting <b>↗</b></span></button> }
+        @else { @for (r of scene().repairs; track r.id) { <button class="picture-region" [style.left.%]="r.rect.x" [style.top.%]="r.rect.y" [style.width.%]="r.rect.width" [style.height.%]="r.rect.height" [attr.aria-label]="'Inspect ' + r.title" (click)="repairId.set(r.id)"></button> } }
+      </div>
+      <div class="studio-controls"><button class="primary" (click)="enter()">{{ state().visited.length ? 'Re-enter historical world' : 'Explore historical world' }}</button><button [attr.aria-pressed]="repairMode()" (click)="repairMode.set(!repairMode()); repairId.set('')">Inspect painting details</button><button [attr.aria-pressed]="original()" (click)="original.set(!original())">{{ original() ? 'Show my restoration' : 'Show original painting' }}</button></div>
+      <p class="small">{{ repairCount() }} of {{ scene().repairs.length }} changes applied · {{ original() ? 'Viewing the original painting' : 'Viewing your current draft' }}. Compare observations with sources; absence from a scene is not proof.</p>
+      @if (repairMode()) {
+        <div class="repair-options" aria-label="Picture details">@for (r of scene().repairs; track r.id) { <button [attr.aria-pressed]="repairId() === r.id" (click)="repairId.set(r.id)">{{ r.title }}</button> }</div>
+        @if (repair(); as r) {
+          <section class="repair-panel" aria-label="Repair selected detail"><h3>{{ r.title }}</h3><p>Compare this detail with what you learned. You can keep it or try a reconstruction.</p><div class="inspection-image" [style.aspect-ratio]="r.rect.width * 3 / r.rect.height"><img [src]="scene().forgery" alt="Selected detail in the forged painting" [style.width.%]="10000 / r.rect.width" [style.left.%]="-r.rect.x * 100 / r.rect.width" [style.top.%]="-r.rect.y * 100 / r.rect.height"></div>
+            <div class="studio-controls"><button [attr.aria-pressed]="!state().repairs[r.id]" (click)="action.emit({ type: 'repair', repairId: r.id, applied: false }); original.set(false)">Keep original detail</button><button [attr.aria-pressed]="!!state().repairs[r.id]" (click)="action.emit({ type: 'repair', repairId: r.id, applied: true }); original.set(false)">{{ r.action }}</button></div>
+            <p class="small">Evidence saved for this detail:</p><div class="source-links">@for (id of r.sourceIds; track id) { @if (state().collected.includes(id)) { <button (click)="inspectSource(id)">{{ sourceTitle(id) }}</button> } }<button (click)="notebook.set(true)">Open research notebook</button></div>
+          </section>
+        }
+      }
+      <div class="studio-controls"><button [disabled]="!state().undo.length" (click)="action.emit({ type: 'undo' }); original.set(false)">Undo last change</button><button (click)="download()">Download restored picture</button></div>
+    } @else if (mode() === 'panorama') {
+      @if (scene().viewpoints; as viewpoints) {
+        <app-spherical-view [viewpoints]="viewpoints" [saved]="state().sphericalView" (position)="action.emit({ type: 'spherical-view', view: $event })" (person)="selectSphericalPerson($event)" />
+        <div class="studio-controls"><button (click)="leave()">Return to painting</button><button (click)="tutorRequested.emit()">Open AI box</button></div>
+        <details class="people-list"><summary>People in this scene · keyboard navigation</summary>@for (p of scene().people; track p.id) { <button (click)="selectSphericalPerson(p.id)">{{ p.name }} · {{ p.activity }}</button> }</details>
+      } @else {
+      <div class="panorama" (pointerdown)="pointerDown($event)" (pointermove)="pointerMove($event)" (pointerup)="pointerEnd()" (pointerleave)="pointerEnd()" (pointercancel)="pointerEnd()">
+        <div class="world" [style.left.%]="heading()" [style.transform]="'translateX(-' + heading() + '%)'">
+          <img class="world-image" [src]="scene().panorama" [alt]="scene().imageAlt" draggable="false">
+          @for (p of scene().people; track p.id) { <button class="person-target" [style.left.%]="p.rect.x" [style.top.%]="p.rect.y" [style.width.%]="p.rect.width" [style.height.%]="p.rect.height" [attr.aria-label]="'Approach ' + p.name" (click)="approach(p)"><span>{{ p.name }}</span></button> }
+        </div>
+        <span class="world-tag">INSIDE THE HISTORICAL WORLD</span>
+      </div>
+      <div class="pan-controls"><button aria-label="Look left" (click)="pan(-15); saveHeading()">←</button><label>Look around<input aria-label="Panorama viewing direction" type="range" min="0" max="100" [value]="heading()" (input)="heading.set(+$any($event.target).value)" (change)="saveHeading()"></label><button aria-label="Look right" (click)="pan(15); saveHeading()">→</button><button (click)="leave()">Return to painting</button></div>
+      <p class="small">Drag to look around, or use arrow keys. Click a person to approach. This world contains none of the painting’s forged details.</p>
+      <details class="people-list"><summary>People in this scene · keyboard navigation</summary>@for (p of scene().people; track p.id) { <button (click)="approach(p)">{{ p.name }} · {{ p.activity }}</button> }</details>
+      }
+    } @else {
+      @if (person(); as p) {
+        <div class="encounter-top"><div><span class="eyebrow">{{ mode() === 'approach' ? 'APPROACHING' : 'IN CONVERSATION' }}</span><h3>{{ p.name }}</h3></div><button (click)="returnToScene()">← Return to scene</button></div>
+        <div class="encounter-layout" [class.talking]="mode() === 'interview'">
+          <div class="character-frame">
+            @if (mode() === 'approach' && p.approach && !videoFailed()) {
+              <video controls autoplay playsinline [poster]="scene().panorama" (ended)="talk()" (error)="videoFailed.set(true)"><source [src]="p.approach.src" type="video/mp4"><track kind="captions" srclang="en" label="English" [src]="p.approach.captions" default></video><details><summary>Video transcript</summary><p>{{ p.approach.transcript }}</p></details>
+            } @else {
+              <div class="character-image" [class.approaching]="mode() === 'approach'" [style.background-image]="'url(' + scene().panorama + ')'" [style.background-position]="(p.rect.x + p.rect.width / 2) + '% center'" role="img" [attr.aria-label]="p.name + ': ' + p.activity"></div>
+            }
+            @if (mode() === 'approach') {
+              @if (!p.approach || videoFailed()) { <p class="media-status">Camera-move preview · character video {{ videoFailed() ? 'could not load' : 'pending' }}.</p> }
+              <p class="welcome">“{{ p.welcome }}”</p><button class="primary" (click)="talk()">{{ p.approach ? 'Continue to conversation' : 'Begin scripted conversation' }}</button>
+            } @else { <p class="small">{{ p.activity }} · Fictional character, historical dramatization.</p> }
+          </div>
+          @if (mode() === 'interview' && scene().questionOwner !== 'tutor') {
+            <section class="interview" aria-label="Character interview"><p class="connection">{{ adapter.mode === 'ai' ? 'AI character interview' : 'Scripted interview preview · AI disconnected' }}</p>
+              <div class="messages" #messages role="log" aria-live="polite" aria-label="Interview conversation"><p class="character-message">{{ p.welcome }}</p>@for (m of conversation(); track $index) { <article [class.student-message]="m.role === 'student'" [class.character-message]="m.role === 'character'"><strong>{{ m.role === 'student' ? 'You' : p.name }}</strong><p>{{ m.text }}</p><div class="source-links">@for (id of m.sourceIds; track id) { <button (click)="inspectSource(id)">{{ sourceTitle(id) }} ↗</button> }</div></article> }</div>
+              <div class="question-box"><label for="scene-question">Ask about their work</label><div><input id="scene-question" maxlength="600" [value]="question()" (input)="question.set($any($event.target).value)" (keydown.enter)="ask()" [placeholder]="p.topics[0].question"><button [disabled]="busy() || !question().trim()" (click)="ask()">{{ busy() ? 'Waiting…' : 'Ask' }}</button></div></div>
+              <div class="suggestions" aria-label="Suggested questions">@for (topic of p.topics; track topic.id) { <button [disabled]="busy()" (click)="ask(topic.question)">{{ topic.question }}</button> }</div>
+            </section>
+          }
+        </div>
+      }
+    }
+    @if (source(); as s) {
+      <dialog class="source-inspection" #sourceDialog aria-label="Source inspection" (cancel)="closeSource()"><div class="encounter-top"><h3>{{ s.title }}</h3><button (click)="closeSource()">Close source</button></div>
+        @if (s.rect; as r) { <div class="object-view" [class.zoomed]="sourceZoom()" [style.background-image]="'url(' + scene().panorama + ')'" [style.background-position]="(r.x + r.width / 2) + '% ' + (r.y + r.height / 2) + '%'" role="img" [attr.aria-label]="s.title + ' in the teaching reconstruction'"></div><button [attr.aria-pressed]="sourceZoom()" (click)="sourceZoom.set(!sourceZoom())">{{ sourceZoom() ? 'Zoom out' : 'Examine closer' }}</button> }
+        <p>{{ s.text }}</p><p class="small">{{ s.provenance }}</p><div class="studio-controls"><a [href]="s.url" target="_blank" rel="noopener noreferrer">Open historical source ↗</a><button [attr.aria-pressed]="state().collected.includes(s.id)" (click)="action.emit({ type: 'collect', sourceId: s.id })">{{ state().collected.includes(s.id) ? 'Remove from notebook' : 'Save to field notebook' }}</button></div>
+      </dialog>
+    }
+  </div>
+  @if (notebook()) { <section class="notebook" aria-label="Field notebook"><div class="encounter-top"><h3>Field notebook</h3><button (click)="notebook.set(false)">Close notebook</button></div><p>Sources describe what historians can support. Character conversations are dramatizations. You can consult every source directly.</p><div class="notebook-sources">@for (s of scene().sources; track s.id) { <button (click)="inspectSource(s.id); notebook.set(false)">{{ s.title }} <span>{{ state().collected.includes(s.id) ? 'Saved' : 'Open source' }}</span></button> }</div><button (click)="downloadNotebook()">Download notebook and interviews</button></section> }
+  <p class="feedback" role="status">{{ status() }}</p><p class="attribution">{{ scene().attribution }}</p>
+</section>

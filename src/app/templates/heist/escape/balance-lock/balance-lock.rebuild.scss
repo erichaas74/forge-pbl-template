@@ -1,0 +1,163 @@
+:host .hanging-pin-chamber {
+  .mechanism-brief {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px 18px;
+    background: #203b3c;
+    border-block: 1px solid #b4a06d44;
+  }
+  .mechanism-brief p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #e9dec6;
+  }
+  .mechanism-brief > span {
+    font-size: 10px;
+    letter-spacing: 0.7px;
+    color: #c1d1c8;
+    flex-shrink: 0;
+  }
+  .mechanism-brief > span.aligned {
+    color: #acface;
+  }
+  .stage-shell {
+    height: auto;
+    min-height: 0;
+    flex: 0 0 auto;
+    overflow: visible;
+  }
+  .stage {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: auto;
+  }
+  .record-trial {
+    padding: 10px 15px;
+    min-height: 44px;
+    border: 1px solid #788b7f;
+    border-radius: 6px;
+    background: #213c42;
+    color: #dfdac6;
+    font-size: 12px;
+  }
+  .seals {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .seals button {
+    min-width: 0;
+    gap: 9px;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+  .seals small {
+    font-size: 9px;
+    letter-spacing: 0.8px;
+  }
+  .equilibrium > div {
+    min-width: 0;
+  }
+  .equation {
+    font-size: 23px;
+  }
+  .workbench {
+    box-shadow: none;
+  }
+  @media (max-width: 600px) {
+    .mechanism-brief {
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 10px 12px;
+    }
+    .seals button {
+      flex-direction: column;
+      align-items: start;
+      gap: 5px;
+      font-size: 12px;
+      padding: 9px;
+    }
+    .seals small {
+      font-size: 8px;
+      letter-spacing: 0.2px;
+    }
+    .tools-row {
+      flex-wrap: wrap;
+    }
+  }
+}
+:host(.week-preview) .hanging-pin-chamber .stage-shell {
+  height: auto;
+  min-height: 0;
+}
+:host(.week-preview) .hanging-pin-chamber .stage {
+  position: relative;
+  height: auto;
+}
+
+:host .expand-workshop {
+  border-color: #b9ae81;
+  background: #2b4545;
+  color: #f0e1b9;
+}
+:host(.expanded-workshop) {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  overflow: auto;
+  background: #0b151b;
+  --balance-3d-height: clamp(420px, 58dvh, 780px);
+  .hanging-pin-chamber {
+    min-height: 100dvh;
+    height: auto;
+    max-width: 1480px;
+    margin: 0 auto;
+  }
+  .workshop-header {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: #17282f;
+  }
+  .workbench {
+    padding-bottom: 22px;
+  }
+  .seals button {
+    padding: 8px 14px;
+  }
+}
+
+// Keep the three scales, their pan readings and the weight tray together at laptop height.
+:host(.week-preview) .hanging-pin-chamber {
+  position: relative;
+  .workshop-header { padding: 9px 12px; min-height: 52px; }
+  .workshop-header .eyebrow { display: none; }
+  .workshop-header h1 { font-size: 14px; margin: 0; }
+  .header-tools { gap: 5px; }
+  .header-tools button { font-size: 11px; padding: 6px 8px; min-height: 38px; }
+  .seals { padding: 5px 9px; gap: 6px; }
+  .seals button { padding: 6px 9px; font-size: 12px; }
+  .mechanism-brief { display: none; }
+  .instructions { position: absolute; right: 12px; top: 58px; width: min(370px,calc(100% - 24px)); padding: 16px; z-index: 8; border: 1px solid #96a992; border-radius: 8px; background: #19343e; box-shadow: 0 12px 30px #0007; }
+  .preview-reset { margin-top: 12px; }
+  &.has-renderer .workbench { display: none; }
+}
+:host(.week-preview.expanded-workshop) {
+  inset: 8px;
+  border: 1px solid #859787;
+  border-radius: 10px;
+  --balance-3d-height: max(300px,calc(100dvh - 340px));
+  .hanging-pin-chamber { min-height: 0; }
+}
+@media(max-width:680px) {
+  :host(.week-preview) .hanging-pin-chamber .workshop-header { display: block; padding: 8px; }
+  :host(.week-preview) .hanging-pin-chamber .workshop-header h1 { font-size: 12px; }
+  :host(.week-preview) .hanging-pin-chamber .header-tools { display: flex; flex-direction: row; flex-wrap: nowrap; margin-top: 6px; gap: 4px; }
+  :host(.week-preview) .hanging-pin-chamber .header-tools button { flex: 1; min-height: 40px; padding: 5px; font-size: 10px; }
+  :host(.week-preview) .hanging-pin-chamber .seals button { flex-direction: row; align-items: center; padding: 6px; gap: 4px; font-size: 10px; }
+  :host(.week-preview) .hanging-pin-chamber .seal-medal { width: 19px; height: 19px; font-size: 11px; }
+  :host(.week-preview.expanded-workshop) { --balance-3d-height: 345px; }
+}

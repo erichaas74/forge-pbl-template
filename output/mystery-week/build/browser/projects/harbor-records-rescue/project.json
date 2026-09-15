@@ -1,0 +1,138 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "harbor-records-rescue",
+  "projectVersion": "1.0.0",
+  "template": {
+    "id": "heist",
+    "version": "1.0"
+  },
+  "title": "Harbor Records Recovery",
+  "briefing": "Carry the port records from the storehouse to the waiting ship before the tide turns.",
+  "history": "A fictional harbor logistics exercise. Merchant records documented cargo and agreements; map dimensions and schedules are scenario data.",
+  "map": {
+    "image": "/projects/harbor-records-rescue/harbor-map.svg",
+    "width": 800,
+    "height": 400,
+    "pixelsPerCm": 25,
+    "metersPerCm": 5
+  },
+  "entry": "quay",
+  "extraction": "ship",
+  "speed": 3,
+  "deadline": 160,
+  "detectionGrace": 2,
+  "target": {
+    "location": "store",
+    "name": "Port records",
+    "mass": 20,
+    "capacity": 50,
+    "pickupSeconds": 5,
+    "loadedSpeed": 2
+  },
+  "locations": [
+    {
+      "id": "quay",
+      "name": "Old quay",
+      "x": 100,
+      "y": 100,
+      "description": "Start with an empty handcart at 3 m/s."
+    },
+    {
+      "id": "store",
+      "name": "Records store",
+      "x": 300,
+      "y": 100,
+      "description": "Collect 20 kg of records. Loaded speed is 2 m/s."
+    },
+    {
+      "id": "ship",
+      "name": "Waiting ship",
+      "x": 600,
+      "y": 100,
+      "description": "Reach the ship before the 160-second tide deadline."
+    }
+  ],
+  "routes": [
+    {
+      "from": "quay",
+      "to": "store"
+    },
+    {
+      "from": "store",
+      "to": "ship"
+    }
+  ],
+  "walls": [],
+  "guards": [
+    {
+      "id": "dock-watch",
+      "name": "Dock watch",
+      "speed": 15,
+      "range": 30,
+      "angle": 60,
+      "points": [
+        {
+          "x": 200,
+          "y": 280,
+          "wait": 4
+        },
+        {
+          "x": 500,
+          "y": 280,
+          "wait": 2
+        }
+      ]
+    }
+  ],
+  "gate": {
+    "location": "ship",
+    "cycle": 40,
+    "openSeconds": 40
+  },
+  "math": {
+    "distanceTolerance": 0.5,
+    "timeTolerance": 0.5,
+    "required": [
+      {
+        "id": "cargo",
+        "type": "CAPACITY",
+        "title": "Available capacity",
+        "prompt": "The handcart supports 50 kg. Records weigh 20 kg. How much capacity remains?",
+        "answer": 30,
+        "tolerance": 0,
+        "unit": "kg",
+        "hint": "Subtract cargo mass from capacity."
+      }
+    ]
+  },
+  "crisis": {
+    "title": "A slippery gangway",
+    "description": "Rain reduces handcart capacity by 20%. Calculate the new limit and choose a safe response.",
+    "challenge": {
+      "id": "crisis-capacity",
+      "type": "PERCENT_CHANGE",
+      "title": "Reduced capacity",
+      "prompt": "50 kg capacity decreases by 20%. What is the new capacity?",
+      "answer": 40,
+      "tolerance": 0,
+      "unit": "kg",
+      "hint": "Multiply by 0.8."
+    },
+    "choices": [
+      {
+        "id": "steady",
+        "label": "Proceed carefully · 40 kg capacity · half speed",
+        "capacity": 40,
+        "speedMultiplier": 0.5,
+        "delay": 5
+      },
+      {
+        "id": "shelter",
+        "label": "Wait for shelter · full speed · 20 s delay",
+        "capacity": 50,
+        "speedMultiplier": 1,
+        "delay": 20
+      }
+    ]
+  }
+}

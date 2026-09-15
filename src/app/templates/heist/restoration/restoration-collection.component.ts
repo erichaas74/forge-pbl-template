@@ -1,3 +1,5 @@
+import { bindLessonFocus } from '../../../shared/project-lessons/project-lesson-focus';
+import { WorkspaceToolsComponent } from '../../../shared/project-lessons/workspace-tools.component';
 import { ChangeDetectionStrategy, Component, ElementRef, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { EncounterComponent } from '../../../shared/encounters/encounter.component';
@@ -14,7 +16,7 @@ import { collectionReady } from './restoration-collection.engine';
 import { RestorationCollectionRuntime } from './restoration-collection.runtime';
 import type { RestorationCommission } from './restoration-collection.models';
 
-@Component({ selector: 'app-restoration-collection', imports: [FormsModule, PaintingCanvasComponent, RestorationEditorComponent, EncounterComponent, AcademicLockComponent], templateUrl: './restoration-collection.component.html', styleUrl: './restoration-collection.component.scss', changeDetection: ChangeDetectionStrategy.OnPush })
+@Component({ selector: 'app-restoration-collection', imports: [WorkspaceToolsComponent,FormsModule, PaintingCanvasComponent, RestorationEditorComponent, EncounterComponent, AcademicLockComponent], templateUrl: './restoration-collection.component.html', styleUrl: './restoration-collection.component.scss', changeDetection: ChangeDetectionStrategy.OnPush })
 export class RestorationCollectionComponent {
   readonly runtime = inject(RestorationCollectionRuntime); readonly mission = this.runtime.mission;
   readonly state = computed(() => { this.runtime.revision(); return this.runtime.engine.state; });
@@ -37,6 +39,13 @@ export class RestorationCollectionComponent {
   readonly heading = viewChild<ElementRef<HTMLElement>>('pageHeading');
   private previousFocus?: HTMLElement;
   constructor() {
+    bindLessonFocus((lesson) => {
+      const target = lesson.focusTarget;
+      if (target === 'studio') {
+        const work = this.work() ?? this.nextWork();
+        if (work) this.open(work);
+      } else if (target === 'ledger' || target === 'heist') this.go(target);
+    });
     if (this.state().heistStarted) this.page.set('heist'); else if (this.state().workId) this.page.set('studio');
     effect(() => { if (this.researchOpen()) this.researchDialog()?.nativeElement.showModal(); else this.researchDialog()?.nativeElement.close(); });
     effect(() => { if (this.encounter()) this.storyDialog()?.nativeElement.showModal(); else this.storyDialog()?.nativeElement.close(); });

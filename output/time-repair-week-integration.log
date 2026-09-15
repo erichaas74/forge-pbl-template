@@ -1,0 +1,31 @@
+Using Vitest configuration file: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\scripts\time-repair-vitest.config.ts
+> Building...
+√ Building...
+Application bundle generation complete. [150.961 seconds] - 2026-09-14T23:22:05.832Z
+
+
+ RUN  v4.1.11 C:/Users/erich/Desktop/pbl-lms/forge-pbl-template
+
+ ❯ |forge-pbl-template| src/app/runtime/project-launch/project-lessons.spec.ts (5 tests | 1 failed) 3070ms
+     × opens every lesson on a mounted visual surface with versioned lesson context and the appropriate standards review 2015ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |forge-pbl-template| src/app/runtime/project-launch/project-lessons.spec.ts > eight-lesson project navigation > opens every lesson on a mounted visual surface with versioned lesson context and the appropriate standards review
+AssertionError: castle-archive-rescue: expected null not to be null
+ ❯ src/app/runtime/project-launch/project-lessons.spec.ts:70:47
+     68|         const reviewPanel = element.querySelector('app-standards-revie…
+     69|         if (/^Grade [456]$/.test(project.grade)) {
+     70|           expect(reviewPanel, project.id).not.toBeNull();
+       |                                               ^
+     71|           expect(reviewPanel?.querySelector('.week-standards')?.textCo…
+     72|             `Week ${Math.ceil(lesson.number / 2)}`,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 8 passed (9)
+   Start at  17:22:08
+   Duration  42.76s (transform 34.27s, setup 1.12s, import 35.12s, tests 3.08s, environment 2.77s)
+

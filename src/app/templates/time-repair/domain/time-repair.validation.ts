@@ -1,5 +1,6 @@
 import { repairCapabilities } from './time-repair.engine';
 import type { TimeRepairConfig } from './time-repair.models';
+import { validateRepairPreview } from './time-repair-preview.validation';
 
 function check(condition: unknown, path: string): asserts condition {
   if (!condition) throw new Error(`INVALID_TIME_REPAIR_PACKAGE: ${path}`);
@@ -193,5 +194,6 @@ export function requireTimeRepairConfig(value: unknown): TimeRepairConfig {
       100,
     'stability values must total 100',
   );
+  if (config.previewWeeks !== undefined) validateRepairPreview(config.previewWeeks, config);
   return freeze(config);
 }

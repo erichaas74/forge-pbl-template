@@ -2,16 +2,16 @@
   <div class="bench-scene" role="img" aria-label="Sealed-vessel reaction bench"></div>
   <div class="bench-shade" aria-hidden="true"></div>
 
-  <div class="bench-grid">
+  <div class="bench-grid" [class.has-record]="step() === 'complete'">
     <!-- ---- Specimen tray + protocol -------------------------------------- -->
-    <aside class="tray" aria-labelledby="tray-title">
+    <aside [hidden]="!!selectedVialId()" class="tray" aria-labelledby="tray-title">
       <span class="kicker">Sealed specimens</span>
       <h2 id="tray-title">Specimen tray</h2>
       <p class="tray-hint">
         {{
           selectedVialId()
             ? 'Your selected vial is loaded. Choose another above or drag one here to switch.'
-            : 'Drag one vial onto the bench to start a run.'
+            : 'Select a vial, then use Place on bench, or drag it onto the bench.'
         }}
       </p>
 
@@ -49,6 +49,11 @@
         }
       </ul>
 
+      @if (heldVialId(); as held) {
+        <button class="primary-action" type="button" [disabled]="busy()" (click)="dockVial()">
+          Place Vial {{ vialCode(held) }} on bench
+        </button>
+      }
       <span class="kicker">Protocol</span>
       <ol class="protocol">
         <li [class.done]="volumeOk() && step() !== 'fill'" [class.active]="step() === 'fill'">
@@ -103,13 +108,7 @@
       <header class="rig-head">
         <div>
           <span class="kicker">Sealed vessel · single specimen</span>
-          <h1>
-            @if (activeVial(); as vial) {
-              Screening Vial {{ vial.code }}
-            } @else {
-              Drag a vial onto the bench
-            }
-          </h1>
+          <h1>{{ stepHint() }}</h1>
         </div>
         @if (step() === 'react') {
           <div class="rig-clock">
@@ -649,9 +648,9 @@
     </div>
 
     <!-- ---- Observation record --------------------------------------------- -->
-    <aside class="record" aria-labelledby="record-title">
+    <aside [hidden]="!(step() === 'complete')" class="record" aria-label="Reaction trial readings">
       <span class="kicker">Your record</span>
-      <h2 id="record-title">What did you see?</h2>
+      <h2>{{ preview ? 'Reaction readings' : 'What did you see?' }}</h2>
 
       @if (stages().length === 0) {
         <p class="record-note">
@@ -701,6 +700,7 @@
           </small>
         </div>
 
+        @if (!preview) {
         <label class="observation-field">
           Write what the vessel showed you
           <textarea
@@ -718,6 +718,7 @@
             The bench will not file a record until you describe the change in your own words.
           </p>
         }
+        } @else { <p class="record-note">This protocol is retained in the local procedure log. Choose another vial or restart to compare.</p> }
       }
     </aside>
   </div>

@@ -1,3 +1,4 @@
+import { WorkspaceToolsComponent } from '../../../shared/project-lessons/workspace-tools.component';
 import { afterNextRender, ChangeDetectionStrategy, Component, computed, effect, ElementRef, Injector, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -9,7 +10,7 @@ import { LeagueLeaderboardComponent } from './league-leaderboard.component';
 
 @Component({
   selector: 'app-league-shell',
-  imports: [DecimalPipe, FormsModule, RouterLink, LeagueLeaderboardComponent],
+  imports: [WorkspaceToolsComponent,DecimalPipe, FormsModule, RouterLink, LeagueLeaderboardComponent],
   templateUrl: './league-shell.component.html',
   styleUrl: './league-shell.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

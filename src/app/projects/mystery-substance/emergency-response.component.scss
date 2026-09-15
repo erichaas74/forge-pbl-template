@@ -1,3 +1,4 @@
+@use './lab-preview' as preview;
 :host {
   position: absolute;
   inset: 0;
@@ -649,3 +650,5 @@ h3 {
   min-height: 34rem;
   overflow: visible;
 }
+
+@include preview.station('emergency');

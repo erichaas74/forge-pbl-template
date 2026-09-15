@@ -1,3 +1,4 @@
+import { WorkspaceToolsComponent } from '../../../shared/project-lessons/workspace-tools.component';
 import { ObjectModelViewerComponent } from '../../../shared/media/object-model-viewer.component';
 import { TaskGuideComponent } from '../../../shared/learning/task-guide.component';
 import { Component, computed, inject, signal } from '@angular/core';
@@ -15,7 +16,7 @@ import { StudentRoomWorkspaceComponent } from '../rooms/student-room-workspace.c
 
 @Component({
   selector: 'app-exhibit-hall-page',
-  imports: [
+  imports: [WorkspaceToolsComponent,
     StudentRoomWorkspaceComponent,
     ObjectModelViewerComponent,
     TaskGuideComponent,

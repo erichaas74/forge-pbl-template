@@ -9,6 +9,10 @@ import {
 import { fractionRenderer, timingRenderer } from './render-fraction-timing';
 import { volumeRenderer, mixingRenderer } from './render-liquids';
 import { coordinateRenderer, reflectionRenderer, cableRenderer } from './render-spatial';
+import { mountTimingCage } from './timing-cage/timing-cage.scene';
+import { mountFractionCage } from './fraction-cage/fraction-cage.scene';
+import { mountOpticsCage } from './optics-cage/optics-cage.scene';
+import { mountBridgeCage } from './bridge-cage/bridge-cage.scene';
 
 export interface MachineSceneHandle {
   destroy(): void;
@@ -30,6 +34,15 @@ export function mountMachineScene(
   snapshot: () => MachineView,
   callbacks: MachineCallbacks,
 ): MachineSceneHandle {
+  if (definition.presentation?.kind === 'bridge-cage')
+    return mountBridgeCage(parent, definition, snapshot, callbacks);
+  const timing = definition.stages[0];
+  if (definition.stages.length === 1 && timing.kind === 'reflection' && timing.presentation?.kind === 'optics-cage')
+    return mountOpticsCage(parent, timing, snapshot, callbacks);
+  if (definition.stages.length === 1 && timing.kind === 'fraction-gear' && timing.presentation?.kind === 'fraction-cage')
+    return mountFractionCage(parent, timing, snapshot, callbacks);
+  if (definition.stages.length === 1 && timing.kind === 'timing-wheels' && timing.presentation?.kind === 'timing-cage')
+    return mountTimingCage(parent, timing, snapshot, callbacks);
   class Workshop extends Phaser.Scene {
     private surface?: MachineSurface;
     private mechanism?: MachineRenderer;

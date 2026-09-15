@@ -1,6 +1,23 @@
-import { afterNextRender, Component, computed, effect, ElementRef, inject, Injector, input, signal, viewChild } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  Injector,
+  input,
+  output,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
-import type { CommandType, MoveMathOperation, RobotCommand, RobotProgram } from '../domain/automation.models';
+import type {
+  CommandType,
+  MoveMathOperation,
+  RobotCommand,
+  RobotProgram,
+} from '../domain/automation.models';
 import { AutomationRuntimeService } from '../runtime/automation-runtime.service';
 import { transformCommands } from '../core/automation-state';
 import { evidenceIsCorrect } from '../core/automation-math';
@@ -22,6 +39,9 @@ export class CommandEditorComponent {
   private readonly palette = viewChild<ElementRef<HTMLElement>>('paletteHost');
   readonly insertion = signal<{ challengeId: string; parentId: string } | undefined>(undefined);
   readonly addedMessage = signal('');
+  readonly paletteOpen = signal(false);
+  readonly reasoning = output<void>();
+  private paletteTrigger?: HTMLElement;
   readonly insertionParent = computed(() => {
     const insertion = this.insertion();
     if (!insertion || insertion.challengeId !== this.runtime.challenge().id) return undefined;
@@ -43,6 +63,7 @@ export class CommandEditorComponent {
   );
   readonly runtime = inject(AutomationRuntimeService);
   readonly snapshot = input<RobotProgram>();
+  readonly assessmentLinks = input(true);
   readonly activeId = input('');
   readonly labels = commandLabels;
   readonly verbs: Record<CommandType, string> = {
@@ -73,6 +94,7 @@ export class CommandEditorComponent {
       this.runtime.challenge().id;
       this.snapshot();
       this.insertion.set(undefined);
+      this.paletteOpen.set(false);
       this.addedMessage.set('');
     });
   }
@@ -124,13 +146,24 @@ export class CommandEditorComponent {
     return [];
   }
   focusPalette(parentId?: string): void {
-    if (parentId && this.readOnly()) return;
-    this.insertion.set(parentId ? { challengeId: this.runtime.challenge().id, parentId } : undefined);
-    afterNextRender(() => {
-      const palette = this.palette()?.nativeElement;
-      palette?.scrollIntoView({ block: 'nearest', behavior: 'instant' });
-      palette?.focus({ preventScroll: true });
-    }, { injector: this.injector });
+    if (this.readOnly()) return;
+    this.paletteTrigger = this.element.nativeElement.ownerDocument.activeElement as HTMLElement;
+    this.paletteOpen.set(true);
+    this.insertion.set(
+      parentId ? { challengeId: this.runtime.challenge().id, parentId } : undefined,
+    );
+    afterNextRender(
+      () => {
+        const palette = this.palette()?.nativeElement;
+        palette?.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+        palette?.focus({ preventScroll: true });
+      },
+      { injector: this.injector },
+    );
+  }
+  closePalette(): void {
+    this.paletteOpen.set(false);
+    afterNextRender(() => this.paletteTrigger?.focus(), { injector: this.injector });
   }
   addBlock(type: CommandType): void {
     if (this.readOnly() || !this.runtime.challenge().allowedCommands.includes(type)) return;
@@ -139,18 +172,28 @@ export class CommandEditorComponent {
     const id = this.runtime.selectedCommandId();
     const path = this.commandPath(this.program().commands, id);
     if (!path.length) return;
+    this.paletteOpen.set(false);
     this.collapsed.update((collapsed) => {
       const next = new Set(collapsed);
       path.forEach((command) => next.delete(command.id));
       return next;
     });
-    this.addedMessage.set(`${this.labels[type]} added ${parent ? 'inside Repeat' : 'to your program'}.`);
-    afterNextRender(() => {
-      const block = Array.from(this.element.nativeElement.querySelectorAll<HTMLElement>('[data-command-id]'))
-        .find((element) => element.dataset['commandId'] === id);
-      block?.scrollIntoView({ block: 'nearest', behavior: 'instant' });
-      block?.querySelector<HTMLElement>('.block-input, .package, .choose')?.focus({ preventScroll: true });
-    }, { injector: this.injector });
+    this.addedMessage.set(
+      `${this.labels[type]} added ${parent ? 'inside Repeat' : 'to your program'}.`,
+    );
+    afterNextRender(
+      () => {
+        const block = Array.from(
+          this.element.nativeElement.querySelectorAll<HTMLElement>('[data-command-id]'),
+        ).find((element) => element.dataset['commandId'] === id);
+        block?.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+        const control =
+          block?.querySelector<HTMLElement>('.block-input, .package') ??
+          block?.querySelector<HTMLElement>('.choose');
+        control?.focus({ preventScroll: true });
+      },
+      { injector: this.injector },
+    );
   }
   remove(id: string): void {
     this.runtime.setCommands(transformCommands(this.program().commands, id, () => []));

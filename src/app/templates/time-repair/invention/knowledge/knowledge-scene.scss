@@ -1,0 +1,139 @@
+:host {
+  display: block;
+  height: 100%;
+  min-width: 0;
+}
+.scene {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: #213d40;
+  font-family: Georgia, serif;
+}
+.scene text {
+  user-select: none;
+}
+[kb] {
+  cursor: pointer;
+  outline: none;
+}
+[kb] .hit {
+  stroke: transparent;
+  stroke-width: 4;
+}
+[kb]:hover .hit {
+  stroke: #f0d69f;
+}
+[kb]:focus-visible .hit,
+[kb][aria-pressed='true'] .hit {
+  stroke: #8cf1db;
+  stroke-width: 5;
+}
+[kb].hit {
+  cursor: pointer;
+  stroke: transparent;
+  stroke-width: 3;
+}
+[kb].hit:hover {
+  stroke: #f0d69f;
+}
+[kb].hit:focus-visible,
+[kb].hit[aria-pressed='true'] {
+  stroke: #8cf1db;
+  stroke-width: 4;
+}
+.paper {
+  fill: #eddab1;
+  stroke: #947145;
+  stroke-width: 2;
+}
+.ink {
+  fill: #355951;
+}
+.label {
+  font:
+    18px Georgia,
+    serif;
+  fill: #f7e5bd;
+  text-anchor: middle;
+}
+.small {
+  font:
+    15px Arial,
+    sans-serif;
+  fill: #f2e0b4;
+  text-anchor: middle;
+}
+.wood {
+  fill: #785039;
+  stroke: #b99463;
+  stroke-width: 3;
+}
+.metal {
+  fill: #a1b2a7;
+  stroke: #415f59;
+  stroke-width: 3;
+}
+.socket {
+  fill: #142e3299;
+  stroke: #a99a72;
+  stroke-width: 3;
+  stroke-dasharray: 9 7;
+}
+[kb] .socket.hit {
+  stroke: #baa87b;
+}
+[kb]:hover .socket.hit {
+  stroke: #f0d69f;
+}
+[kb]:focus-visible .socket.hit {
+  stroke: #8cf1db;
+}
+.button-face {
+  fill: #ddc08b;
+  stroke: #795837;
+  stroke-width: 3;
+}
+.button-ink {
+  fill: #294a46;
+  font:
+    22px Georgia,
+    serif;
+  text-anchor: middle;
+}
+.moved {
+  transition:
+    transform 0.6s ease,
+    opacity 0.5s;
+}
+.glow {
+  fill: #90b49a;
+  opacity: 0.25;
+}
+.running {
+  animation: turn-wheel 3s linear 3;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.reverse {
+  animation-direction: reverse;
+}
+.operate {
+  animation: work-bob 1s ease-in-out 3;
+}
+@keyframes turn-wheel {
+  to {
+    rotate: 360deg;
+  }
+}
+@keyframes work-bob {
+  50% {
+    translate: 0 -8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

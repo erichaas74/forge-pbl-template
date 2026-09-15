@@ -37,52 +37,89 @@
         (leave)="runtime.phase() === 'celebrate' ? next() : closePuzzle()"
       />
     }
-    @if (machinePuzzle(); as machine) {
-      <app-machine-workshop
-        [definition]="machine.lock"
-        [answer]="runtime.draft().machine ?? null"
-        [grade]="runtime.engine().grade"
-        [completed]="runtime.phase() === 'celebrate'"
-        [paused]="runtime.paused()"
-        [reducedMotion]="runtime.reducedMotion()"
-        [saveWarning]="runtime.progress.warning()"
-        (changed)="runtime.input({ type: 'machine-change', answer: $event })"
-        (solved)="submit()"
-        (sound)="audio.cue($event)"
-        (pauseRequested)="openSettings()"
-        (retrySave)="runtime.progress.retrySave()"
-        (leave)="runtime.phase() === 'celebrate' ? next() : closePuzzle()"
-      />
+    @for (step of [runtime.current()]; track step.id) {
+      @if (machinePuzzle(); as machine) {
+        <app-machine-workshop
+          [definition]="machine.lock"
+          [answer]="runtime.draft().machine ?? null"
+          [grade]="runtime.engine().grade"
+          [completed]="runtime.phase() === 'celebrate'"
+          [paused]="runtime.paused()"
+          [reducedMotion]="runtime.reducedMotion()"
+          [saveWarning]="runtime.progress.warning()"
+          (changed)="runtime.input({ type: 'machine-change', answer: $event })"
+          (solved)="submit()"
+          (sound)="audio.cue($event)"
+          (pauseRequested)="openSettings()"
+          (retrySave)="runtime.progress.retrySave()"
+          (leave)="runtime.phase() === 'celebrate' ? next() : closePuzzle()"
+        />
+      }
     }
     <div #worldHost class="world-host"></div>
     <div class="vignette" aria-hidden="true"></div>
-    <header class="game-bar">
-      <a routerLink="/" aria-label="Back to all projects">← <span>Projects</span></a>
-      <div class="game-brand">
-        <span aria-hidden="true">☾</span>
-        <div>{{ mission.title }}<small>SOLO EXPEDITION</small></div>
-      </div>
-      @if (runtime.phase() !== 'opening') {
-        <div class="rescue-counter" aria-live="polite">
-          <strong
-            >{{ runtime.engine().rescued }}<span> / {{ runtime.totalAnimals }}</span></strong
-          ><small>{{ runtime.engine().complete ? 'HOME SAFE' : 'ANIMALS FREED' }}</small>
+    @if (ready() && runtime.engine().started && !runtime.engine().complete) {
+      <nav class="lock-navigation" aria-label="Lock navigation">
+        <button
+          type="button"
+          (click)="visitLock(runtime.engine().index - 1)"
+          [disabled]="runtime.engine().index === 0 || runtime.paused()"
+          aria-label="Previous lock"
+        >
+          ←
+        </button>
+        <select
+          aria-label="Choose lock"
+          [ngModel]="runtime.engine().index"
+          (ngModelChange)="visitLock(+$event)"
+          [disabled]="runtime.paused()"
+        >
+          @for (step of mission.steps; track step.id; let i = $index) {
+            <option [ngValue]="i">
+              {{ i + 1 }} / {{ mission.steps.length }} · {{ step.place
+              }}{{ runtime.engine().solved.has(step.id) ? ' ✓' : '' }}
+            </option>
+          }
+        </select>
+        <button
+          type="button"
+          (click)="visitLock(runtime.engine().index + 1)"
+          [disabled]="runtime.engine().index === mission.steps.length - 1 || runtime.paused()"
+          aria-label="Next lock"
+        >
+          →
+        </button>
+      </nav>
+    }
+    <app-workspace-tools
+      ><header class="game-bar">
+        <a routerLink="/" aria-label="Back to all projects">← <span>Projects</span></a>
+        <div class="game-brand">
+          <span aria-hidden="true">☾</span>
+          <div>{{ mission.title }}<small>SOLO EXPEDITION</small></div>
         </div>
-        <div class="header-actions">
-          <button
-            (click)="runtime.openJournal()"
-            [disabled]="settings()"
-            aria-label="Open rescue journal"
-          >
-            Journal</button
-          ><button (click)="toggleSound()" [attr.aria-pressed]="runtime.audioEnabled()">
-            {{ runtime.audioEnabled() ? 'Sound on' : 'Sound off' }}</button
-          ><button (click)="openSettings()">Pause</button>
-        </div>
-      } @else {
-        <span class="chapter-tag">CHAPTER 01 · THE CASTLE</span>
-      }
-    </header>
+        @if (runtime.phase() !== 'opening') {
+          <div class="rescue-counter" aria-live="polite">
+            <strong
+              >{{ runtime.engine().rescued }}<span> / {{ runtime.totalAnimals }}</span></strong
+            ><small>{{ runtime.engine().complete ? 'HOME SAFE' : 'ANIMALS FREED' }}</small>
+          </div>
+          <div class="header-actions">
+            <button
+              (click)="runtime.openJournal()"
+              [disabled]="settings()"
+              aria-label="Open rescue journal"
+            >
+              Journal</button
+            ><button (click)="toggleSound()" [attr.aria-pressed]="runtime.audioEnabled()">
+              {{ runtime.audioEnabled() ? 'Sound on' : 'Sound off' }}</button
+            ><button (click)="openSettings()">Pause</button>
+          </div>
+        } @else {
+          <span class="chapter-tag">CHAPTER 01 · THE CASTLE</span>
+        }
+      </header></app-workspace-tools
+    >
 
     @if (!ready() || error()) {
       <section class="loading-screen" role="status">

@@ -1,3 +1,5 @@
+import type { JourneyPathDefinition } from './journey-path.models';
+
 export type JourneyResponseMode = 'text' | 'audio';
 
 export type JourneySceneType =
@@ -201,6 +203,7 @@ export interface ClassVoyageRecord {
 }
 
 export interface JourneyProjectConfig {
+  readonly experience?: JourneyPathDefinition;
   /** Published historical context. Player commands cannot rewrite these events. */
   readonly historicalFrame?: JourneyHistoricalFrame;
   readonly schemaVersion: '1.0';

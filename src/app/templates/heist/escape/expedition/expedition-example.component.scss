@@ -1,0 +1,177 @@
+:host {
+  display: block;
+  background: #071c25;
+  color: #f6ebd2;
+  font-family: 'Trebuchet MS', sans-serif;
+}
+* {
+  box-sizing: border-box;
+}
+.route-example {
+  min-height: 100dvh;
+  padding: 20px 20px 24px;
+  text-align: center;
+}
+.tour-question {
+  margin-bottom: 14px;
+  span {
+    color: #bdc8bf;
+    font-size: 12px;
+  }
+  h1 {
+    margin: 7px 0;
+    font:
+      500 clamp(20px, 3vw, 30px) Georgia,
+      serif;
+  }
+}
+.map {
+  position: relative;
+  margin: auto;
+  max-width: min(1120px, calc((100dvh - 260px) * 1.5));
+  min-width: min(100%, 320px);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #bba67855;
+  background: #0c2027;
+}
+svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+polyline {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.route-shadow {
+  stroke: #04161de0;
+  stroke-width: 13;
+}
+.route-base {
+  stroke: #ffe3a2;
+  stroke-opacity: 0.25;
+  stroke-width: 5;
+  stroke-dasharray: 7 10;
+}
+.visited {
+  stroke: #87dbbb;
+  stroke-opacity: 0.9;
+  stroke-dasharray: none;
+}
+.route-active {
+  stroke: #ffdc88;
+  stroke-width: 7;
+}
+.stop {
+  fill: #102e37;
+  stroke: #c4b389;
+  stroke-width: 3;
+}
+.current .stop {
+  fill: #eaca82;
+  stroke: #fff0c0;
+  stroke-width: 5;
+}
+.stop-number {
+  fill: #fff1cd;
+  font:
+    bold 22px Arial,
+    sans-serif;
+}
+.current .stop-number {
+  fill: #112d35;
+}
+.traveler-glow {
+  fill: #ffe29650;
+}
+.traveler {
+  fill: #fff8d5;
+  stroke: #d9943c;
+  stroke-width: 3;
+}
+.tour-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  padding: 12px 16px;
+  background: #0a232bf5;
+}
+.stop-caption {
+  display: grid;
+  gap: 3px;
+  small {
+    color: #b9c6bd;
+  }
+  strong {
+    font-size: 17px;
+  }
+}
+.playback,
+.stops {
+  display: flex;
+  gap: 7px;
+  justify-content: center;
+}
+button {
+  min-height: 44px;
+  min-width: 44px;
+  border: 1px solid #98b5a566;
+  border-radius: 7px;
+  color: inherit;
+  background: #14363e;
+  padding: 8px 12px;
+  font: inherit;
+  cursor: pointer;
+}
+button:focus-visible {
+  outline: 3px solid #a3efdb;
+  outline-offset: 3px;
+}
+button[aria-current] {
+  background: #eaca82;
+  color: #0e2b35;
+  border-color: #ffe7aa;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.stops {
+  margin: 16px auto 0;
+  flex-wrap: wrap;
+}
+.stop-note {
+  max-width: 740px;
+  margin: 12px auto;
+  line-height: 1.5;
+  min-height: 3em;
+  color: #d2dfd5;
+}
+.example-note {
+  color: #9caea8;
+}
+@media (max-width: 600px) {
+  .route-example {
+    padding: 20px 10px 20px;
+  }
+  .map {
+    max-width: 100%;
+  }
+  .tour-controls {
+    padding: 10px;
+    flex-wrap: wrap;
+  }
+  .stops {
+    gap: 4px;
+  }
+  .stops button {
+    padding: 6px;
+  }
+  .stop-note {
+    font-size: 14px;
+  }
+}

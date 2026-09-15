@@ -1,0 +1,156 @@
+:host {
+  display: block;
+  height: 100%;
+}
+.courtyard {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  background: #51625b;
+  isolation: isolate;
+}
+svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.station {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  min-width: 44px;
+  min-height: 44px;
+  border: 2px solid #806a44;
+  background: #f0d09a;
+  color: #3e4c3e;
+  border-radius: 50%;
+  box-shadow:
+    0 4px 0 #473e2f,
+    0 0 0 6px #d9bc8c24;
+  cursor: pointer;
+  transform: translateX(-50%);
+  transition: background 0.2s;
+}
+.station:hover {
+  background: #ffe6b5;
+}
+.station span {
+  font-size: 25px;
+  line-height: 1;
+}
+.station small {
+  font:
+    700 10px Arial,
+    sans-serif;
+  margin-top: 2px;
+}
+.scribe {
+  left: 22%;
+  top: 74%;
+}
+.binder {
+  left: 53%;
+  top: 79%;
+}
+.courier {
+  left: 81%;
+  top: 81%;
+}
+.access-object {
+  position: absolute;
+  left: 88%;
+  top: 56%;
+  width: 44px;
+  height: 44px;
+  background: #e6c890e8;
+  color: #4b4a39;
+  border: 1px solid #79613d;
+  border-radius: 50%;
+  box-shadow: 0 2px 10px #53493055;
+  cursor: pointer;
+  font-size: 21px;
+}
+button:focus-visible {
+  outline: 3px solid #eefff5;
+  outline-offset: 4px;
+}
+.object-count {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #173e39;
+  color: #e9d4a7;
+  border: 1px solid #cfb278;
+  display: grid;
+  place-items: center;
+  font:
+    11px Arial,
+    sans-serif;
+}
+.sheets {
+  top: 70%;
+  left: 41%;
+}
+.bound {
+  top: 75%;
+  left: 63%;
+}
+.copy-progress {
+  position: absolute;
+  top: 74%;
+  left: 12%;
+  display: flex;
+  gap: 4px;
+  transform: rotate(-8deg);
+}
+.copy-progress i {
+  width: 6px;
+  height: 6px;
+  border: 1px solid #ddd0a7;
+  background: #554f3b;
+  border-radius: 50%;
+}
+.copy-progress i.filled {
+  background: #f6d590;
+}
+.quill {
+  transition: transform 0.2s;
+  transform-origin: 257px 565px;
+}
+.quill.writing {
+  transform: rotate(-17deg);
+}
+.messenger-delivered {
+  animation: messenger-step 0.5s ease-out;
+}
+@keyframes messenger-step {
+  from {
+    transform: translateX(-12px);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@media (max-width: 600px) {
+  .station {
+    width: 48px;
+    height: 48px;
+  }
+  .access-object {
+    left: 86%;
+    top: 55%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  .quill {
+    animation: none;
+    transition: none;
+  }
+}

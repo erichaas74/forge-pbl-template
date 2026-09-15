@@ -1,0 +1,57 @@
+> Building...
+√ Building...
+Application bundle generation failed. [30.063 seconds] - 2026-09-14T22:04:38.202Z
+
+X [ERROR] NG5002: Unexpected closing tag "article". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags [plugin angular-compiler]
+
+    src/app/projects/mystery-substance/emergency-response.component.html:47:6:
+      47 │       </article>
+         ╵       ~~~~~~~~~~
+
+  Error occurs in the template of component EmergencyResponseComponent.
+
+    src/app/projects/mystery-substance/emergency-response.component.ts:62:15:
+      62 │   templateUrl: './emergency-response.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Unexpected closing tag "div". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags [plugin angular-compiler]
+
+    src/app/projects/mystery-substance/emergency-response.component.html:48:4:
+      48 │     </div>
+         ╵     ~~~~~~
+
+  Error occurs in the template of component EmergencyResponseComponent.
+
+    src/app/projects/mystery-substance/emergency-response.component.ts:62:15:
+      62 │   templateUrl: './emergency-response.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Unexpected closing block. The block may have been closed earlier. If you meant to write the `}` character, you should use the "&#125;" HTML entity instead. [plugin angular-compiler]
+
+    src/app/projects/mystery-substance/emergency-response.component.html:49:2:
+      49 │   }
+         ╵   ^
+
+  Error occurs in the template of component EmergencyResponseComponent.
+
+    src/app/projects/mystery-substance/emergency-response.component.ts:62:15:
+      62 │   templateUrl: './emergency-response.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'findLast' does not exist on type 'readonly DesignCapture[]'. [plugin angular-compiler]
+
+    src/app/templates/engineering-design/ui/engineering-week-workspace.component.ts:58:38:
+      58 │ ...last = this.draft()?.trials.findLast(t => t.settings['previewSe...
+         ╵                                ~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 't' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/engineering-design/ui/engineering-week-workspace.component.ts:58:47:
+      58 │ ... this.draft()?.trials.findLast(t => t.settings['previewSession'...
+         ╵                                   ^
+
+

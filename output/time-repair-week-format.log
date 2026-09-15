@@ -1,0 +1,19 @@
+src/app/templates/time-repair/domain/time-repair-preview.models.ts 289ms
+src/app/templates/time-repair/domain/time-repair-preview.validation.ts 113ms
+src/app/templates/time-repair/runtime/time-repair-preview.persistence.ts 21ms
+src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts 82ms
+src/app/templates/time-repair/ui/time-repair-week-activity.scss 277ms
+src/app/templates/time-repair/ui/time-repair-week-exhibit.component.html 363ms
+src/app/templates/time-repair/ui/time-repair-week-exhibit.component.ts 15ms
+src/app/templates/time-repair/ui/time-repair-week-ripple.component.html 131ms
+src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts 16ms
+src/app/templates/time-repair/ui/time-repair-week-scene.component.html 197ms
+src/app/templates/time-repair/ui/time-repair-week-scene.component.ts 29ms
+src/app/templates/time-repair/ui/time-repair-week-source.component.ts 34ms
+src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts 84ms
+src/app/templates/time-repair/ui/time-repair-week-workspace.component.html 155ms
+src/app/templates/time-repair/ui/time-repair-week-workspace.component.scss 72ms
+src/app/templates/time-repair/ui/time-repair-week-workspace.component.spec.ts 196ms
+src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts 45ms
+scripts/serve-time-repair-weeks.mjs 136ms
+scripts/time-repair-vitest.config.ts 3ms (unchanged)

@@ -1,5 +1,5 @@
 <main class="room-workspace">
-  <header class="workspace-header">
+  <app-workspace-tools [error]="runtime.saveState() === 'save_failed' ? 'Your room could not be saved. Keep this page open.' : undefined"><header class="workspace-header">
     <div class="museum-brand">
       <span class="museum-monogram" aria-hidden="true">M</span>
       <div><span>FORGE · CLASS MUSEUM</span><strong>Curator studio</strong></div>
@@ -17,7 +17,7 @@
             : 'Saved on this device'
       }}
     </div>
-  </header>
+  </header></app-workspace-tools>
 
   @if (!publication.ready()) {
     <section class="unassigned" aria-live="polite">
@@ -121,10 +121,7 @@
             </button>
           }
         </nav>
-        <div class="room-footnote">
-          <span>{{ draft().objects.length }} of {{ slots().length }} display spots filled</span
-          ><span>Room design prepared by your teacher</span>
-        </div>
+
       </section>
 
       <aside class="curator-panel" aria-label="Room contents">

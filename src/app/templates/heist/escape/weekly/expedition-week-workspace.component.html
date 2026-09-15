@@ -1,0 +1,183 @@
+<main class="weekly-workspace" [class.timing-scene]="timingScene()" [attr.data-week]="week().week">
+  <header class="week-heading">
+    <div>
+      <p class="eyebrow">RESCUE WORKSHOPS · WEEK {{ week().week }} / 4</p>
+      <h1>{{ week().title }}</h1>
+      <p>{{ week().setting }}</p>
+    </div>
+    <span class="session-label">{{
+      sessionIndex() === 0 ? 'Individual session' : 'Group activity · local practice'
+    }}</span>
+  </header>
+  <div class="workspace-grid">
+    <section class="activity" aria-label="Interactive rescue workshop">
+      <div class="workshop-picker">
+        <label
+          >Explore a workshop
+          <select [value]="runtime.selected()" (change)="choose($any($event.target).value)">
+            @for (step of runtime.mission.steps; track step.id) {
+              <option [value]="step.id" [selected]="step.id === runtime.selected()">{{ step.title }}</option>
+            }
+          </select>
+        </label>
+        <label
+          >Math pathway
+          <select [value]="runtime.grade()" (change)="runtime.setGrade(+$any($event.target).value)">
+            @for (grade of runtime.mission.mathGrades ?? [5]; track grade) {
+              <option [value]="grade" [selected]="grade === runtime.grade()">Grade {{ grade }}</option>
+            }
+          </select>
+        </label>
+        <button (click)="paused.set(!paused())" [attr.aria-pressed]="paused()">
+          {{ paused() ? 'Resume machine' : 'Pause machine' }}
+        </button>
+        @if (timingScene()) { <button (click)="sceneTools.set(!sceneTools())" [attr.aria-expanded]="sceneTools()">Saved setups</button> }
+      </div>
+      <div class="setup-note">
+        <strong>{{ runtime.source() }}</strong> {{ sample() }} All workshops can be tested directly.
+      </div>
+      @if (extra()) {
+        <p class="extra-note">
+          Exploring {{ runtime.step().title }}. The planning panels still describe Week
+          {{ week().week }}.
+          <button (click)="choose(session().stepId)">Return to session workshop</button>
+        </p>
+      }
+      @for (key of [mountKey()]; track key) {
+        @if (runtime.step().puzzle; as puzzle) {
+          @switch (puzzle.type) {
+            @case ('balance-lock') {
+              <app-balance-lock
+                [definition]="puzzle.lock"
+                [title]="runtime.step().title"
+                [placements]="placements()"
+                [initialScale]="restoredStage()"
+                [authoringPreview]="true"
+                [paused]="paused()"
+                [reducedMotion]="reducedMotion()"
+                (moved)="runtime.moveWeight($event.index, $event.side)"
+                (tested)="runtime.trial($event)"
+                (pauseRequested)="paused.set(!paused())"
+              />
+            }
+            @case ('gear-lock') {
+              <app-gear-lock
+                [definition]="puzzle.lock"
+                [answer]="placements()"
+                [authoringPreview]="true"
+                [paused]="paused()"
+                [reducedMotion]="reducedMotion()"
+                (changed)="runtime.change($event)"
+                (tested)="runtime.trial($event)"
+                (pauseRequested)="paused.set(!paused())"
+              />
+            }
+            @case ('machine-lock') {
+              <app-machine-workshop
+                [definition]="puzzle.lock"
+                [answer]="machineAnswer()"
+                [grade]="runtime.grade()"
+                [initialStage]="restoredStage()"
+                [authoringPreview]="true"
+                [paused]="paused()"
+                [reducedMotion]="reducedMotion()"
+                (changed)="runtime.change($event)"
+                (tested)="runtime.trial($event)"
+                (pauseRequested)="paused.set(!paused())"
+              />
+            }
+          }
+        }
+      }
+      <div class="secondary-tools" [class.tools-open]="sceneTools()" [hidden]="timingScene() && !sceneTools()" (keydown.escape)="sceneTools.set(false)">
+      @if (timingScene()) { <button class="close-tools" (click)="sceneTools.set(false)">Close saved setups</button> }
+      <div class="workspace-options">
+        <button (click)="reset()">Reset workshop settings</button>
+        <label
+          ><input
+            type="checkbox"
+            [checked]="reducedMotion()"
+            (change)="reducedMotion.set($any($event.target).checked)"
+          />
+          Reduce motion</label
+        >
+        <small>Local preview · no lesson completion recorded</small>
+      </div>
+      <details class="trial-history">
+        <summary>Workshop trials · {{ runtime.draft().trials.length }}</summary>
+        <p>
+          Compare a previous setup, restore its controls, and run the machine again. The most recent
+          30 trials for this workshop and grade are retained.
+        </p>
+        @for (trial of runtime.draft().trials.slice().reverse(); track trial.id) {
+          <article>
+            <div>
+              <strong
+                >{{ trial.success ? 'Mechanism works' : 'Needs adjustment' }} · Stage
+                {{ trial.stage + 1 }}</strong
+              >
+              <p>{{ trial.equation }}</p>
+              <p>{{ trial.feedback }}</p>
+            </div>
+            <button (click)="restoreTrial(trial.id)">Restore this setup</button>
+          </article>
+        } @empty {
+          <p>Engage the mechanism to capture your first trial.</p>
+        }
+      </details>
+      </div>
+      @if (runtime.warning()) {
+        <p class="warning" role="alert">
+          {{ runtime.warning() }} <button (click)="runtime.retrySave()">Retry save</button>
+        </p>
+      }
+    </section>
+    <aside class="planning" aria-label="Week planning">
+      <details class="products" open>
+        <summary>
+          Proposed weekly products <span>Week {{ week().week }}</span>
+        </summary>
+        <div class="panel-body">
+          @for (s of week().sessions; track s.stepId; let i = $index) {
+            <article>
+              <small>{{ i === 0 ? 'INDIVIDUAL SESSION' : 'GROUP ACTIVITY' }}</small>
+              <p>{{ s.product }}</p>
+            </article>
+          }
+          <p class="muted">
+            Potential deliverables for future tutor review. Group work is planned; shared editing is
+            not connected.
+          </p>
+        </div>
+      </details>
+      <details class="tutor" open>
+        <summary>AI Tutor <span>Disconnected</span></summary>
+        <div class="panel-body">
+          <p class="muted">
+            Builder planning only. No automatic questions, review, adaptation, or mastery decisions
+            run here.
+          </p>
+          <h2>Questions & concepts</h2>
+          <ul>
+            @for (question of week().questions; track question) {
+              <li>{{ question }}</li>
+            }
+          </ul>
+          <h2>Evidence to inspect</h2>
+          <ul>
+            @for (evidence of week().evidence; track evidence) {
+              <li>{{ evidence }}</li>
+            }
+          </ul>
+          <h2>Future model controls</h2>
+          <p class="muted">Planned full model control through supported settings:</p>
+          <ul>
+            @for (control of week().controls; track control) {
+              <li>{{ control }}</li>
+            }
+          </ul>
+        </div>
+      </details>
+    </aside>
+  </div>
+</main>

@@ -1,0 +1,1681 @@
+> Building...
+√ Building...
+Application bundle generation failed. [68.720 seconds] - 2026-09-14T22:06:24.521Z
+
+X [ERROR] NG5002: Unexpected closing tag "article". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags [plugin angular-compiler]
+
+    src/app/projects/mystery-substance/emergency-response.component.html:47:6:
+      47 │       </article>
+         ╵       ~~~~~~~~~~
+
+  Error occurs in the template of component EmergencyResponseComponent.
+
+    src/app/projects/mystery-substance/emergency-response.component.ts:62:15:
+      62 │   templateUrl: './emergency-response.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Unexpected closing tag "div". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags [plugin angular-compiler]
+
+    src/app/projects/mystery-substance/emergency-response.component.html:48:4:
+      48 │     </div>
+         ╵     ~~~~~~
+
+  Error occurs in the template of component EmergencyResponseComponent.
+
+    src/app/projects/mystery-substance/emergency-response.component.ts:62:15:
+      62 │   templateUrl: './emergency-response.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Unexpected closing block. The block may have been closed earlier. If you meant to write the `}` character, you should use the "&#125;" HTML entity instead. [plugin angular-compiler]
+
+    src/app/projects/mystery-substance/emergency-response.component.html:49:2:
+      49 │   }
+         ╵   ^
+
+  Error occurs in the template of component EmergencyResponseComponent.
+
+    src/app/projects/mystery-substance/emergency-response.component.ts:62:15:
+      62 │   templateUrl: './emergency-response.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2345: Argument of type '{ design: BlockDesign; id: string; pluginId: string; capturedAt: string; settings: Readonly<Record<string, string | number>>; measurements: readonly { readonly label: string; readonly value: string; }[]; } | { ...; }' is not assignable to parameter of type 'DesignCapture | undefined'.
+  Object literal may only specify known properties, and 'timestamp' does not exist in type 'DesignCapture'. [plugin angular-compiler]
+
+    src/app/templates/engineering-design/ui/engineering-week-workspace.component.ts:61:6:
+      61 │       timestamp: new Date().toISOString(), design: this.design(),
+         ╵       ~~~~~~~~~
+
+
+Watch mode enabled. Watching for file changes...
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [37.471 seconds] - 2026-09-14T22:07:13.085Z
+
+X [ERROR] TS2345: Argument of type '{ design: BlockDesign; id: string; pluginId: string; capturedAt: string; settings: Readonly<Record<string, string | number>>; measurements: readonly { readonly label: string; readonly value: string; }[]; } | { ...; }' is not assignable to parameter of type 'DesignCapture | undefined'.
+  Object literal may only specify known properties, and 'timestamp' does not exist in type 'DesignCapture'. [plugin angular-compiler]
+
+    src/app/templates/engineering-design/ui/engineering-week-workspace.component.ts:61:6:
+      61 │       timestamp: new Date().toISOString(), design: this.design(),
+         ╵       ~~~~~~~~~
+
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [10.446 seconds] - 2026-09-14T22:07:41.919Z
+
+X [ERROR] TS2345: Argument of type '{ design: BlockDesign; id: string; pluginId: string; capturedAt: string; settings: Readonly<Record<string, string | number>>; measurements: readonly { readonly label: string; readonly value: string; }[]; } | { ...; }' is not assignable to parameter of type 'DesignCapture | undefined'.
+  Object literal may only specify known properties, and 'timestamp' does not exist in type 'DesignCapture'. [plugin angular-compiler]
+
+    src/app/templates/engineering-design/ui/engineering-week-workspace.component.ts:61:6:
+      61 │       timestamp: new Date().toISOString(), design: this.design(),
+         ╵       ~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find template file './narrative-week-workspace.component.html'. [plugin angular-compiler]
+
+    src/app/templates/narrative-studio/ui/narrative-week-workspace.component.ts:20:15:
+      20 │   templateUrl: './narrative-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+X [ERROR] TS2345: Argument of type '{ design: BlockDesign; id: string; pluginId: string; capturedAt: string; settings: Readonly<Record<string, string | number>>; measurements: readonly { readonly label: string; readonly value: string; }[]; } | { ...; }' is not assignable to parameter of type 'DesignCapture | undefined'.
+  Object literal may only specify known properties, and 'timestamp' does not exist in type 'DesignCapture'. [plugin angular-compiler]
+
+    src/app/templates/engineering-design/ui/engineering-week-workspace.component.ts:61:6:
+      61 │       timestamp: new Date().toISOString(), design: this.design(),
+         ╵       ~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find template file './narrative-week-workspace.component.html'. [plugin angular-compiler]
+
+    src/app/templates/narrative-studio/ui/narrative-week-workspace.component.ts:20:15:
+      20 │   templateUrl: './narrative-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Application bundle generation failed. [50.127 seconds] - 2026-09-14T22:09:28.323Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [10.363 seconds] - 2026-09-14T22:09:38.761Z
+
+X [ERROR] NG2008: Could not find template file './narrative-week-workspace.component.html'. [plugin angular-compiler]
+
+    src/app/templates/narrative-studio/ui/narrative-week-workspace.component.ts:20:15:
+      20 │   templateUrl: './narrative-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [7.571 seconds] - 2026-09-14T22:09:47.003Z
+
+> Changes detected. Rebuilding...
+X [ERROR] NG2008: Could not find template file './narrative-week-workspace.component.html'. [plugin angular-compiler]
+
+    src/app/templates/narrative-studio/ui/narrative-week-workspace.component.ts:20:15:
+      20 │   templateUrl: './narrative-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [5.187 seconds] - 2026-09-14T22:09:52.207Z
+
+X [ERROR] NG2008: Could not find template file './narrative-week-workspace.component.html'. [plugin angular-compiler]
+
+    src/app/templates/narrative-studio/ui/narrative-week-workspace.component.ts:20:15:
+      20 │   templateUrl: './narrative-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [37.432 seconds] - 2026-09-14T22:11:20.796Z
+
+X [ERROR] TS2307: Cannot find module '../../../projects/mystery-substance/lab-week-workspace.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/runtime/project-launch/template-launchers/investigation.launcher.ts:13:59:
+      13 │ ...it import('../../../projects/mystery-substance/lab-week-workspa...
+         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find template file './narrative-week-workspace.component.html'. [plugin angular-compiler]
+
+    src/app/templates/narrative-studio/ui/narrative-week-workspace.component.ts:20:15:
+      20 │   templateUrl: './narrative-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] Could not resolve "../../../projects/mystery-substance/lab-week-workspace.component"
+
+    src/app/runtime/project-launch/template-launchers/investigation.launcher.ts:13:59:
+      13 │ ...it import('../../../projects/mystery-substance/lab-week-workspa...
+         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                               |  Raw size
+chunk-47AWS4WT.js   | -                                   |  24.19 kB | 
+main.js             | main                                |   4.14 kB | 
+chunk-GOMI4DH3.js   | -                                   |   1.42 kB | 
+styles.css          | styles                              |   1.12 kB | 
+
+                    | Initial total                       |  30.87 kB
+
+Lazy chunk files    | Names                               |  Raw size
+chunk-TLJUETQM.js   | simulation-decision-shell-component |   1.18 MB | 
+chunk-WPWVRGJB.js   | crisis-center-component             | 711.95 kB | 
+chunk-XNIIYE4D.js   | -                                   | 670.86 kB | 
+chunk-66G3624Q.js   | -                                   | 503.07 kB | 
+chunk-MIS4GQOW.js   | exhibit-hall-page-component         | 429.01 kB | 
+chunk-SGNKXTND.js   | history-live-page-component         | 428.71 kB | 
+chunk-6KJSQ4MZ.js   | debate-studio-page-component        | 413.03 kB | 
+chunk-5HINF524.js   | journey-shell-component             | 373.58 kB | 
+chunk-ZNMG6RGO.js   | index                               | 342.77 kB | 
+chunk-AJPMZUJW.js   | project-intro-component             | 303.84 kB | 
+chunk-2DLZ4BPS.js   | project-host-component              | 222.83 kB | 
+chunk-MLVHDJPI.js   | -                                   | 208.90 kB | 
+chunk-ZKNJFCRU.js   | time-repair-page-component          | 206.05 kB | 
+chunk-DOP2HHTP.js   | -                                   | 205.92 kB | 
+chunk-5TU67YPC.js   | restoration-collection-component    | 197.58 kB | 
+...and 170 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [3.914 seconds] - 2026-09-14T22:11:24.770Z
+
+NOTE: Raw file sizes do not reflect development server per-request transformations.
+  ➜  Local:   http://127.0.0.1:4326/
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [3.902 seconds] - 2026-09-14T22:12:10.720Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Initial chunk files | Names                             |  Raw size
+main.js             | main                              |   4.14 kB | 
+
+Lazy chunk files    | Names                             |  Raw size
+chunk-R2Q6BNOC.js   | project-host-component            | 222.83 kB | 
+chunk-VNQD7BRM.js   | heist-launcher                    |  13.69 kB | 
+chunk-VIXGJY4Y.js   | restoration-collection-validation |   7.76 kB | 
+
+Application bundle generation complete. [2.186 seconds] - 2026-09-14T22:12:12.986Z
+
+Page reload sent to client(s).
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [29.191 seconds] - 2026-09-14T22:14:08.666Z
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-scene.component.ts:7:68:
+      7 │ ...cene.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-source.component.ts:11:12:
+      11 │   styleUrl: './time-repair-week-activity.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-timeline.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:8:49:
+      8 │ ...eWorkbenchComponent } from './time-repair-week-timeline.component';
+        ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-ripple.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:9:47:
+      9 │ ...pleWorkbenchComponent } from './time-repair-week-ripple.component';
+        ╵                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-exhibit.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:10:48:
+      10 │ ...tWorkbenchComponent } from './time-repair-week-exhibit.component';
+         ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:55:
+      14 │ ...benchComponent, RepairTimelineWorkbenchComponent, RepairRippleW...
+         ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:55:
+      14 │ ...benchComponent, RepairTimelineWorkbenchComponent, RepairRippleW...
+         ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:89:
+      14 │ ...kbenchComponent, RepairRippleWorkbenchComponent, RepairExhibitW...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:89:
+      14 │ ...kbenchComponent, RepairRippleWorkbenchComponent, RepairExhibitW...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-workspace.component.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:17:12:
+      17 │   styleUrl: './time-repair-week-workspace.component.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [8.993 seconds] - 2026-09-14T22:14:25.325Z
+
+> Changes detected. Rebuilding...
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-scene.component.ts:7:68:
+      7 │ ...cene.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-source.component.ts:11:12:
+      11 │   styleUrl: './time-repair-week-activity.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-timeline.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:8:49:
+      8 │ ...eWorkbenchComponent } from './time-repair-week-timeline.component';
+        ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-ripple.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:9:47:
+      9 │ ...pleWorkbenchComponent } from './time-repair-week-ripple.component';
+        ╵                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-exhibit.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:10:48:
+      10 │ ...tWorkbenchComponent } from './time-repair-week-exhibit.component';
+         ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:55:
+      14 │ ...benchComponent, RepairTimelineWorkbenchComponent, RepairRippleW...
+         ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:55:
+      14 │ ...benchComponent, RepairTimelineWorkbenchComponent, RepairRippleW...
+         ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:89:
+      14 │ ...kbenchComponent, RepairRippleWorkbenchComponent, RepairExhibitW...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:89:
+      14 │ ...kbenchComponent, RepairRippleWorkbenchComponent, RepairExhibitW...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-workspace.component.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:17:12:
+      17 │   styleUrl: './time-repair-week-workspace.component.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+√ Changes detected. Rebuilding...
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-scene.component.ts:7:68:
+      7 │ ...cene.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-source.component.ts:11:12:
+      11 │   styleUrl: './time-repair-week-activity.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-timeline.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:8:49:
+      8 │ ...eWorkbenchComponent } from './time-repair-week-timeline.component';
+        ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-ripple.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:9:47:
+      9 │ ...pleWorkbenchComponent } from './time-repair-week-ripple.component';
+        ╵                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-exhibit.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:10:48:
+      10 │ ...tWorkbenchComponent } from './time-repair-week-exhibit.component';
+         ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:55:
+      14 │ ...benchComponent, RepairTimelineWorkbenchComponent, RepairRippleW...
+         ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:55:
+      14 │ ...benchComponent, RepairTimelineWorkbenchComponent, RepairRippleW...
+         ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:89:
+      14 │ ...kbenchComponent, RepairRippleWorkbenchComponent, RepairExhibitW...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:89:
+      14 │ ...kbenchComponent, RepairRippleWorkbenchComponent, RepairExhibitW...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-workspace.component.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:17:12:
+      17 │   styleUrl: './time-repair-week-workspace.component.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Application bundle generation failed. [20.995 seconds] - 2026-09-14T22:14:46.484Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [15.359 seconds] - 2026-09-14T22:15:01.899Z
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-scene.component.ts:7:68:
+      7 │ ...cene.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-source.component.ts:11:12:
+      11 │   styleUrl: './time-repair-week-activity.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-timeline.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:8:49:
+      8 │ ...eWorkbenchComponent } from './time-repair-week-timeline.component';
+        ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-ripple.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:9:47:
+      9 │ ...pleWorkbenchComponent } from './time-repair-week-ripple.component';
+        ╵                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-exhibit.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:10:48:
+      10 │ ...tWorkbenchComponent } from './time-repair-week-exhibit.component';
+         ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:55:
+      14 │ ...benchComponent, RepairTimelineWorkbenchComponent, RepairRippleW...
+         ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:55:
+      14 │ ...benchComponent, RepairTimelineWorkbenchComponent, RepairRippleW...
+         ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:89:
+      14 │ ...kbenchComponent, RepairRippleWorkbenchComponent, RepairExhibitW...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:89:
+      14 │ ...kbenchComponent, RepairRippleWorkbenchComponent, RepairExhibitW...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-workspace.component.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:17:12:
+      17 │   styleUrl: './time-repair-week-workspace.component.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [14.030 seconds] - 2026-09-14T22:15:22.536Z
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-scene.component.ts:7:68:
+      7 │ ...cene.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-source.component.ts:11:12:
+      11 │   styleUrl: './time-repair-week-activity.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-timeline.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:8:49:
+      8 │ ...eWorkbenchComponent } from './time-repair-week-timeline.component';
+        ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-ripple.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:9:47:
+      9 │ ...pleWorkbenchComponent } from './time-repair-week-ripple.component';
+        ╵                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-exhibit.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:10:48:
+      10 │ ...tWorkbenchComponent } from './time-repair-week-exhibit.component';
+         ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:55:
+      14 │ ...benchComponent, RepairTimelineWorkbenchComponent, RepairRippleW...
+         ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:55:
+      14 │ ...benchComponent, RepairTimelineWorkbenchComponent, RepairRippleW...
+         ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:89:
+      14 │ ...kbenchComponent, RepairRippleWorkbenchComponent, RepairExhibitW...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:89:
+      14 │ ...kbenchComponent, RepairRippleWorkbenchComponent, RepairExhibitW...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-workspace.component.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:17:12:
+      17 │   styleUrl: './time-repair-week-workspace.component.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+X [ERROR] NG2008: Could not find template file './time-repair-week-ripple.component.html'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-scene.component.ts:7:68:
+      7 │ ...cene.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-source.component.ts:11:12:
+      11 │   styleUrl: './time-repair-week-activity.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:27:12:
+      27 │   styleUrl: './time-repair-week-activity.scss', changeDetection: C...
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-exhibit.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:10:48:
+      10 │ ...tWorkbenchComponent } from './time-repair-week-exhibit.component';
+         ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-workspace.component.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:17:12:
+      17 │   styleUrl: './time-repair-week-workspace.component.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Application bundle generation failed. [35.623 seconds] - 2026-09-14T22:15:58.214Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+X [ERROR] NG2008: Could not find template file './time-repair-week-ripple.component.html'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-scene.component.ts:7:68:
+      7 │ ...cene.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-source.component.ts:11:12:
+      11 │   styleUrl: './time-repair-week-activity.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:27:12:
+      27 │   styleUrl: './time-repair-week-activity.scss', changeDetection: C...
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-exhibit.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:10:48:
+      10 │ ...tWorkbenchComponent } from './time-repair-week-exhibit.component';
+         ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-workspace.component.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:17:12:
+      17 │   styleUrl: './time-repair-week-workspace.component.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Application bundle generation failed. [41.162 seconds] - 2026-09-14T22:16:39.403Z
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:24:141:
+      24 │ ...startTime]="runtime.state().filmTimes[lesson()] ?? 0" (position...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:492:
+      60 │ ...ria-pressed]="(runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:609:
+      60 │ ...ource.id)">{{ (runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Application bundle generation failed. [49.013 seconds] - 2026-09-14T22:18:22.457Z
+
+X [ERROR] NG2008: Could not find stylesheet file './restoration-week-workspace.component.scss'. [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:13:12:
+      13 │   styleUrl: './restoration-week-workspace.component.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2774: This condition will always return true since this function is always defined. Did you mean to call it instead? [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:11:277:
+      11 │ ... 1 }}</span>{{ r.config.nodes.find ? '' : '' }}{{ ripple.nodeId...
+         ╵                                  ~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previous' does not exist on type 'RepairRippleWorkbenchComponent'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:21:96:
+      21 │ ...lick)="r.rippleIndex.update(previous)">← Previous moment</but...
+         ╵                                ~~~~~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'next' does not exist on type 'RepairRippleWorkbenchComponent'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:21:308:
+      21 │ ..." (click)="r.rippleIndex.update(next)">Next moment →</button>...
+         ╵                                  ~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:69:
+      7 │ ...pple.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-scene.component.ts:7:68:
+      7 │ ...cene.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-source.component.ts:11:12:
+      11 │   styleUrl: './time-repair-week-activity.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:27:12:
+      27 │   styleUrl: './time-repair-week-activity.scss', changeDetection: C...
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-exhibit.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:10:48:
+      10 │ ...tWorkbenchComponent } from './time-repair-week-exhibit.component';
+         ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-workspace.component.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:17:12:
+      17 │   styleUrl: './time-repair-week-workspace.component.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [19.963 seconds] - 2026-09-14T22:18:42.567Z
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:24:141:
+      24 │ ...startTime]="runtime.state().filmTimes[lesson()] ?? 0" (position...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:492:
+      60 │ ...ria-pressed]="(runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:609:
+      60 │ ...ource.id)">{{ (runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2774: This condition will always return true since this function is always defined. Did you mean to call it instead? [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:11:277:
+      11 │ ... 1 }}</span>{{ r.config.nodes.find ? '' : '' }}{{ ripple.nodeId...
+         ╵                                  ~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previous' does not exist on type 'RepairRippleWorkbenchComponent'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:21:96:
+      21 │ ...lick)="r.rippleIndex.update(previous)">← Previous moment</but...
+         ╵                                ~~~~~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'next' does not exist on type 'RepairRippleWorkbenchComponent'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:21:308:
+      21 │ ..." (click)="r.rippleIndex.update(next)">Next moment →</button>...
+         ╵                                  ~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:69:
+      7 │ ...pple.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-scene.component.ts:7:68:
+      7 │ ...cene.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-source.component.ts:11:12:
+      11 │   styleUrl: './time-repair-week-activity.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:27:12:
+      27 │   styleUrl: './time-repair-week-activity.scss', changeDetection: C...
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-exhibit.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:10:48:
+      10 │ ...tWorkbenchComponent } from './time-repair-week-exhibit.component';
+         ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-workspace.component.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:17:12:
+      17 │   styleUrl: './time-repair-week-workspace.component.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [11.865 seconds] - 2026-09-14T22:19:45.347Z
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:24:141:
+      24 │ ...startTime]="runtime.state().filmTimes[lesson()] ?? 0" (position...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:492:
+      60 │ ...ria-pressed]="(runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:609:
+      60 │ ...ource.id)">{{ (runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2774: This condition will always return true since this function is always defined. Did you mean to call it instead? [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:11:277:
+      11 │ ... 1 }}</span>{{ r.config.nodes.find ? '' : '' }}{{ ripple.nodeId...
+         ╵                                  ~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previous' does not exist on type 'RepairRippleWorkbenchComponent'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:21:96:
+      21 │ ...lick)="r.rippleIndex.update(previous)">← Previous moment</but...
+         ╵                                ~~~~~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'next' does not exist on type 'RepairRippleWorkbenchComponent'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:21:308:
+      21 │ ..." (click)="r.rippleIndex.update(next)">Next moment →</button>...
+         ╵                                  ~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:69:
+      7 │ ...pple.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-scene.component.ts:7:68:
+      7 │ ...cene.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-source.component.ts:11:12:
+      11 │   styleUrl: './time-repair-week-activity.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:27:12:
+      27 │   styleUrl: './time-repair-week-activity.scss', changeDetection: C...
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-exhibit.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:10:48:
+      10 │ ...tWorkbenchComponent } from './time-repair-week-exhibit.component';
+         ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-workspace.component.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:17:12:
+      17 │   styleUrl: './time-repair-week-workspace.component.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+> Changes detected. Rebuilding...
+√ Changes detected. Rebuilding...
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:24:141:
+      24 │ ...startTime]="runtime.state().filmTimes[lesson()] ?? 0" (position...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:492:
+      60 │ ...ria-pressed]="(runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:609:
+      60 │ ...ource.id)">{{ (runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Application bundle generation failed. [24.560 seconds] - 2026-09-14T22:20:17.818Z
+
+> Changes detected. Rebuilding...
+X [ERROR] TS2774: This condition will always return true since this function is always defined. Did you mean to call it instead? [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:11:277:
+      11 │ ... 1 }}</span>{{ r.config.nodes.find ? '' : '' }}{{ ripple.nodeId...
+         ╵                                  ~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previous' does not exist on type 'RepairRippleWorkbenchComponent'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:21:96:
+      21 │ ...lick)="r.rippleIndex.update(previous)">← Previous moment</but...
+         ╵                                ~~~~~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'next' does not exist on type 'RepairRippleWorkbenchComponent'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:21:308:
+      21 │ ..." (click)="r.rippleIndex.update(next)">Next moment →</button>...
+         ╵                                  ~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:69:
+      7 │ ...pple.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-scene.component.ts:7:68:
+      7 │ ...cene.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-source.component.ts:11:12:
+      11 │   styleUrl: './time-repair-week-activity.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:27:12:
+      27 │   styleUrl: './time-repair-week-activity.scss', changeDetection: C...
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-exhibit.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:10:48:
+      10 │ ...tWorkbenchComponent } from './time-repair-week-exhibit.component';
+         ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-workspace.component.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:17:12:
+      17 │   styleUrl: './time-repair-week-workspace.component.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+4:20:36 PM [vite] (client) [console.warn] NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+4:20:36 PM [vite] (client) [console.warn] NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [27.861 seconds] - 2026-09-14T22:20:45.773Z
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:24:141:
+      24 │ ...startTime]="runtime.state().filmTimes[lesson()] ?? 0" (position...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:492:
+      60 │ ...ria-pressed]="(runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:609:
+      60 │ ...ource.id)">{{ (runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2774: This condition will always return true since this function is always defined. Did you mean to call it instead? [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:11:277:
+      11 │ ... 1 }}</span>{{ r.config.nodes.find ? '' : '' }}{{ ripple.nodeId...
+         ╵                                  ~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:69:
+      7 │ ...pple.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-scene.component.ts:7:68:
+      7 │ ...cene.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-source.component.ts:11:12:
+      11 │   styleUrl: './time-repair-week-activity.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:27:12:
+      27 │   styleUrl: './time-repair-week-activity.scss', changeDetection: C...
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-exhibit.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:10:48:
+      10 │ ...tWorkbenchComponent } from './time-repair-week-exhibit.component';
+         ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-workspace.component.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:17:12:
+      17 │   styleUrl: './time-repair-week-workspace.component.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+> Changes detected. Rebuilding...
+4:21:27 PM [vite] (client) [console.warn] NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+4:21:27 PM [vite] (client) [console.warn] NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+4:21:29 PM [vite] (client) [console.warn] NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+4:21:29 PM [vite] (client) [console.warn] NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+4:21:30 PM [vite] (client) [console.warn] NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 3. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+4:21:30 PM [vite] (client) [console.warn] NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+4:21:30 PM [vite] (client) [console.warn] NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+√ Changes detected. Rebuilding...
+Application bundle generation failed. [49.269 seconds] - 2026-09-14T22:21:35.089Z
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:24:141:
+      24 │ ...startTime]="runtime.state().filmTimes[lesson()] ?? 0" (position...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:492:
+      60 │ ...ria-pressed]="(runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:609:
+      60 │ ...ource.id)">{{ (runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find template file './time-repair-week-exhibit.component.html'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-exhibit.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-exhibit.component.html', styleUrl...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:69:
+      7 │ ...pple.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-scene.component.ts:7:68:
+      7 │ ...cene.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-source.component.ts:11:12:
+      11 │   styleUrl: './time-repair-week-activity.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:27:12:
+      27 │   styleUrl: './time-repair-week-activity.scss', changeDetection: C...
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2012: Component imports must be standalone components, directives, pipes, or must be NgModules. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-workspace.component.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:17:12:
+      17 │   styleUrl: './time-repair-week-workspace.component.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+> Changes detected. Rebuilding...
+4:21:35 PM [vite] (client) [console.warn] NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 3. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+4:21:35 PM [vite] (client) [console.warn] NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+4:21:35 PM [vite] (client) [console.warn] NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+√ Changes detected. Rebuilding...
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:24:141:
+      24 │ ...startTime]="runtime.state().filmTimes[lesson()] ?? 0" (position...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:492:
+      60 │ ...ria-pressed]="(runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:609:
+      60 │ ...ource.id)">{{ (runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: TimeRepairWeekWorkspaceComponent is not used within the template of TimeRepairPageComponent [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-page.component.ts:25:12:
+      25 │   imports: [TimeRepairWeekWorkspaceComponent, WorkspaceToolsCompon...
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: WorkspaceToolsComponent is not used within the template of TimeRepairPageComponent [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-page.component.ts:25:46:
+      25 │ ...WorkspaceComponent, WorkspaceToolsComponent,FormsModule, Router...
+         ╵                        ~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: RouterLink is not used within the template of TimeRepairPageComponent [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-page.component.ts:25:83:
+      25 │ ...oolsComponent,FormsModule, RouterLink, TimeRepairInvestigationC...
+         ╵                               ~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: TimeRepairInvestigationComponent is not used within the template of TimeRepairPageComponent [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-page.component.ts:25:95:
+      25 │ ...le, RouterLink, TimeRepairInvestigationComponent, TimeRepairSce...
+         ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: TimeRepairSceneComponent is not used within the template of TimeRepairPageComponent [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-page.component.ts:25:129:
+      25 │ ...Link, TimeRepairInvestigationComponent, TimeRepairSceneComponent],
+         ╵                                            ~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Application bundle generation failed. [72.033 seconds] - 2026-09-14T22:22:47.159Z
+
+X [ERROR] NG5002: Unclosed block "else" [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-page.component.html:3:2:
+      3 │ } @else {
+        ╵   ~~~~~~~
+
+  Error occurs in the template of component TimeRepairPageComponent.
+
+    src/app/templates/time-repair/ui/time-repair-page.component.ts:26:15:
+      26 │   templateUrl: './time-repair-page.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find template file './time-repair-week-exhibit.component.html'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-exhibit.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-exhibit.component.html', styleUrl...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-scene.component.ts:7:68:
+      7 │ ...cene.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-source.component.ts:11:12:
+      11 │   styleUrl: './time-repair-week-activity.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:27:12:
+      27 │   styleUrl: './time-repair-week-activity.scss', changeDetection: C...
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2012: Component imports must be standalone components, directives, pipes, or must be NgModules. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-workspace.component.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:17:12:
+      17 │   styleUrl: './time-repair-week-workspace.component.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+> Changes detected. Rebuilding...

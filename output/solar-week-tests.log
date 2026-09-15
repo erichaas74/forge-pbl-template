@@ -1,0 +1,166 @@
+> Building...
+√ Building...
+Application bundle generation complete. [2215.778 seconds] - 2026-09-14T23:02:17.854Z
+
+
+ RUN  v4.1.11 C:/Users/erich/Desktop/pbl-lms/forge-pbl-template
+
+stderr | src/app/templates/engineering-design/ui/engineering-week-workspace.component.spec.ts > engineering weekly authoring preview > maps all eight host lessons to four substantive builds, matching planning and immediate controls
+NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 3. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 3. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 3. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+
+ ❯ |forge-pbl-template| src/app/plugins/simulations/solar-monument/solar-monument.editor.spec.ts (4 tests | 2 failed) 17670ms
+     × shows validated seasonal pictures in a parent-page dialog and restores its close action 8546ms
+     × treats Explore as a preview and validates mode messages with legacy fallback 5522ms
+stderr | src/app/templates/engineering-design/ui/engineering-week-workspace.component.spec.ts > engineering weekly authoring preview > directly enters the final and replays immutable trials despite an exhausted assessed notebook
+NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 3. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+NG0956: The configured tracking expression (track by identity) caused re-creation of the entire collection of size 2. This is an expensive operation requiring destruction and subsequent creation of DOM nodes, directives, components etc. Please review the "track expression" and make sure that it uniquely identifies items in a collection. Find more at https://v22.angular.dev/errors/NG0956
+
+ ❯ |forge-pbl-template| src/app/templates/engineering-design/ui/engineering-week-workspace.component.spec.ts (4 tests | 2 failed) 23470ms
+     × maps all eight host lessons to four substantive builds, matching planning and immediate controls 8688ms
+     × directly enters the final and replays immutable trials despite an exhausted assessed notebook 13451ms
+ ❯ |forge-pbl-template| src/app/templates/engineering-design/engineering-design.spec.ts (24 tests | 3 failed) 31122ms
+     × previews samples without saving them and returns to the student design 5648ms
+     × preserves an opening while resizing or stacking a block and rejects a rim-breaking resize 12016ms
+     × rejects an invalid or over-capacity comparison atomically 6975ms
+ ❯ |forge-pbl-template| src/app/plugins/simulations/solar-monument/solar-monument.component.spec.ts (16 tests | 2 failed) 38997ms
+     × replays each seasonal result and records the complete comparison once 8175ms
+     × does not record incomplete expectations or persist changes from a read-only example 11748ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |forge-pbl-template| src/app/templates/engineering-design/engineering-design.spec.ts > engineering design template > previews samples without saving them and returns to the student design
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/app/templates/engineering-design/engineering-design.spec.ts:210:3
+    208|     ).toBeUndefined();
+    209|   });
+    210|   it('previews samples without saving them and returns to the student …
+       |   ^
+    211|     const registry = new DesignSimulationRegistry();
+    212|     registry.register(calendarMonumentConfig.simulationId, ExampleSimu…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  |forge-pbl-template| src/app/templates/engineering-design/engineering-design.spec.ts > engineering design template > preserves an opening while resizing or stacking a block and rejects a rim-breaking resize
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/app/templates/engineering-design/engineering-design.spec.ts:454:3
+    452|     expect(loaded.snapshot().design.displayObject).toBeUndefined();
+    453|   });
+    454|   it('preserves an opening while resizing or stacking a block and reje…
+       |   ^
+    455|     const fixture = TestBed.createComponent(BlockBuilderComponent);
+    456|     fixture.componentRef.setInput('design', opticalDesign);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  |forge-pbl-template| src/app/templates/engineering-design/engineering-design.spec.ts > engineering design template > rejects an invalid or over-capacity comparison atomically
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/app/templates/engineering-design/engineering-design.spec.ts:573:3
+    571|     ).toThrow('STATE_INVALID');
+    572|   });
+    573|   it('rejects an invalid or over-capacity comparison atomically', () =…
+       |   ^
+    574|     const runtime = TestBed.inject(EngineeringDesignRuntime);
+    575|     const captures = structuredClone(calendarMonumentSample.trials);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+ FAIL  |forge-pbl-template| src/app/plugins/simulations/solar-monument/solar-monument.component.spec.ts > solar monument demonstration bridge > replays each seasonal result and records the complete comparison once
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/app/plugins/simulations/solar-monument/solar-monument.component.spec.ts:75:3
+     73|     return { fixture, component: fixture.componentInstance, sent, rece…
+     74|   }
+     75|   it('replays each seasonal result and records the complete comparison…
+       |   ^
+     76|     const test = setup();
+     77|     test.receive(test.response(test.latest()));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯
+
+ FAIL  |forge-pbl-template| src/app/plugins/simulations/solar-monument/solar-monument.component.spec.ts > solar monument demonstration bridge > does not record incomplete expectations or persist changes from a read-only example
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/app/plugins/simulations/solar-monument/solar-monument.component.spec.ts:142:3
+    140|     test.fixture.destroy();
+    141|   });
+    142|   it('does not record incomplete expectations or persist changes from …
+       |   ^
+    143|     const test = setup();
+    144|     test.receive(test.response(test.latest(), 'unconfigured'));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯
+
+ FAIL  |forge-pbl-template| src/app/plugins/simulations/solar-monument/solar-monument.editor.spec.ts > optional monument editor bridge > shows validated seasonal pictures in a parent-page dialog and restores its close action
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/app/plugins/simulations/solar-monument/solar-monument.editor.spec.ts:63:3
+     61|     };
+     62|   }
+     63|   it('shows validated seasonal pictures in a parent-page dialog and re…
+       |   ^
+     64|     const t = setup();
+     65|     t.receive({ type: 'toolbar-state', state: { ...t.component.ui(), m…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯
+
+ FAIL  |forge-pbl-template| src/app/plugins/simulations/solar-monument/solar-monument.editor.spec.ts > optional monument editor bridge > treats Explore as a preview and validates mode messages with legacy fallback
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/app/plugins/simulations/solar-monument/solar-monument.editor.spec.ts:133:3
+    131|     t.fixture.destroy();
+    132|   });
+    133|   it('treats Explore as a preview and validates mode messages with leg…
+       |   ^
+    134|     const t = setup();
+    135|     t.receive({ type: 'toolbar-state', state: { ...t.component.ui(), m…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/9]⎯
+
+ FAIL  |forge-pbl-template| src/app/templates/engineering-design/ui/engineering-week-workspace.component.spec.ts > engineering weekly authoring preview > maps all eight host lessons to four substantive builds, matching planning and immediate controls
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/app/templates/engineering-design/ui/engineering-week-workspace.component.spec.ts:71:3
+     69|     measurements: [{ label: 'Sun altitude', value: '74 degrees' }],
+     70|   });
+     71|   it('maps all eight host lessons to four substantive builds, matching…
+       |   ^
+     72|     const fixture = TestBed.createComponent(EngineeringWeekWorkspaceCo…
+     73|     fixture.detectChanges();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/9]⎯
+
+ FAIL  |forge-pbl-template| src/app/templates/engineering-design/ui/engineering-week-workspace.component.spec.ts > engineering weekly authoring preview > directly enters the final and replays immutable trials despite an exhausted assessed notebook
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ src/app/templates/engineering-design/ui/engineering-week-workspace.component.spec.ts:109:3
+
+ Test Files  4 failed (4)
+      Tests  9 failed | 39 passed (48)
+   Start at  17:02:33
+    107|     expect(reloaded.snapshot().design).toEqual(calendarMonumentConfig.…
+    108|   });
+    109|   it('directly enters the final and replays immutable trials despite a…
+       |   ^
+    110|     const runtime = TestBed.inject(EngineeringDesignRuntime);
+    111|     runtime.openPreviewWeek('stone-calendar');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/9]⎯
+
+   Duration  113.55s (transform 42.06s, setup 98.10s, import 47.95s, tests 111.26s, environment 116.34s)
+

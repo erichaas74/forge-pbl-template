@@ -1,3 +1,5 @@
+import { bindLessonFocus } from '../../../shared/project-lessons/project-lesson-focus';
+import { WorkspaceToolsComponent } from '../../../shared/project-lessons/workspace-tools.component';
 import {
   Component,
   computed,
@@ -25,7 +27,7 @@ import { CrisisWeatherScreenComponent } from './crisis-weather-screen.component'
 
 @Component({
   selector: 'app-crisis-center',
-  imports: [
+  imports: [WorkspaceToolsComponent,
     RouterLink,
     CrisisIconComponent,
     CrisisTableControlsComponent,
@@ -97,6 +99,10 @@ export class CrisisCenterComponent implements OnDestroy {
     this.fullscreen.set(document.fullscreenElement === this.element.nativeElement);
 
   constructor() {
+    bindLessonFocus((lesson) => {
+      const target = lesson.focusTarget;
+      if (target === 'room' || target === 'map' || target === 'news' || target === 'station' || target === 'command') this.navigate(target);
+    });
     document.addEventListener('fullscreenchange', this.onFullscreen);
   }
   openWorkstation(id: string): void {

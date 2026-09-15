@@ -1,0 +1,296 @@
+[
+  {
+    "id": "FF.G5.ELA.12",
+    "grade": 5,
+    "title": "Explain evidence, central ideas, and relationships",
+    "description": "Quote accurately, identify two or more central ideas, summarize, and explain relationships among people, events, ideas, or concepts.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - ELA 4-6.csv"
+  },
+  {
+    "id": "FF.G5.ELA.16",
+    "grade": 5,
+    "title": "Collaborate and evaluate spoken information",
+    "description": "Prepare for discussions, follow agreed norms, build on others’ ideas, summarize information, and evaluate a speaker’s reasons and evidence.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - ELA 4-6.csv"
+  },
+  {
+    "id": "FF.G5.ELA.17",
+    "grade": 5,
+    "title": "Present clearly with evidence, media, and register",
+    "description": "Present a topic, text, or opinion in logical sequence, use multimedia purposefully, and adapt speech to context.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - ELA 4-6.csv"
+  },
+  {
+    "id": "FF.G5.ELA.19",
+    "grade": 5,
+    "title": "Write informative explanations",
+    "description": "Develop a topic with facts, definitions, quotations, examples, precise language, transitions, formatting, and a conclusion.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - ELA 4-6.csv"
+  },
+  {
+    "id": "FF.G5.ELA.20",
+    "grade": 5,
+    "title": "Craft effective narratives",
+    "description": "Develop real or imagined experiences using effective technique, sequence, pacing, description, dialogue, transitions, and conclusion.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - ELA 4-6.csv"
+  },
+  {
+    "id": "FF.G5.ELA.21",
+    "grade": 5,
+    "title": "Plan, revise, edit, and publish coherent writing",
+    "description": "Produce writing appropriate to task, purpose, and audience, then strengthen it through planning, feedback, revision, editing, and digital production.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - ELA 4-6.csv"
+  },
+  {
+    "id": "FF.G5.ELA.22",
+    "grade": 5,
+    "title": "Research, evaluate sources, and use evidence",
+    "description": "Conduct short research using multiple sources, gather and categorize information, take notes, cite sources, and draw evidence from texts.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - ELA 4-6.csv"
+  },
+  {
+    "id": "FF.G6.ELA.14",
+    "grade": 6,
+    "title": "Integrate media, evaluate arguments, and compare sources",
+    "description": "Integrate information across media, trace and evaluate arguments and claims, and compare authors’ presentations of the same events or ideas.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - ELA 4-6.csv"
+  },
+  {
+    "id": "FF.G6.ELA.17",
+    "grade": 6,
+    "title": "Evaluate arguments and present claims",
+    "description": "Explain a speaker’s argument and claims, present findings in logical sequence, use multimedia purposefully, and adapt speech to context.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - ELA 4-6.csv"
+  },
+  {
+    "id": "FF.G6.ELA.18",
+    "grade": 6,
+    "title": "Write evidence-based arguments",
+    "description": "Write arguments with clear claims, relevant evidence, logical organization, credible sources, formal style, and a conclusion.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - ELA 4-6.csv"
+  },
+  {
+    "id": "FF.G6.ELA.19",
+    "grade": 6,
+    "title": "Write informative explanations",
+    "description": "Examine a topic using organized relevant content, facts, definitions, quotations, examples, transitions, precise language, formal style, and a conclusion.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - ELA 4-6.csv"
+  },
+  {
+    "id": "FF.G6.ELA.21",
+    "grade": 6,
+    "title": "Plan, revise, edit, and publish coherent writing",
+    "description": "Produce writing appropriate to task, purpose, and audience, then strengthen it through planning, feedback, revision, editing, and digital production.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - ELA 4-6.csv"
+  },
+  {
+    "id": "FF.G6.ELA.22",
+    "grade": 6,
+    "title": "Research, evaluate sources, and integrate evidence",
+    "description": "Conduct research using multiple sources, integrate relevant and credible information, cite sources, and support analysis and reflection with textual evidence.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - ELA 4-6.csv"
+  },
+  {
+    "id": "FF.G5.MATH.10",
+    "grade": 5,
+    "title": "Operate with decimals to hundredths",
+    "description": "Add, subtract, multiply, and divide decimals to hundredths using models, place-value reasoning, and estimation to assess reasonableness.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Math 4-6.csv"
+  },
+  {
+    "id": "FF.G5.MATH.11",
+    "grade": 5,
+    "title": "Add and subtract fractions with unlike denominators",
+    "description": "Use equivalent fractions to add and subtract fractions and mixed numbers with unlike denominators.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Math 4-6.csv"
+  },
+  {
+    "id": "FF.G5.MATH.14",
+    "grade": 5,
+    "title": "Multiply fractions and model fractional area",
+    "description": "Multiply a fraction by a whole number or another fraction and connect the product to visual models and rectangular area.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Math 4-6.csv"
+  },
+  {
+    "id": "FF.G5.MATH.15",
+    "grade": 5,
+    "title": "Interpret multiplication as scaling",
+    "description": "Compare product size to factor size and explain how multiplying by fractions greater than, equal to, or less than one scales a quantity.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Math 4-6.csv"
+  },
+  {
+    "id": "FF.G5.MATH.16",
+    "grade": 5,
+    "title": "Solve fraction multiplication problems",
+    "description": "Solve real-world problems involving multiplication of fractions and mixed numbers with visual models or equations.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Math 4-6.csv"
+  },
+  {
+    "id": "FF.G5.MATH.18",
+    "grade": 5,
+    "title": "Convert measurements within a system",
+    "description": "Convert customary and metric measurements from larger units to smaller units and solve multistep problems involving length, time, volume, mass, and money.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Math 4-6.csv"
+  },
+  {
+    "id": "FF.G5.MATH.23",
+    "grade": 5,
+    "title": "Graph and interpret ordered pairs",
+    "description": "Graph and label ordered pairs in the first quadrant and explain how coordinates represent horizontal and vertical distances.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Math 4-6.csv"
+  },
+  {
+    "id": "FF.G5.MATH.24",
+    "grade": 5,
+    "title": "Solve problems on the coordinate plane",
+    "description": "Represent and solve real-world and mathematical problems by graphing and interpreting points in the first quadrant.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Math 4-6.csv"
+  },
+  {
+    "id": "FF.G6.MATH.02",
+    "grade": 6,
+    "title": "Interpret unit rates",
+    "description": "Understand unit rate as a ratio with a nonzero second quantity and use rate language in context.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Math 4-6.csv"
+  },
+  {
+    "id": "FF.G6.MATH.03",
+    "grade": 6,
+    "title": "Solve ratio, rate, percent, and conversion problems",
+    "description": "Use equivalent-ratio tables, diagrams, graphs, equations, unit rates, percents, and unit conversions to solve problems.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Math 4-6.csv"
+  },
+  {
+    "id": "FF.G6.MATH.06",
+    "grade": 6,
+    "title": "Operate with multi-digit decimals fluently",
+    "description": "Fluently add, subtract, multiply, and divide multi-digit decimals using standard algorithms connected to conceptual models.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Math 4-6.csv"
+  },
+  {
+    "id": "FF.G5.SCI.02",
+    "grade": 5,
+    "title": "Demonstrate conservation of matter",
+    "description": "Use data to show that the amount of matter is conserved when matter changes form, including changes where matter appears to vanish.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Science 4-6.csv"
+  },
+  {
+    "id": "FF.G5.SCI.03",
+    "grade": 5,
+    "title": "Determine whether mixing forms a new substance",
+    "description": "Use physical properties as evidence to argue whether combining substances produces a new substance.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Science 4-6.csv"
+  },
+  {
+    "id": "FF.G5.SCI.14",
+    "grade": 5,
+    "title": "Model day, night, and shadow patterns",
+    "description": "Use a model to explain how Earth’s orbit and the sun relate to day-night patterns and changes in shadow length and direction.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Science 4-6.csv"
+  },
+  {
+    "id": "FF.G5.SCI.16",
+    "grade": 5,
+    "title": "Explain seasons and changing daylight",
+    "description": "Relate Earth’s axial tilt and revolution to changing sunlight intensity, day length, and seasons at different latitudes.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Science 4-6.csv"
+  },
+  {
+    "id": "FF.G5.SCI.18",
+    "grade": 5,
+    "title": "Test and improve prototypes",
+    "description": "Plan and carry out controlled tests of prototype elements, identify failure points, and use results to improve the design.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Science 4-6.csv"
+  },
+  {
+    "id": "FF.G5.SCI.19",
+    "grade": 5,
+    "title": "Use tools to answer testable questions",
+    "description": "Select and use appropriate tools to make measurements and answer testable questions.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Science 4-6.csv"
+  },
+  {
+    "id": "FF.G6.SCI.12",
+    "grade": 6,
+    "title": "Model the water cycle as an Earth system",
+    "description": "Develop a model of water cycling through Earth’s systems driven by solar energy and gravity.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Science 4-6.csv"
+  },
+  {
+    "id": "FF.G6.SCI.13",
+    "grade": 6,
+    "title": "Analyze changes to water, landform, and atmospheric systems",
+    "description": "Analyze data to determine how humans and other organisms affect the water cycle, landforms, and atmospheric systems.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Science 4-6.csv"
+  },
+  {
+    "id": "FF.G6.SCI.15",
+    "grade": 6,
+    "title": "Use air-mass data to predict weather",
+    "description": "Collect data showing how air-mass interactions change local weather and use the data to predict probable patterns.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Science 4-6.csv"
+  },
+  {
+    "id": "FF.G6.SS.01",
+    "grade": 6,
+    "title": "Gather inquiry sources",
+    "description": "Collect relevant information from varied primary and secondary sources, including print, artifacts, graphics, media, technology, and oral history.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Social Studies 4-6.csv"
+  },
+  {
+    "id": "FF.G6.SS.02",
+    "grade": 6,
+    "title": "Critically examine sources",
+    "description": "Extract, summarize, and paraphrase relevant ideas; distinguish fact and opinion; analyze purpose, viewpoint, bias, inference, and argument strength.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Social Studies 4-6.csv"
+  },
+  {
+    "id": "FF.G6.SS.03",
+    "grade": 6,
+    "title": "Synthesize and compare evidence",
+    "description": "Synthesize data across sources, recognize differences among accounts, establish validity through comparison, and frame further questions.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Social Studies 4-6.csv"
+  },
+  {
+    "id": "FF.G6.SS.04",
+    "grade": 6,
+    "title": "Communicate evidence-based arguments",
+    "description": "Construct and communicate arguments with cited evidence, compare viewpoints, explain cause and effect, predict outcomes, propose solutions, and engage in civic discourse.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Social Studies 4-6.csv"
+  },
+  {
+    "id": "FF.G6.SS.06",
+    "grade": 6,
+    "title": "Develop geographic awareness",
+    "description": "Use varied maps and geographic perspectives to analyze spatial relationships, diffusion, regions, and human-environment interaction across scales.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Social Studies 4-6.csv"
+  },
+  {
+    "id": "FF.G6.SS.10",
+    "grade": 6,
+    "title": "Evaluate government, society, religion, writing, and law",
+    "description": "Explain monarchy, empire, hierarchy, polytheism, cuneiform, monumental architecture, epic literature, and the Code of Hammurabi.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Social Studies 4-6.csv"
+  },
+  {
+    "id": "FF.G6.SS.11",
+    "grade": 6,
+    "title": "Connect geography, agriculture, society, and leadership",
+    "description": "Explain how the Nile region supported agriculture and state development and analyze social structure, religion, and influential pharaohs.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Social Studies 4-6.csv"
+  },
+  {
+    "id": "FF.G6.SS.12",
+    "grade": 6,
+    "title": "Analyze achievements and cultural diffusion",
+    "description": "Evaluate Egyptian writing and architecture and explain cultural diffusion between Egypt and Nubia through trade and conflict.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Social Studies 4-6.csv"
+  },
+  {
+    "id": "FF.G6.SS.20",
+    "grade": 6,
+    "title": "Explain Roman geography, society, and republican government",
+    "description": "Explain how geography supported Roman growth and analyze Roman social classes, republican institutions, checks and balances, civic participation, and law.",
+    "sourceFile": "Forge_School_Master_Standards_Framework_Grades_4-6.xlsx - Social Studies 4-6.csv"
+  }
+]

@@ -1,6 +1,7 @@
 import type { EngineeringDesignConfig } from '../../templates/engineering-design/domain/engineering-design.models';
 import { calendarMonumentDesignSamples } from './calendar-monument.design-samples';
 import { calendarMonumentLearning } from './calendar-monument.learning';
+import { calendarMonumentWeeks } from './calendar-monument.weeks';
 import { solsticeGatesStarter, solsticeGatesChecks } from './calendar-monument.solstice-gates';
 export const calendarMonumentConfig: EngineeringDesignConfig = {
   schemaVersion: '1.0',
@@ -11,6 +12,7 @@ export const calendarMonumentConfig: EngineeringDesignConfig = {
   mission:
     'Build a sundial, investigate its seasonal shadows, and explain Earth’s tilt. Your final project is a solar calendar: a stone monument with openings and colored jewels that marks the equinoxes and solstices.',
   simulationId: 'simulation.solar-monument',
+  previewWeeks: calendarMonumentWeeks,
   designSamples: calendarMonumentDesignSamples,
   learningSequence: calendarMonumentLearning,
   research: [

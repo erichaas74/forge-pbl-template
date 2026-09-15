@@ -1,0 +1,110 @@
+<section class="ripple-lab" aria-label="Consequence model">
+  <div class="ripple-banner">
+    <span class="eyebrow">ONE CHANGE · THREE LATER MOMENTS</span>
+    <h3>What follows the cargo?</h3>
+    <p>
+      Compare authored interpretations of the record. This model does not simulate alternate world
+      history.
+    </p>
+  </div>
+  @if (r.session().mode === 'compare') {
+    <div class="toolbar">
+      <label
+        >Intervention<select
+          aria-label="Compare intervention"
+          [value]="r.draft().optionId"
+          (change)="r.selectOption($any($event.target).value)"
+        >
+          <option value="">Choose what to change</option>
+          @for (o of r.mission().repair.options; track o.id) {
+            <option [value]="o.id">{{ o.label }}</option>
+          }
+        </select></label
+      ><button class="primary" (click)="r.run()">▶ Run repair test</button>
+    </div>
+    <p class="feedback" role="status">{{ r.message() }}</p>
+    @if (option(); as o) {
+      <p class="trial-label">Showing trial {{ r.trial()!.id }} · {{ o.label }}</p>
+      <p>{{ o.description }}</p>
+    }
+    <div class="button-row">
+      @for (trial of r.draft().trials; track trial.id) {
+        <button [attr.aria-pressed]="r.trial()?.id === trial.id" (click)="r.replayId.set(trial.id)">
+          Replay {{ trial.id }}
+        </button>
+      }
+    </div>
+  } @else {
+    <div class="button-row record-toggle" aria-label="Record state">
+      <button [attr.aria-pressed]="!repaired()" (click)="repaired.set(false)">Damaged record</button
+      ><button [attr.aria-pressed]="repaired()" (click)="repaired.set(true)">Cargo removed</button>
+    </div>
+  }
+  <nav class="ripple-steps" aria-label="Downstream moments">
+    @for (ripple of r.mission().ripples; track ripple.nodeId; let i = $index) {
+      <button
+        [attr.aria-current]="r.rippleIndex() === i ? 'step' : null"
+        (click)="r.rippleIndex.set(i)"
+      >
+        <span>{{ i + 1 }}</span
+        >{{ date(ripple.nodeId) }}
+      </button>
+    }
+  </nav>
+  <h3 class="moment-title">{{ node().dateLabel }} · {{ node().title }}</h3>
+  <div class="ripple-comparison" aria-live="polite">
+    <article class="damaged">
+      <span class="eyebrow">DAMAGED BASELINE</span>
+      <h3>Cargo stays in 1490</h3>
+      <p>{{ ripple().before }}</p>
+    </article>
+    <article
+      class="repaired"
+      [class.active]="r.session().mode === 'compare' ? r.trial()?.supported : repaired()"
+    >
+      <span class="eyebrow">{{
+        r.session().mode === 'compare' ? 'SELECTED TRIAL' : 'SELECTED RECORD'
+      }}</span>
+      @if (r.session().mode === 'compare' ? r.trial()?.supported : repaired()) {
+        <h3>Premature cargo removed</h3>
+        <p>{{ ripple().after }}</p>
+      } @else if (r.session().mode === 'compare' && !r.trial()) {
+        <h3>Run a comparison</h3>
+        <p>Choose an intervention above to see whether this downstream interpretation changes.</p>
+      } @else {
+        <h3>{{ option()?.objectLabel || 'Damaged record remains' }}</h3>
+        <p>{{ ripple().before }}</p>
+        @if (r.session().mode === 'compare') {
+          <p>
+            The model does not accept this intervention as a source-supported repair. It leaves the
+            downstream conflict unresolved.
+          </p>
+        }
+      }
+    </article>
+  </div>
+  <div class="toolbar">
+    <button [disabled]="r.rippleIndex() === 0" (click)="r.rippleIndex.update(previous)">
+      ← Previous moment</button
+    ><span>{{ r.rippleIndex() + 1 }} / {{ r.mission().ripples.length }}</span
+    ><button
+      [disabled]="r.rippleIndex() === r.mission().ripples.length - 1"
+      (click)="r.rippleIndex.update(next)"
+    >
+      Next moment →
+    </button>
+  </div>
+  <details class="source-shelf">
+    <summary>Sources and limits of this model</summary>
+    <p>
+      These changes follow the configured evidence narrative; they are not proof of every later
+      social effect.
+    </p>
+    <div class="source-buttons">
+      @for (e of r.config.evidence; track e.id) {
+        <button (click)="r.sourceId.set(e.id)">{{ e.title }}</button>
+      }
+    </div>
+    <app-repair-week-source [source]="r.selectedSource()" />
+  </details>
+</section>

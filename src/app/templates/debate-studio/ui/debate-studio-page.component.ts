@@ -1,3 +1,4 @@
+import { WorkspaceToolsComponent } from '../../../shared/project-lessons/workspace-tools.component';
 import { TaskGuideComponent } from '../../../shared/learning/task-guide.component';
 import { Component, inject, signal, ViewChild } from '@angular/core';
 
@@ -6,10 +7,12 @@ import { DebateFactionRailComponent } from './debate-faction-rail.component';
 import { DebateShowcaseComponent } from './debate-showcase.component';
 import { DebateComposerDockComponent } from './debate-composer-dock.component';
 import { DebateThreadComponent } from './debate-thread.component';
+import { DebateInquiryComponent } from './debate-inquiry.component';
+import { bindLessonFocus } from '../../../shared/project-lessons/project-lesson-focus';
 
 @Component({
   selector: 'app-debate-studio-page',
-  imports: [
+  imports: [WorkspaceToolsComponent, DebateInquiryComponent,
     TaskGuideComponent,
     DebateFactionRailComponent,
     DebateShowcaseComponent,
@@ -22,6 +25,16 @@ import { DebateThreadComponent } from './debate-thread.component';
 export class DebateStudioPageComponent {
   readonly runtime = inject(DebateStudioRuntimeService);
   readonly docketOpen = signal(false);
+  readonly inquiryOpen = signal(true);
+  constructor() {
+    bindLessonFocus(() => { if (this.runtime.config.inquiry) this.inquiryOpen.set(true); });
+  }
+
+  enterHearing(): void {
+    const inquiry = this.runtime.config.inquiry;
+    if (!inquiry || !this.runtime.inquiryGate(inquiry.hearingGateId)) return;
+    this.inquiryOpen.set(false);
+  }
 
   @ViewChild(DebateThreadComponent) private readonly debateThread?: DebateThreadComponent;
   @ViewChild(DebateComposerDockComponent)

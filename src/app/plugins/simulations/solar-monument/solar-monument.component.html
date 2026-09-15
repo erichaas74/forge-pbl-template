@@ -1,251 +1,371 @@
 <ng-template #toolbar>
-  <div class="toolbar-controls">
-    @if (presentation() && readOnly()) {
-      <button
-        (click)="event('june')"
-        [disabled]="!ready() || reviewing()"
-        [attr.aria-pressed]="selected() === 1"
-      >
-        June solstice
-      </button>
-      <button
-        (click)="event('dec')"
-        [disabled]="!ready() || reviewing()"
-        [attr.aria-pressed]="selected() === 3"
-      >
-        December solstice
-      </button>
-      @if (surfaceTargets().length) {
-        <button (click)="command('targetView')" [disabled]="!ready()">Inspect pillar</button>
+  @if (weeklyControls()) {
+    <ng-container *ngTemplateOutlet="weeklyToolbar" />
+  } @else {
+    <div class="toolbar-controls">
+      @if (presentation() && readOnly()) {
+        <button
+          (click)="event('june')"
+          [disabled]="!ready() || reviewing()"
+          [attr.aria-pressed]="selected() === 1"
+        >
+          June solstice
+        </button>
+        <button
+          (click)="event('dec')"
+          [disabled]="!ready() || reviewing()"
+          [attr.aria-pressed]="selected() === 3"
+        >
+          December solstice
+        </button>
+        @if (surfaceTargets().length) {
+          <button (click)="command('targetView')" [disabled]="!ready()">Inspect pillar</button>
+        }
+        <button (click)="command('shadowView')" [disabled]="!ready()">View whole model</button>
+        <button (click)="reviewOpen.set(!reviewOpen())" [attr.aria-expanded]="reviewOpen()">
+          Compare {{ matches() }}/4
+        </button>
+        <output class="observation"
+          >{{ ui().date }} <strong>{{ ui().clock }}</strong></output
+        >
+      } @else {
+        <button
+          (click)="chooseMode('explore')"
+          [class.current]="ui().mode === 'explore'"
+          [attr.aria-pressed]="ui().mode === 'explore'"
+          [disabled]="!ready() || busy() || reviewing()"
+        >
+          Explore Earth
+        </button>
+        @if (!presentation() && !readOnly()) {
+          @if (activity() === 'sundial-build') {
+            <details class="toolbar-menu" #postMenu>
+              <summary>Build</summary>
+              <div class="popover">
+                <label
+                  >Post height (cm)<input
+                    #post
+                    type="number"
+                    min="10"
+                    max="200"
+                    step="1"
+                    [value]="ui().height"
+                /></label>
+                <button (click)="command('post', +post.value); postMenu.open = false">
+                  Build sundial
+                </button>
+              </div>
+            </details>
+          } @else if (!activity().startsWith('sundial-')) {
+            <button
+              (click)="chooseMode('build')"
+              [class.current]="ui().mode === 'build'"
+              [attr.aria-pressed]="ui().mode === 'build'"
+              [disabled]="!ready()"
+            >
+              Build
+            </button>
+          }
+        }
+        <button
+          (click)="chooseMode('test')"
+          [class.current]="ui().mode === 'test'"
+          [attr.aria-pressed]="ui().mode === 'test'"
+          [disabled]="!ready()"
+        >
+          Test sunlight
+        </button>
+        <button
+          (click)="toggleSunDay($event)"
+          [attr.aria-expanded]="ui().sunDay"
+          [class.current]="ui().sunDay"
+          [disabled]="!ready()"
+        >
+          Sunrise & sunset
+        </button>
+        <button
+          (click)="toggleCenterView($event)"
+          [attr.aria-pressed]="ui().centerView"
+          [class.current]="ui().centerView"
+          [disabled]="!ready() || busy() || reviewing()"
+        >
+          From center
+        </button>
+        @if (!activity().startsWith('sundial-') && !ui().centerView && ui().mode === 'test') {
+          @if (!presentation()) {
+            <button
+              (click)="command('morningLight')"
+              [disabled]="!ready()"
+              title="30 minutes after sunrise"
+            >
+              Morning light
+            </button>
+          }
+          <button (click)="command('alignmentToggle')" [disabled]="!ready()">Ray guide</button>
+          @if (surfaceTargets().length) {
+            <button (click)="command('targetView')" [disabled]="!ready()">Inspect pillar</button>
+          }
+          <button
+            (click)="toggleMarkers()"
+            [attr.aria-expanded]="markersOpen()"
+            [disabled]="!ready()"
+          >
+            ⌖ Markers · {{ design().targets.length }}
+          </button>
+        }
+        @if (!presentation() && !ui().centerView && ui().mode === 'test') {
+          <button class="play" (click)="command('playBtn')" [disabled]="!ready() || !ui().canPlay">
+            {{ ui().play }}
+          </button>
+          @if (
+            !readOnly() && (activity() === 'sundial-build' || activity() === 'sundial-calendar')
+          ) {
+            <button (click)="command('markDial')" [disabled]="!ready()">
+              {{ activity() === 'sundial-calendar' ? 'Mark date' : 'Mark time' }}
+            </button>
+          }
+        }
+        @if (ui().mode !== 'explore') {
+          <select
+            class="event-select"
+            [attr.aria-label]="presentation() ? 'Special date' : 'Sun events'"
+            [disabled]="!ready()"
+            [ngModel]="eventSelection()"
+            (ngModelChange)="event($event)"
+          >
+            @if (!presentation()) {
+              <option value="">Events & time</option>
+            }
+            @if (activity() !== 'sundial-build' || ui().centerView) {
+              @for (item of cases; track item.id) {
+                <option [value]="item.id">{{ item.label }}</option>
+              }
+            }
+            @if (!presentation() && !ui().centerView) {
+              <optgroup label="Time of day">
+                <option value="dayStart">Sunrise</option>
+                <option value="dialMorning">9 AM</option>
+                <option value="noonBtn">Solar noon</option>
+                <option value="dialAfternoon">3 PM</option>
+                <option value="dayEnd">Sunset</option>
+              </optgroup>
+              @if (activity() === 'sundial-calendar') {
+                <optgroup label="Nearby dates">
+                  <option value="dialWeekBefore">A week before</option>
+                  <option value="dialWeekAfter">A week after</option>
+                </optgroup>
+              }
+            }
+            @if (presentation()) {
+              <optgroup label="Nearby dates">
+                <option value="nearby-before">A week before</option>
+                <option value="special-return">Back to special date</option>
+                <option value="nearby-after">A week after</option>
+              </optgroup>
+            }
+            <option value="controlsToggle">Place & date…</option>
+          </select>
+        }
+        <output class="observation" aria-label="Current observation"
+          >{{ ui().date }} <strong>{{ ui().clock }}</strong></output
+        >
+        @if (presentation() && ui().mode === 'test') {
+          <button (click)="event('june')" [disabled]="!ready() || reviewing()">
+            June solstice
+          </button>
+          <button (click)="event('dec')" [disabled]="!ready() || reviewing()">
+            December solstice
+          </button>
+        }
+        @if (presentation() && !ui().centerView && ui().mode === 'test') {
+          <button (click)="reviewOpen.set(!reviewOpen())" [attr.aria-expanded]="reviewOpen()">
+            Compare {{ matches() }}/4
+          </button>
+          @if (!readOnly()) {
+            <button
+              (click)="recordReview()"
+              [disabled]="!configured() || recorded() || reviewing()"
+            >
+              {{ recorded() ? 'Saved' : 'Save comparison' }}
+            </button>
+          }
+        } @else if (!readOnly() && !ui().centerView && ui().mode === 'test') {
+          <button
+            (click)="capture()"
+            [disabled]="!ready() || busy() || (!design().blocks.length && !design().displayObject)"
+          >
+            {{ busy() ? 'Saving…' : 'Save test' }}
+          </button>
+        }
+        <details class="toolbar-menu" #viewMenu>
+          <summary>Tools</summary>
+          <div class="popover">
+            <button (click)="command('shadowView'); viewMenu.open = false">See shadows</button>
+            <button (click)="command('topView'); viewMenu.open = false">View from above</button>
+            <button (click)="command('fitView'); viewMenu.open = false">Fit model</button>
+            @if (activity().startsWith('sundial-') && !ui().centerView) {
+              <button
+                (click)="command('returnDial'); viewMenu.open = false"
+                [disabled]="!ui().canReturn"
+              >
+                Return to marking day
+              </button>
+              @if (activity() === 'sundial-build' || activity() === 'sundial-calendar') {
+                <button
+                  (click)="command('undoDial'); viewMenu.open = false"
+                  [disabled]="readOnly() || !ui().canUndo"
+                >
+                  Remove last mark
+                </button>
+              }
+            }
+            @if (!presentation() && !ui().centerView) {
+              <label
+                >Playback speed<select
+                  aria-label="Playback speed"
+                  (change)="command('speed', $any($event.target).value)"
+                >
+                  <option value="0.5">Slow</option>
+                  <option value="1" selected>Normal</option>
+                  <option value="2">Fast</option>
+                </select></label
+              >
+            }
+            @if (presentation() && !ui().centerView) {
+              <button
+                (click)="runReview(); viewMenu.open = false"
+                [disabled]="!ready() || reviewing()"
+              >
+                Recheck four dates
+              </button>
+            }
+          </div>
+        </details>
+        @if (!presentation() && !ui().centerView && ui().mode === 'test') {
+          <app-solar-time-dial
+            class="header-time-dial"
+            [start]="ui().start"
+            [end]="ui().end"
+            [minutes]="ui().minutes"
+            [clock]="ui().clock"
+            [startLabel]="ui().startLabel"
+            [endLabel]="ui().endLabel"
+            [disabled]="!ready() || !ui().canPlay"
+            (changed)="command('minutes', $event)"
+          />
+        }
       }
-      <button (click)="command('shadowView')" [disabled]="!ready()">View whole model</button>
-      <button (click)="reviewOpen.set(!reviewOpen())" [attr.aria-expanded]="reviewOpen()">
-        Compare {{ matches() }}/4
-      </button>
-      <output class="observation"
-        >{{ ui().date }} <strong>{{ ui().clock }}</strong></output
-      >
-    } @else {
-      <button
-        (click)="chooseMode('explore')"
-        [class.current]="ui().mode === 'explore'"
-        [attr.aria-pressed]="ui().mode === 'explore'"
-        [disabled]="!ready() || busy() || reviewing()"
-      >
-        Explore Earth
-      </button>
-      @if (!presentation() && !readOnly()) {
-        @if (activity() === 'sundial-build') {
+    </div>
+  }
+</ng-template>
+<ng-template #weeklyToolbar>
+  <div class="week-controls">
+    <app-solar-time-dial
+      class="time-dial"
+      [start]="ui().start"
+      [end]="ui().end"
+      [minutes]="ui().minutes"
+      [clock]="ui().clock"
+      [startLabel]="ui().startLabel"
+      [endLabel]="ui().endLabel"
+      [disabled]="!ready() || !ui().canPlay"
+      (changed)="command('minutes', $event)"
+    />
+    @if (questTools().length) {
+      <div class="week-actions" aria-label="Level tools">
+        @if (questTools().includes('post') && activity() === 'sundial-build') {
           <details class="toolbar-menu" #postMenu>
-            <summary>Build</summary>
+            <summary>Post height</summary>
             <div class="popover">
               <label
                 >Post height (cm)<input
-                  #post
+                  #height
                   type="number"
                   min="10"
                   max="200"
-                  step="1"
                   [value]="ui().height"
               /></label>
-              <button (click)="command('post', +post.value); postMenu.open = false">
+              <button
+                (click)="command('post', +height.value); postMenu.open = false"
+                [disabled]="!ready() || ui().centerView"
+              >
                 Build sundial
               </button>
             </div>
           </details>
-        } @else if (!activity().startsWith('sundial-')) {
+        }
+        @if (questTools().includes('build') && !activity().startsWith('sundial-')) {
           <button
-            (click)="chooseMode('build')"
-            [class.current]="ui().mode === 'build'"
-            [attr.aria-pressed]="ui().mode === 'build'"
+            (click)="chooseMode(ui().mode === 'build' ? 'test' : 'build')"
             [disabled]="!ready()"
+            [attr.aria-pressed]="ui().mode === 'build'"
           >
-            Build
+            {{ ui().mode === 'build' ? 'Done editing' : 'Edit build' }}
           </button>
         }
-      }
-      <button
-        (click)="chooseMode('test')"
-        [class.current]="ui().mode === 'test'"
-        [attr.aria-pressed]="ui().mode === 'test'"
-        [disabled]="!ready()"
-      >
-        Test sunlight
-      </button>
+        @if (questTools().includes('markers') && !activity().startsWith('sundial-')) {
+          <button
+            (click)="toggleMarkers()"
+            [disabled]="!canMark()"
+            [attr.aria-expanded]="markersOpen()"
+          >
+            Markers · {{ design().targets.length }}
+          </button>
+        }
+      </div>
+    }
+    <div class="week-views" aria-label="Sun views">
       <button
         (click)="toggleSunDay($event)"
-        [attr.aria-expanded]="ui().sunDay"
-        [class.current]="ui().sunDay"
         [disabled]="!ready()"
+        [attr.aria-expanded]="ui().sunDay"
       >
-        Sunrise & sunset
+        Sun path · sunrise & sunset
       </button>
       <button
         (click)="toggleCenterView($event)"
+        [disabled]="!ready()"
         [attr.aria-pressed]="ui().centerView"
-        [class.current]="ui().centerView"
-        [disabled]="!ready() || busy() || reviewing()"
       >
-        From center
+        {{ ui().centerView ? 'Return to model' : 'From center' }}
       </button>
-      @if (!activity().startsWith('sundial-') && !ui().centerView && ui().mode === 'test') {
-        @if (!presentation()) {
-          <button
-            (click)="command('morningLight')"
-            [disabled]="!ready()"
-            title="30 minutes after sunrise"
-          >
-            Morning light
-          </button>
-        }
-        <button (click)="command('alignmentToggle')" [disabled]="!ready()">Ray guide</button>
-        @if (surfaceTargets().length) {
-          <button (click)="command('targetView')" [disabled]="!ready()">Inspect pillar</button>
-        }
-        <button
-          (click)="toggleMarkers()"
-          [attr.aria-expanded]="markersOpen()"
-          [disabled]="!ready()"
-        >
-          ⌖ Markers · {{ design().targets.length }}
-        </button>
-      }
-      @if (!presentation() && !ui().centerView && ui().mode === 'test') {
-        <button class="play" (click)="command('playBtn')" [disabled]="!ready() || !ui().canPlay">
-          {{ ui().play }}
-        </button>
-        @if (!readOnly() && (activity() === 'sundial-build' || activity() === 'sundial-calendar')) {
-          <button (click)="command('markDial')" [disabled]="!ready()">
-            {{ activity() === 'sundial-calendar' ? 'Mark date' : 'Mark time' }}
-          </button>
-        }
-      }
-      @if (ui().mode !== 'explore') {
-        <select
-          class="event-select"
-          [attr.aria-label]="presentation() ? 'Special date' : 'Sun events'"
-          [disabled]="!ready()"
-          [ngModel]="eventSelection()"
-          (ngModelChange)="event($event)"
-        >
-          @if (!presentation()) {
-            <option value="">Events & time</option>
-          }
-          @if (activity() !== 'sundial-build' || ui().centerView) {
-            @for (item of cases; track item.id) {
-              <option [value]="item.id">{{ item.label }}</option>
-            }
-          }
-          @if (!presentation() && !ui().centerView) {
-            <optgroup label="Time of day">
-              <option value="dayStart">Sunrise</option>
-              <option value="dialMorning">9 AM</option>
-              <option value="noonBtn">Solar noon</option>
-              <option value="dialAfternoon">3 PM</option>
-              <option value="dayEnd">Sunset</option>
-            </optgroup>
-            @if (activity() === 'sundial-calendar') {
-              <optgroup label="Nearby dates">
-                <option value="dialWeekBefore">A week before</option>
-                <option value="dialWeekAfter">A week after</option>
-              </optgroup>
-            }
-          }
-          @if (presentation()) {
-            <optgroup label="Nearby dates">
-              <option value="nearby-before">A week before</option>
-              <option value="special-return">Back to special date</option>
-              <option value="nearby-after">A week after</option>
-            </optgroup>
-          }
-          <option value="controlsToggle">Place & date…</option>
-        </select>
-      }
-      <output class="observation" aria-label="Current observation"
-        >{{ ui().date }} <strong>{{ ui().clock }}</strong></output
+      <button
+        (click)="chooseMode('explore')"
+        [disabled]="!ready()"
+        [attr.aria-pressed]="ui().mode === 'explore'"
       >
-      @if (presentation() && ui().mode === 'test') {
-        <button (click)="event('june')" [disabled]="!ready() || reviewing()">June solstice</button>
-        <button (click)="event('dec')" [disabled]="!ready() || reviewing()">
-          December solstice
-        </button>
-      }
-      @if (presentation() && !ui().centerView && ui().mode === 'test') {
-        <button (click)="reviewOpen.set(!reviewOpen())" [attr.aria-expanded]="reviewOpen()">
-          Compare {{ matches() }}/4
-        </button>
-        @if (!readOnly()) {
-          <button (click)="recordReview()" [disabled]="!configured() || recorded() || reviewing()">
-            {{ recorded() ? 'Saved' : 'Save comparison' }}
-          </button>
-        }
-      } @else if (!readOnly() && !ui().centerView && ui().mode === 'test') {
-        <button
-          (click)="capture()"
-          [disabled]="!ready() || busy() || (!design().blocks.length && !design().displayObject)"
-        >
-          {{ busy() ? 'Saving…' : 'Save test' }}
-        </button>
-      }
-      <details class="toolbar-menu" #viewMenu>
-        <summary>Tools</summary>
+        Earth & Sun view
+      </button>
+      <details class="toolbar-menu" #more>
+        <summary>More tools</summary>
         <div class="popover">
-          <button (click)="command('shadowView'); viewMenu.open = false">See shadows</button>
-          <button (click)="command('topView'); viewMenu.open = false">View from above</button>
-          <button (click)="command('fitView'); viewMenu.open = false">Fit model</button>
-          @if (activity().startsWith('sundial-') && !ui().centerView) {
-            <button
-              (click)="command('returnDial'); viewMenu.open = false"
-              [disabled]="!ui().canReturn"
-            >
-              Return to marking day
-            </button>
-            @if (activity() === 'sundial-build' || activity() === 'sundial-calendar') {
-              <button
-                (click)="command('undoDial'); viewMenu.open = false"
-                [disabled]="readOnly() || !ui().canUndo"
-              >
-                Remove last mark
-              </button>
-            }
+          <button (click)="command('morningLight'); more.open = false">
+            Morning light · sunrise +30 min
+          </button>
+          <button (click)="command('alignmentToggle'); more.open = false">Ray guide</button>
+          @if (surfaceTargets().length) {
+            <button (click)="command('targetView'); more.open = false">Inspect pillar</button>
           }
-          @if (!presentation() && !ui().centerView) {
-            <label
-              >Playback speed<select
-                aria-label="Playback speed"
-                (change)="command('speed', $any($event.target).value)"
-              >
-                <option value="0.5">Slow</option>
-                <option value="1" selected>Normal</option>
-                <option value="2">Fast</option>
-              </select></label
-            >
-          }
-          @if (presentation() && !ui().centerView) {
-            <button
-              (click)="runReview(); viewMenu.open = false"
-              [disabled]="!ready() || reviewing()"
-            >
-              Recheck four dates
+          <button (click)="command('topView'); more.open = false">View from above</button>
+          <button (click)="command('fitView'); more.open = false">Fit model</button>
+          @if (activity().startsWith('sundial-')) {
+            <button (click)="command('undoDial')" [disabled]="!ui().canUndo">
+              Remove last mark
             </button>
           }
         </div>
       </details>
-      @if (!presentation() && !ui().centerView && ui().mode === 'test') {
-        <label class="header-timeline"
-          ><span>{{ ui().startLabel }}</span
-          ><input
-            type="range"
-            aria-label="Time from sunrise to sunset"
-            [min]="ui().start"
-            [max]="ui().end"
-            step="any"
-            [value]="ui().minutes"
-            [disabled]="!ready() || !ui().canPlay"
-            (input)="command('minutes', +$any($event.target).value)"
-          /><span>{{ ui().endLabel }}</span></label
-        >
-      }
+    </div>
+    @if (ui().mode === 'explore') {
+      <small
+        >Earth view has day/year options below. Play day returns to the monument’s daily Sun.</small
+      >
+    }
+    @if (ui().centerView) {
+      <small
+        >Play the full day from the center, or use the sunrise offset below. Return to model to save
+        a test.</small
+      >
     }
   </div>
 </ng-template>

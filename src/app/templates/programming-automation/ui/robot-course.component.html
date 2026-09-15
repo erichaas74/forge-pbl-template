@@ -1,22 +1,9 @@
 <div class="arena" [class.workshop]="course().visualTheme === 'workshop' && renderer() === 'game'" [class.tabletop]="course().visualTheme === 'tabletop' && renderer() === 'game'">
   <div class="arena-hud">
-    <span class="arena-id"><i></i> DELIVERY ARENA</span
+    <span class="arena-id">{{ target().label }}</span
     ><span class="target-distance"
-      >TARGET <strong>{{ targetDistance() }} cm</strong></span
+      >TO TARGET <strong>{{ targetDistance() }} cm</strong></span
     >
-  </div>
-  <div class="view-controls" aria-label="Course view controls">
-    <button type="button" [attr.aria-pressed]="renderer() === 'game'" (click)="renderer.set('game')">Game view</button>
-    <button type="button" [attr.aria-pressed]="renderer() === 'map'" (click)="renderer.set('map')">Map view</button>
-    @if (renderer() === 'game') {
-      @if (course().visualTheme === 'workshop') {
-        <button type="button" [attr.aria-pressed]="!fullOverview() && !follow()" (click)="objectiveView()">Parking lane</button>
-      }
-      <button type="button" (click)="overview()">Overview</button>
-      <button type="button" [attr.aria-pressed]="follow()" (click)="followRobot()">Follow robot</button>
-      <button type="button" aria-label="Zoom out" [disabled]="zoom() <= 1" (click)="changeZoom(-0.25)">−</button>
-      <button type="button" aria-label="Zoom in" [disabled]="zoom() >= 3" (click)="changeZoom(0.25)">+</button>
-    }
   </div>
   @if (course().actors?.length) {
     <p class="patrol-notice">{{ sample() ? 'Patrols follow the run timeline. Use WAIT to time your crossing.' : (renderer() === 'game' ? 'Patrol preview — every run resets the routes. Use WAIT to time your crossing.' : 'Patrols shown at their starting positions. Run a program to watch their movement.') }}</p>
@@ -513,16 +500,27 @@
     </g>
   </svg>
   }
-  <div class="arena-bottom">
-    <span><i class="robot-dot"></i>{{ sample() ? 'RUN ' + ((sample()?.timeMs ?? 0) / 1000).toFixed(1) + ' s' : 'ROBOT READY' }}</span
-    ><span
-      >{{ sample()?.deliveredPackageIds?.length ?? 0 }} /
-      {{ course().packages.length }} DELIVERIES</span
-    >
-  </div>
+  @if (course().packages.length) {
+    <div class="arena-bottom"><span>{{ sample()?.deliveredPackageIds?.length ?? 0 }} / {{ course().packages.length }} deliveries</span></div>
+  }
 </div>
 <details class="course-description">
-  <summary>Course coordinates & objects</summary>
+  <summary>Map & view options</summary>
+  <div class="view-controls" aria-label="Course view controls">
+    <button type="button" [attr.aria-pressed]="renderer() === 'game'" (click)="renderer.set('game')">Game view</button>
+    <button type="button" [attr.aria-pressed]="renderer() === 'map'" (click)="renderer.set('map')">Map view</button>
+    @if (renderer() === 'game') {
+      @if (course().visualTheme === 'workshop') {
+        <button type="button" [attr.aria-pressed]="!fullOverview() && !follow()" (click)="objectiveView()">Parking lane</button>
+      }
+      <button type="button" (click)="overview()">Overview</button>
+      <button type="button" [attr.aria-pressed]="follow()" (click)="followRobot()">Follow robot</button>
+      <button type="button" aria-label="Zoom out" [disabled]="zoom() <= 1" (click)="changeZoom(-0.25)">−</button>
+      <button type="button" aria-label="Zoom in" [disabled]="zoom() >= 3" (click)="changeZoom(0.25)">+</button>
+    }
+  </div>
+  <ng-content />
+  <p>Each square = {{ course().gridSizeCm }} cm</p>
   <p>{{ description() }} Heading 0° points north; 90° points east.</p>
   <ul>
     @for (target of course().targets; track $index) {
@@ -547,8 +545,3 @@
     }
   </ul>
 </details>
-<div class="legend">
-  <span><i class="robot"></i>Robot</span><span><i class="target"></i>Parking target</span
-  ><span><i class="trace"></i>Travelled path</span
-  ><span>Each square = {{ course().gridSizeCm }} cm</span>
-</div>

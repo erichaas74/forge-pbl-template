@@ -26,6 +26,7 @@ export const ENGINEERING_PERSISTENCE = new InjectionToken<EngineeringPersistence
   'ENGINEERING_PERSISTENCE',
 );
 export const engineeringEvents = {
+  preview: 'engineering.previewSaved',
   design: 'engineering.designSaved',
   research: 'engineering.researchSaved',
   prediction: 'engineering.predictionSaved',
@@ -42,6 +43,10 @@ export class EngineeringDesignRuntime {
   private readonly persistence = inject(ENGINEERING_PERSISTENCE);
   private readonly session = inject(ENGINEERING_SESSION);
   private readonly events = new EventRegistry();
+  readonly authoringPreview =
+    this.session.mode === 'preview' &&
+    this.session.authorityMode === 'localDemo' &&
+    !!this.config.previewWeeks;
   readonly saveStatus = signal(this.persistence.location);
   readonly snapshot = signal<EngineeringSnapshot>({
     schemaVersion: '1.0',
@@ -65,6 +70,66 @@ export class EngineeringDesignRuntime {
         'Could not read the saved draft. Keep this page open and export your work.',
       );
     }
+  }
+  private previewWeek(id: string) {
+    const week = this.config.previewWeeks?.find((w) => w.id === id);
+    if (!this.authoringPreview || !week)
+      throw new Error('STATE_INVALID: Weekly authoring requires a configured local preview.');
+    return week;
+  }
+  openPreviewWeek(id: string): void {
+    const week = this.previewWeek(id);
+    if (Object.hasOwn(this.snapshot().previewDrafts ?? {}, id)) return;
+    this.commit(engineeringEvents.preview, {
+      previewDrafts: {
+        ...this.snapshot().previewDrafts,
+        [id]: { design: week.starter, trials: [] },
+      },
+    });
+  }
+  savePreviewDesign(id: string, design: BlockDesign): void {
+    this.previewWeek(id);
+    if (!isBlockDesign(design))
+      throw new Error('STATE_INVALID: Check block dimensions and positions.');
+    this.openPreviewWeek(id);
+    this.commit(engineeringEvents.preview, {
+      previewDrafts: {
+        ...this.snapshot().previewDrafts,
+        [id]: { ...this.snapshot().previewDrafts![id], design },
+      },
+    });
+  }
+  capturePreview(id: string, capture: DesignCapture): void {
+    this.previewWeek(id);
+    if (!isDesignCapture(capture) || capture.pluginId !== this.config.simulationId)
+      throw new Error('STATE_INVALID: Invalid preview trial.');
+    this.openPreviewWeek(id);
+    const draft = this.snapshot().previewDrafts![id];
+    if (draft.trials.some((t) => t.id === capture.id)) return;
+    this.commit(engineeringEvents.preview, {
+      previewDrafts: {
+        ...this.snapshot().previewDrafts,
+        [id]: { ...draft, trials: [...draft.trials, capture].slice(-40) },
+      },
+    });
+  }
+  /** Records a level win once. The simulation measures success; the runtime only keeps the result. */
+  completeQuest(id: string, questId: string): void {
+    const week = this.previewWeek(id);
+    if (!week.sessions.some((s) => s.quest?.id === questId))
+      throw new Error('STATE_INVALID: Unknown level challenge.');
+    this.openPreviewWeek(id);
+    const draft = this.snapshot().previewDrafts![id];
+    if (draft.quests?.[questId]) return;
+    this.commit(engineeringEvents.preview, {
+      previewDrafts: {
+        ...this.snapshot().previewDrafts,
+        [id]: {
+          ...draft,
+          quests: { ...draft.quests, [questId]: { completedAt: new Date().toISOString() } },
+        },
+      },
+    });
   }
   saveDesign(design: BlockDesign, workspace: 'practice' | 'project' = 'project'): void {
     if (!isBlockDesign(design))

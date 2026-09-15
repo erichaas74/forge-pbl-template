@@ -1,0 +1,11 @@
+> Building...
+√ Building...
+Application bundle generation failed. [8.321 seconds] - 2026-09-15T14:59:37.213Z
+
+X [ERROR] TS18048: 'presentation' is possibly 'undefined'. [plugin angular-compiler]
+
+    src/app/templates/heist/escape/locks/timing-cage/timing-cage.scene.ts:463:134:
+      463 │ ...0 ? 'Cage opening.' : `${presentation.animal.label} waiting in...
+          ╵                             ~~~~~~~~~~~~
+
+

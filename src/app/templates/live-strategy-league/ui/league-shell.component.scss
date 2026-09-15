@@ -17,3 +17,7 @@ fieldset { border: 0; margin: 19px 0 0; padding: 0; min-width: 0; }legend { marg
 @media (max-width: 1100px) { .league { padding-inline: 18px; }.arena { gap: 14px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }.panel { padding: 16px; }.stage { padding: 0 12px; }.project-title { gap: 10px; }h1 { font-size: 18px; }.project-title > span { padding-left: 10px; }.reflection-fields { gap: 10px; }.decision-fields { gap: 8px; }h2 { font-size: 20px; } }
 @media (max-width: 850px) { .arena, .round-information { grid-template-columns: 1fr; }.project-title { flex: 1 0 100%; }.project-header > .actions { width: 100%; }.project-header > .actions .primary { margin-left: auto; }.round-information { gap: 14px; }.masthead { gap: 14px; }.practice { font-size: 8px; }.wordmark span { display: none; } }
 @media (max-width: 450px) { .league { padding-inline: 10px; }.project-title { justify-content: space-between; }h1 { font-size: 16px; }.project-title > span { font-size: 9px; }.project-header .actions { gap: 5px; }button { font-size: 10px; padding-inline: 8px; }.panel { padding: 14px; }.stage { padding: 0 10px; }.reflection-fields { grid-template-columns: 1fr; }.saved { display: none; }.clock { font-size: 25px; }.section-heading h2 { font-size: 19px; } }
+
+.focus-round-action { display: flex; justify-content: flex-end; margin-top: 16px; }
+.focus-round-action button { min-height: 48px; }
+.league { padding-top: 70px; }

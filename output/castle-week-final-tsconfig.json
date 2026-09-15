@@ -1,0 +1,8 @@
+{
+  "extends": "../tsconfig.spec.json",
+  "compilerOptions": { "outDir": "./castle-week-final-test-tsc" },
+  "include": [
+    "../src/**/*.d.ts",
+    "../src/app/templates/heist/escape/weekly/expedition-week-workspace.component.spec.ts"
+  ]
+}

@@ -34,6 +34,20 @@ export const DESIGN_CHANGE = new InjectionToken<
   (design: import('./block-design').BlockDesign) => void
 >('DESIGN_CHANGE');
 
+/** Level progress reported by an installed simulation; the host decides whether to save completion. */
+export interface DesignQuestProgress {
+  readonly questId: string;
+  readonly complete: boolean;
+  readonly progress: readonly {
+    readonly id: string;
+    readonly label: string;
+    readonly done: boolean;
+  }[];
+}
+export const DESIGN_QUEST_PROGRESS = new InjectionToken<(state: DesignQuestProgress) => void>(
+  'DESIGN_QUEST_PROGRESS',
+);
+
 /** Optional local composition: installed renderers contribute controls to one workspace header. */
 export interface DesignChrome {
   readonly toolbar: TemplateRef<unknown>;

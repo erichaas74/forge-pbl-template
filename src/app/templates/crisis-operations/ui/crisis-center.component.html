@@ -20,7 +20,7 @@
   <div class="edge-vignette" aria-hidden="true"></div>
   <app-crisis-workstations [view]="view()" (open)="openWorkstation($event)" />
   <app-crisis-robot [view]="view()" [roaming]="robotRoaming()" (open)="showView('argus')" />
-  <header class="room-hud">
+  <app-workspace-tools><header class="room-hud">
     <div class="operation-identity">
       <a
         routerLink="/projects"
@@ -68,7 +68,7 @@
         </button>
       </div>
     </div>
-  </header>
+  </header></app-workspace-tools>
 
   @if (view() === 'room') {
     @if (!runtime.config.workstations?.length) {

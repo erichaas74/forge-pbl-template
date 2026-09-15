@@ -1,4 +1,10 @@
 import {
+  isEngineeringPreviewDrafts,
+  isEngineeringPreviewWeeks,
+  type EngineeringPreviewDraft,
+  type EngineeringPreviewWeek,
+} from './engineering-preview.models';
+import {
   isWalkthroughTask,
   type DesignWalkthroughTask,
 } from '../../../shared/engineering/design-walkthrough';
@@ -11,6 +17,7 @@ import {
   type DesignCapture,
 } from '../../../shared/engineering/block-design';
 export interface EngineeringDesignConfig {
+  readonly previewWeeks?: readonly EngineeringPreviewWeek[];
   readonly schemaVersion: '1.0';
   readonly projectId: string;
   readonly version: string;
@@ -57,6 +64,7 @@ export interface EngineeringDesignSample {
   readonly checks?: readonly DesignCheck[];
 }
 export interface EngineeringSnapshot {
+  readonly previewDrafts?: Readonly<Record<string, EngineeringPreviewDraft>>;
   readonly schemaVersion: '1.0';
   readonly revision: number;
   readonly learningStepId?: string;
@@ -110,6 +118,8 @@ export function requireEngineeringConfig(v: unknown, projectId: string): Enginee
     throw new Error('CONFIG_INVALID: The engineering design package is incomplete or unsupported.');
   }
   const config = v as unknown as EngineeringDesignConfig;
+  if (config.previewWeeks !== undefined && !isEngineeringPreviewWeeks(config.previewWeeks))
+    throw new Error('CONFIG_INVALID: Invalid engineering preview weeks.');
   if (
     config.designSamples !== undefined &&
     (!Array.isArray(config.designSamples) ||
@@ -173,6 +183,7 @@ export function requireEngineeringConfig(v: unknown, projectId: string): Enginee
 export function isEngineeringSnapshot(v: unknown): v is EngineeringSnapshot {
   return (
     record(v) &&
+    (v['previewDrafts'] === undefined || isEngineeringPreviewDrafts(v['previewDrafts'])) &&
     v['schemaVersion'] === '1.0' &&
     Number.isInteger(v['revision']) &&
     (v['revision'] as number) >= 0 &&

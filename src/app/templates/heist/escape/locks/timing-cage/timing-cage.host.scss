@@ -1,0 +1,34 @@
+/* Only the opted-in timing workshop owns its complete in-scene controls. */
+.workshop.timing-diorama {
+  height: auto;
+  overflow: visible;
+  > header,
+  > nav,
+  > .mission,
+  > .preview-action,
+  > footer,
+  .run-caption {
+    display: none;
+  }
+  .stage-shell {
+    height: 620px;
+    min-height: 620px;
+    flex: none;
+  }
+  .stage {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+:host(.week-preview) .workshop.timing-diorama .stage-shell {
+  height: 620px;
+  min-height: 620px;
+}
+@media (max-width: 600px) {
+  :host(.week-preview) .workshop.timing-diorama .stage-shell {
+    height: 650px;
+    min-height: 650px;
+  }
+}

@@ -1,0 +1,75 @@
+<main class="route-example">
+  <div class="tour-question">
+    <span>Final example · Rescue route</span>
+    <h1>How does the rescue reach every lock?</h1>
+  </div>
+  <div class="map">
+    <svg
+      [attr.viewBox]="'0 0 ' + world.width + ' ' + world.height"
+      role="img"
+      [attr.aria-label]="
+        'Castle map with a rescue path from the entrance to all ' + mission.steps.length + ' locks'
+      "
+    >
+      <image
+        [attr.href]="mission.environment"
+        [attr.width]="world.width"
+        [attr.height]="world.height"
+      />
+      @for (leg of legs; track $index; let i = $index) {
+        <polyline class="route-shadow" [attr.points]="points(leg.points)" />
+        <polyline
+          class="route-base"
+          [class.visited]="i < index()"
+          [attr.points]="points(leg.points)"
+        />
+      }
+      <polyline class="route-active" [attr.points]="route()" />
+      @for (stop of mission.steps; track stop.id; let i = $index) {
+        <g
+          [attr.transform]="
+            'translate(' + (stop.x * world.width) / 100 + ',' + (stop.y * world.height) / 100 + ')'
+          "
+          [class.current]="i === index()"
+        >
+          <circle class="stop" r="23" />
+          <text class="stop-number" text-anchor="middle" dy="7">{{ i + 1 }}</text>
+        </g>
+      }
+      <circle class="traveler-glow" [attr.cx]="position().x" [attr.cy]="position().y" r="17" />
+      <circle class="traveler" [attr.cx]="position().x" [attr.cy]="position().y" r="8" />
+    </svg>
+    <div class="tour-controls">
+      <div class="stop-caption" aria-live="polite" aria-atomic="true">
+        <small>{{
+          finished() ? 'Route complete' : 'Lock ' + (index() + 1) + ' / ' + mission.steps.length
+        }}</small>
+        <strong>{{ step().place }}</strong>
+      </div>
+      <div class="playback">
+        @if (!reducedMotion()) {
+          <button type="button" (click)="playing.set(!playing())" [disabled]="finished()">
+            {{ playing() ? 'Pause' : 'Play' }}
+          </button>
+        }
+        <button type="button" (click)="replay()">Replay route</button>
+      </div>
+    </div>
+  </div>
+  <nav class="stops" aria-label="Example route stops">
+    @for (stop of mission.steps; track stop.id; let i = $index) {
+      <button
+        type="button"
+        (click)="select(i)"
+        [attr.aria-current]="index() === i ? 'step' : null"
+        [attr.aria-label]="'Lock ' + (i + 1) + ': ' + stop.place"
+      >
+        {{ i + 1 }}
+      </button>
+    }
+  </nav>
+  <p class="stop-note">
+    {{ arrived() ? step().explanation : 'Follow the gold path to the next lock.' }}
+  </p>
+  <small class="example-note">Illustrated example · Your rescue progress is unchanged</small>
+</main>

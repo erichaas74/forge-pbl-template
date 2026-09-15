@@ -6,6 +6,7 @@ export interface ProjectHomeCard {
   readonly projectType: string;
   readonly description: string;
   readonly demoTitle?: string;
+  readonly grade?: string;
   readonly coverImage?: string;
   readonly symbol?: string;
   readonly route: string | null;
@@ -37,6 +38,7 @@ export function createProjectHomeCards(
         projectType: overview?.title ?? project.projectType,
         description: overview?.description ?? project.description,
         demoTitle: override?.unavailable ? undefined : project.title,
+        grade: project.grade,
         coverImage: project.coverImage,
         symbol: project.symbol,
         route: override?.unavailable ? null : project.route,

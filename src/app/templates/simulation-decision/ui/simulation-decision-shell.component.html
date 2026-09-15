@@ -1,11 +1,6 @@
 @if (runtime.state().status === 'not_started') {
   <div class="setup-shell">
-    <nav class="setup-project-links" aria-label="Project navigation">
-      <a href="/projects">← Projects</a>
-      @if (projectRoute) {
-        <a [href]="projectRoute">Opening</a>
-      }
-    </nav>
+
     <app-simulation-company-setup />
   </div>
 } @else {
@@ -16,20 +11,7 @@
     [class.cargo-mode]="runtime.state().lastView === 'cargo'"
     [class.journey-mode]="runtime.state().lastView === 'events'"
   >
-    <header
-      class="mission-bar compact-project-header unified-project-header"
-      aria-label="Project controls"
-      (click)="headerClick($event)"
-    >
-      <a class="project-back" href="/projects" aria-label="Back to projects">←</a>
-      <div class="project-identity">
-        <strong class="trading-title">{{ runtime.config.title }}</strong
-        ><small
-          >{{ runtime.state().companyName }} · {{ runtime.currentLocation()?.shortName }} · Day
-          {{ runtime.state().currentDay }}</small
-        >
-      </div>
-      <nav class="project-tools" aria-label="Game pages">
+    <app-workspace-tools>      <nav class="project-tools" aria-label="Game pages">
         @for (item of expeditionNavigation; track item.view) {
           <button
             type="button"
@@ -62,7 +44,8 @@
             <small>{{ saveLabel() }}</small>
           </div>
         </details>
-      </nav>
+      </nav></app-workspace-tools>
+    <div class="field-controls">
       @if (routePage()?.atlas()?.controls(); as mapControls) {
         <ng-container [ngTemplateOutlet]="mapControls" />
       }
@@ -81,7 +64,7 @@
           {{ nextMission().actionLabel }} →
         </button>
       }
-    </header>
+    </div>
     <main class="simulation-main">
       @if (runtime.state().status === 'paused_by_teacher') {
         <section class="paused-banner" role="status">

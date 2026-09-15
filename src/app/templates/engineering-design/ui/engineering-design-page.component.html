@@ -1,5 +1,5 @@
 <main class="design-studio" [class.guided-studio]="guided()">
-  <header class="lab-header" aria-label="Lab navigation and controls">
+  <app-workspace-tools>  <header class="lab-header" aria-label="Lab navigation and controls">
     @if (guided()) {
       <a class="project-return" [routerLink]="['/projects', config.projectId]">← Project</a>
       <h1>{{ config.title }}</h1>
@@ -52,8 +52,7 @@
         </div>
       }
     }
-  </header>
-  @if (guided()) {
+  </header>  @if (guided()) {
     <nav class="lesson-path" aria-label="Five-step walkthrough">
       @for (step of learningSteps; track step.id; let i = $index) {
         <button
@@ -66,7 +65,7 @@
         </button>
       }
     </nav>
-  }
+  }</app-workspace-tools>
   <div
     class="workspace"
     [class.guided-workspace]="guided()"

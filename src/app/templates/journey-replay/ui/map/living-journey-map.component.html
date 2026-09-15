@@ -148,13 +148,13 @@
             <title>{{ candidateAriaLabel(route) }}</title>
             <path class="route-hit" [attr.d]="candidatePath(route.id)" />
             <path class="route-option" [attr.d]="candidatePath(route.id)" />
-            <text
+            @if (showRouteLabels()) { <text
               class="route-choice-label"
               [attr.x]="candidateLabelPoint(route).x"
               [attr.y]="candidateLabelPoint(route).y - 7"
             >
               {{ candidateLabel(route.id) }}
-            </text>
+            </text> }
           </g>
         }
       </g>

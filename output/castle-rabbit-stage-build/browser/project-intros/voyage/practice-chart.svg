@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" role="img" aria-labelledby="title desc">
+  <title id="title">Captain's practice chart</title>
+  <desc id="desc">Two routes connect Departure Bay in the northeast to the destination in the southwest. A short dashed gold route crosses uncertain winds. A longer teal route stops at Supply Harbor in the southeast. This is a fictional chart.</desc>
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#8dbea8" stroke-opacity=".16"/></pattern>
+    <radialGradient id="sea"><stop stop-color="#235467"/><stop offset="1" stop-color="#102d3b"/></radialGradient>
+  </defs>
+  <rect width="720" height="440" rx="18" fill="#0d2430"/>
+  <rect x="14" y="14" width="692" height="412" rx="10" fill="url(#sea)" stroke="#d7bd81" stroke-opacity=".7"/>
+  <rect x="24" y="65" width="672" height="298" fill="url(#grid)"/>
+  <g font-family="Trebuchet MS, Arial, sans-serif">
+    <text x="34" y="42" fill="#f6dfaa" font-size="20" font-weight="bold">CAPTAIN'S PRACTICE CHART</text>
+    <text x="686" y="41" text-anchor="end" fill="#bacdd0" font-size="11">FICTIONAL WATERS</text>
+    <path d="M695 67H549l-27 17 8 19 20 5 9 27 33 9 27-17 26 9 50-17Z" fill="#a49c70" stroke="#e6cea0" stroke-width="2"/>
+    <path d="M26 210l46 7 26 20-9 22 22 15 29 27-5 24-24 16-22-4-18 24H26Z" fill="#a49c70" stroke="#e6cea0" stroke-width="2"/>
+    <path d="M558 325l-3 21 21 17 38-3 10-22-17-17-25-5Z" fill="#a49c70" stroke="#e6cea0" stroke-width="2"/>
+    <g fill="none" stroke="#577a68" stroke-width="3"><path d="m580 94 10-12 12 12m28 10 10-12 12 12M46 249l10-12 12 12m519 94 7-9 8 9"/></g>
+    <path d="M550 120Q350 128 135 325" fill="none" stroke="#f2c773" stroke-width="4" stroke-dasharray="10 8"/>
+    <path d="M550 120Q651 205 570 320Q345 381 135 325" fill="none" stroke="#86d4c3" stroke-width="4"/>
+    <g fill="#f9e5b7" stroke="#123342" stroke-width="3"><circle cx="550" cy="120" r="8"/><circle cx="135" cy="325" r="8"/><circle cx="570" cy="320" r="8"/></g>
+    <g fill="#f9edcc" font-size="14" font-weight="bold">
+      <text x="530" y="94" text-anchor="end">DEPARTURE BAY</text>
+      <text x="530" y="113" text-anchor="end" font-size="11" fill="#c8dbdd">YOU ARE HERE</text>
+      <text x="147" y="297">DESTINATION</text>
+      <text x="554" y="294" text-anchor="end">SUPPLY HARBOR</text>
+    </g>
+    <rect x="256" y="180" width="196" height="58" rx="8" fill="#112d3be8" stroke="#f2c773" stroke-opacity=".5"/>
+    <text x="354" y="202" text-anchor="middle" fill="#f2c773" font-size="14" font-weight="bold">DIRECT PASSAGE</text>
+    <text x="354" y="222" text-anchor="middle" fill="#f6edda" font-size="12">Shorter · older wind reports</text>
+    <g transform="translate(64 125)" stroke="#cdb889" fill="none"><circle r="25"/><path d="M0-32V32M-32 0H32"/><path d="M0-22 6 4 0 0-6 4Z" fill="#e6cea0"/><text y="-39" text-anchor="middle" fill="#e6cea0" stroke="none" font-size="12">N</text></g>
+    <g fill="#d3e5e4" font-size="12"><text x="246" y="279">≈ Changing winds ≈</text><text x="606" y="227" transform="rotate(75 606 227)">Harbor route</text></g>
+    <path d="M35 381H685" stroke="#d7bd81" stroke-opacity=".4"/>
+    <path d="M36 403H72" stroke="#f2c773" stroke-width="3" stroke-dasharray="7 5"/>
+    <text x="83" y="407" fill="#f6dfaa" font-size="12">Direct: less distance, less certainty</text>
+    <path d="M365 403H401" stroke="#86d4c3" stroke-width="3"/>
+    <text x="413" y="407" fill="#d6eee5" font-size="12">Harbor: fresh report + supplies</text>
+  </g>
+</svg>

@@ -1,0 +1,21 @@
+> Building...
+√ Building...
+▲ [WARNING] src/app/projects/mystery-substance/station-workspaces.scss exceeded maximum budget. Budget 14.00 kB was not met by 3.77 kB with a total of 17.77 kB.
+
+
+▲ [WARNING] src/app/projects/mystery-substance/properties-lab.component.scss exceeded maximum budget. Budget 14.00 kB was not met by 1.77 kB with a total of 15.77 kB.
+
+
+▲ [WARNING] src/app/projects/mystery-substance/reaction-bench.component.scss exceeded maximum budget. Budget 14.00 kB was not met by 8.57 kB with a total of 22.57 kB.
+
+
+Initial chunk files | Names         |  Raw size | Estimated transfer size
+main-BUW62ISS.js    | main          | 444.21 kB |                98.89 kB
+styles-PWEBVAZL.css | styles        | 865 bytes |               865 bytes
+
+                    | Initial total | 445.08 kB |                99.75 kB
+
+Application bundle generation complete. [226.216 seconds] - 2026-09-14T22:22:52.735Z
+
+Output location: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\output\mystery-week\isolated-build
+

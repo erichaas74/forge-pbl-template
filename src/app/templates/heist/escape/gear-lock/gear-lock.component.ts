@@ -33,11 +33,14 @@ export const GEAR_SCENE_LOADER = new InjectionToken<
 @Component({
   selector: 'app-gear-lock',
   templateUrl: './gear-lock.component.html',
-  styleUrl: './gear-lock.component.scss',
+  styleUrls: ['./gear-lock.component.scss', '../weekly/preview-machine.scss', './gear-cage/gear-cage.host.scss'],
+  host: { '[class.week-preview]': 'authoringPreview()' },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GearLockComponent implements AfterViewInit {
   readonly definition = input.required<GearLockDefinition>();
+  readonly authoringPreview = input(false);
+  readonly tested = output<number>();
   readonly answer = input<readonly number[]>([]);
   readonly completed = input(false);
   readonly paused = input(false);
@@ -59,6 +62,7 @@ export class GearLockComponent implements AfterViewInit {
   readonly notice = signal('Drag a cog onto A or B. The sliding axles adjust to its size.');
   readonly module = signal<ReleaseModule>('drive');
   readonly positions = computed(() => (this.answer().length ? this.answer() : emptyGears()));
+  readonly diorama = computed(() => this.definition().presentation?.kind === 'gear-cage');
   readonly locked = computed(() => this.running() || this.completed() || this.paused());
   readonly motion = computed(() =>
     gearMotion(this.definition(), this.positions(), this.positions()[2]),
@@ -117,6 +121,11 @@ export class GearLockComponent implements AfterViewInit {
             this.sound.emit(module === 'hammer' ? 'turn' : 'open');
           },
           finished: () => this.finish(),
+          crank: (delta) => this.crank(delta),
+          test: () => this.test(),
+          replay: () => this.replay(),
+          reset: () => this.reset(),
+          pause: () => this.pauseRequested.emit(),
         },
       );
     } catch {
@@ -162,6 +171,7 @@ export class GearLockComponent implements AfterViewInit {
   }
   test(): void {
     if (this.locked()) return;
+    this.tested.emit(0);
     if (this.positions()[0] < 0 || this.positions()[1] < 0) {
       this.notice.set(gearFeedback(this.definition(), this.positions()));
       return;
@@ -180,12 +190,12 @@ export class GearLockComponent implements AfterViewInit {
     this.running.set(false);
     this.notice.set(gearFeedback(this.definition(), this.positions()));
     if (this.passed()) {
-      if (!this.completed()) this.solved.emit();
+      if (!this.completed() && !this.authoringPreview()) this.solved.emit();
       this.sound.emit('open');
     } else this.sound.emit('wrong');
   }
   replay(): void {
-    if (!this.completed() || this.paused() || this.running()) return;
+    if ((!this.completed() && !(this.authoringPreview() && this.diorama() && evaluateGearLock(this.definition(), this.positions()))) || this.paused() || this.running()) return;
     this.passed.set(true);
     this.module.set('drive');
     this.running.set(true);

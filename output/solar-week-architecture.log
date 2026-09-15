@@ -1,0 +1,4 @@
+Architecture boundary violations:
+- core/index.ts: forbidden dependency ./templates
+- projects/mystery-substance/lab-kit/render-quality.service.ts: project packages may not add components or services
+- projects/mystery-substance/lab-week-workspace.component.ts: project packages may not add components or services

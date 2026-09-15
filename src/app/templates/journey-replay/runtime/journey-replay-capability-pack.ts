@@ -2,6 +2,7 @@ import type { CapabilityRegistry } from '../../../core/registries/specialized-re
 
 export const JOURNEY_REPLAY_CAPABILITIES = [
   'livingJourneyMap',
+  'branchingJourney',
   'journeyChoices',
   'studentResponses',
   'journeyReplay',

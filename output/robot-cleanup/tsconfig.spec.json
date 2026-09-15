@@ -1,0 +1,4 @@
+{
+  "extends": "../../tsconfig.spec.json",
+  "include": ["../../src/**/*.d.ts", "../../src/app/templates/programming-automation/**/*.spec.ts", "../../src/app/shared/project-lessons/standards-review.component.spec.ts", "../../src/app/runtime/project-launch/project-standards.registry.spec.ts"]
+}

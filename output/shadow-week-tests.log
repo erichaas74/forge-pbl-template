@@ -1,0 +1,17 @@
+
+> forge-pbl-template@0.0.0 test
+> ng test --watch=false --include=src/app/templates/heist/restoration/**/*.spec.ts --include=src/app/shared/restoration/*.spec.ts --include=src/app/runtime/project-launch/template-launchers/heist.launcher.spec.ts
+
+> Building...
+√ Building...
+Application bundle generation complete. [45.047 seconds] - 2026-09-14T23:33:51.191Z
+
+
+ RUN  v4.1.11 C:/Users/erich/Desktop/pbl-lms/forge-pbl-template
+
+
+ Test Files  8 passed (8)
+      Tests  33 passed (33)
+   Start at  17:33:51
+   Duration  13.47s (transform 21.12s, setup 8.84s, import 29.20s, tests 3.65s, environment 21.20s)
+

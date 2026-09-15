@@ -1,0 +1,105 @@
+{
+  "schemaVersion": "1.0",
+  "planVersion": "1.1.0",
+  "projectId": "exploration-time-repair",
+  "projectVersion": "1.0.0",
+  "finalProduct": "Illustrated, source-linked timeline exhibit and local walkthrough.",
+  "grouping": "Individual exploration then group activity each week. Group sessions run locally; shared editing is a future build.",
+  "availability": "All eight sessions open directly with sample starting content. Scene repair, chronology, source linking, ripple comparison and exhibit composition are interactive. The AI Tutor is disconnected; no assessment or completion is recorded.",
+  "evidenceCriteria": [
+    "Use dates and source identity to support a chronological claim.",
+    "Explain cause, consequence, and uncertainty using observed timeline changes."
+  ],
+  "lessons": [
+    {
+      "number": 1,
+      "title": "Scan the harbor",
+      "output": "An inspected harbor scene with a suspected chronology conflict.",
+      "workspace": "Scan the harbor",
+      "checkpoint": "Compare the scene’s 1490 date with the crop’s origin and the later dated record. A prop is not an independent source.",
+      "criteria": [
+        "Use dates and source identity to support a chronological claim."
+      ],
+      "focusTarget": "week-workspace"
+    },
+    {
+      "number": 2,
+      "title": "Try a precise repair",
+      "output": "A set of cargo-repair trials to discuss.",
+      "workspace": "Try a precise repair",
+      "checkpoint": "Look for a repair that removes only the unsupported cargo while preserving the rest of the historical record.",
+      "criteria": [
+        "Use dates and source identity to support a chronological claim."
+      ],
+      "focusTarget": "week-workspace"
+    },
+    {
+      "number": 3,
+      "title": "Put the dates back in order",
+      "output": "An ordered timeline with chronology feedback.",
+      "workspace": "Put the dates back in order",
+      "checkpoint": "A chronological sequence runs from earlier to later. The 1565 trace is not a known first-arrival date.",
+      "criteria": [
+        "Use dates and source identity to support a chronological claim."
+      ],
+      "focusTarget": "week-workspace"
+    },
+    {
+      "number": 4,
+      "title": "Give each event a source",
+      "output": "A source-linked timeline for discussion.",
+      "workspace": "Give each event a source",
+      "checkpoint": "Check whether the source supports the event’s specific claim and what it leaves uncertain. Links are not automatically graded.",
+      "criteria": [
+        "Use dates and source identity to support a chronological claim."
+      ],
+      "focusTarget": "week-workspace"
+    },
+    {
+      "number": 5,
+      "title": "Follow one change forward",
+      "output": "A comparison of three downstream interpretations.",
+      "workspace": "Follow one change forward",
+      "checkpoint": "Read the before/after wording and its source. These are authored interpretations, not predictions of alternate history.",
+      "criteria": [
+        "Explain cause, consequence, and uncertainty using observed timeline changes."
+      ],
+      "focusTarget": "week-workspace"
+    },
+    {
+      "number": 6,
+      "title": "Compare the interventions",
+      "output": "A replayable comparison of repair choices.",
+      "workspace": "Compare the interventions",
+      "checkpoint": "Changing a whole dock’s date alters more than the unsupported crate. Arrival and widespread adoption remain different claims.",
+      "criteria": [
+        "Explain cause, consequence, and uncertainty using observed timeline changes."
+      ],
+      "focusTarget": "week-workspace"
+    },
+    {
+      "number": 7,
+      "title": "Build an illustrated exhibit",
+      "output": "An illustrated exhibit draft with source credits.",
+      "workspace": "Build an illustrated exhibit",
+      "checkpoint": "Read the displayed caption against its source. Images set the scene; they do not prove historical claims.",
+      "criteria": [
+        "Use dates and source identity to support a chronological claim."
+      ],
+      "focusTarget": "week-workspace"
+    },
+    {
+      "number": 8,
+      "title": "Rehearse the timeline tour",
+      "output": "A local illustrated timeline walkthrough.",
+      "workspace": "Rehearse the timeline tour",
+      "checkpoint": "Make sure the audience can follow origin, the breach, the dated trace and the limits of the repair. Nothing is submitted or assessed.",
+      "criteria": [
+        "Use dates and source identity to support a chronological claim.",
+        "Explain cause, consequence, and uncertainty using observed timeline changes."
+      ],
+      "focusTarget": "week-workspace"
+    }
+  ],
+  "workspaceView": "experience"
+}

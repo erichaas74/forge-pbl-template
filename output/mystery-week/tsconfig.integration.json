@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.spec.json",
+  "compilerOptions": { "outDir": "./integration-tsc" },
+  "include": [
+    "../../src/**/*.d.ts",
+    "../../src/app/runtime/project-launch/project-lesson.registry.spec.ts",
+    "../../src/app/runtime/project-launch/project-lessons.spec.ts"
+  ]
+}

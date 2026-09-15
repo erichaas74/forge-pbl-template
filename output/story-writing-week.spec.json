@@ -1,0 +1,5 @@
+{
+  "extends": "../tsconfig.spec.json",
+  "compilerOptions": { "outDir": "./story-writing-week-tsc" },
+  "include": ["../src/**/*.d.ts", "../src/app/templates/narrative-studio/**/*.spec.ts"]
+}

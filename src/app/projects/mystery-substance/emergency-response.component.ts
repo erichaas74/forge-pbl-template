@@ -29,6 +29,7 @@ import {
 import { RenderQualityService } from './lab-kit/render-quality.service';
 import type { StationCapture } from './station-workspaces';
 import { persistWorkspaceDraft } from '../../shared/drafts/persist-workspace-draft';
+import { LAB_AUTHORING_PREVIEW } from './lab-week.models';
 
 /** One test the team bought, in the order they bought it. */
 interface RanTest {
@@ -61,8 +62,10 @@ const neutraliseTargetCount = 24;
   templateUrl: './emergency-response.component.html',
   styleUrl: './emergency-response.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '[class.lab-preview]': 'preview' },
 })
 export class EmergencyResponseComponent implements OnDestroy {
+  readonly preview = inject(LAB_AUTHORING_PREVIEW);
   readonly captured = output<StationCapture>();
 
   /** What the teacher loaded into the tub. Never shown until the call is filed. */
@@ -76,7 +79,8 @@ export class EmergencyResponseComponent implements OnDestroy {
 
   private readonly renderQuality = inject(RenderQualityService);
 
-  readonly briefingOpen = signal(true);
+  readonly briefingOpen = signal(!this.preview);
+  readonly attemptHistory = signal<readonly { attempt: number; minutesLeft: number; tests: readonly RanTest[]; call: EmergencyCall | undefined }[]>([]);
   readonly minutesLeft = signal(emergencyBudgetMinutes);
   readonly running = signal<EmergencyTestId | undefined>(undefined);
   readonly ran = signal<readonly RanTest[]>([]);
@@ -114,6 +118,7 @@ export class EmergencyResponseComponent implements OnDestroy {
         this.verdict.set(saved.verdict);
         this.attempt.set(saved.attempt);
         this.briefingOpen.set(saved.briefingOpen);
+        if (Array.isArray(saved.attemptHistory)) this.attemptHistory.set(saved.attemptHistory);
       },
     );
   }
@@ -130,6 +135,7 @@ export class EmergencyResponseComponent implements OnDestroy {
       verdict: this.verdict(),
       attempt: this.attempt(),
       briefingOpen: this.briefingOpen(),
+      attemptHistory: this.attemptHistory(),
     };
   }
 
@@ -156,11 +162,12 @@ export class EmergencyResponseComponent implements OnDestroy {
     () =>
       this.verdict() === undefined &&
       this.call() !== undefined &&
-      this.reasoning().trim().length > 0,
+      (this.preview || this.reasoning().trim().length > 0),
   );
 
   readonly hint = computed(() => {
     if (this.verdict() !== undefined) {
+      if (this.preview) return 'Simulation outcome retained locally. Restart the incident to try another test sequence.';
       return 'File the record so the review board can read what you did.';
     }
     if (this.outOfTime()) {
@@ -273,6 +280,24 @@ export class EmergencyResponseComponent implements OnDestroy {
     this.stop();
     this.fizz.set([]);
     this.gasCount.set(0);
+  }
+
+  restartPreview(): void {
+    if (!this.preview || this.running()) return;
+    this.attemptHistory.update(history => [...history.slice(-19), {
+      attempt: this.attempt(), minutesLeft: this.minutesLeft(), tests: [...this.ran()], call: this.call(),
+    }]);
+    this.stop();
+    this.minutesLeft.set(emergencyBudgetMinutes);
+    this.ran.set([]);
+    this.citedTestIds.set([]);
+    this.call.set(undefined);
+    this.verdict.set(undefined);
+    this.reasoning.set('');
+    this.attempt.update(value => value + 1);
+    this.fizz.set([]);
+    this.gasCount.set(0);
+    this.briefingOpen.set(false);
   }
 
   /** Sends the incident record to the evidence locker. */

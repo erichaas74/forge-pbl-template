@@ -4,16 +4,15 @@ import type {
   ProjectPackageSource,
 } from '../core/packages/project-package-contracts';
 import type { ProjectTemplateRuntime } from '../core/templates/template-contracts';
-import type { TimeRepairConfig } from '../templates/time-repair/domain/time-repair.models';
-import { requireTimeRepairConfig } from '../templates/time-repair/domain/time-repair.validation';
+import { requireTimeRepairPackage, type TimeRepairPackage } from '../templates/time-repair/domain/time-repair.package';
 
-export class LocalTimeRepairRuntime implements ProjectTemplateRuntime<TimeRepairConfig> {
+export class LocalTimeRepairRuntime implements ProjectTemplateRuntime<TimeRepairPackage> {
   constructor(private readonly source: ProjectPackageSource) {}
   async loadProject(
     location: ProjectPackageLocation,
-  ): Promise<ProjectPackageLoadResult<TimeRepairConfig>> {
+  ): Promise<ProjectPackageLoadResult<TimeRepairPackage>> {
     try {
-      const graph = requireTimeRepairConfig(await this.source.read(location, 'project.json'));
+      const graph = requireTimeRepairPackage(await this.source.read(location, 'project.json'));
       if (
         graph.projectId !== location.projectId ||
         graph.projectVersion !== location.projectVersion

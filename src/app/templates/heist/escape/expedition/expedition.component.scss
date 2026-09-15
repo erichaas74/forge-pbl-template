@@ -768,7 +768,7 @@ input[type='range'] {
 }
 .pause-backdrop {
   position: absolute;
-  z-index: 40;
+  z-index: 60;
   inset: 0;
   background: #001019b8;
   backdrop-filter: blur(7px);
@@ -1024,4 +1024,46 @@ input[type='range'] {
     color: #13282b;
     background: #e9c482;
   }
+}
+
+.lock-navigation {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  max-width: calc(100% - 24px);
+  padding: 3px;
+  border-radius: 10px;
+  background: #0b252cf5;
+  border: 1px solid #bca36f66;
+  button {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 8px;
+  }
+  select {
+    min-width: 0;
+    max-width: 270px;
+    min-height: 44px;
+    font: inherit;
+    color: #fff0cb;
+    background: #123139;
+    border: 0;
+    border-radius: 6px;
+    padding: 6px;
+  }
+  select:focus-visible {
+    outline: 3px solid #91f3da;
+  }
+}
+app-machine-workshop,
+app-gear-lock,
+app-balance-lock {
+  position: absolute;
+  inset: 68px 0 0;
+  --expedition-lock-height: calc(100dvh - 68px);
 }

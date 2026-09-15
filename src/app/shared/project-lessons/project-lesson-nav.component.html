@@ -1,0 +1,67 @@
+@if (plan()?.presentation; as presentation) {
+  <header class="compact-shell">
+    <a class="compact-return" routerLink="/projects" aria-label="Return to projects">←</a>
+    <div class="compact-identity"><span>{{ presentation.identifier }} · {{ presentation.grade }}</span><h1>{{ presentation.title }}</h1></div>
+    <nav class="compact-weeks" aria-label="Project weeks and sessions">
+      @for (group of weekGroups(); track group.week) {
+        <div class="compact-week"><span>Week {{ group.week }}</span><div>
+          @for (lesson of group.lessons; track lesson.number) {
+            <a [routerLink]="route()" [queryParams]="{ lesson: lesson.number }" [attr.aria-current]="!finalExampleActive() && selected() === lesson.number ? 'step' : null" [attr.aria-label]="'Week ' + group.week + ', lesson ' + lesson.number + ': ' + lesson.title + ', ' + lesson.kind" [title]="lesson.title">{{ lesson.number }}</a>
+          }
+        </div></div>
+      }
+    </nav>
+    <details class="compact-menu" #weekMenu><summary aria-label="Choose week or session">Week {{ selectedWeek() }} · {{ selected() }} ⌄</summary><nav aria-label="Choose a lesson">
+      @for (group of weekGroups(); track group.week) {
+        <strong>Week {{ group.week }}</strong>
+        @for (lesson of group.lessons; track lesson.number) {
+          <a [routerLink]="route()" [queryParams]="{ lesson: lesson.number }" (click)="weekMenu.open = false" [attr.aria-current]="!finalExampleActive() && selected() === lesson.number ? 'step' : null">{{ lesson.number }} · {{ lesson.title }}</a>
+        }
+      }
+      @if (finalExampleRoute(); as exampleRoute) { <a [routerLink]="exampleRoute" (click)="weekMenu.open = false">Final example ↗</a> }
+    </nav></details>
+    @if (finalExampleRoute(); as exampleRoute) { <a class="compact-example" [routerLink]="exampleRoute" [attr.aria-current]="finalExampleActive() ? 'page' : null">Example ↗</a> }
+  </header>
+} @else {
+<header>
+  <div class="primary-row">
+    <a class="return-link" routerLink="/projects"
+      ><span aria-hidden="true">←</span> Return to projects</a
+    >
+    <nav class="weeks" aria-label="Project weeks">
+      @for (group of weekGroups(); track group.week) {
+        <div class="week-button" [class.selected-week]="!finalExampleActive() && selectedWeek() === group.week" role="group" [attr.aria-label]="'Week ' + group.week">
+          <div class="week-label">Week {{ group.week }} @if (!finalExampleActive() && selectedWeek() === group.week) { <small>Selected</small> }</div>
+          <div class="lessons">
+            @for (lesson of group.lessons; track lesson.number) {
+              <a [routerLink]="route()" queryParamsHandling="merge" [queryParams]="{ lesson: lesson.number, lessonPlan: null }"
+                [attr.aria-current]="!finalExampleActive() && selected() === lesson.number ? 'step' : null"
+                [attr.aria-label]="'Week ' + group.week + ', Lesson ' + lesson.number + ': ' + lesson.title + ', ' + lesson.kind" [title]="lesson.title">
+                <b>{{ lesson.kind }}</b><span>Lesson {{ lesson.number }}</span>
+                @if (!finalExampleActive() && selected() === lesson.number) { <small>✓ Selected</small> }
+              </a>
+            }
+          </div>
+        </div>
+      }
+    </nav>
+    @if (finalExampleRoute(); as exampleRoute) {
+      <a
+        class="final-example"
+        [routerLink]="exampleRoute"
+        [attr.aria-current]="finalExampleActive() ? 'page' : null"
+      >
+        Final example <span aria-hidden="true">↗</span>
+      </a>
+    } @else {
+      <button
+        class="final-example"
+        disabled
+        title="Final example not yet available for this project"
+      >
+        Final example
+      </button>
+    }
+  </div>
+</header>
+}

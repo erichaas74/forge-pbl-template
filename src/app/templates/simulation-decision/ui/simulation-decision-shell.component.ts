@@ -1,3 +1,5 @@
+import { bindLessonFocus } from '../../../shared/project-lessons/project-lesson-focus';
+import { WorkspaceToolsComponent } from '../../../shared/project-lessons/workspace-tools.component';
 import { NgTemplateOutlet } from '@angular/common';
 import {
   SIMULATION_DECISION_PROJECT_ROUTE,
@@ -70,7 +72,7 @@ interface ResourceFeedback {
 
 @Component({
   selector: 'app-simulation-decision-shell',
-  imports: [
+  imports: [WorkspaceToolsComponent,
     NgTemplateOutlet,
     ReviewDialogDirective,
     TradeWorldPanelComponent,
@@ -100,6 +102,10 @@ export class SimulationDecisionShellComponent implements OnDestroy {
   private feedbackTimer?: ReturnType<typeof setTimeout>;
   private missionFocusTimer?: ReturnType<typeof setTimeout>;
   constructor() {
+    bindLessonFocus((lesson) => {
+      const target = lesson.focusTarget;
+      if (target === 'market' || target === 'route' || target === 'events' || target === 'ledger' || target === 'report' || target === 'showcase') this.navigate(target);
+    });
     afterEveryRender(() => {
       const view = this.runtime.state().lastView;
       if (this.runtime.state().status !== 'not_started') {

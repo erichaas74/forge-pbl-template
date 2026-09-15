@@ -388,8 +388,8 @@ export function assembleBroadcastTimeline(
       id: 'ceremony-open',
       kind: 'ceremony',
       title: config.title,
-      roundLabel: 'The Senate is called to order',
-      transcript: `The presiding officer convenes the Senate to consider: ${config.centralQuestion}`,
+      roundLabel: `The ${config.presentation?.assembly ?? 'Senate'} is called to order`,
+      transcript: `The presiding officer opens the ${config.presentation?.assembly ?? 'Senate'} to consider: ${config.centralQuestion}`,
       evidenceIds: [],
       durationSeconds: 10,
     },
@@ -417,7 +417,7 @@ export function assembleBroadcastTimeline(
           id: `broadcast-${prompt.id}`,
           kind: 'moderator',
           title: config.moderator.title,
-          roundLabel: 'Question before the Senate',
+          roundLabel: `Question before the ${config.presentation?.assembly ?? 'Senate'}`,
           transcript: prompt.question,
           promptId: prompt.id,
           evidenceIds: [],
@@ -447,7 +447,7 @@ export function assembleBroadcastTimeline(
       title: 'The decision passes to the class',
       roundLabel: 'The record is sealed',
       transcript:
-        'The Senate has heard both factions. The class will now judge the evidence and the arguments.',
+        `The ${config.presentation?.assembly ?? 'Senate'} has heard both factions. The class will now judge the evidence and the arguments.`,
       evidenceIds: [],
       durationSeconds: 8,
     });
@@ -531,8 +531,8 @@ function draftModeratorPrompt(
   const excerpt = sentenceExcerpt(mostRecent?.transcript ?? config.centralQuestion);
   const question =
     triggerTurns.length > 1
-      ? `Both factions have described the same crisis differently. ${targetFaction?.shortName ?? 'Senators'}, where should the line be drawn between necessary leadership and power that can no longer be restrained? Use the record to answer.`
-      : `${opponent?.shortName ?? 'The opposing faction'} has argued, “${excerpt}” ${targetFaction?.shortName ?? 'Senators'}, which evidence most directly answers that claim, and what limit or tradeoff does it reveal?`;
+      ? `The two cases interpret the record differently. ${targetFaction?.shortName ?? 'Speakers'}, which claim best answers “${config.centralQuestion}”? Compare the sources and acknowledge a limitation.`
+      : `${opponent?.shortName ?? 'The opposing faction'} has argued, “${excerpt}” ${targetFaction?.shortName ?? 'Speakers'}, which evidence most directly answers that claim, and what limit or tradeoff does it reveal?`;
   return {
     id: `moderator-${target.id}-${generation}`,
     targetTurnId: target.id,

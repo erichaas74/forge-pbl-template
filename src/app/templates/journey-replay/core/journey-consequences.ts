@@ -6,9 +6,9 @@ import type {
 
 /** One calculation shared by the preview, recorded outcome, and replay narration. */
 export function resolveJourneyOutcome(
-  config: JourneyProjectConfig,
-  record: StudentJourneyRecord,
-  choice: JourneyChoiceDefinition,
+  config: Pick<JourneyProjectConfig, 'resources'>,
+  record: { readonly resources: StudentJourneyRecord['resources']; readonly completedSteps: readonly { readonly choiceId: string }[] },
+  choice: Pick<JourneyChoiceDefinition, 'resourceChanges' | 'consequenceModifiers' | 'consequence'>,
 ) {
   const priorChoices = new Set(record.completedSteps.map((step) => step.choiceId));
   const modifiers = (choice.consequenceModifiers ?? []).filter((modifier) =>

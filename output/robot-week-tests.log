@@ -1,0 +1,17 @@
+
+> forge-pbl-template@0.0.0 test
+> ng test --watch=false --include=src/app/templates/programming-automation/**/*.spec.ts
+
+> Building...
+√ Building...
+Application bundle generation complete. [28.650 seconds] - 2026-09-14T21:39:46.164Z
+
+
+ RUN  v4.1.11 C:/Users/erich/Desktop/pbl-lms/forge-pbl-template
+
+
+ Test Files  11 passed (11)
+      Tests  77 passed (77)
+   Start at  15:39:48
+   Duration  23.62s (transform 8.50s, setup 3.80s, import 9.37s, tests 7.90s, environment 193.63s)
+

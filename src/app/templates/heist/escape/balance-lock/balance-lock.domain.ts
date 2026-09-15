@@ -19,6 +19,9 @@ export interface BalanceScale {
   readonly pieces: readonly BalancePiece[];
 }
 export interface BalanceLockDefinition {
+  /** Piston mode uses the legacy fixed left load as its right-hand counterweight.
+   * Saved side 2 remains the weight pan; former side 1 additions return to the tray. */
+  readonly mechanism?: 'two-pan' | 'piston-counterweight';
   readonly backdrop: string;
   /** Three equal horizontal cells: brass, stone, laboratory. */
   readonly blockAtlas?: string;
@@ -49,10 +52,25 @@ export const emptyBalance = (lock: BalanceLockDefinition): BalanceSide[] =>
   allBalancePieces(lock).map(() => 0);
 export const scaleOffset = (lock: BalanceLockDefinition, index: number): number =>
   lock.scales.slice(0, index).reduce((n, s) => n + s.pieces.length, 0);
+export const usesPiston = (lock: BalanceLockDefinition): boolean =>
+  lock.mechanism === 'piston-counterweight';
+export function balancePlacements(
+  lock: BalanceLockDefinition,
+  placements: readonly number[],
+): readonly number[] {
+  return usesPiston(lock) && placements.includes(1)
+    ? placements.map((side) => (side === 1 ? 0 : side))
+    : placements;
+}
+export const canPlaceBalanceWeight = (lock: BalanceLockDefinition, side: number): boolean =>
+  side === 0 || side === 2 || (side === 1 && !usesPiston(lock));
+export const pistonMassLabel = (lock: BalanceLockDefinition, index: number): string =>
+  lock.scales[index].left.map(formatPiece).join(' + ');
 export function validPlacements(
   lock: BalanceLockDefinition,
   placements: readonly number[],
 ): boolean {
+  // Accept legacy side 1 saves for migration without discarding the remaining arrangement.
   return (
     placements.length === allBalancePieces(lock).length &&
     placements.every((n) => n === 0 || n === 1 || n === 2)
@@ -75,15 +93,16 @@ export function balanceReading(
   placements: readonly number[],
 ) {
   const scale = lock.scales[index],
-    offset = scaleOffset(lock, index);
-  const leftPieces = [
-    ...scale.left,
-    ...scale.pieces.filter((_, i) => placements[offset + i] === 1),
-  ];
-  const rightPieces = [
+    offset = scaleOffset(lock, index),
+    positions = balancePlacements(lock, placements),
+    piston = usesPiston(lock);
+  const fixedSide = [...scale.left, ...scale.pieces.filter((_, i) => positions[offset + i] === 1)];
+  const adjustableSide = [
     ...scale.right,
-    ...scale.pieces.filter((_, i) => placements[offset + i] === 2),
+    ...scale.pieces.filter((_, i) => positions[offset + i] === 2),
   ];
+  const leftPieces = piston ? adjustableSide : fixedSide,
+    rightPieces = piston ? fixedSide : adjustableSide;
   const left = sum(leftPieces),
     right = sum(rightPieces),
     difference = subtract(right, left),
@@ -103,9 +122,13 @@ export function balanceReading(
     totals: `${formatExact(left)} : ${formatExact(right)}`,
     feedback: balanced
       ? 'Equal loads. The release pin is aligned.'
-      : difference.n > 0n
-        ? 'The right pan is heavier. Move or remove weight to level the beam.'
-        : 'The left pan is heavier. Add weight to the right, or adjust the left.',
+      : piston
+        ? difference.n > 0n
+          ? 'The piston is heavier. Add weight to the pan to lift its cutout.'
+          : 'The pan is heavier. Remove weight to lower the piston cutout.'
+        : difference.n > 0n
+          ? 'The right pan is heavier. Move or remove weight to level the beam.'
+          : 'The left pan is heavier. Add weight to the right, or adjust the left.',
   };
 }
 export function evaluateBalanceLock(
@@ -150,6 +173,12 @@ export function validateBalanceLock(input: unknown): asserts input is BalanceLoc
   const array = (v: unknown, min: number, max: number): unknown[] =>
     Array.isArray(v) && v.length >= min && v.length <= max ? v : fail('array bounds');
   const lock = row(input);
+  if (
+    lock['mechanism'] !== undefined &&
+    !['two-pan', 'piston-counterweight'].includes(String(lock['mechanism']))
+  )
+    fail('mechanism');
+  const piston = lock['mechanism'] === 'piston-counterweight';
   if (!/^\/projects\/[a-zA-Z0-9/_-]+\.(png|webp)$/.test(text(lock['backdrop'])))
     fail('local backdrop');
   if (
@@ -185,12 +214,17 @@ export function validateBalanceLock(input: unknown): asserts input is BalanceLoc
       }
     const scale = v as BalanceScale;
     if (!scale.left.length && !scale.right.length) fail('fixed load required');
-    // Every piece has one of three locations, including unused. Validate a nontrivial solution.
+    if (piston && (!scale.left.length || scale.right.length))
+      fail('piston requires a fixed counterweight and empty pan');
+    // Validate only available placements: piston mode has one adjustable pan.
     let reachable = new Map<string, Exact>([['0/1', { n: 0n, d: 1n }]]);
     for (const p of scale.pieces) {
       const next = new Map(reachable);
       for (const a of reachable.values())
-        for (const b of [add(a, value(p.value)), subtract(a, value(p.value))]) next.set(key(b), b);
+        for (const b of piston
+          ? [add(a, value(p.value))]
+          : [add(a, value(p.value)), subtract(a, value(p.value))])
+          next.set(key(b), b);
       reachable = next;
     }
     const target = subtract(sum(scale.left), sum(scale.right)),

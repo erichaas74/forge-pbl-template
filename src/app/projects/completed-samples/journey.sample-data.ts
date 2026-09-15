@@ -19,7 +19,7 @@ export const journeySampleEnrollment: JourneyEnrollment = {
   classId: 'sample-voyagers',
   studentId: 'sample-alex',
   studentDisplayName: 'Alex Rivera · North Star crew',
-  classLabel: 'Fictional Grade 6 expedition',
+  classLabel: 'Fictional Grade 7 expedition',
   mode: 'demo',
 };
 const drafts: readonly { choiceId: string; draft: JourneyResponseDraft }[] = [
@@ -184,7 +184,7 @@ export const journeySampleGuide: SampleGuide = {
   title: 'Our Class Race Around the World',
   subtitle:
     'Follow fictional crews through their personal voyages in 1501. Compare their loyalties, routes, experiences, and revised claims within a historical record that stays the same.',
-  audience: 'Whole-class historical inquiry · Grade 6',
+  audience: 'Whole-class historical inquiry · Grade 7',
   duration: 'Two presentation modes · Explore at your pace',
   trail: [
     {

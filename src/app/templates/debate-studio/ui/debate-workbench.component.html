@@ -172,7 +172,7 @@
                 }
               </article>
               <label class="prompt-editor">
-                <span>Question the Consul will ask</span>
+                <span>Question the {{ runtime.config.moderator.displayName }} will ask</span>
                 <textarea
                   rows="8"
                   [value]="runtime.moderatorDraft() || prompt.question"
@@ -214,7 +214,7 @@
             <p>{{ prompt.reason }}</p>
           </div>
           <footer class="station-actions">
-            <button type="button" (click)="runtime.speak(prompt.question)">Hear the Consul</button>
+            <button type="button" (click)="runtime.speak(prompt.question)">Hear the {{ runtime.config.moderator.displayName }}</button>
             <button class="seal-action" type="button" (click)="runtime.markModeratorHeard()">
               Question received · illuminate our lectern
             </button>
@@ -222,7 +222,7 @@
         } @else {
           <div class="empty-moderator">
             <span>Presiding dais</span>
-            <h2 id="station-title">The Consul is considering the record</h2>
+            <h2 id="station-title">The {{ runtime.config.moderator.displayName }} is considering the record</h2>
             <p>A question will appear after the required arguments are filed and approved.</p>
           </div>
         }
@@ -323,7 +323,7 @@
 
               <article class="speech-tablet">
                 <div class="question-tablet">
-                  <span>Question Before the Senate</span>
+                  <span>Question Before the {{ runtime.assembly }}</span>
                   <p>
                     {{
                       runtime.currentModeratorPrompt()?.question ?? runtime.config.centralQuestion
@@ -344,7 +344,7 @@
                     rows="12"
                     [value]="runtime.state().draft"
                     (input)="updateDraft($event)"
-                    placeholder="Presiding Consul, fellow senators…"
+                    placeholder="Presiding {{ runtime.config.moderator.displayName }}, fellow advocates…"
                   ></textarea>
                 </label>
                 <label class="reasoning-note">
@@ -475,7 +475,7 @@
                 (click)="runtime.fileSpeech()"
               >
                 <span aria-hidden="true">◆</span>
-                Enter into the record and send across the Senate
+                Enter into the record and send across the {{ runtime.assembly }}
               </button>
             </section>
           </div>

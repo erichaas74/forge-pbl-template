@@ -1,0 +1,150 @@
+{
+  "desktop": [
+    {
+      "lesson": 1,
+      "activityTop": 52,
+      "prompt": "What do you think?",
+      "selected": "Week 1, Lesson 1: Form an initial position, Individual",
+      "standardsHeight": 289,
+      "tutorPresent": false,
+      "composer": " Round II · The First Exchange · Evidence Senator ",
+      "round": "Round II · The First Exchange",
+      "threadText": 1488
+    },
+    {
+      "lesson": 2,
+      "activityTop": 401,
+      "prompt": "What do you think?",
+      "selected": "Week 1, Lesson 2: Build the case, Group",
+      "standardsHeight": 289,
+      "tutorPresent": false,
+      "composer": " Round II · The First Exchange · Evidence Senator ",
+      "round": "Round II · The First Exchange",
+      "threadText": 1488
+    },
+    {
+      "lesson": 3,
+      "activityTop": 401,
+      "prompt": "What do you think?",
+      "selected": "Week 2, Lesson 3: Listen and gather evidence, Individual",
+      "standardsHeight": 289,
+      "tutorPresent": false,
+      "composer": " Round II · The First Exchange · Evidence Senator ",
+      "round": "Round II · The First Exchange",
+      "threadText": 1488
+    },
+    {
+      "lesson": 4,
+      "activityTop": 401,
+      "prompt": "What do you think?",
+      "selected": "Week 2, Lesson 4: Draft the address, Group",
+      "standardsHeight": 289,
+      "tutorPresent": false,
+      "composer": " Round II · The First Exchange · Evidence Senator ",
+      "round": "Round II · The First Exchange",
+      "threadText": 1488
+    },
+    {
+      "lesson": 5,
+      "activityTop": 401,
+      "prompt": "What do you think?",
+      "selected": "Week 3, Lesson 5: Strengthen the rebuttal, Individual",
+      "standardsHeight": 289,
+      "tutorPresent": false,
+      "composer": " Round II · The First Exchange · Evidence Senator ",
+      "round": "Round II · The First Exchange",
+      "threadText": 1488
+    },
+    {
+      "lesson": 6,
+      "activityTop": 401,
+      "prompt": "What do you think?",
+      "selected": "Week 3, Lesson 6: Rehearse the exchange, Group",
+      "standardsHeight": 289,
+      "tutorPresent": false,
+      "composer": " Round II · The First Exchange · Evidence Senator ",
+      "round": "Round II · The First Exchange",
+      "threadText": 1488
+    },
+    {
+      "lesson": 7,
+      "activityTop": 408,
+      "prompt": "What do you think?",
+      "selected": "Week 4, Lesson 7: Defend a source, Individual",
+      "standardsHeight": 296,
+      "tutorPresent": false,
+      "composer": " Round II · The First Exchange · Evidence Senator ",
+      "round": "Round II · The First Exchange",
+      "threadText": 1488
+    },
+    {
+      "lesson": 8,
+      "activityTop": 430,
+      "prompt": "What do you think?",
+      "selected": "Week 4, Lesson 8: Hold the proceeding, Group",
+      "standardsHeight": 318,
+      "tutorPresent": false,
+      "composer": " Round II · The First Exchange · Evidence Senator ",
+      "round": "Round II · The First Exchange",
+      "threadText": 1488
+    }
+  ],
+  "mobile": [
+    {
+      "activityTop": 753,
+      "horizontalOverflow": false,
+      "lesson": "1",
+      "opinionTop": 1081,
+      "standardHeight": 503
+    },
+    {
+      "activityTop": 753,
+      "horizontalOverflow": false,
+      "lesson": "2",
+      "opinionTop": 1081,
+      "standardHeight": 503
+    },
+    {
+      "activityTop": 732,
+      "horizontalOverflow": false,
+      "lesson": "3",
+      "opinionTop": 1060,
+      "standardHeight": 482
+    },
+    {
+      "activityTop": 732,
+      "horizontalOverflow": false,
+      "lesson": "4",
+      "opinionTop": 1060,
+      "standardHeight": 482
+    },
+    {
+      "activityTop": 753,
+      "horizontalOverflow": false,
+      "lesson": "5",
+      "opinionTop": 1081,
+      "standardHeight": 503
+    },
+    {
+      "activityTop": 753,
+      "horizontalOverflow": false,
+      "lesson": "6",
+      "opinionTop": 1081,
+      "standardHeight": 503
+    },
+    {
+      "activityTop": 782,
+      "horizontalOverflow": false,
+      "lesson": "7",
+      "opinionTop": 1110,
+      "standardHeight": 532
+    },
+    {
+      "activityTop": 782,
+      "horizontalOverflow": false,
+      "lesson": "8",
+      "opinionTop": 1110,
+      "standardHeight": 532
+    }
+  ]
+}

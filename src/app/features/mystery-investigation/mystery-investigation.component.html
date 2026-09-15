@@ -1,70 +1,82 @@
 <div class="investigation-shell workbench">
-  <header class="case-bar">
-    <button class="project-identity" type="button" (click)="drawer.set('mission')">
-      <span class="project-seal" aria-hidden="true">US</span
-      ><span><strong>The Unlabeled Shelf</strong></span>
-    </button>
-    <nav class="workbench-stages" aria-label="Investigation stages">
+  <app-workspace-tools>
+    <header class="case-bar">
+      <button class="project-identity" type="button" (click)="drawer.set('mission')">
+        <span class="project-seal" aria-hidden="true">US</span
+        ><span><strong>The Unlabeled Shelf</strong></span>
+      </button>
+      <nav class="workbench-stages" aria-label="Investigation stages">
+        <button
+          type="button"
+          [attr.aria-pressed]="workspacePair() !== 'final-investigation'"
+          (click)="openBench()"
+        >
+          1 · Investigate
+        </button>
+        <button type="button" (click)="selectWorkspace('analysis-theory')">
+          2 · My explanation
+        </button>
+        <button type="button" (click)="openFinalInvestigation()">3 · Final case</button>
+      </nav>
+      @if (selectedVial(); as vial) {
+        <span class="current-vial">Current specimen: Vial {{ vial.code }}</span>
+      }
+      <span class="save-dot" aria-live="polite">{{
+        investigation.saveState() === 'saved' ? 'Recorded work saved' : investigation.saveState()
+      }}</span>
+      <details #equipmentMenu class="equipment-menu">
+        <summary>Equipment</summary>
+        <div>
+          @for (station of labStations(); track station.key) {
+            <button
+              type="button"
+              [disabled]="selectionBusy()"
+              (click)="launchStation(station); equipmentMenu.open = false"
+            >
+              {{ station.name }}
+            </button>
+          }
+        </div>
+      </details>
       <button
         type="button"
-        [attr.aria-pressed]="workspacePair() !== 'final-investigation'"
-        (click)="openBench()"
+        (click)="evidenceDockOpen.set(!evidenceDockOpen())"
+        [attr.aria-pressed]="evidenceDockOpen()"
       >
-        1 · Investigate
+        Evidence
       </button>
-      <button type="button" (click)="selectWorkspace('analysis-theory')">2 · My explanation</button>
-      <button type="button" (click)="openFinalInvestigation()">3 · Final case</button>
-    </nav>
-    @if (selectedVial(); as vial) {
-      <span class="current-vial">Current specimen: Vial {{ vial.code }}</span>
-    }
-    <span class="save-dot" aria-live="polite">{{
-      investigation.saveState() === 'saved' ? 'Recorded work saved' : investigation.saveState()
-    }}</span>
-    <details #equipmentMenu class="equipment-menu">
-      <summary>Equipment</summary>
-      <div>
-        @for (station of labStations(); track station.key) {
-          <button
-            type="button"
-            [disabled]="selectionBusy()"
-            (click)="launchStation(station); equipmentMenu.open = false"
-          >
-            {{ station.name }}
+      <button
+        type="button"
+        [attr.aria-pressed]="comparisonOpen()"
+        (click)="comparisonOpen.set(true); explanationOpen.set(false)"
+      >
+        Compare
+      </button>
+      <details class="equipment-menu" #recordMenu>
+        <summary>My record</summary>
+        <div>
+          <button type="button" (click)="drawer.set('notebook'); recordMenu.open = false">
+            My questions
           </button>
-        }
-      </div>
-    </details>
-    <button
-      type="button"
-      (click)="evidenceDockOpen.set(!evidenceDockOpen())"
-      [attr.aria-pressed]="evidenceDockOpen()"
-    >
-      Evidence
-    </button>
-    <button
-      type="button"
-      [attr.aria-pressed]="comparisonOpen()"
-      (click)="comparisonOpen.set(true); explanationOpen.set(false)"
-    >
-      Compare
-    </button>
-    <details class="equipment-menu" #recordMenu>
-      <summary>My record</summary>
-      <div>
-        <button type="button" (click)="drawer.set('notebook'); recordMenu.open = false">
-          My questions
-        </button>
-        <button type="button" (click)="drawer.set('route'); recordMenu.open = false">
-          Checklist
-        </button>
-      </div>
-    </details>
-    <app-task-guide title="Investigation guide"
-      ><p>{{ nextAction() }}</p>
-      <p>Look → test → compare → explain.</p>
-    </app-task-guide>
-  </header>
+          <button type="button" (click)="drawer.set('route'); recordMenu.open = false">
+            Checklist
+          </button>
+        </div>
+      </details>
+      <app-task-guide title="Investigation guide"
+        ><p>{{ nextAction() }}</p>
+        <p>Look → test → compare → explain.</p>
+      </app-task-guide>
+    </header>
+  </app-workspace-tools>
+  <button
+    class="focus-evidence"
+    type="button"
+    (click)="evidenceDockOpen.set(!evidenceDockOpen())"
+    [attr.aria-expanded]="evidenceDockOpen()"
+  >
+    {{ evidenceDockOpen() ? 'Close evidence' : 'Evidence' }}
+  </button>
   @if (investigation.loading()) {
     <section class="system-state" role="status">Preparing your workbench…</section>
   } @else if (investigation.errors().length > 0) {
@@ -79,7 +91,15 @@
     </section>
   } @else if (investigation.snapshot(); as runtime) {
     <div [hidden]="workspacePair() === 'final-investigation'">
-      <section class="workbench-selection" aria-label="Your current specimen">
+      <section
+        class="workbench-selection"
+        [hidden]="
+          ['restoration', 'conservation', 'emergency'].includes(activeStationKey() ?? '') ||
+          explanationOpen() ||
+          comparisonOpen()
+        "
+        aria-label="Your current specimen"
+      >
         @if (activeStationKey() === 'conservation') {
           <strong>Comparing open and sealed chambers · vials do not change this model</strong>
         } @else if (activeStationKey() === 'emergency') {
@@ -149,20 +169,22 @@
                       </figure>
                     </section>
                     <section class="scanner-record">
-                      <span class="eyebrow">Observation</span>
                       <h2>What do you notice?</h2>
-                      <div class="tag-bank" aria-label="Visible feature markers">
-                        @for (tag of observationTags; track tag) {
-                          <button
-                            type="button"
-                            [class.selected]="selectedTags().includes(tag)"
-                            [attr.aria-pressed]="selectedTags().includes(tag)"
-                            (click)="toggleTag(tag)"
-                          >
-                            {{ tag }}
-                          </button>
-                        }
-                      </div>
+                      <details class="optional-markers">
+                        <summary>Mark a feature</summary>
+                        <div class="tag-bank" aria-label="Visible feature markers">
+                          @for (tag of observationTags; track tag) {
+                            <button
+                              type="button"
+                              [class.selected]="selectedTags().includes(tag)"
+                              [attr.aria-pressed]="selectedTags().includes(tag)"
+                              (click)="toggleTag(tag)"
+                            >
+                              {{ tag }}
+                            </button>
+                          }
+                        </div>
+                      </details>
                       <label
                         >My observation<textarea
                           rows="4"
@@ -288,7 +310,7 @@
               explanations stay in your record.
             </p>
             <app-investigation-working-theory
-              [singlePage]="true"
+              [singlePage]="false"
               [theory]="currentTheory()"
               [theories]="runtime.hypotheses"
               [evidence]="evidence()"

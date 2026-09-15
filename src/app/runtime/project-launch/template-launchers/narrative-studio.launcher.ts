@@ -1,4 +1,5 @@
 import type { ProjectSessionContext } from '../../../core/context/project-session-context';
+import { usesNarrativeWeeklyPreview, validateNarrativePreview } from '../../../templates/narrative-studio/core/narrative-preview';
 import { BrowserProjectIntroAdapter } from '../../../infrastructure/persistence/browser-project-intro.adapter';
 import type { NarrativeStudioProjectConfig } from '../../../templates/narrative-studio/domain/narrative-studio.models';
 import {
@@ -19,6 +20,17 @@ export const narrativeStudioLauncher: TemplateLauncher = {
   templateId: 'narrative-studio',
   async load(request: ProjectLaunchRequest) {
     const config = requireNarrativeConfig(request.projectDefinition, request.project.id);
+    if (usesNarrativeWeeklyPreview(config, request.session)) {
+      validateNarrativePreview(config);
+      const preview = await import('../../../templates/narrative-studio/ui/narrative-week-workspace.component');
+      return {
+        component: preview.NarrativeWeekWorkspaceComponent,
+        providers: [
+          { provide: NARRATIVE_STUDIO_CONFIG, useValue: config },
+          { provide: NARRATIVE_STUDIO_SESSION, useValue: request.session },
+        ],
+      };
+    }
     const initialHistorySettingId = await loadOpeningHistoryChoice(request);
     const module =
       await import('../../../templates/narrative-studio/ui/narrative-studio-page.component');

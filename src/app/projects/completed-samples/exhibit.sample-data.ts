@@ -101,7 +101,7 @@ export const exhibitSampleGuide: SampleGuide = {
   title: 'The Museum Is Open',
   subtitle:
     'Four student-curated wings. Four supplied 3D models. Step into the class museum and discover how a label becomes an argument.',
-  audience: 'Social studies · Grade 5',
+  audience: 'Social studies · Grade 6',
   duration: 'Explore in 2–3 minutes',
   trail: [
     {

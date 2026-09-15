@@ -1,0 +1,38 @@
+Using Vitest configuration file: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\output\castle-week-vitest.config.mjs
+> Building...
+√ Building...
+Application bundle generation complete. [19.064 seconds] - 2026-09-15T17:15:19.536Z
+
+
+ RUN  v4.1.11 C:/Users/erich/Desktop/pbl-lms/forge-pbl-template
+
+ ❯ |forge-pbl-template| src/app/templates/heist/escape/gear-lock/gear-cage/gear-cage.spec.ts (13 tests | 1 failed) 1390ms
+     × opens a physical door only after retracting the bolt and keeps all fox routes within the doorway 632ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |forge-pbl-template| src/app/templates/heist/escape/gear-lock/gear-cage/gear-cage.spec.ts > Gear cage release and geometry > opens a physical door only after retracting the bolt and keeps all fox routes within the doorway
+AssertionError: expected -0 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ -0
+
+ ❯ src/app/templates/heist/escape/gear-lock/gear-cage/gear-cage.spec.ts:86:33
+
+     84|     const phase={drive:1,ball:1,hammer:1,weight:1,domino:1,gate:.27};
+     85|     positionGearRelease(art,rig,phase,1,true);
+     86|     expect(rig.door.rotation.y).toBe(0);
+       |                                 ^
+     87|     expect(rig.latch.position.x).toBeGreaterThan(10.5);
+     88|     positionGearRelease(art,rig,{...phase,gate:1},1,true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 20 passed (21)
+   Start at  11:15:21
+   Duration  10.25s (transform 1.15s, setup 2.51s, import 1.07s, tests 2.40s, environment 3.37s)
+

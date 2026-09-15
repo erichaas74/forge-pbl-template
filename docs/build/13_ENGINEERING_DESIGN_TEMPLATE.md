@@ -1,5 +1,7 @@
 # Engineering Design template 1.0
 
+Optional local weekly authoring is documented in [Solar Monument interactive weeks](../engineering-design/SOLAR_MONUMENT_INTERACTIVE_WEEK_REDESIGN.md). Validated `previewWeeks` configuration and `previewDrafts` snapshots preserve the existing assessed lifecycle; the launcher selects the new workspace only for a configured local preview. No core contract changed.
+
 Optional editing and annual-preview extensions are documented in [Earth motion and building](../engineering-design/MOTION_AND_BUILDING_IMPLEMENTATION.md). Shared `DESIGN_EDITOR` selection/history, optional block labels/assembly IDs and plugin-owned preview playback preserve existing designs and evidence. The current final example is [Solstice Windows](../engineering-design/SOLSTICE_GATES.md).
 
 The reusable `engineering-design` template supports research, a measured block design, bounded simulation trials, and an evidence exhibit. Its first curriculum package is `calendar-monument@1.0.0` (Grade 5, Preview).

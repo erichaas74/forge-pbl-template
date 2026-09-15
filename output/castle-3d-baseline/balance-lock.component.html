@@ -1,0 +1,142 @@
+<section
+  class="chamber hanging-pin-chamber"
+  aria-label="Balance lock workshop"
+  [class.is-complete]="released() || completed()"
+  [class.reduced-motion]="reducedMotion()"
+>
+  <header class="workshop-header">
+    @if (!authoringPreview()) {
+      <button class="back" (click)="leave.emit()" [disabled]="paused()">← Back to castle</button>
+    }
+    <div>
+      <p class="eyebrow">THE KEEPER’S WORKSHOP</p>
+      <h1 #heading tabindex="-1">{{ title() }}</h1>
+    </div>
+    <div class="header-tools">
+      @if (!authoringPreview()) {
+        <button class="help" (click)="pauseRequested.emit()">Pause</button>
+      }
+      <button class="help" (click)="help.set(!help())" [attr.aria-expanded]="help()">
+        How it works
+      </button>
+    </div>
+  </header>
+  <nav class="seals" aria-label="Connected balance seals">
+    @for (scale of definition().scales; track scale.id; let i = $index) {
+      <button
+        (click)="changeScale(i)"
+        [disabled]="paused()"
+        [class.active]="active() === i"
+        [class.sealed]="readings()[i].balanced"
+        [attr.aria-current]="active() === i ? 'step' : null"
+      >
+        <span class="seal-medal">{{ readings()[i].balanced ? '✓' : i + 1 }}</span
+        ><span
+          >{{ scale.title
+          }}<small>{{
+            readings()[i].balanced
+              ? 'PIN ALIGNED'
+              : readings()[i].difference < 0
+                ? 'PIN TOO HIGH'
+                : 'PIN TOO LOW'
+          }}</small></span
+        >
+      </button>
+    }
+  </nav>
+  @if (help()) {
+    <aside class="instructions">
+      <strong>Equal mass opens the lock.</strong> Drag a weight onto either pan; drag it back to the
+      tray to remove it. Each scale has its own rope and hanging brass pin. The heavier pan drops,
+      moving that pin's middle cutout up or down. When every scale balances, the cutouts line up and
+      the steel master bolt opens automatically. You can also select a block and tap a pan.
+    </aside>
+  }
+  <div class="mechanism-brief">
+    <p>{{ scale().instruction }}</p>
+    <span role="status" [class.aligned]="allBalanced()">{{
+      allBalanced()
+        ? 'ALL PINS ALIGNED · AUTO UNLOCK'
+        : sealed().length + ' / ' + definition().scales.length + ' PINS ALIGNED'
+    }}</span>
+  </div>
+  <div class="stage-shell">
+    <div #stage class="stage"></div>
+    @if (!ready() || error()) {
+      <p class="loading" role="status">
+        {{
+          error()
+            ? 'The mechanism could not load. The accessible weight controls below still work.'
+            : 'Preparing the hanging pins…'
+        }}
+      </p>
+    }
+  </div>
+  <footer class="workbench">
+    <div class="equilibrium">
+      <div>
+        <p class="eyebrow">{{ released() ? 'MASTER BOLT RELEASED' : 'LIVE BALANCE' }}</p>
+        <p class="equation" [class.equal]="reading().balanced">{{ reading().equation }}</p>
+      </div>
+      <p class="status" role="status" aria-live="polite">{{ notice() }}</p>
+      @if (completed()) {
+        <button class="primary" (click)="continued.emit()" [disabled]="paused()">
+          Return to the rescue →
+        </button>
+      } @else {
+        <button class="record-trial" (click)="engage()" [disabled]="paused()">
+          Record this setup
+        </button>
+      }
+    </div>
+    @if (saveWarning()) {
+      <p class="save-warning" role="alert">{{ saveWarning() }}</p>
+    }
+    <div class="tools-row">
+      <button (click)="controls.set(!controls())" [attr.aria-expanded]="controls()">
+        {{ controls() ? 'Hide' : 'Show' }} keyboard / tap controls
+      </button>
+      <span>Drag between either pan and the tray · {{ scale().unit }}</span>
+      <button (click)="resetScale()" [disabled]="paused() || locked()">Reset this scale</button>
+    </div>
+    @if (controls() || error()) {
+      <div class="accessible-controls" aria-label="Weight placement controls">
+        <div class="piece-buttons">
+          @for (block of blocks(); track block.index) {
+            <button
+              (click)="select(block.index)"
+              [disabled]="locked() || paused()"
+              [attr.aria-pressed]="selected() === block.index"
+              [attr.aria-label]="
+                'Select weight ' + format(block.piece) + ', piece ' + (block.index - offset() + 1)
+              "
+            >
+              {{ format(block.piece)
+              }}<small>{{
+                block.side === 1 ? 'LEFT PAN' : block.side === 2 ? 'RIGHT PAN' : 'TRAY'
+              }}</small>
+            </button>
+          }
+        </div>
+        <div class="pan-buttons">
+          <button
+            (click)="placeSelected(1)"
+            [disabled]="selected() === null || locked() || paused()"
+          >
+            Place on left pan</button
+          ><button
+            (click)="placeSelected(2)"
+            [disabled]="selected() === null || locked() || paused()"
+          >
+            Place on right pan</button
+          ><button
+            (click)="placeSelected(0)"
+            [disabled]="selected() === null || locked() || paused()"
+          >
+            Return to tray
+          </button>
+        </div>
+      </div>
+    }
+  </footer>
+</section>

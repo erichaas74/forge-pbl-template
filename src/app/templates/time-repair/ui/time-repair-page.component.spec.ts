@@ -16,7 +16,8 @@ import { TimeRepairPageComponent } from './time-repair-page.component';
 import { timeRepairLauncher } from '../../../runtime/project-launch/template-launchers/time-repair.launcher';
 import { projectCatalog } from '../../../projects/project-catalog';
 
-const config = requireTimeRepairConfig(raw);
+// The legacy assessed workspace remains available without the optional authoring extension.
+const config = requireTimeRepairConfig({ ...raw, previewWeeks: undefined });
 const session = createLocalPreviewSession(config.projectId, config.projectVersion);
 
 describe('Time Repair playable investigation', () => {

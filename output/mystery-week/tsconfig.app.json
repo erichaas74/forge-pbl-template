@@ -1,0 +1,6 @@
+{
+  "extends": "../../tsconfig.app.json",
+  "compilerOptions": { "outDir": "./preview-tsc" },
+  "include": ["./preview-main.ts"],
+  "exclude": []
+}

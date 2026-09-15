@@ -1,3 +1,5 @@
+import { bindLessonFocus } from '../../../shared/project-lessons/project-lesson-focus';
+import { WorkspaceToolsComponent } from '../../../shared/project-lessons/workspace-tools.component';
 import {
   Component,
   ElementRef,
@@ -36,7 +38,7 @@ import { DESIGN_EDITOR, DesignEditor } from '../../../shared/engineering/design-
 import type { DesignWalkthroughAction } from '../../../shared/engineering/design-walkthrough';
 @Component({
   selector: 'app-engineering-design-page',
-  imports: [
+  imports: [WorkspaceToolsComponent,
     NgComponentOutlet,
     NgTemplateOutlet,
     RouterLink,
@@ -141,6 +143,16 @@ export class EngineeringDesignPageComponent {
     () => !this.preview() && !this.presenting(),
   );
   constructor() {
+    bindLessonFocus((lesson) => {
+      const target = lesson.focusTarget;
+      if (this.learningSteps.some(step => step.id === target)) this.selectStep(target!);
+      else if (target === 'explanation' || target === 'presentation') {
+        const last = this.learningSteps.at(-1);
+        if (last) this.selectStep(last.id);
+        if (target === 'explanation') this.panel.set('explain');
+        else this.presenting.set(true);
+      }
+    });
     effect(() => {
       this.activeDesign();
       const scope = this.practicing() ? 'practice' : 'project';

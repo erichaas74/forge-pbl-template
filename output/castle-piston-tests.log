@@ -1,0 +1,38 @@
+Using Vitest configuration file: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\output\castle-week-vitest.config.mjs
+> Building...
+√ Building...
+Application bundle generation complete. [9.352 seconds] - 2026-09-15T13:32:39.784Z
+
+
+ RUN  v4.1.11 C:/Users/erich/Desktop/pbl-lms/forge-pbl-template
+
+ ❯ |forge-pbl-template| src/app/templates/heist/escape/weekly/expedition-week-workspace.component.spec.ts (16 tests | 1 failed) 1435ms
+     × keeps weight and gear controls operational and retains incorrect trials 60ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |forge-pbl-template| src/app/templates/heist/escape/weekly/expedition-week-workspace.component.spec.ts > Expedition authoring weeks > keeps weight and gear controls operational and retains incorrect trials
+AssertionError: expected +0 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ src/app/templates/heist/escape/weekly/expedition-week-workspace.component.spec.ts:201:56
+    199|     balance.place(0, 1);
+    200|     f.detectChanges();
+    201|     expect((r.draft().answer as readonly number[])[0]).toBe(1);
+       |                                                        ^
+    202|     balance.engage();
+    203|     expect(r.draft().trials).toHaveLength(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 33 passed (34)
+      Tests  1 failed | 217 passed (218)
+   Start at  07:32:41
+   Duration  19.76s (transform 9.57s, setup 538ms, import 11.04s, tests 4.81s, environment 2.89s)
+

@@ -1,0 +1,111 @@
+<div class="scene-grid">
+  <div>
+    <figure class="harbor-scene">
+      <img class="scene-image" [src]="r.scene().image" [alt]="r.scene().imageAlt" />
+      <span class="scene-date">{{ r.scene().title }}</span>
+      @for (spot of r.scene().hotspots; track spot.id; let i = $index) {
+        <button
+          class="hotspot"
+          [style.left.%]="spot.x"
+          [style.top.%]="spot.y"
+          [attr.aria-label]="'Inspect ' + spot.label"
+          [attr.aria-pressed]="r.activeHotspot() === spot.id"
+          (click)="inspect(spot.id)"
+        >
+          {{ i + 1 }}
+        </button>
+        @if (spot.objectImage) {
+          <img
+            class="cargo-object"
+            [src]="
+              r.trial()?.supported && spot.restoredObjectImage
+                ? spot.restoredObjectImage
+                : spot.objectImage
+            "
+            alt=""
+            [style.left.%]="spot.x"
+            [style.top.%]="spot.y"
+          />
+        }
+      }
+      @if (appliedOption(); as option) {
+        <span class="scene-result">Trial {{ r.trial()!.id }} · {{ option.objectLabel }}</span>
+      }
+    </figure>
+    <p class="art-note">
+      Imagined teaching scene. The date and cargo are scenario props; use the source cards to test
+      them.
+    </p>
+    <div class="hotspot-list" aria-label="Objects to inspect">
+      @for (spot of r.scene().hotspots; track spot.id; let i = $index) {
+        <button [attr.aria-pressed]="r.activeHotspot() === spot.id" (click)="inspect(spot.id)">
+          {{ i + 1 }} · {{ spot.label
+          }}<small>{{ r.draft().inspectedIds.includes(spot.id) ? 'Viewed' : 'Inspect' }}</small>
+        </button>
+      }
+    </div>
+  </div>
+  <aside class="field-notes">
+    @if (r.session().mode === 'repair') {
+      <section class="repair-controls" aria-label="Cargo intervention">
+        <h3>Choose what to change</h3>
+        <label
+          >Intervention<select
+            aria-label="Cargo intervention"
+            [value]="r.draft().optionId"
+            (change)="r.selectOption($any($event.target).value)"
+          >
+            <option value="">Choose a repair</option>
+            @for (option of r.mission().repair.options; track option.id) {
+              <option [value]="option.id">{{ option.label }}</option>
+            }
+          </select></label
+        >
+        @if (selectedOption(); as option) {
+          <p>{{ option.description }}</p>
+        }
+        <button class="primary" (click)="r.run()">▶ Run repair test</button>
+        <p class="feedback" role="status">{{ r.message() }}</p>
+        <details>
+          <summary>Trial replays ({{ r.draft().trials.length }})</summary>
+          <div class="button-row">
+            @for (trial of r.draft().trials; track trial.id) {
+              <button (click)="r.replayId.set(trial.id)">
+                Replay {{ trial.id }} · {{ trial.supported ? 'Cargo removed' : 'Conflict remains' }}
+              </button>
+            }
+          </div>
+        </details>
+      </section>
+    }
+    @if (hotspot(); as spot) {
+      <article class="inspection" #inspector tabindex="-1">
+        <span class="eyebrow">INSPECTION</span>
+        <h3>{{ spot.label }}</h3>
+        <p>{{ spot.description }}</p>
+      </article>
+    } @else {
+      <article class="inspection">
+        <span class="eyebrow">START HERE</span>
+        <h3>A crate in the wrong century?</h3>
+        <p>{{ r.mission().signal }}</p>
+        <button class="primary" (click)="inspect(r.mission().repair.targetHotspotId)">
+          Inspect flagged cargo
+        </button>
+      </article>
+    }
+    <h3>Compare with a source</h3>
+    <div class="source-buttons">
+      @for (id of r.session().evidenceIds; track id) {
+        @for (e of r.config.evidence; track e.id) {
+          @if (e.id === id) {
+            <button [attr.aria-pressed]="r.sourceId() === id" (click)="r.sourceId.set(id)">
+              {{ e.title }} ↗
+            </button>
+          }
+        }
+      }
+    </div>
+    <app-repair-week-source [source]="r.selectedSource()" />
+  </aside>
+</div>

@@ -1,0 +1,34 @@
+> Building...
+√ Building...
+Application bundle generation complete. [35.532 seconds] - 2026-09-14T22:07:27.412Z
+
+
+ RUN  v4.1.11 C:/Users/erich/Desktop/pbl-lms/forge-pbl-template
+
+ ❯ |forge-pbl-template| src/app/templates/heist/escape/weekly/expedition-week-workspace.component.spec.ts (15 tests | 1 failed) 7485ms
+     × selects only configured local previews and preserves assessed and final-example routes 768ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |forge-pbl-template| src/app/templates/heist/escape/weekly/expedition-week-workspace.component.spec.ts > Expedition preview configuration and launch boundary > selects only configured local previews and preserves assessed and final-example routes
+AssertionError: expected '_ExpeditionComponent' to be 'ExpeditionComponent' // Object.is equality
+
+Expected: "ExpeditionComponent"
+Received: "_ExpeditionComponent"
+
+ ❯ src/app/templates/heist/escape/weekly/expedition-week-workspace.component.spec.ts:298:7
+    296|       (await heistLauncher.load({ ...request, session: { ...session, m…
+    297|         .name,
+    298|     ).toBe('ExpeditionComponent');
+       |       ^
+    299|     expect(
+    300|       (
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 28 passed (29)
+      Tests  1 failed | 191 passed (192)
+   Start at  16:07:30
+   Duration  33.29s (transform 50.07s, setup 20.87s, import 56.92s, tests 38.54s, environment 208.41s)
+

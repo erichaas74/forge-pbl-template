@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realistic 3-Pin Lock Mechanism</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            /* Brass Materials */
+            --brass-base: #b5944f;
+            --brass-light: #e6c875;
+            --brass-highlight: #fff0b3;
+            --brass-dark: #6e5422;
+            --brass-shadow: #3b2a0c;
+            
+            /* Steel Materials */
+            --steel-base: #b0b5b9;
+            --steel-light: #e2e6e9;
+            --steel-dark: #7a8288;
+            --steel-shadow: #2c3135;
+
+            /* Housing Materials */
+            --bg-color: #1a1c1e;
+            --plate-color: #d1d5db;
+            
+            /* Dimensions */
+            --pin-height: 320px;
+            --pin-width: 60px;
+            --cutout-height: 46px;
+            --housing-width: 480px;
+            --housing-height: 420px;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at 50% 50%, #2a2d32 0%, #111 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Inter', system-ui, sans-serif;
+            overflow: hidden;
+            touch-action: none; /* Prevent scroll on drag */
+            user-select: none; /* Prevent text selection while dragging */
+        }
+
+        #app-container {
+            position: relative;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .mechanism-container {
+            position: relative;
+            width: var(--housing-width);
+            height: var(--housing-height);
+            /* Brushed metal backing plate */
+            background: linear-gradient(135deg, #e5e7eb 0%, #9ca3af 50%, #6b7280 100%);
+            border: 4px solid #4b5563;
+            border-radius: 12px;
+            box-shadow: 
+                inset 0 0 40px rgba(0,0,0,0.3),
+                0 20px 50px rgba(0,0,0,0.6),
+                0 0 0 1px rgba(255,255,255,0.2) inset;
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        /* Screws in corners of housing */
+        .mechanism-container::before,
+        .mechanism-container::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background-image: 
+                radial-gradient(circle at 20px 20px, #374151 4px, transparent 5px),
+                radial-gradient(circle at calc(100% - 20px) 20px, #374151 4px, transparent 5px),
+                radial-gradient(circle at 20px calc(100% - 20px), #374151 4px, transparent 5px),
+                radial-gradient(circle at calc(100% - 20px) calc(100% - 20px), #374151 4px, transparent 5px);
+            z-index: 10;
+        }
+
+        /* Alignment Target Line */
+        .axis-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: rgba(239, 68, 68, 0.4);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+            transform: translateY(-50%);
+            z-index: 1;
+            border-top: 1px dashed rgba(255,255,255,0.3);
+        }
+
+        .pin-track {
+            position: relative;
+            width: var(--pin-width);
+            height: 90%;
+            background: #1f2937;
+            border-radius: 30px;
+            box-shadow: inset 0 10px 20px rgba(0,0,0,0.8), inset 0 0 0 2px #111827;
+            display: flex;
+            justify-content: center;
+        }
+
+        .hanging-pin {
+            position: absolute;
+            width: 100%;
+            height: var(--pin-height);
+            /* Initial starting positions overridden by JS, but providing a default */
+            top: 20px; 
+            
+            /* Metallic Brass Texture */
+            background: linear-gradient(
+                90deg, 
+                var(--brass-shadow) 0%,
+                var(--brass-dark) 10%, 
+                var(--brass-base) 30%, 
+                var(--brass-highlight) 45%,
+                var(--brass-base) 60%, 
+                var(--brass-dark) 85%,
+                var(--brass-shadow) 100%
+            );
+            border-radius: 30px;
+            box-shadow: 
+                -3px 0 10px rgba(0,0,0,0.5) inset,
+                3px 0 10px rgba(255,255,255,0.2) inset,
+                0 10px 20px rgba(0,0,0,0.6);
+            cursor: grab;
+            z-index: 5;
+            will-change: top;
+        }
+
+        .hanging-pin.dragging {
+            cursor: grabbing;
+            transition: none;
+            box-shadow: 
+                -3px 0 10px rgba(0,0,0,0.5) inset,
+                3px 0 10px rgba(255,255,255,0.2) inset,
+                0 15px 25px rgba(0,0,0,0.8);
+        }
+
+        /* Ropes attaching to tops */
+        .hanging-pin::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 100px;
+            background: repeating-linear-gradient(
+                -45deg,
+                #4a3f35,
+                #4a3f35 3px,
+                #2d251f 3px,
+                #2d251f 6px
+            );
+            box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+            z-index: 4;
+        }
+
+        .cutout {
+            position: absolute;
+            top: 140px; /* Offset from top of pin */
+            left: -2px; /* Slight overlap to cut through edges */
+            width: calc(100% + 4px);
+            height: var(--cutout-height);
+            /* Deep hole look */
+            background: #000;
+            box-shadow: 
+                inset 0 6px 12px rgba(0,0,0,1),
+                inset 0 -6px 12px rgba(0,0,0,1);
+            border-top: 2px solid var(--brass-light);
+            border-bottom: 2px solid var(--brass-shadow);
+            z-index: 6;
+        }
+
+        /* Inner detail for the cutout to show depth */
+        .cutout::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 10%;
+            width: 80%; height: 100%;
+            background: linear-gradient(90deg, #111, #333, #111);
+            opacity: 0.5;
+        }
+
+        .latch-housing {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            width: 60px;
+            height: 120px;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+            border-left: 2px solid #6b7280;
+            border-radius: 8px 0 0 8px;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.6);
+            z-index: 12;
+            display: flex;
+            align-items: center;
+        }
+
+        .latch-opening {
+            width: 10px;
+            height: var(--cutout-height);
+            background: #111;
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.8);
+            border-radius: 0 4px 4px 0;
+            margin-left: 0;
+        }
+
+        .locking-bar-container {
+            position: absolute;
+            top: 50%;
+            /* Extend container to include the latch area */
+            right: 10px; 
+            width: calc(100% - 10px); 
+            height: var(--cutout-height);
+            transform: translateY(-50%);
+            pointer-events: none;
+            z-index: 15;
+            overflow: visible; /* Allow bar to slide left */
+        }
+
+        .locking-bar {
+            position: absolute;
+            top: 4px;
+            height: calc(var(--cutout-height) - 8px);
+            /* Make the bar long enough to go through pins and sit in the latch */
+            width: calc(100% + 40px); 
+            /* Start position: Far right, end of bar is inside the latch */
+            left: 0; 
+            
+            /* Solid Steel Look */
+            background: linear-gradient(
+                0deg, 
+                var(--steel-shadow) 0%, 
+                var(--steel-dark) 20%,
+                var(--steel-base) 40%, 
+                var(--steel-light) 70%, 
+                var(--steel-base) 90%,
+                var(--steel-dark) 100%
+            );
+            border-radius: 4px;
+            border-top: 1px solid rgba(255,255,255,0.6);
+            border-bottom: 1px solid rgba(0,0,0,0.8);
+            box-shadow: 
+                -10px 5px 15px rgba(0,0,0,0.5),
+                0 0 10px rgba(0,0,0,0.5);
+                
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: translateX(0); /* Locked state: Bar is fully right, inside latch */
+        }
+        
+        .locking-bar::before {
+            content: '';
+            position: absolute;
+            /* Move visual handle to the left end of the bar */
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 70%;
+            background: var(--steel-shadow);
+            border-radius: 50%;
+            box-shadow: inset 2px 0 5px rgba(0,0,0,0.8);
+        }
+
+        /* When unlocked, the bar slides left, out of the latch */
+        .mechanism-container.unlocked .locking-bar {
+            /* Slide left by the width of the latch housing + some clearance */
+            transform: translateX(-70px); 
+        }
+
+        .status-panel {
+            background: #1f2937;
+            padding: 1.5rem 3rem;
+            border-radius: 16px;
+            border: 2px solid #374151;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        .status-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+        
+        .status-locked {
+            color: #ef4444;
+            text-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+        }
+        
+        .status-unlocked {
+            color: #22c55e;
+            text-shadow: 0 0 20px rgba(34, 197, 94, 0.6);
+        }
+        
+        .instructions {
+            color: #9ca3af;
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app-container">
+        
+        <div class="mechanism-container" id="housing">
+            <!-- Center lock axis visual guide -->
+            <div class="axis-line"></div>
+            
+            <div class="latch-housing">
+                <div class="latch-opening"></div>
+            </div>
+
+            <!-- Three independent pins in their tracks -->
+            <div class="pin-track">
+                <div class="hanging-pin" id="pin-1">
+                    <div class="cutout"></div>
+                </div>
+            </div>
+            
+            <div class="pin-track">
+                <div class="hanging-pin" id="pin-2">
+                    <div class="cutout"></div>
+                </div>
+            </div>
+            
+            <div class="pin-track">
+                <div class="hanging-pin" id="pin-3">
+                    <div class="cutout"></div>
+                </div>
+            </div>
+
+            <!-- The single master locking bar -->
+            <div class="locking-bar-container">
+                <div class="locking-bar" id="master-bolt"></div>
+            </div>
+        </div>
+        
+        <div class="status-panel">
+            <div id="status" class="status-text status-locked">Locked</div>
+            <div class="instructions">Drag all 3 brass pins to align their cutouts<br>with the center axis simultaneously.</div>
+        </div>
+
+    </div>
+
+    <script>
+        const pins = document.querySelectorAll('.hanging-pin');
+        const housing = document.getElementById('housing');
+        const statusEl = document.getElementById('status');
+        
+        // Track the currently interacted pin
+        let activePin = null;
+        let startY = 0;
+        let startTop = 0;
+        
+        // Mechanism constants
+        const MIN_TOP = -30;
+        const MAX_TOP = 200;
+        const ALIGNMENT_TOLERANCE = 8; // Pixels of wiggle room
+        const CUTOUT_TOP_OFFSET = 140; // Matches CSS .cutout top
+        const CUTOUT_HEIGHT = 46; // Matches CSS
+        
+        function initializePins() {
+            // Randomize starting positions so it's not solved immediately
+            // Ensure they aren't accidentally aligned from the start
+            const startingTops = [10, 150, 70]; 
+            
+            pins.forEach((pin, index) => {
+                pin.style.top = `${startingTops[index]}px`;
+            });
+            
+            // Small delay to ensure DOM is fully rendered before checking absolute rects
+            setTimeout(checkLockState, 50);
+        }
+
+        function checkLockState() {
+            let allAligned = true;
+            
+            const axisLine = document.querySelector('.axis-line');
+            const axisRect = axisLine.getBoundingClientRect();
+            const targetY = axisRect.top + (axisRect.height / 2);
+            
+            pins.forEach(pin => {
+                const cutout = pin.querySelector('.cutout');
+                const cutoutRect = cutout.getBoundingClientRect();
+                const cutoutCenterY = cutoutRect.top + (cutoutRect.height / 2);
+                
+                // Distance from true physical cutout center to the target axis center
+                const distance = Math.abs(cutoutCenterY - targetY);
+                
+                if (distance > ALIGNMENT_TOLERANCE) {
+                    allAligned = false;
+                }
+            });
+            
+            if (allAligned) {
+                // UNLOCK!
+                housing.classList.add('unlocked');
+                statusEl.textContent = 'Unlocked';
+                statusEl.classList.replace('status-locked', 'status-unlocked');
+            } else {
+                // LOCK! (or stay locked)
+                housing.classList.remove('unlocked');
+                statusEl.textContent = 'Locked';
+                statusEl.classList.replace('status-unlocked', 'status-locked');
+            }
+        }
+
+        function startDrag(e, pin) {
+            // Prevent dragging if the lock bar is shot through (mechanically locked in place)
+            // If it's unlocked, dragging should be physically impossible in a real mechanism
+            if (housing.classList.contains('unlocked')) {
+                // Allow a tiny jiggle to break the lock if user really wants to reset it
+                // Or we can just strictly disable. Let's strictly disable for realism, 
+                // but if they pull hard enough, it snaps out.
+            }
+            
+            activePin = pin;
+            activePin.classList.add('dragging');
+            
+            // Handle both Mouse and Touch events
+            const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+            
+            startY = clientY;
+            startTop = parseFloat(window.getComputedStyle(activePin).top) || 0;
+        }
+
+        function moveDrag(e) {
+            if (!activePin) return;
+            
+            const clientY = e.type.includes('mouse') ? e.clientY : e.touches[0].clientY;
+            const deltaY = clientY - startY;
+            let newTop = startTop + deltaY;
+            
+            // Constrain to physical limits of the housing
+            newTop = Math.max(MIN_TOP, Math.min(newTop, MAX_TOP));
+            
+            // If currently unlocked (bar is through the pins), apply massive resistance
+            if (housing.classList.contains('unlocked')) {
+                // Calculate center alignment top dynamically based on absolute rects
+                const trackRect = activePin.parentElement.getBoundingClientRect();
+                const axisRect = document.querySelector('.axis-line').getBoundingClientRect();
+                const targetY = axisRect.top + (axisRect.height / 2);
+                
+                const perfectTop = targetY - trackRect.top - CUTOUT_TOP_OFFSET - (CUTOUT_HEIGHT / 2);
+                
+                // If they pull hard enough (> 20px), force the mechanism to lock and bar to retract
+                if (Math.abs(newTop - perfectTop) > 20) {
+                     housing.classList.remove('unlocked'); // Snap it back
+                } else {
+                    // Heavily dampen movement (simulating rattling against the steel bar)
+                    newTop = perfectTop + ((newTop - perfectTop) * 0.05); 
+                }
+            }
+
+            activePin.style.top = `${newTop}px`;
+            checkLockState(); // Continually evaluate as we drag
+        }
+
+        function endDrag() {
+            if (!activePin) return;
+            activePin.classList.remove('dragging');
+            activePin = null;
+            checkLockState(); // Final evaluation
+        }
+
+        pins.forEach(pin => {
+            pin.addEventListener('mousedown', (e) => startDrag(e, pin));
+            pin.addEventListener('touchstart', (e) => {
+                e.preventDefault(); // Prevent screen scroll
+                startDrag(e, pin);
+            }, { passive: false });
+        });
+
+        window.addEventListener('mousemove', moveDrag);
+        window.addEventListener('touchmove', moveDrag, { passive: false });
+        
+        window.addEventListener('mouseup', endDrag);
+        window.addEventListener('touchend', endDrag);
+        window.addEventListener('touchcancel', endDrag);
+
+        // Run setup on load
+        window.addEventListener('load', initializePins);
+
+    </script>
+</body>
+</html>

@@ -1,30 +1,47 @@
-import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  Injector,
+  input,
+  signal,
+} from '@angular/core';
 import { AutomationRuntimeService } from '../runtime/automation-runtime.service';
 import { calculate, decimalAndFraction, expectedMath, mathTools } from '../core/automation-math';
 import type { MathEvidence, MathTool } from '../domain/automation.models';
 @Component({
   selector: 'app-math-workbench',
   template: `
-    <small>REASON</small>
-    <h2>Math workbench</h2>
-    <p class="intro">
-      Use your run as evidence. Work out a new number, explain it, then test again.
-    </p>
+    <h2 tabindex="-1">
+      {{
+        runtime.sample
+          ? 'Saved calculations'
+          : step() === 'observe'
+            ? 'What did you notice?'
+            : step() === 'calculate'
+              ? 'What number will you try next?'
+              : 'Why does your calculation work?'
+      }}
+    </h2>
     @if (!runtime.sample) {
-      <div class="result">
-        <strong>What did you notice?</strong>
+      <div class="observation" [hidden]="step() !== 'observe'">
         @if (runtime.observedTrial(); as trial) {
           <p>
-            Your first observed run: {{ format(trial.distanceCm) }} cm travelled.
-            {{ trial.stoppedReason }}.
+            Observed run: {{ format(trial.distanceCm) }} cm travelled. {{ trial.stoppedReason }}.
           </p>
         }
-        <p>
-          {{
-            runtime.challenge().discovery?.reasoningPrompt ??
-              'Which command first took the robot away from your plan? Should its number increase or decrease? Use the course measurements and trial results to explain a new estimate.'
-          }}
-        </p>
+        <details>
+          <summary>Need a clue?</summary>
+          <p>
+            {{
+              runtime.challenge().discovery?.reasoningPrompt ??
+                'Which command first took the robot away from your plan? Should its number increase or decrease? Use the course measurements and trial results to explain a new estimate.'
+            }}
+          </p>
+        </details>
         <label
           >My observation<textarea
             aria-label="My observation"
@@ -34,148 +51,221 @@ import type { MathEvidence, MathTool } from '../domain/automation.models';
             (input)="runtime.updateDraft({ diagnosis: $any($event.target).value })"
           ></textarea>
         </label>
+        <button
+          class="primary"
+          [disabled]="!runtime.draft().diagnosis.trim()"
+          (click)="go('calculate')"
+        >
+          Continue
+        </button>
       </div>
     }
     @if (selectedEvidence(); as selected) {
-      <div class="result correct">
-        <strong>Linked to your selected command</strong>
+      <details class="result" [class.correct]="selected.status === 'correct'">
+        <summary>Linked calculation</summary>
         <p>{{ title(selected.tool) }} · {{ format(selected.answer) }} {{ selected.unit }}</p>
         <p>{{ selected.explanation }}</p>
-      </div>
+      </details>
     }
     @if (!runtime.sample) {
-      <label
-        >Calculation<select
-          aria-label="Math calculation"
-          [value]="toolId()"
-          (change)="choose($any($event.target).value)"
-        >
-          @for (tool of tools; track tool.id) {
-            <option [value]="tool.id" [selected]="tool.id === toolId()">{{ tool.title }}</option>
-          }
-        </select></label
-      >
-      <details>
-        <summary>Need a math hint?</summary>
-        <p class="formula">{{ tool().formula }}</p>
-        <p>{{ runtime.challenge().hint }}</p>
-      </details>
-      @for (label of tool().inputs; track $index; let i = $index) {
+      <div [hidden]="step() !== 'calculate'">
         <label
-          >{{ label
-          }}<input
-            [attr.aria-label]="label"
-            placeholder="Enter a number or fraction"
-            [value]="values().at(i) ?? ''"
-            (input)="setValue(i, $any($event.target).value)"
+          >Calculation<select
+            aria-label="Math calculation"
+            [value]="toolId()"
+            (change)="choose($any($event.target).value)"
+          >
+            @for (tool of tools; track tool.id) {
+              <option [value]="tool.id" [selected]="tool.id === toolId()">{{ tool.title }}</option>
+            }
+          </select></label
+        >
+        <details>
+          <summary>Need a math hint?</summary>
+          <p class="formula">{{ tool().formula }}</p>
+          <p>{{ runtime.challenge().hint }}</p>
+        </details>
+        @for (label of tool().inputs; track $index; let i = $index) {
+          <label
+            >{{ label
+            }}<input
+              [attr.aria-label]="label"
+              placeholder="Enter a number or fraction"
+              [value]="values().at(i) ?? ''"
+              (input)="setValue(i, $any($event.target).value)"
+              [disabled]="runtime.sample"
+          /></label>
+        }
+        <label
+          >Your answer ({{ tool().unit }})<input
+            aria-label="Your math answer"
+            placeholder="Calculate before checking"
+            [value]="answer()"
+            (input)="answer.set($any($event.target).value); result.set(undefined)"
             [disabled]="runtime.sample"
         /></label>
-      }
-      <label
-        >Your answer ({{ tool().unit }})<input
-          aria-label="Your math answer"
-          placeholder="Calculate before checking"
-          [value]="answer()"
-          (input)="answer.set($any($event.target).value); result.set(undefined)"
-          [disabled]="runtime.sample"
-      /></label>
-      <label
-        >Explain your thinking<textarea
-          aria-label="Math explanation"
-          placeholder="I multiplied… because…"
-          rows="3"
-          [value]="explanation()"
-          (input)="explanation.set($any($event.target).value); result.set(undefined)"
-          [disabled]="runtime.sample"
-        ></textarea>
-      </label>
-      <button class="primary" [disabled]="runtime.sample" (click)="check()">
-        Check & save calculation
-      </button>
-      <p class="feedback" role="status">{{ feedback() }}</p>
-      @if (result(); as evidence) {
-        <div class="result" [class.correct]="evidence.status === 'correct'">
-          <strong>{{
-            evidence.status === 'correct' ? '✓ Calculation supported' : 'Revise your calculation'
-          }}</strong>
-          @if (evidence.status === 'needs-revision') {
+        <div class="step-actions">
+          <button (click)="go('observe')">Back</button>
+          <button [disabled]="!calculationReady()" (click)="go('explain')">Continue</button>
+        </div>
+      </div>
+      <div [hidden]="step() !== 'explain'">
+        <label
+          >Explain your thinking<textarea
+            aria-label="Math explanation"
+            placeholder="I multiplied… because…"
+            rows="3"
+            [value]="explanation()"
+            (input)="explanation.set($any($event.target).value); result.set(undefined)"
+            [disabled]="runtime.sample"
+          ></textarea>
+        </label>
+        <button (click)="go('calculate')">Back</button>
+        <button class="primary" [disabled]="runtime.sample" (click)="check()">
+          Check & save calculation
+        </button>
+        <p class="feedback" role="status">{{ feedback() }}</p>
+        @if (result(); as evidence) {
+          <div class="result" [class.correct]="evidence.status === 'correct'">
+            <strong>{{
+              evidence.status === 'correct' ? '✓ Calculation supported' : 'Revise your calculation'
+            }}</strong>
+            @if (evidence.status === 'needs-revision') {
+              <p>
+                Check which quantities you used, their units, and the operation. Use the hint if you
+                need another starting point, then try your own calculation again.
+              </p>
+            }
+            <p>Your answer: {{ format(evidence.answer) }} {{ evidence.unit }}</p>
+            @if (
+              evidence.status === 'correct' &&
+              runtime.selectedCommand() &&
+              runtime.canEdit() &&
+              allowLink()
+            ) {
+              <button (click)="link(evidence.id)">Link to selected command</button>
+            }
+          </div>
+        }
+      </div>
+    }
+    <details class="reference-notebooks">
+      <summary>Measurements & saved work</summary>
+      <details class="evidence" [open]="runtime.sample">
+        <summary>Saved calculations ({{ runtime.state().math.length }})</summary>
+        @for (evidence of runtime.state().math; track evidence.id) {
+          <article>
+            <strong>{{ title(evidence.tool) }}</strong>
             <p>
-              Check which quantities you used, their units, and the operation. Use the hint if you
-              need another starting point, then try your own calculation again.
+              {{ format(evidence.answer) }} {{ evidence.unit }} ·
+              {{ evidence.status === 'correct' ? 'Checked' : 'Needs revision' }}
             </p>
+            <p>{{ evidence.explanation }}</p>
+            <button
+              [disabled]="
+                evidence.status !== 'correct' ||
+                !runtime.selectedCommand() ||
+                !runtime.canEdit() ||
+                !allowLink()
+              "
+              (click)="link(evidence.id)"
+            >
+              Link to selected command
+            </button>
+          </article>
+        } @empty {
+          <p>Your calculations will appear here, including revisions.</p>
+        }
+      </details>
+      <details class="calibration" #calibration>
+        <summary>Robot calibration notebook</summary>
+        <h3 tabindex="-1">
+          {{
+            calibrationStep() === 0
+              ? 'How far does one rotation move the robot?'
+              : calibrationStep() === 1
+                ? 'How far does it turn in one second?'
+                : 'Why might your measurement differ?'
+          }}
+        </h3>
+        @if (calibrationStep() === 0) {
+          <label
+            >Measured distance per rotation (cm)<input
+              aria-label="Measured distance per rotation"
+              [value]="runtime.state().measuredDistancePerRotation"
+              (input)="
+                runtime.updateCalibration('measuredDistancePerRotation', $any($event.target).value)
+              "
+              [disabled]="runtime.sample"
+          /></label>
+          <details>
+            <summary>Measurement clue</summary>
+            <p>
+              Wheel diameter: {{ runtime.config.robot.wheelDiameterCm }} cm. Use π = 3.14. Test one
+              rotation and compare its measured distance.
+            </p>
+          </details>
+        } @else if (calibrationStep() === 1) {
+          <label
+            >Measured turn rate (°/second)<input
+              aria-label="Measured turn rate"
+              [value]="runtime.state().measuredTurnRate"
+              (input)="runtime.updateCalibration('measuredTurnRate', $any($event.target).value)"
+              [disabled]="runtime.sample"
+          /></label>
+        } @else {
+          <label
+            >Your explanation<textarea
+              aria-label="Measurement explanation"
+              rows="3"
+              [value]="runtime.state().measurementExplanation"
+              (input)="
+                runtime.updateCalibration('measurementExplanation', $any($event.target).value)
+              "
+              [disabled]="runtime.sample"
+            ></textarea>
+          </label>
+        }
+        <div class="step-actions">
+          @if (calibrationStep() > 0) {
+            <button (click)="goCalibration(calibrationStep() - 1)">Back</button>
           }
-          <p>Your answer: {{ format(evidence.answer) }} {{ evidence.unit }}</p>
-          @if (
-            evidence.status === 'correct' &&
-            runtime.selectedCommand() &&
-            runtime.canEdit() &&
-            allowLink()
-          ) {
-            <button (click)="link(evidence.id)">Link to selected command</button>
+          @if (calibrationStep() < 2) {
+            <button (click)="goCalibration(calibrationStep() + 1)">Continue</button>
+          } @else {
+            <button
+              (click)="calibration.open = false; calibration.querySelector('summary')?.focus()"
+            >
+              Done
+            </button>
           }
         </div>
-      }
-    }
-    <details class="evidence" [open]="runtime.sample">
-      <summary>Saved calculations ({{ runtime.state().math.length }})</summary>
-      @for (evidence of runtime.state().math; track evidence.id) {
-        <article>
-          <strong>{{ title(evidence.tool) }}</strong>
-          <p>
-            {{ format(evidence.answer) }} {{ evidence.unit }} ·
-            {{ evidence.status === 'correct' ? 'Checked' : 'Needs revision' }}
-          </p>
-          <p>{{ evidence.explanation }}</p>
-          <button
-            [disabled]="
-              evidence.status !== 'correct' ||
-              !runtime.selectedCommand() ||
-              !runtime.canEdit() ||
-              !allowLink()
-            "
-            (click)="link(evidence.id)"
-          >
-            Link to selected command
-          </button>
-        </article>
-      } @empty {
-        <p>Your calculations will appear here, including revisions.</p>
-      }
-    </details>
-    <details class="calibration">
-      <summary>Robot calibration notebook</summary>
-      <p>
-        Wheel diameter: {{ runtime.config.robot.wheelDiameterCm }} cm. Use π = 3.14. Test one
-        rotation and read the distance in your trial.
-      </p>
-      <label
-        >Measured distance / rotation (cm)<input
-          [value]="runtime.state().measuredDistancePerRotation"
-          (input)="
-            runtime.updateCalibration('measuredDistancePerRotation', $any($event.target).value)
-          "
-          [disabled]="runtime.sample"
-      /></label>
-      <label
-        >Measured turn rate (° / second)<input
-          [value]="runtime.state().measuredTurnRate"
-          (input)="runtime.updateCalibration('measuredTurnRate', $any($event.target).value)"
-          [disabled]="runtime.sample"
-      /></label>
-      <label
-        >Why might a measurement differ from a calculation?<textarea
-          rows="3"
-          [value]="runtime.state().measurementExplanation"
-          (input)="runtime.updateCalibration('measurementExplanation', $any($event.target).value)"
-          [disabled]="runtime.sample"
-        ></textarea>
-      </label>
+      </details>
     </details>
   `,
   styles: `
     :host {
       display: block;
     }
+    [hidden] {
+      display: none !important;
+    }
+    .step-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .observation p {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    button,
+    input,
+    select,
+    summary {
+      min-height: 44px;
+    }
+
     small {
       font-size: 10px;
       letter-spacing: 1.6px;
@@ -294,6 +384,35 @@ import type { MathEvidence, MathTool } from '../domain/automation.models';
   `,
 })
 export class MathWorkbenchComponent {
+  private readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
+  readonly step = signal<'observe' | 'calculate' | 'explain'>('observe');
+  readonly calculationReady = computed(
+    () => !!this.answer().trim() && this.tool().inputs.every((_, i) => !!this.values()[i]?.trim()),
+  );
+  go(step: 'observe' | 'calculate' | 'explain'): void {
+    this.step.set(step);
+    afterNextRender(
+      () => {
+        const heading = this.element.nativeElement.querySelector<HTMLElement>('h2');
+        heading?.scrollIntoView({ block: 'nearest' });
+        heading?.focus({ preventScroll: true });
+      },
+      { injector: this.injector },
+    );
+  }
+  readonly calibrationStep = signal(0);
+  goCalibration(step: number): void {
+    this.calibrationStep.set(Math.max(0, Math.min(2, step)));
+    afterNextRender(
+      () => {
+        const heading = this.element.nativeElement.querySelector<HTMLElement>('.calibration h3');
+        heading?.scrollIntoView({ block: 'nearest' });
+        heading?.focus({ preventScroll: true });
+      },
+      { injector: this.injector },
+    );
+  }
   readonly allowLink = input(true);
   readonly selectedEvidence = computed(() =>
     this.runtime.state().math.find((e) => e.id === this.runtime.selectedCommand()?.mathEvidenceId),
@@ -311,6 +430,7 @@ export class MathWorkbenchComponent {
   constructor() {
     effect(() => {
       const challenge = this.runtime.challenge();
+      this.step.set('observe');
       this.choose(
         challenge.discovery?.mathTool ?? challenge.requiredMath[0] ?? 'distance-rotations',
       );

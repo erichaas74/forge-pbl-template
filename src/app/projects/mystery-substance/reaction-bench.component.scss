@@ -1,3 +1,4 @@
+@use './lab-preview' as preview;
 :host {
   position: absolute;
   inset: 0;
@@ -1361,3 +1362,16 @@ h2 {
   min-height: 34rem;
   overflow: visible;
 }
+
+/* Reveal the evidence response only after the experiment. */
+
+:host(.workbench-station) .bench-canvas { min-height: 100dvh; }
+.bench-grid { padding-top: 80px; grid-template-columns: minmax(0, 1fr); max-width: 1160px; margin: auto; }
+.bench-grid.has-record { grid-template-columns: minmax(0, 1.4fr) minmax(260px, 1fr); }
+.tray[hidden], .record[hidden], .kicker, .rig-hint { display: none; }
+.rig-head h1 { max-width: 35ch; font-size: clamp(20px, 2.3vw, 29px); line-height: 1.25; }
+.record { grid-column: auto; }
+.protocol li:not(.active) { display: none; }
+@container (max-width: 700px) { .bench-grid { padding-top: 120px; } .bench-grid.has-record { grid-template-columns: 1fr; } }
+
+@include preview.station;

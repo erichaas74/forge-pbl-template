@@ -25,11 +25,20 @@ export const engineeringDesignLauncher: TemplateLauncher = {
     const registry = new DesignSimulationRegistry();
     registry.register('simulation.solar-monument', SolarMonumentComponent);
     registry.require(config.simulationId);
+    const preview =
+      !!config.previewWeeks &&
+      request.session.mode === 'preview' &&
+      request.session.authorityMode === 'localDemo';
     return {
-      integratedHeader: !!config.learningSequence?.steps.some((step) => step.tasks?.length),
-      component: (
-        await import('../../../templates/engineering-design/ui/engineering-design-page.component')
-      ).EngineeringDesignPageComponent,
+      integratedHeader:
+        preview || !!config.learningSequence?.steps.some((step) => step.tasks?.length),
+      component: preview
+        ? (
+            await import('../../../templates/engineering-design/ui/engineering-week-workspace.component')
+          ).EngineeringWeekWorkspaceComponent
+        : (
+            await import('../../../templates/engineering-design/ui/engineering-design-page.component')
+          ).EngineeringDesignPageComponent,
       providers: [
         { provide: ENGINEERING_CONFIG, useValue: config },
         { provide: ENGINEERING_SESSION, useValue: request.session },

@@ -1,0 +1,128 @@
+<main class="invention-layout" [attr.data-week]="r.week()" [attr.data-lesson]="r.number()">
+  <section
+    class="activity-panel"
+    [class.knowledge-panel]="k.active()"
+    aria-label="Invention rescue activity"
+  >
+    @if (k.active()) {
+      <app-knowledge-host />
+    } @else if (r.scene() === 'courtyard') {
+      <app-courtyard-scene />
+    } @else {
+      <app-press-workbench />
+    }
+  </section>
+  <aside class="mission-column" aria-label="Weekly task and AI Tutor">
+    <details class="task-box" open>
+      <summary>
+        <span
+          >WEEK {{ r.week() }} ·
+          {{ r.example ? 'EXAMPLE' : r.number() % 2 === 1 ? 'INDIVIDUAL' : 'GROUP' }}</span
+        >
+        <h2>{{ r.weekContent().title }}</h2>
+      </summary>
+      <div class="task-content">
+        <p class="coordinates">
+          {{ r.scene() === 'courtyard' ? 'Mainz · bookseller’s courtyard' : r.session().location
+          }}<b>{{ r.scene() === 'courtyard' ? 'c. 1460' : r.session().date }}</b>
+        </p>
+        <h3>{{ r.session().title }}</h3>
+        <p>{{ r.session().task }}</p>
+        @if (r.session().mode === 'return') {
+          <button class="time-jump" (click)="r.travel()">
+            {{ r.scene() === 'press' ? 'Return to 1460 ↗' : 'Back to the workshop ↙' }}
+          </button>
+          @if (r.scene() === 'press') {
+            <p class="batch-note">
+              {{ r.goodCount() }} / {{ r.session().batchSize }} clean impressions in a row
+            </p>
+          }
+        }
+        <details class="inside-detail">
+          <summary>This week’s goal & work</summary>
+          <p>{{ r.weekContent().goal }}</p>
+          <ul>
+            @for (s of r.content.sessions; track s.id) {
+              @if (s.number === r.week() * 2 - 1 || s.number === r.week() * 2) {
+                <li>
+                  <strong>Session {{ s.number }}</strong> · {{ s.product }}
+                </li>
+              }
+            }
+          </ul>
+        </details>
+        <p class="feedback" role="status" aria-live="polite">
+          {{
+            (k.active() ? k.message() : r.message()) ||
+              (r.example
+                ? 'Example batch prepared. This does not alter your session work.'
+                : 'Operate the objects. Your observations will appear here.')
+          }}
+        </p>
+        <details class="inside-detail">
+          <summary>Trial notebook & local save</summary>
+          <p>
+            {{
+              (k.active() ? k.storageMessage() : r.storageMessage()) ||
+                'Local model practice. No grades or shared changes are recorded.'
+            }}
+          </p>
+          @if (k.active()) {
+            <p>{{ k.state().trials.length }} recorded investigations</p>
+            <button class="notebook" (click)="k.export()">Download notebook</button>
+            <button class="notebook" (click)="k.reset()">Reset this activity</button>
+          } @else {
+            <p>
+              {{ r.state().trials.length }} proofs · {{ r.state().samples.length }} material tests
+            </p>
+            <button class="notebook" (click)="r.exportNotebook()">Download notebook</button>
+          }
+        </details>
+      </div>
+    </details>
+    <details class="tutor-box" open>
+      <summary>
+        <span>YOUR THINKING SPACE</span>
+        <div class="tutor-title">
+          <h2>AI Tutor</h2>
+          <b>Not connected</b>
+        </div>
+      </summary>
+      <div class="tutor-content">
+        <p class="tutor-question">{{ r.session().question }}</p>
+        <details class="inside-detail">
+          <summary>The history behind this scene</summary>
+          <p>{{ r.session().historicalNote }}</p>
+          <p>{{ r.content.fiction }}</p>
+          <p>{{ r.content.modelNote }}</p>
+        </details>
+        <details class="inside-detail">
+          <summary>Sources to investigate</summary>
+          @for (source of r.sourceIds(); track source.id) {
+            <div class="source">
+              <a [href]="source.url" target="_blank" rel="noopener noreferrer"
+                >{{ source.title }} ↗</a
+              >
+              <p>{{ source.detail }}</p>
+            </div>
+          }
+        </details>
+        <details class="inside-detail">
+          <summary>Evidence the tutor will check</summary>
+          <ul>
+            @for (item of r.weekContent().evidence; track $index) {
+              <li>{{ item }}</li>
+            }
+          </ul>
+        </details>
+        <details class="inside-detail">
+          <summary>Planned tutor controls</summary>
+          <p>
+            Compare your trials, prompt a one-variable test, introduce a fresh mechanical fault, and
+            review your historical explanation. These controls and assessment are not connected.
+          </p>
+        </details>
+      </div>
+    </details>
+  </aside>
+</main>

@@ -1,0 +1,112 @@
+:host {
+  display: block;
+}
+.workbench {
+  min-height: 100dvh;
+}
+.workbench .workbench-layout,
+.workbench .workbench-layout:not(.evidence-open) {
+  max-width: none;
+  padding: 0;
+}
+.workbench-main > div {
+  border: 0;
+  border-radius: 0;
+  min-height: 100dvh;
+}
+.workbench-selection {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  padding: 0;
+}
+.workbench-selection[hidden] {
+  display: none;
+}
+.workbench-vials button {
+  min-height: 40px;
+  padding: 4px 10px;
+  background: #102b35df;
+}
+.workbench-vials img {
+  display: none;
+}
+.focus-evidence {
+  position: fixed;
+  top: calc(var(--project-navigation-height, 0px) + 14px);
+  right: 66px;
+  z-index: 80;
+  min-height: 40px;
+  border: 1px solid #8aa6af80;
+  border-radius: 22px;
+  padding: 8px 14px;
+  color: #eef9f9;
+  background: #102b35ee;
+  cursor: pointer;
+}
+.workbench .scan-activity {
+  display: grid;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 100dvh;
+  padding: 82px 24px 32px;
+}
+.workbench .scanner {
+  width: 100%;
+  margin: auto;
+  background: #0a202bdd;
+  border-radius: 20px;
+}
+.workbench .scanner-visual header {
+  justify-content: center;
+}
+.scanner-visual header > span,
+.scanner-visual header > small {
+  display: none;
+}
+.workbench-explanation {
+  box-sizing: border-box;
+  padding: 90px max(24px, calc((100% - 700px) / 2)) 32px;
+  background:
+    linear-gradient(#03101d88, #03101d99),
+    url('/week1-incident-room-v1.webp') center / cover;
+}
+.workbench-explanation > h2,
+.workbench-explanation > p {
+  display: none;
+}
+.optional-markers {
+  margin-bottom: 16px;
+}
+.optional-markers summary {
+  cursor: pointer;
+  color: #b7ced5;
+  font-size: 13px;
+}
+.workbench-update {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  z-index: 60;
+}
+.workbench-layout.evidence-open {
+  padding-top: 72px;
+}
+@media (max-width: 700px) {
+  .workbench-selection {
+    top: 66px;
+    width: max-content;
+  }
+  .workbench .scan-activity {
+    padding: 122px 12px 20px;
+  }
+  .workbench .scanner {
+    grid-template-columns: 1fr;
+  }
+  .workbench .scanner-visual figure {
+    min-height: 200px;
+  }
+}

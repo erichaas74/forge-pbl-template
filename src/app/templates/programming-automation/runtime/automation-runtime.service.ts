@@ -26,6 +26,7 @@ export class AutomationRuntimeService implements OnDestroy {
   readonly config = inject(AUTOMATION_CONFIG);
   readonly session = inject(AUTOMATION_SESSION);
   readonly sample = inject(AUTOMATION_SAMPLE, { optional: true }) ?? false;
+  readonly testingWorkspace = !this.sample && this.session.mode === 'preview' && !!this.config.previewWeeks;
   private readonly persistence = inject(AUTOMATION_PERSISTENCE);
   private timer?: ReturnType<typeof setTimeout>;
   readonly state = signal(this.load());
@@ -54,8 +55,8 @@ export class AutomationRuntimeService implements OnDestroy {
   readonly canEdit = computed(
     () =>
       !this.sample &&
-      !this.draft().lockedVersionId &&
-      !(this.isChampionship() && this.state().championship.finalized),
+      (this.testingWorkspace || (!this.draft().lockedVersionId &&
+      !(this.isChampionship() && this.state().championship.finalized))),
   );
   readonly compiled = computed(() =>
     compileProgram(this.draft().program, this.config.robot, this.challenge(), this.state().math),
@@ -154,7 +155,7 @@ export class AutomationRuntimeService implements OnDestroy {
   selectChallenge(id: string): void {
     const next = this.config.challenges.find((item) => item.id === id);
     if (!next) return;
-    if (id === this.config.championshipChallengeId && !this.state().championship.revealed) {
+    if (!this.testingWorkspace && id === this.config.championshipChallengeId && !this.state().championship.revealed) {
       this.message.set('Reveal the championship course using the rehearsal controls.');
       return;
     }
@@ -231,7 +232,7 @@ export class AutomationRuntimeService implements OnDestroy {
   runPractice(): RobotTrial | undefined {
     if (this.sample) return;
     if (
-      this.isChampionship() &&
+      !this.testingWorkspace && this.isChampionship() &&
       (this.state().championship.finalized ||
         !this.state().championship.practiceOpen ||
         (this.state().championship.practiceLimit > 0 &&

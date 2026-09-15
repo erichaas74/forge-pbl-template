@@ -9,6 +9,7 @@ import type { ValidationIssue } from '../../../core/validation/validation-contra
 import type { JourneyMapConfig } from '../domain/journey-replay.models';
 import { validateJourneyAdventures } from './journey-adventure.validation';
 import { validateJourneyHistory } from './journey-history.validation';
+import { validateJourneyPaths } from './journey-path.validation';
 import type {
   JourneyPackageDefinition,
   JourneyReplayDefinitionGraph,
@@ -52,6 +53,10 @@ export class JourneyReplayProjectPackageAssembler implements ProjectPackageAssem
     validateReferences(journey, map, replay, issues);
     issues.push(...validateJourneyAdventures(journey.steps, journey.resources));
     issues.push(...validateJourneyHistory(journey.historicalFrame));
+    issues.push(...validateJourneyPaths(journey.experience, map, journey.resources, journey.evidence));
+    if (journey.experience && !manifest.capabilities.includes('branchingJourney')) {
+      issues.push({ code: 'CAPABILITY_REQUIRED', severity: 'error', file: 'project.json', capabilityId: 'branchingJourney', message: 'The experience graph requires branchingJourney.' });
+    }
     if (issues.some((issue) => issue.severity === 'error')) return { issues };
 
     return {

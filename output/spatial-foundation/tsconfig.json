@@ -1,0 +1,1 @@
+{"extends":"../../tsconfig.app.json","include":["../../src/app/shared/spatial-inspection/*.ts"],"exclude":["../../src/app/shared/spatial-inspection/*.spec.ts"],"compilerOptions":{"noEmit":true,"rootDir":"../../src"}}

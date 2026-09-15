@@ -5,7 +5,7 @@
 >
   @switch (runtime.state().room) {
     @case ('premiere') {
-      <section class="premiere" aria-label="Senate debate premiere">
+      <section class="premiere" aria-label="{{ runtime.assembly }} debate premiere">
         <header class="broadcast-order">
           @if (!readOnly()) {
             <button type="button" (click)="runtime.enterRoom('chamber')">
@@ -27,7 +27,7 @@
                 ? 'Completed fictional session'
                 : runtime.session().status === 'premiere' ||
                     runtime.session().status === 'premiere-ready'
-                  ? 'Senate session ready'
+                  ? '' + runtime.assembly + ' session ready'
                   : 'Record-in-progress preview'
             }}
           </p>
@@ -69,7 +69,7 @@
                 </button>
               </nav>
             }
-            <span>The Senate broadcast</span>
+            <span>The {{ runtime.assembly }} broadcast</span>
             <ol>
               @for (segment of runtime.program(); track segment.id; let index = $index) {
                 <li
@@ -127,7 +127,7 @@
                 <header class="speaker-title">
                   <span>{{ segment.roundLabel }}</span>
                   <h2>{{ segment.speakerDisplayName }}</h2>
-                  <p>{{ runtime.faction(segment.factionId)?.name }} · Student Senator</p>
+                  <p>{{ runtime.faction(segment.factionId)?.name }} · {{ runtime.speakerLabel }}</p>
                 </header>
                 <div class="student-broadcast">
                   @if (segment.recording?.kind === 'video') {
@@ -207,7 +207,7 @@
                 !runtime.premiereCanPlay()
                   ? 'Awaiting the teacher'
                   : runtime.state().activeSegmentIndex === 0
-                    ? 'Convene the Senate'
+                    ? 'Convene the ' + runtime.assembly + ''
                     : 'Continue proceeding'
               }}
             </button>
@@ -244,13 +244,13 @@
         <section class="ballot-chamber" aria-labelledby="ballot-title">
           <header>
             <span>The complete student debate has ended</span>
-            <h1 id="ballot-title">The Judgment of the Senate</h1>
+            <h1 id="ballot-title">The Judgment of the {{ runtime.assembly }}</h1>
             <p>Cast a private post-debate opinion, then place one clay token for each judgment.</p>
           </header>
 
           <fieldset class="opinion-vote">
             <legend>
-              <strong>Post-Debate Senate Opinion</strong
+              <strong>Post-Debate {{ runtime.assembly }} Opinion</strong
               ><small>Did the debate change your view?</small>
             </legend>
             <div>
@@ -333,7 +333,7 @@
       <section class="verdict-chamber" aria-labelledby="verdict-title">
         <header>
           <span>The seals are broken before the class</span>
-          <h1 id="verdict-title">Did the Debate Move the Senate?</h1>
+          <h1 id="verdict-title">Did the Debate Move the {{ runtime.assembly }}?</h1>
           <p>
             {{
               readOnly()
@@ -397,7 +397,7 @@
             }}</span>
             <h2>{{ runtime.config.title }}</h2>
             <p>
-              The Senate can now see not only which argument prevailed, but whether the class
+              The {{ runtime.assembly }} can now see not only which argument prevailed, but whether the class
               changed its mind.
             </p>
             <div>
@@ -406,7 +406,7 @@
                 (click)="readOnly() ? selectEntry(2) : runtime.enterRoom('chamber')"
               >
                 {{ readOnly() ? 'Replay the arguments' : 'Return to chamber' }}</button
-              ><a routerLink="/projects">Leave the Senate</a>
+              ><a routerLink="/projects">Leave the {{ runtime.assembly }}</a>
             </div>
           </article>
         } @else {

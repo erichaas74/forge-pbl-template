@@ -1,0 +1,124 @@
+<section class="exhibit-workbench" [class.touring]="touring()" aria-label="Illustrated exhibit">
+  <div class="toolbar">
+    <div>
+      <span class="eyebrow">{{
+        r.example ? 'ILLUSTRATED SAMPLE' : 'EDITABLE SAMPLE STARTING CONTENT'
+      }}</span>
+      <h3>{{ touring() ? 'The repaired record · a guided tour' : 'Your exhibit studio' }}</h3>
+    </div>
+    <div class="button-row">
+      @if (!r.example) {
+        @if (touring()) {
+          <button (click)="touring.set(false)">Return to editing</button>
+        } @else {
+          <button class="primary" (click)="rehearse()">▶ Rehearse tour</button>
+        }
+        <button (click)="r.download()">Download draft</button>
+      }
+    </div>
+  </div>
+  <nav class="panel-picker" aria-label="Exhibit panels">
+    @for (panel of r.draft().panels; track panel.id; let i = $index) {
+      <button [attr.aria-pressed]="r.panelIndex() === i" (click)="select(i)">
+        {{ i + 1 }} · {{ panel.title || 'Untitled panel' }}
+      </button>
+    }
+  </nav>
+  <div class="exhibit-grid">
+    <article class="exhibit-card" #card tabindex="-1" aria-label="Live exhibit panel">
+      <img [src]="illustration().src" [alt]="illustration().alt" />
+      <div class="exhibit-caption">
+        <span class="eyebrow">PANEL {{ r.panelIndex() + 1 }} / {{ r.draft().panels.length }}</span>
+        <h2>{{ r.activePanel().title || 'Untitled panel' }}</h2>
+        <p class="caption-text">
+          {{
+            r.activePanel().caption ||
+              'This caption is intentionally empty. Add exhibit text when you are ready.'
+          }}
+        </p>
+        @if (source(); as e) {
+          <a [href]="e.url" target="_blank" rel="noopener noreferrer">Source: {{ e.title }} ↗</a
+          ><small>{{ e.citation }}</small>
+        } @else {
+          <small>No source credit selected.</small>
+        }
+        <details class="image-credit">
+          <summary>About this image</summary>
+          <p>{{ illustration().caption }}</p>
+        </details>
+      </div>
+    </article>
+    @if (!touring() && !r.example) {
+      <section class="caption-editor" aria-label="Edit exhibit panel">
+        <h3>Edit panel {{ r.panelIndex() + 1 }}</h3>
+        <label
+          >Exhibit title<input
+            aria-label="Exhibit title"
+            maxlength="180"
+            [ngModel]="r.activePanel().title"
+            (ngModelChange)="r.editPanel({ title: $event })"
+            (blur)="r.save()"
+        /></label>
+        <label
+          >Exhibit caption<textarea
+            aria-label="Exhibit caption"
+            maxlength="2400"
+            rows="7"
+            [ngModel]="r.activePanel().caption"
+            (ngModelChange)="r.editPanel({ caption: $event })"
+            (blur)="r.save()"
+          ></textarea>
+        </label>
+        <label
+          >Illustration<select
+            aria-label="Exhibit illustration"
+            [ngModel]="r.activePanel().imageId"
+            (ngModelChange)="r.editPanel({ imageId: $event }); r.save()"
+          >
+            @for (image of r.config.previewWeeks!.illustrations; track image.id) {
+              <option [value]="image.id">{{ image.title }}</option>
+            }
+          </select></label
+        >
+        <label
+          >Source credit<select
+            aria-label="Exhibit source credit"
+            [ngModel]="r.activePanel().evidenceId"
+            (ngModelChange)="r.editPanel({ evidenceId: $event }); r.save()"
+          >
+            <option value="">No source credit</option>
+            @for (e of r.config.evidence; track e.id) {
+              <option [value]="e.id">{{ e.title }}</option>
+            }
+          </select></label
+        >
+        <div class="button-row">
+          <button [disabled]="r.panelIndex() === 0" (click)="r.movePanel(-1)">↑ Move earlier</button
+          ><button
+            [disabled]="r.panelIndex() === r.draft().panels.length - 1"
+            (click)="r.movePanel(1)"
+          >
+            ↓ Move later
+          </button>
+        </div>
+        <p class="art-note">
+          This text is the actual exhibit product. You can rewrite or clear the sample. Images are
+          illustrations, and captions still need human review.
+        </p>
+      </section>
+    }
+  </div>
+  @if (touring()) {
+    <div class="toolbar tour-controls">
+      <button [disabled]="r.panelIndex() === 0" (click)="select(r.panelIndex() - 1)">
+        ← Previous panel</button
+      ><span>{{ r.panelIndex() + 1 }} of {{ r.draft().panels.length }}</span
+      ><button
+        [disabled]="r.panelIndex() === r.draft().panels.length - 1"
+        (click)="select(r.panelIndex() + 1)"
+      >
+        Next panel →
+      </button>
+    </div>
+  }
+</section>

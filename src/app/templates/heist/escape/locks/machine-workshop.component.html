@@ -1,22 +1,32 @@
-<section class="workshop" aria-label="Math machine workshop">
+<section class="workshop" [class.timing-diorama]="diorama() && !error()" [class.optics-diorama]="stage().kind === 'reflection' && diorama() && !error()" [class.bridge-diorama]="definition().presentation?.kind === 'bridge-cage' && !error()" aria-label="Math machine workshop">
   <header>
-    <button (click)="leave.emit()" [disabled]="testing() || paused()">
+    @if (!authoringPreview()) { <button (click)="leave.emit()" [disabled]="testing() || paused()">
       &#8592; {{ completed() ? 'Return to rescue' : 'Back to map' }}
-    </button>
+    </button> }
     <div>
       <p>THE KEEPER'S WORKSHOPS / GRADE {{ grade() }}</p>
       <h1 #heading tabindex="-1">{{ stage().title }}</h1>
     </div>
-    <button (click)="pauseRequested.emit()">Pause</button>
+    @if (!authoringPreview()) { <button (click)="pauseRequested.emit()">Pause</button> }
   </header>
   <nav aria-label="Workshop stages">
     @for (s of definition().stages; track s.id; let i = $index) {
+      @if (authoringPreview()) {
+        <button (click)="selectStage(i)" [disabled]="testing() || paused()" [attr.aria-pressed]="i === active()">{{ i + 1 }} · {{ s.title }}</button>
+      } @else {
       <span [class.active]="i === active()" [class.sealed]="state().seals.includes(s.id)"
         >{{ state().seals.includes(s.id) ? '✓' : i + 1 }} · {{ s.title }}</span
       >
+      }
     }
   </nav>
   <p class="mission">{{ stage().instruction }}</p>
+  @if (authoringPreview()) {
+    <div class="preview-action">
+      <button class="primary" (click)="test()" [disabled]="locked() || !settled()">Test mechanism</button>
+      <div><strong>{{ reading().equation }}</strong><p aria-live="polite">{{ testing() ? 'Testing the mechanism…' : notice() }}</p></div>
+    </div>
+  }
   <div class="stage-shell">
     <div #stageHost class="stage"></div>
     @if (!ready() && !error()) {

@@ -1,3 +1,4 @@
+import { validateFieldStudio } from '../../../templates/history-live/core/field-studio.validation';
 import { inject } from '@angular/core';
 
 import { IndexedDbAssetStorageAdapter } from '../../../infrastructure/storage/indexeddb-asset-storage.adapter';
@@ -21,6 +22,32 @@ export const historyLiveLauncher: TemplateLauncher = {
   templateId: 'history-live-broadcast',
   async load(request: ProjectLaunchRequest) {
     const config = requireHistoryConfig(request.projectDefinition, request.project.id);
+    validateFieldStudio(config);
+    if (request.view === 'final-demo') {
+      const finalLesson = config.inquiry?.lessons.at(-1)?.number;
+      const example = config.inquiry?.examples?.find((item) => item.lesson === finalLesson);
+      if (!example)
+        throw new Error('CAPABILITY_NOT_INSTALLED: This project has no final model video.');
+      const { InquiryExamplePageComponent, INQUIRY_EXAMPLE_PRESENTATION } =
+        await import('../../../shared/inquiry/inquiry-example-page.component');
+      return {
+        component: InquiryExamplePageComponent,
+        providers: [
+          {
+            provide: INQUIRY_EXAMPLE_PRESENTATION,
+            useValue: {
+              projectTitle: config.title,
+              example,
+              sources: config.sources.map((source) => ({ ...source, sourceUrl: source.url })),
+            },
+          },
+        ],
+      };
+    }
+    if (config.inquiry && request.session.authorityMode !== 'localDemo')
+      throw new Error(
+        'A server-authoritative inquiry gateway must be configured for classroom use.',
+      );
     const enrollment = previewEnrollment(request);
     const module = await import('../../../templates/history-live/ui/history-live-page.component');
     return {
@@ -30,7 +57,8 @@ export const historyLiveLauncher: TemplateLauncher = {
         { provide: HISTORY_LIVE_ENROLLMENT, useValue: enrollment },
         {
           provide: HISTORY_LIVE_PERSISTENCE,
-          useFactory: () => new BrowserHistoryLivePersistenceAdapter(inject(HISTORY_LIVE_ENROLLMENT)),
+          useFactory: () =>
+            new BrowserHistoryLivePersistenceAdapter(inject(HISTORY_LIVE_ENROLLMENT)),
         },
         {
           provide: HISTORY_LIVE_MEDIA,

@@ -1,6 +1,8 @@
 import * as Phaser from 'phaser';
 import type { MachineChallenge, MachineInput, StageAnswer } from './machine.models';
 export interface MachineView {
+  readonly stages?: readonly StageAnswer[];
+  readonly freelySelectStages?: boolean;
   readonly active: number;
   readonly answer: StageAnswer;
   readonly selected: number | null;
@@ -12,12 +14,16 @@ export interface MachineView {
   readonly reducedMotion: boolean;
 }
 export interface MachineCallbacks {
+  stage?(index: number): void;
   input(i: MachineInput): void;
   select(index: number): void;
   ready(): void;
   failed(): void;
   settled(value: boolean): void;
   finished(): void;
+  engage?(): void;
+  replay?(): void;
+  pause?(): void;
 }
 export interface MachineRenderer {
   draw(view: MachineView, dt: number, time: number): void;

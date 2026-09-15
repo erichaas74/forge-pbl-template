@@ -1,209 +1,57 @@
-import { Component, computed, inject, output, signal } from '@angular/core';
+import {
+  afterNextRender,
+  Component,
+  computed,
+  effect,
+  ElementRef,
+  inject,
+  Injector,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { AutomationRuntimeService } from '../runtime/automation-runtime.service';
 import type { RobotTrial } from '../domain/automation.models';
 import { allCommands } from '../core/automation-compiler';
 import { commandLabels } from './command-editor.component';
 import { commandExpression } from '../core/move-math';
+import { RobotCourseComponent } from './robot-course.component';
 @Component({
   selector: 'app-automation-evidence',
-  template: `
-    <div class="tabs">
-      <button [class.active]="view() === 'trials'" (click)="view.set('trials')">
-        Trial history</button
-      ><button [class.active]="view() === 'portfolio'" (click)="view.set('portfolio')">
-        Engineering portfolio
-      </button>
-    </div>
-    @if (view() === 'trials') {
-      <div class="evidence-grid">
-        <section>
-          <h2>Test. Compare. Improve.</h2>
-          <p>
-            Every run keeps its own program and replay. Compare two trials to find what changed.
-          </p>
-          <div class="trial-list">
-            @for (trial of runtime.currentTrials(); track trial.id; let i = $index) {
-              <article>
-                <div>
-                  <strong
-                    >Trial {{ i + 1 }} ·
-                    {{ trial.completedMission ? 'Mission complete' : 'Keep testing' }}</strong
-                  ><small
-                    >v{{ trial.version.program.version }} · {{ trial.mode }} ·
-                    {{ trial.elapsedSeconds.toFixed(1) }} s ·
-                    {{ trial.stoppingErrorCm.toFixed(1) }} cm error</small
-                  >
-                </div>
-                <button (click)="replay.emit(trial)">Replay trial {{ i + 1 }}</button>
-              </article>
-            } @empty {
-              <p class="empty">Run your first program to start collecting evidence.</p>
-            }
-          </div>
-          @if (runtime.currentTrials().length >= 2) {
-            <h3>Compare two trials</h3>
-            <div class="compare-select">
-              @for (side of [0, 1]; track side) {
-                <label
-                  >Trial {{ side === 0 ? 'A' : 'B'
-                  }}<select
-                    [value]="comparison()[side]"
-                    (change)="selectComparison(side, $any($event.target).value)"
-                  >
-                    @for (trial of runtime.currentTrials(); track trial.id; let i = $index) {
-                      <option [value]="trial.id" [selected]="trial.id === comparison()[side]">
-                        Trial {{ i + 1 }} · v{{ trial.version.program.version }}
-                      </option>
-                    }
-                  </select></label
-                >
-              }
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Measure</th>
-                  <th>Trial A</th>
-                  <th>Trial B</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (metric of metrics; track metric.key) {
-                  <tr>
-                    <th>{{ metric.label }}</th>
-                    <td>{{ metricValue(compared()[0], metric.key) }}</td>
-                    <td>{{ metricValue(compared()[1], metric.key) }}</td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          }
-        </section>
-        <section>
-          <h3>Debugging notebook</h3>
-          <label
-            >What happened? What will you change?<textarea
-              rows="4"
-              [value]="runtime.draft().diagnosis"
-              (input)="runtime.updateDraft({ diagnosis: $any($event.target).value })"
-              [disabled]="!runtime.canEdit()"
-              placeholder="My robot stopped short because… Next I will…"
-            ></textarea></label
-          ><label
-            >Use two trials to explain your improvement<textarea
-              rows="4"
-              [value]="runtime.draft().reflection"
-              (input)="runtime.updateDraft({ reflection: $any($event.target).value })"
-              [disabled]="!runtime.canEdit()"
-              placeholder="In trial 1… In trial 2… The evidence shows…"
-            ></textarea>
-          </label>
-          <details>
-            <summary>Evidence needed to finish this mission</summary>
-            <ul>
-              @for (problem of runtime.readiness(); track problem) {
-                <li>{{ problem }}</li>
-              } @empty {
-                <li>All evidence is ready.</li>
-              }
-            </ul>
-          </details>
-          <button
-            class="primary"
-            [disabled]="runtime.readiness().length > 0 || !runtime.canEdit()"
-            (click)="runtime.completeChallenge()"
-          >
-            Save completed mission
-          </button>
-        </section>
-      </div>
-    } @else {
-      <section class="portfolio">
-        <div class="portfolio-heading">
-          <div>
-            <small>ENGINEERING PORTFOLIO</small>
-            <h2>{{ runtime.session.actorDisplayName }} · {{ runtime.config.title }}</h2>
-            <p>Collected from your calculations, programs, tests, and explanations.</p>
-          </div>
-          <button (click)="download()">Download portfolio</button>
-        </div>
-        <div class="evidence-grid">
-          <section>
-            <h3>Individual math evidence</h3>
-            <ul class="mastery">
-              @for (skill of runtime.mastery(); track skill.title) {
-                <li>
-                  {{ skill.achieved ? '✓' : '○' }} {{ skill.title }}
-                  <small>{{ skill.achieved ? 'Evidence recorded' : 'Evidence needed' }}</small>
-                </li>
-              }
-            </ul>
-            <p>
-              Competition scores describe robot performance. Your explanations and mathematical
-              reasoning are assessed separately.
-            </p>
-            <h3>Calibration</h3>
-            <p>
-              Distance per rotation:
-              {{ runtime.state().measuredDistancePerRotation || 'Not recorded' }} cm. Turn rate:
-              {{ runtime.state().measuredTurnRate || 'Not recorded' }} °/s.
-            </p>
-            <p>
-              {{
-                runtime.state().measurementExplanation ||
-                  'Add a comparison of your calculated and measured values in the calibration notebook.'
-              }}
-            </p>
-          </section>
-          <section>
-            <h3>Current program · v{{ runtime.draft().program.version }}</h3>
-            <ol>
-              @for (command of flatProgram(); track command.id) {
-                <li>
-                  {{ labels[command.type] }} {{ expression(command) }} {{ command.packageId ?? '' }}
-                  {{ command.disabled ? '(disabled)' : '' }}
-                </li>
-              }
-            </ol>
-            <h3>Testing evidence</h3>
-            <p>
-              {{ runtime.state().trials.length }} saved trials ·
-              {{ runtime.state().math.length }} calculations ·
-              {{ runtime.state().versions.length }} locked versions.
-            </p>
-            <p>
-              {{ runtime.draft().reflection || 'Add your debugging reflection in Trial history.' }}
-            </p>
-            <h3>Engineering defense</h3>
-            <label
-              >How does your evidence support your final design?<textarea
-                rows="5"
-                [value]="runtime.state().defense"
-                (input)="runtime.updateCalibration('defense', $any($event.target).value)"
-                [disabled]="runtime.sample"
-                placeholder="Explain your measurements, code decisions, improvements, and remaining uncertainty."
-              ></textarea>
-            </label>
-          </section>
-        </div>
-        <details>
-          <summary>Calculation evidence</summary>
-          @for (evidence of runtime.state().math; track evidence.id) {
-            <p>
-              <strong>{{ evidence.tool }}: {{ evidence.answer }} {{ evidence.unit }}</strong> ·
-              {{ evidence.status }}<br />{{ evidence.explanation }}
-            </p>
-          }
-        </details>
-      </section>
-    }
-  `,
+  imports: [RobotCourseComponent],
+  templateUrl: './automation-evidence.component.html',
   styleUrl: './automation-panels.css',
 })
 export class AutomationEvidenceComponent {
   readonly runtime = inject(AutomationRuntimeService);
   readonly replay = output<RobotTrial>();
-  readonly view = signal<'trials' | 'portfolio'>('trials');
+  readonly view = input<'trials' | 'portfolio'>('trials');
+  readonly step = signal<'explain' | 'review'>('explain');
+  private readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
+  readonly shownTrial = computed(
+    () => this.compared()[1] ?? this.compared()[0] ?? this.runtime.currentTrials().at(-1),
+  );
+  readonly shownCourse = computed(() => this.shownTrial()?.version.course ?? this.runtime.course());
+  constructor() {
+    effect(() => {
+      this.runtime.challenge().id;
+      this.view();
+      this.step.set('explain');
+      this.selected.set([]);
+    });
+  }
+  go(step: 'explain' | 'review'): void {
+    this.step.set(step);
+    afterNextRender(
+      () => {
+        const heading = this.element.nativeElement.querySelector<HTMLElement>('.question-card h2');
+        heading?.scrollIntoView({ block: 'nearest' });
+        heading?.focus({ preventScroll: true });
+      },
+      { injector: this.injector },
+    );
+  }
   readonly selected = signal<string[]>([]);
   readonly labels = commandLabels;
   readonly expression = commandExpression;

@@ -1,3 +1,5 @@
+import { bindLessonFocus } from '../../../shared/project-lessons/project-lesson-focus';
+import { WorkspaceToolsComponent } from '../../../shared/project-lessons/workspace-tools.component';
 import { TaskGuideComponent } from '../../../shared/learning/task-guide.component';
 import {
   afterRenderEffect,
@@ -23,7 +25,7 @@ import { NarrativeStoryMapComponent } from './narrative-story-map.component';
 
 @Component({
   selector: 'app-narrative-studio-page',
-  imports: [
+  imports: [WorkspaceToolsComponent,
     TaskGuideComponent,
     RouterLink,
     NarrativeCoachPanelComponent,
@@ -116,6 +118,10 @@ export class NarrativeStudioPageComponent implements OnDestroy {
   private priorNode?: string;
 
   constructor() {
+    bindLessonFocus((lesson) => {
+      const target = lesson.focusTarget;
+      if (target === 'write' || target === 'map' || target === 'playtest' || target === 'publish') this.openStage(target);
+    });
     afterRenderEffect(() => {
       const stage = this.runtime.state().stage;
       const nodeId = stage === 'playtest' ? this.playNodeId() : this.runtime.state().selectedNodeId;

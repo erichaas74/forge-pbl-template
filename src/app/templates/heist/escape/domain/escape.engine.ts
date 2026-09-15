@@ -4,7 +4,7 @@ import { validMachineAnswer } from '../locks/machine.rules';
 import type { MachineAnswer, MathGrade } from '../locks/machine.models';
 import type { EscapeAttempt, EscapeEnvelope, EscapeMission } from './escape.models';
 
-/** Deterministic local-practice progression; the UI cannot release animals or skip locks. */
+/** Visiting a lock is independent of solving it; only checked answers release animals. */
 export class EscapeEngine {
   started = false;
   index = 0;
@@ -55,6 +55,11 @@ export class EscapeEngine {
     } else if (c.type === 'start') {
       if (this.started) return false;
       this.started = true;
+    } else if (c.type === 'visit') {
+      if (!this.started || this.complete || !this.mission.world || !('stepId' in c)) return false;
+      const index = this.mission.steps.findIndex((step) => step.id === c.stepId);
+      if (index < 0) return false;
+      this.index = index;
     } else {
       if (!this.started || this.complete || !('stepId' in c) || c.stepId !== this.current.id)
         return false;
@@ -81,7 +86,14 @@ export class EscapeEngine {
         this.checkpoints.set(this.current.id, structuredClone(c.answer));
       } else if (c.type === 'continue') {
         if (!this.solved.has(this.current.id)) return false;
-        this.index++;
+        if (this.solved.size === this.mission.steps.length) this.index = this.mission.steps.length;
+        else {
+          const next = this.mission.steps.findIndex(
+            (step, i) => i > this.index && !this.solved.has(step.id),
+          );
+          this.index =
+            next >= 0 ? next : this.mission.steps.findIndex((step) => !this.solved.has(step.id));
+        }
       } else if (c.type === 'submit') {
         if (this.solved.has(this.current.id) || !('answer' in c) || this.attempts.length >= 1500)
           return false;

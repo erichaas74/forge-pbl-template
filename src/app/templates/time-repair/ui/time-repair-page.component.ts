@@ -1,3 +1,5 @@
+import { bindLessonFocus } from '../../../shared/project-lessons/project-lesson-focus';
+import { WorkspaceToolsComponent } from '../../../shared/project-lessons/workspace-tools.component';
 import {
   afterNextRender,
   ChangeDetectionStrategy,
@@ -12,21 +14,30 @@ import {
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { nodeStatus } from '../domain/time-repair.engine';
-import { TimeRepairRuntime } from '../runtime/time-repair.runtime';
+import { TimeRepairRuntime, TIME_REPAIR_SESSION } from '../runtime/time-repair.runtime';
+import { TimeRepairWeekWorkspaceComponent } from './time-repair-week-workspace.component';
 import { TimeRepairInvestigationComponent } from './time-repair-investigation.component';
 import { TimeRepairSceneComponent } from './time-repair-scene.component';
 
 type Space = 'control' | 'archive' | 'scene' | 'ripple';
 @Component({
   selector: 'app-time-repair-page',
-  imports: [FormsModule, RouterLink, TimeRepairInvestigationComponent, TimeRepairSceneComponent],
+  imports: [TimeRepairWeekWorkspaceComponent, WorkspaceToolsComponent,FormsModule, RouterLink, TimeRepairInvestigationComponent, TimeRepairSceneComponent],
   templateUrl: './time-repair-page.component.html',
   styleUrl: './time-repair-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimeRepairPageComponent {
+  constructor() {
+    bindLessonFocus((lesson) => {
+      const target = lesson.focusTarget;
+      if (target === 'control' || target === 'archive' || target === 'ripple') this.openSpace(target);
+    });
+  }
   readonly runtime = inject(TimeRepairRuntime);
   readonly config = this.runtime.config;
+  private readonly sessionContext = inject(TIME_REPAIR_SESSION);
+  readonly weeklyPreview = !!this.config.previewWeeks && this.sessionContext.mode === 'preview' && this.sessionContext.authorityMode === 'localDemo';
   readonly nodes = [...this.config.nodes].sort((a, b) => a.order - b.order);
   readonly selectedNodeId = signal(this.config.missions[0].nodeId);
   readonly selectedNode = computed(() =>

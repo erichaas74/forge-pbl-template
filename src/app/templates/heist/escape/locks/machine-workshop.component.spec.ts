@@ -136,4 +136,39 @@ describe('Independent machine workshop controls', () => {
     expect(solved).toHaveBeenCalledOnce();
     expect(c.testing()).toBe(false);
   });
+  it('records an automatic cage release in preview and replays without another trial or completion', async () => {
+    const f = await create(1), c = f.componentInstance, tested = vi.fn(), solved = vi.fn();
+    f.componentRef.setInput('authoringPreview', true);
+    c.tested.subscribe(tested); c.solved.subscribe(solved); f.detectChanges();
+    callbacks.input({type:'steps', value:12}); f.detectChanges();
+    callbacks.engage?.();
+    expect(c.testing()).toBe(true);
+    expect(tested).toHaveBeenCalledOnce();
+    expect(solved).not.toHaveBeenCalled();
+    expect(c.state().seals).toEqual([]);
+    callbacks.finished(); callbacks.replay?.();
+    expect(c.testing()).toBe(true);
+    callbacks.finished();
+    expect(tested).toHaveBeenCalledOnce();
+    expect(solved).not.toHaveBeenCalled();
+  });
+  it('automatically tests the rabbit cog and replays without duplicate rescue or preview awards', async () => {
+    const f = await create(2), c = f.componentInstance, tested = vi.fn(), solved = vi.fn();
+    f.componentRef.setInput('authoringPreview', true);
+    c.tested.subscribe(tested); c.solved.subscribe(solved); f.detectChanges();
+    for (const [index, offset] of [[0, 0], [2, 12], [3, 18]]) {
+      callbacks.input({type: 'piece', index, offset}); f.detectChanges();
+    }
+    expect(c.diorama()).toBe(true);
+    expect(c.reading().solved).toBe(true);
+    callbacks.engage?.();
+    expect(c.testing()).toBe(true);
+    expect(tested).toHaveBeenCalledOnce();
+    callbacks.finished(); callbacks.replay?.();
+    expect(c.testing()).toBe(true);
+    callbacks.finished();
+    expect(tested).toHaveBeenCalledOnce();
+    expect(solved).not.toHaveBeenCalled();
+    expect(c.state().seals).toEqual([]);
+  });
 });

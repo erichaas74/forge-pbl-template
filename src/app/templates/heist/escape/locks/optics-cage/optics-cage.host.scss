@@ -1,0 +1,11 @@
+.workshop.optics-diorama .stage-shell,
+:host(.week-preview) .workshop.optics-diorama .stage-shell {
+  height: 680px;
+  min-height: 680px;
+}
+@media (max-width: 600px) {
+  :host(.week-preview) .workshop.optics-diorama .stage-shell {
+    height: 700px;
+    min-height: 700px;
+  }
+}

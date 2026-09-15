@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600" role="img" aria-label="Block tower and seasonal shadow markers">
+<defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="#12373c"/><stop offset="1" stop-color="#467665"/></linearGradient><linearGradient id="land" x2="0" y2="1"><stop stop-color="#a9b88c"/><stop offset="1" stop-color="#607d63"/></linearGradient></defs>
+<path fill="url(#sky)" d="M0 0h1000v600H0z"/><circle cx="745" cy="134" r="37" fill="#ffda7e"/><circle cx="745" cy="134" r="58" fill="none" stroke="#e7d995" opacity=".3"/><circle cx="178" cy="105" r="22" fill="#cadcd6"/><circle cx="189" cy="96" r="21" fill="#214b4b"/>
+<g fill="none" stroke="#f7d891" stroke-width="3" stroke-dasharray="9 12" opacity=".65"><path d="M70 340Q500 -180 930 340"/><path d="M70 340Q500 20 930 340"/><path d="M70 340Q500 180 930 340"/></g>
+<path d="M0 382L520 284 1000 385V600H0Z" fill="url(#land)"/><g stroke="#d9dfb6" opacity=".3"><path d="M0 460L630 306M0 545L820 349M200 600L1000 394M500 600L1000 478M820 600L1000 550M30 377L930 600M215 342L1000 530M395 307L1000 445"/></g>
+<path d="M523 394L544 405 232 520 213 506Z" fill="#163d3b" opacity=".7"/><path d="M501 226L526 216 550 228V396L526 409 501 397Z" fill="#e7d2a6"/><path d="M526 241L550 228V396L526 409Z" fill="#ad956d"/><path d="M501 226L526 216 550 228 526 241Z" fill="#ffefc8"/>
+<g stroke="#8b795a" stroke-width="2"><path d="M501 250L526 264 550 251M501 274L526 287 550 275M501 298L526 312 550 299M501 322L526 336 550 323M501 346L526 360 550 347M501 370L526 384 550 371"/></g>
+<g fill="none" stroke="#ffe3a1" stroke-width="5"><ellipse cx="438" cy="440" rx="22" ry="10"/><ellipse cx="340" cy="477" rx="22" ry="10"/><ellipse cx="222" cy="519" rx="22" ry="10"/></g>
+<g fill="#fff5d7" font-family="system-ui,sans-serif" font-size="15" letter-spacing="2"><text x="420" y="469">JUNE</text><text x="308" y="505">EQUINOX</text><text x="194" y="550">DECEMBER</text><text x="50" y="54">THE SKY IS YOUR CALENDAR</text></g>
+<path d="M889 525V468m-9 14 9-14 9 14" fill="none" stroke="#fff5d7" stroke-width="3"/><text x="881" y="455" fill="#fff5d7" font-family="system-ui" font-size="20">N</text>
+</svg>

@@ -1,3 +1,5 @@
+import { bindLessonFocus } from '../../../shared/project-lessons/project-lesson-focus';
+import { WorkspaceToolsComponent } from '../../../shared/project-lessons/workspace-tools.component';
 import {
   afterNextRender,
   Component,
@@ -18,12 +20,20 @@ import { MuseumPublicationService } from './museum-publication.service';
 
 @Component({
   selector: 'app-student-room-workspace',
-  imports: [MuseumSceneComponent, MuseumWalkthroughComponent],
+  imports: [WorkspaceToolsComponent,MuseumSceneComponent, MuseumWalkthroughComponent],
   providers: [MuseumPublicationService],
   templateUrl: './student-room-workspace.component.html',
   styleUrl: './student-room-workspace.component.scss',
 })
 export class StudentRoomWorkspaceComponent {
+  constructor() {
+    bindLessonFocus((lesson) => {
+      if (lesson.focusTarget === 'edit' || lesson.focusTarget === 'preview') {
+        this.visiting.set(false);
+        this.preview.set(lesson.focusTarget === 'preview');
+      }
+    });
+  }
   readonly runtime = inject(ExhibitHallRuntimeService);
   readonly publication = inject(MuseumPublicationService);
   readonly selectedSlot = signal<string | undefined>(undefined);

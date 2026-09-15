@@ -2,6 +2,7 @@ import { EventRegistry, CapabilityRegistry } from '../../../core/registries/spec
 import { Registry } from '../../../core/registries/registry';
 
 export const historyLiveEventIds = [
+  'inquiry.draftChanged', 'inquiry.attemptSubmitted', 'inquiry.reviewed', 'inquiry.segmentPrepared',
   'reporting.storySelected', 'reporting.stepOpened', 'reporting.questionAsked',
   'reporting.noteDraftChanged', 'reporting.noteSaved', 'reporting.boardChanged',
   'reporting.noteLinked', 'reporting.checkChanged', 'reporting.formatSelected',
@@ -67,6 +68,10 @@ historyLiveCommands.registerAll([
 ]);
 export const historyLiveCapabilities = new CapabilityRegistry();
 historyLiveCapabilities.register({
+  id: 'learning.worked-example', version: '1.0', status: 'extension',
+  eventsProduced: [], actionsSupported: [],
+});
+historyLiveCapabilities.register({
   id: 'history-live.story-reporting', version: '1.0', status: 'extension',
   eventsProduced: historyLiveEventIds.filter(id => id.startsWith('reporting.')),
   actionsSupported: ['history-live.reporting.configureFormats'],
@@ -77,4 +82,13 @@ historyLiveCapabilities.register({
   status: 'extension',
   eventsProduced: historyLiveEventIds,
   actionsSupported: historyLiveCommands.list().map((command) => `history-live.${command.id}`),
+});
+
+historyLiveCapabilities.register({
+  id: 'learning.inquiry-portfolio', version: '1.0', status: 'extension',
+  eventsProduced: historyLiveEventIds.filter(id => id.startsWith('inquiry.')), actionsSupported: [],
+});
+historyLiveCapabilities.register({
+  id: 'history-live.field-studio', version: '1.0', status: 'extension',
+  eventsProduced: ['inquiry.segmentPrepared', 'recording.saved'], actionsSupported: [],
 });

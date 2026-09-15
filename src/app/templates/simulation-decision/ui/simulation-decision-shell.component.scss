@@ -840,3 +840,9 @@
     padding: 0.3rem 0.5rem;
   }
 }
+
+.field-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+  gap: 10px; padding: 12px 90px; background: #122a30; color: #f5f4df; }
+.field-controls .next-action { min-height: 44px; padding: 10px 18px; border-radius: 24px; cursor: pointer;
+  color: #152f2c; background: #dfc273; border: 0; font-weight: 700; }
+@media (max-width: 700px) { .field-controls { padding: 70px 12px 12px; } }

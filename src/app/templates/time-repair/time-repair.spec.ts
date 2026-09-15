@@ -190,7 +190,8 @@ describe('Time Repair evidence-to-verification capability', () => {
     expect(() => dispatch(state, action)).toThrow('ALREADY_REPAIRED');
   });
   it('uses the identical runtime for an original literary scene-sequence content pack', () => {
-    const story = { ...structuredClone(raw), evidence: [] as TimeRepairConfig['evidence'] };
+    // The independent literary fixture does not inherit the history authoring content.
+    const story = { ...structuredClone(raw), previewWeeks: undefined, evidence: [] as TimeRepairConfig['evidence'] };
     story.projectId = 'letter-out-of-order';
     story.subject = 'literature';
     story.title = 'The Letter Before the Storm';

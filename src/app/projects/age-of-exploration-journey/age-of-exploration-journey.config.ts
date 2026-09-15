@@ -2,6 +2,7 @@ import type { JourneyProjectConfig } from '../../templates/journey-replay/domain
 import { expeditionEvidence, expeditionLearning } from './age-of-exploration-learning';
 import { withAtlanticAdventures } from './atlantic-adventures';
 import { withHistoricalVoyage } from './historical-voyage';
+import { withVoyageExperience } from './voyage-experience';
 
 export const legacyAgeOfExplorationJourneyConfig: JourneyProjectConfig = {
   schemaVersion: '1.0',
@@ -985,6 +986,8 @@ export const adventureAgeOfExplorationJourneyConfig = withAtlanticAdventures(
   evidenceAgeOfExplorationJourneyConfig,
 );
 
-export const ageOfExplorationJourneyConfig = withHistoricalVoyage(
+export const historicalAgeOfExplorationJourneyConfig = withHistoricalVoyage(
   adventureAgeOfExplorationJourneyConfig,
 );
+
+export const ageOfExplorationJourneyConfig = withVoyageExperience(historicalAgeOfExplorationJourneyConfig);

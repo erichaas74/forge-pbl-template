@@ -134,5 +134,10 @@ for grade in (6,7,8):
     p['hint']='For each meshed pair, turns multiply by driver teeth divided by driven teeth. The shared axle turns together.'
     mission['steps'][3].setdefault('gradePuzzles',{})[str(grade)]=p
 
+# Weekly authoring content is maintained in the current package, independently of math fixtures.
+# Rebuilding the unchanged machines must not discard that optional preview extension.
+current = json.loads(project.read_text(encoding='utf-8'))
+if 'previewWeeks' in current:
+    mission['previewWeeks'] = current['previewWeeks']
 project.write_text(json.dumps(mission,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
 # Keep the matching version in src/app/projects/project-catalog.ts when publishing.

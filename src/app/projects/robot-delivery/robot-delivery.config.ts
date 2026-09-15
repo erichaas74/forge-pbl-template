@@ -1,3 +1,4 @@
+import { robotDeliveryWeeks } from './robot-delivery-weeks';
 import type {
   AutomationProjectConfig,
   CommandType,
@@ -245,6 +246,7 @@ export const robotDeliveryConfig: AutomationProjectConfig = {
   subtitle: 'Programming & Automation Challenge',
   initialChallengeId: 'precision-parking',
   championshipChallengeId: 'championship',
+  previewWeeks: robotDeliveryWeeks,
   robot: {
     id: 'courier-01',
     name: 'Courier 01',
@@ -276,7 +278,7 @@ export const robotDeliveryConfig: AutomationProjectConfig = {
       'Precision Parking',
       1,
       'parking',
-      'Park the center of your robot on the selected target. Try a rotation guess, watch the run, then use evidence to improve it.',
+      'What number parks your robot on the target?',
       movement,
       ['circumference', 'distance-rotations'],
       'Find the distance from the start to your target. Divide it by the measured travel per wheel rotation.',
@@ -366,7 +368,7 @@ export const robotDeliveryConfig: AutomationProjectConfig = {
         'Robot Command Championship',
         3,
         'championship',
-        'Deliver both packages to their matching zones and return to the start. Lock a tested program, then run it autonomously.',
+        'Deliver both packages to their matching zones and return to the start. Test and revise your autonomous program.',
         all,
         [
           'circumference',

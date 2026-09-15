@@ -49,6 +49,7 @@ export function createInitialHistoryLiveState(
     schemaVersion: '1.0',
     revision: 1,
     stage: 'opening',
+    selectedSide: config.fieldStudio?.networkSide,
     role: 'student',
     sideLocked: false,
     pitch: EMPTY_PITCH,
@@ -138,21 +139,10 @@ export function canOpenStage(state: HistoryLiveRuntimeState, stage: HistoryLiveS
 export function interleaveBroadcastSegments(
   segments: readonly BroadcastSegment[],
 ): readonly BroadcastSegment[] {
-  const patriot = segments.filter((segment) => segment.side === 'patriot');
-  const british = segments.filter((segment) => segment.side === 'british');
-  const firstSide: HistoryLiveSide =
-    (segments[0]?.side ?? 'patriot') === 'patriot' ? 'patriot' : 'british';
-  const queues: Record<HistoryLiveSide, BroadcastSegment[]> = {
-    patriot: [...patriot],
-    british: [...british],
-  };
+  const keys = [...new Set(segments.map(s => s.side))];
+  const queues = keys.map(key => segments.filter(s => s.side === key));
   const result: BroadcastSegment[] = [];
-  let side = firstSide;
-  while (queues.patriot.length > 0 || queues.british.length > 0) {
-    const next = queues[side].shift() ?? queues[side === 'patriot' ? 'british' : 'patriot'].shift();
-    if (next !== undefined) result.push(next);
-    side = side === 'patriot' ? 'british' : 'patriot';
-  }
+  while (queues.some(q => q.length)) for (const queue of queues) { const next = queue.shift(); if (next) result.push(next); }
   return result;
 }
 
@@ -166,6 +156,9 @@ export function validateHistoryLiveVisualConfig(
   config: HistoryLiveProjectConfig,
 ): readonly string[] {
   const errors: string[] = [];
+  const sides = config.networks.map(n => n.side);
+  if (!sides.length || new Set(sides).size !== sides.length || sides.some(id => typeof id !== 'string' || !/^[a-z0-9][a-z0-9-]*$/.test(id))) errors.push('Network keys must be unique stable IDs.');
+  if (config.storyLeads.some(l => !sides.includes(l.side))) errors.push('Story references an unknown network.');
   for (const network of config.networks) {
     if (network.deskImageUrl.trim().length === 0) {
       errors.push(`Network ${network.id} is missing a project-specific desk image.`);
@@ -174,8 +167,9 @@ export function validateHistoryLiveVisualConfig(
       errors.push(`Network ${network.id} is missing desk image alt text.`);
     }
   }
-  for (const side of ['patriot', 'british'] as const) {
+  for (const side of new Set([...sides, ...config.storyLeads.map(l => l.side), ...config.assignmentScenes.map(s => s.side)].filter(id => typeof id === 'string'))) {
     const scene = config.assignmentScenes.find((item) => item.side === side);
+    if (scene === undefined && config.fieldStudio) continue;
     if (scene === undefined) {
       errors.push(`Side ${side} is missing an assignment scene.`);
       continue;

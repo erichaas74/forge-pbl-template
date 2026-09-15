@@ -1,0 +1,32 @@
+.workshop.gear-diorama {
+  height: auto;
+  overflow: visible;
+  > header,
+  > .calibrations,
+  > .preview-action,
+  > footer,
+  .run-caption {
+    display: none;
+  }
+  .stage-shell {
+    height: 660px;
+    min-height: 660px;
+    flex: none;
+  }
+  .stage {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+:host(.week-preview) .workshop.gear-diorama .stage-shell {
+  height: 660px;
+  min-height: 660px;
+}
+@media (max-width: 600px) {
+  :host(.week-preview) .workshop.gear-diorama .stage-shell {
+    height: 710px;
+    min-height: 710px;
+  }
+}

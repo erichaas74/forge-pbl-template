@@ -8,7 +8,10 @@ export const RESTORATION_PERSISTENCE = new InjectionToken<RestorationPersistence
 export class LocalRestorationAdapter implements RestorationPersistence {
   readonly key: string; private readonly signature: string;
   constructor(session: ProjectSessionContext, mission: RestorationMission) {
-    this.key = 'forge:heist:restoration:1:' + JSON.stringify([session.tenantId, session.classId, session.projectId, session.projectVersion, session.actorId, session.teamId, session.attemptId]); this.signature = JSON.stringify(mission);
+    this.key = 'forge:heist:restoration:1:' + JSON.stringify([session.tenantId, session.classId, session.projectId, session.projectVersion, session.actorId, session.teamId, session.attemptId]);
+    // Optional authoring content does not change the assessed collection's saved rules.
+    const { previewWeeks: _preview, ...assessedMission } = mission;
+    this.signature = JSON.stringify(assessedMission);
   }
   load(): readonly CollectionEnvelope[] {
     const raw = localStorage.getItem(this.key); if (!raw) return [];

@@ -1,29 +1,45 @@
+@if (!loading() && !error() && lessonPlan()) {
+  <app-project-lesson-nav
+    [plan]="lessonPlan()"
+    [route]="workspaceRoute()"
+    [selected]="lessonPlan()?.presentation && currentRoute().at(-1) === 'final-demo' ? 8 : selectedLesson()"
+    [finalExampleRoute]="hasFinalExample() ? ['/projects', project()!.id, 'final-demo'] : null"
+    [finalExampleActive]="currentRoute().at(-1) === 'final-demo'"
+  />
+}
 @if (loading()) {
-  <main class="project-host-status" aria-live="polite">
-    <span>Loading project package…</span>
-  </main>
+  <main class="project-host-status" aria-live="polite"><span>Loading project package…</span></main>
 } @else if (error()) {
   <main class="project-host-status project-host-error" role="alert">
     <h1>Project unavailable</h1>
     <p>{{ error() }}</p>
     <a routerLink="/projects">Return to projects</a>
   </main>
-} @else if (previewUrl(); as url) {
-  <iframe class="project-preview" [src]="url" [title]="project()?.title + ' — project preview'"></iframe>
 } @else {
-  @if (isActivity() && hasIntro() && !usesIntegratedActivityHeader() && project(); as current) {
-    <nav class="project-return-bar" aria-label="Project launch and example">
-      <a routerLink="/projects">← Back to projects</a>
-      <span>FORGE PBL</span>
-      <div class="lms-links">
-        <a [routerLink]="['/projects', current.id]">Opening</a>
-        @if (hasFinalExample()) {
-          <a [routerLink]="['/projects', current.id, 'final-demo']">Final example ↗</a>
-        }
-      </div>
-    </nav>
+  @if (standardsReview(); as review) {
+    <app-standards-review
+      [review]="review"
+      [plan]="lessonPlan()!"
+      [selected]="lessonPlan()?.presentation && currentRoute().at(-1) === 'final-demo' ? 8 : selectedLesson()"
+      [standards]="reviewStandards"
+      [connections]="curriculumConnections"
+      [compact]="!!lessonPlan()?.presentation"
+    />
+  } @else if (lessonPlan()?.presentation) {
+    <app-curriculum-disclosure [plan]="lessonPlan()!" [selected]="currentRoute().at(-1) === 'final-demo' ? 8 : selectedLesson()" />
   }
-  <ng-container
-    *ngComponentOutlet="component(); environmentInjector: projectInjector()"
-  ></ng-container>
+  <!-- Lesson changes retain the visual workspace and its unsaved drafts. -->
+  <div class="project-surface" [class.lesson-focused]="isActivity() && !!lessonPlan()">
+    @if (previewUrl(); as url) {
+      <iframe
+        class="project-preview"
+        [src]="url"
+        [title]="project()?.title + ' — project preview'"
+      ></iframe>
+    } @else {
+      <ng-container
+        *ngComponentOutlet="component(); environmentInjector: projectInjector()"
+      ></ng-container>
+    }
+  </div>
 }

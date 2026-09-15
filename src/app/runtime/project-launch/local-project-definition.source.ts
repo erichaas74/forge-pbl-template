@@ -30,10 +30,17 @@ export class LocalProjectDefinitionSource implements ProjectDefinitionSource {
       case 'projects/the-fate-of-the-republic':
         return (await import('../../projects/roman-senate-debate/roman-senate-debate.config'))
           .romanSenateDebateConfig;
-      case 'projects/race-around-the-world':
-        return (
-          await import('../../projects/age-of-exploration-journey/age-of-exploration-journey.config')
-        ).ageOfExplorationJourneyConfig;
+      case 'projects/expedition-news-network':
+        return (await import('../../projects/expedition-news-network/expedition-news-network.config')).expeditionNewsNetworkConfig;
+      case 'projects/hammurabi-on-trial':
+        return (await import('../../projects/hammurabi-on-trial/hammurabi-on-trial.config'))
+          .hammurabiOnTrialConfig;
+      case 'projects/race-around-the-world': {
+        const definitions = await import('../../projects/age-of-exploration-journey/age-of-exploration-journey.config');
+        if (project.projectVersion === '1.3.0') return definitions.historicalAgeOfExplorationJourneyConfig;
+        if (project.projectVersion === definitions.ageOfExplorationJourneyConfig.projectVersion) return definitions.ageOfExplorationJourneyConfig;
+        throw new Error('PROJECT_VERSION_NOT_AVAILABLE: The requested journey version is not installed.');
+      }
       case 'projects/survival-island-story-lab':
         return (await import('../../projects/survival-island-story-lab/survival-island.config'))
           .survivalIslandStoryLabConfig;

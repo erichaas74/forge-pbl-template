@@ -1,3 +1,6 @@
+import { bindLessonFocus } from '../../../shared/project-lessons/project-lesson-focus';
+import { AutomationWeekWorkspaceComponent } from './automation-week-workspace.component';
+import { WorkspaceToolsComponent } from '../../../shared/project-lessons/workspace-tools.component';
 import {
   afterNextRender,
   Component,
@@ -27,6 +30,8 @@ import type { RobotTrial } from '../domain/automation.models';
 @Component({
   selector: 'app-automation-lab',
   imports: [
+    AutomationWeekWorkspaceComponent,
+    WorkspaceToolsComponent,
     DecimalPipe,
     RobotCourseComponent,
     CommandEditorComponent,
@@ -45,8 +50,9 @@ export class AutomationLabComponent {
   readonly commandLabels = commandLabels;
   readonly commandDescriptions = commandDescriptions;
   readonly replay = inject(RobotReplayService);
-  readonly panel = signal<'workspace' | 'evidence' | 'championship'>('workspace');
-  readonly mobilePane = signal('course');
+  readonly panel = signal<'workspace' | 'evidence' | 'portfolio' | 'championship'>('workspace');
+  readonly reasoningView = signal(false);
+  readonly taskPanel = viewChild<ElementRef<HTMLElement>>('taskPanel');
   readonly trace = signal(true);
   readonly replayMode = signal(false);
   private readonly injector = inject(Injector);
@@ -69,9 +75,19 @@ export class AutomationLabComponent {
   );
   readonly pose = computed(() => this.replay.current() ?? this.shownCourse().startPose);
   constructor() {
+    bindLessonFocus((lesson) => {
+      if (this.runtime.testingWorkspace) return;
+      const target = lesson.focusTarget;
+      if (target === 'workspace' || target === 'evidence' || target === 'championship')
+        this.panel.set(target);
+    });
+    effect(() => {
+      if (this.panel() !== 'workspace') this.replay.pause();
+    });
     effect(() => {
       const trial = this.replay.trial();
-      if (trial && this.replayFinished()) this.runtime.observeTrial(trial.id);
+      if (this.panel() === 'workspace' && trial && this.replayFinished())
+        this.runtime.observeTrial(trial.id);
     });
     if (this.runtime.sample) {
       const trial = this.runtime.currentTrials().at(-1);
@@ -84,7 +100,6 @@ export class AutomationLabComponent {
   }
   choose(id: string): void {
     this.edit();
-    this.mobilePane.set('course');
     this.runtime.selectChallenge(id);
     if (this.runtime.sample) {
       const trial = this.runtime.currentTrials().at(-1);
@@ -102,8 +117,8 @@ export class AutomationLabComponent {
   openReasoning(): void {
     this.runtime.openReasoning();
     if (!this.runtime.reasoningOpened()) return;
-    this.edit();
-    this.mobilePane.set('math');
+    this.replay.pause();
+    this.reasoningView.set(true);
     afterNextRender(
       () => {
         const panel = this.mathPanel()?.nativeElement;
@@ -121,6 +136,7 @@ export class AutomationLabComponent {
     if (trial) this.showTrial(trial);
   }
   showTrial(trial: RobotTrial): void {
+    this.reasoningView.set(false);
     if (this.runtime.challenge().id !== trial.challengeId)
       this.runtime.selectChallenge(trial.challengeId);
     this.replayMode.set(true);
@@ -129,7 +145,6 @@ export class AutomationLabComponent {
       !(typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches),
     );
     this.panel.set('workspace');
-    this.mobilePane.set('course');
     afterNextRender(
       () => {
         const course = this.courseView()?.nativeElement;
@@ -144,6 +159,17 @@ export class AutomationLabComponent {
     this.replay.timeMs.set(0);
     this.replay.trial.set(undefined);
     this.replayMode.set(false);
+    this.reasoningView.set(false);
+    afterNextRender(
+      () => {
+        const task = this.taskPanel()?.nativeElement;
+        task?.scrollIntoView({ block: 'nearest' });
+        task
+          ?.querySelector<HTMLElement>('input:not(:disabled), button')
+          ?.focus({ preventScroll: true });
+      },
+      { injector: this.injector },
+    );
   }
   changeTarget(index: string): void {
     this.edit();

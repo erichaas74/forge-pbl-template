@@ -1,0 +1,74 @@
+<section class="worked-example" [attr.aria-labelledby]="example().id + '-title'">
+  <div class="example-heading">
+    <span class="eyebrow">{{
+      example().lesson === 1 ? 'Launch · sample news piece' : 'Final project · example video'
+    }}</span>
+    <span class="duration">{{ time(example().durationSeconds) }} · Model work</span>
+  </div>
+  <h3 [id]="example().id + '-title'">{{ example().title }}</h3>
+  <p class="intro">{{ example().summary }}</p>
+  <div class="example-columns">
+    <div>
+      <video
+        #player
+        controls
+        playsinline
+        preload="metadata"
+        [poster]="example().posterUrl"
+        [src]="example().videoUrl"
+        [attr.aria-label]="example().title + ' — example video'"
+        (loadedmetadata)="ready.set(true)"
+        (error)="failed.set(true)"
+      >
+        <track kind="captions" label="English" srclang="en" [src]="example().captionsUrl" />
+        Your browser cannot play this video. Read the transcript below.
+      </video>
+      @if (failed()) {
+        <p role="alert">This video could not load. You can still read its full transcript below.</p>
+      }
+      <p class="small">Captions are included in the picture. {{ example().attribution }}</p>
+      <a [href]="example().videoUrl" download>Download the example video</a>
+    </div>
+    <aside aria-label="What to notice in the example">
+      <strong>Watch for these things</strong>
+      <ul>
+        @for (point of example().lookFors; track point) {
+          <li>{{ point }}</li>
+        }
+      </ul>
+      <p>Use the structure as a guide. Create your own report and explain your own evidence.</p>
+      <p class="small">Watching an example does not complete a lesson or a standard.</p>
+    </aside>
+  </div>
+  <details>
+    <summary>Read the news piece and jump to a section</summary>
+    @for (chapter of example().chapters; track chapter.startSeconds; let i = $index) {
+      <section class="transcript-section">
+        <button
+          type="button"
+          [disabled]="!ready() || failed()"
+          [attr.aria-pressed]="activeChapter() === i"
+          (click)="jump(i)"
+        >
+          {{ time(chapter.startSeconds) }} · {{ chapter.label }}
+        </button>
+        <p>{{ chapter.text }}</p>
+      </section>
+    }
+    <div class="example-sources">
+      <strong>Sources used in this model</strong>
+      @for (id of example().sourceIds; track id) {
+        @if (credit(id); as source) {
+          <p>
+            {{ source.citation }}
+            @if (source.sourceUrl) {
+              <a [href]="source.sourceUrl" target="_blank" rel="noopener noreferrer"
+                >{{ source.title }} ↗</a
+              >
+            }
+          </p>
+        }
+      }
+    </div>
+  </details>
+</section>

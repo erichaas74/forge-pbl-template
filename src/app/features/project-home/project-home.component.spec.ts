@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
 import { ProjectHomeComponent } from './project-home.component';
+import { projectCatalog } from '../../projects/project-catalog';
 
 describe('ProjectHomeComponent', () => {
   it('renders demo links and leaves unbuilt project types inactive', async () => {
@@ -34,6 +35,10 @@ describe('ProjectHomeComponent', () => {
     ]);
 
     const inactive = fixture.debugElement.queryAll(By.css('.project-card a[aria-disabled="true"]'));
+    for (const project of projectCatalog) {
+      const card = fixture.debugElement.query(By.css(`[data-project-id="${project.id}"]`));
+      expect(card.query(By.css('.project-grade')).nativeElement.textContent.trim()).toBe(project.grade);
+    }
     expect(inactive).toHaveLength(2);
     for (const card of inactive) {
       expect(card.attributes['href']).toBeUndefined();
@@ -42,6 +47,7 @@ describe('ProjectHomeComponent', () => {
         card.query(By.css('.project-content p')).nativeElement.textContent.length,
       ).toBeGreaterThan(100);
       expect(card.nativeElement.textContent).toContain('Not built yet');
+      expect(card.query(By.css('.project-grade'))).toBeNull();
       card.nativeElement.click();
       expect(card.attributes['href']).toBeUndefined();
     }
@@ -53,7 +59,7 @@ describe('ProjectHomeComponent', () => {
     expect(mystery.query(By.css('.project-art')).nativeElement.textContent).toContain(
       'The Unlabeled Shelf',
     );
-    expect(mystery.query(By.css('.project-content p')).nativeElement.textContent).toContain(
+    expect(mystery.query(By.css('.project-content p:not(.project-grade)')).nativeElement.textContent).toContain(
       'developing competing explanations',
     );
 

@@ -561,7 +561,7 @@ export const frontierTradingConfig: SimulationDecisionConfig = {
   },
   title: 'Frontier Trading Company',
   subtitle: 'Trading Season Simulation',
-  gradeLabel: 'Grade 5 Mathematics PBL',
+  gradeLabel: 'Grade 6 Mathematics PBL',
   mission:
     'Build a trading company, manage limited cash and cargo, forecast route profit, solve trail math, and explain the strategy with game records.',
   companyNameSuggestions: [

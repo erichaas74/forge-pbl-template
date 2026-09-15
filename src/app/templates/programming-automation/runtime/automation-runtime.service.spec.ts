@@ -1,7 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { afterEach, describe, expect, it } from 'vitest';
 import { createLocalPreviewSession } from '../../../core/context/project-session-context';
-import { robotDeliveryConfig as config } from '../../../projects/robot-delivery/robot-delivery.config';
+import { robotDeliveryConfig } from '../../../projects/robot-delivery/robot-delivery.config';
+// These tests exercise the assessed lifecycle without the optional authoring preview.
+const config = { ...robotDeliveryConfig, previewWeeks: undefined };
 import {
   createRobotSampleState,
   robotSampleStudent,

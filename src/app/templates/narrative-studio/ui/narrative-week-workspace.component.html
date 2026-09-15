@@ -1,0 +1,117 @@
+<main class="week-workspace" [attr.data-week]="week().week">
+  <section class="interactive" aria-label="Interactive story workspace">
+    <header class="mission-header">
+      <p class="eyebrow">STORY WRITING · WEEK {{ week().week }}</p>
+      <h1>{{ week().title }}</h1>
+      <p>{{ week().setting }}</p>
+      <span class="test-badge">Editable sample · resets on reload</span>
+    </header>
+    <div class="session-bar">
+      <strong>{{ sessionIndex() === 0 ? 'Individual learning' : 'Group activity · local test' }}</strong>
+      <h2>{{ session().title }}</h2>
+      <p>{{ session().mission }}</p>
+    </div>
+    <nav class="tool-bar" aria-label="Story tools">
+      @for (item of tools; track item.id) {
+        <button type="button" [class.active]="tool() === item.id" [attr.aria-pressed]="tool() === item.id" (click)="chooseTool(item.id)">{{ item.label }}</button>
+      }
+    </nav>
+    @if (extraTool()) {
+      <p class="extra-note">Extra tool open · the products and tutor plan still describe Week {{ week().week }}, {{ session().title }}.</p>
+    }
+    <section class="active-surface" tabindex="-1" [attr.aria-label]="tool() === 'read' ? 'Playable story' : 'Story authoring'">
+      @if (tool() === 'map') {
+        <div class="surface-heading"><h2>Your branch map</h2><p>Select any scene to edit its writing or change its branches.</p></div>
+        <app-narrative-story-map [config]="runtime().storyConfig()" [scenes]="runtime().state().scenes" [activeNodeId]="runtime().state().selectedNodeId" (nodeSelected)="selectScene($event)" />
+      } @else if (tool() === 'read') {
+        <div class="reader-toolbar">
+          <button type="button" (click)="restart()">Restart current draft</button>
+          <button type="button" (click)="editReaderScene()">Edit this scene</button>
+        </div>
+        @if (replay(); as reading) { <p class="sample-note">Replaying a temporary earlier version. Original route: {{ reading.path.join(' → ') }}. Restart returns to your current draft.</p> }
+        <div class="path-strip" aria-label="Current reading path">
+          @for (id of path(); track $index; let index = $index) {
+            <button type="button" (click)="stepBack(index)" [attr.aria-current]="index === path().length - 1 ? 'step' : null">{{ index + 1 }} · {{ readerScenes()[id].title || 'Untitled scene' }}</button>
+          }
+        </div>
+        <article class="reader">
+          <p class="eyebrow">{{ replay()?.title ?? runtime().state().storyTitle }}</p>
+          <h2>{{ readerScene().title || 'Untitled scene' }}</h2>
+          <p class="story-copy">{{ readerScene().text || 'This scene is empty. Open the writer to create it.' }}</p>
+          @if (readerNode().choices.length) {
+            <h3>{{ readerNode().choiceQuestion }}</h3>
+            <div class="reader-choices">
+              @for (choice of readerNode().choices; track choice.id; let index = $index) {
+                <button type="button" (click)="choosePath(choice.nextNodeId)"><span>{{ index + 1 }}</span>{{ readerScene().choiceLabels[choice.id] || 'Untitled choice — edit in the writer' }} <b aria-hidden="true">→</b></button>
+              }
+            </div>
+          } @else {
+            <p class="ending">{{ readerNode().kind === 'ending' ? 'End of this path' : 'This branch is ready for you to continue writing.' }}</p>
+          }
+        </article>
+        <details class="test-paths"><summary>Paths tried in this test ({{ currentReadings().length }})</summary>
+          <p>Temporary versions, kept only on this page. The latest 20 paths remain available.</p>
+          @for (reading of currentReadings(); track $index; let index = $index) {
+            <button type="button" (click)="replayPath(reading)">Replay {{ index + 1 }} · {{ reading.scenes[reading.path.at(-1)!].title }} · {{ reading.path.length }} scenes</button>
+          } @empty { <p>Follow a route to an ending to try it again here.</p> }
+        </details>
+      } @else {
+        <div class="editor-tools">
+          <label>Scene<select aria-label="Writing scene" [value]="runtime().state().selectedNodeId" (change)="selectScene(inputValue($event))">
+            @for (node of runtime().storyConfig().nodes; track node.id) { <option [value]="node.id" [selected]="node.id === runtime().state().selectedNodeId">{{ sceneTitle(node.id) }}</option> }
+          </select></label>
+          <label>Writing lens<select aria-label="Writing point of view" [value]="runtime().state().bible.pointOfView" (change)="runtime().updateBible('pointOfView', inputValue($event) === 'first' ? 'first' : 'third')">
+            <option value="first">First person · I</option><option value="third">Third person · they</option>
+          </select></label>
+          <button type="button" class="primary" (click)="chooseTool('read')">▶ Play story</button>
+        </div>
+        <p class="craft-prompt">{{ runtime().selectedNode().craftPrompt }} <span>The writing lens is your intention; changing it does not rewrite your words.</span></p>
+        <div class="draft-grid" [class.comparing]="tool() === 'revise'">
+          @if (tool() === 'revise') {
+            <article class="original"><p class="eyebrow">Original fictional sample</p><h3>{{ sample()?.suggestedTitle || 'New branch' }}</h3><p class="story-copy">{{ sample()?.starterText || 'You created this branch. It has no sample text.' }}</p></article>
+          }
+          <div class="writer">
+            <label>Scene title<input [value]="runtime().selectedScene().title" (input)="runtime().updateSceneTitle(inputValue($event))" /></label>
+            <label class="prose-label"><span>Your scene <small>{{ wordCount(runtime().selectedScene().text) }} words · temporary draft</small></span>
+              <textarea aria-label="Your scene" rows="9" spellcheck="true" [value]="runtime().selectedScene().text" (input)="runtime().updateSceneText(inputValue($event))" placeholder="Write the next moment in your own words…"></textarea>
+            </label>
+          </div>
+        </div>
+        @if (runtime().selectedNode().choices.length) {
+          <fieldset class="choice-editor"><legend>Reader choices</legend>
+            @for (choice of runtime().selectedNode().choices; track choice.id; let index = $index) {
+              <div><label>Choice {{ index + 1 }}<input [value]="runtime().selectedScene().choiceLabels[choice.id]" (input)="runtime().updateChoice(choice.id, inputValue($event))" placeholder="Write a decision the reader can make" /></label>
+                <button type="button" (click)="selectScene(choice.nextNodeId)">Write destination → {{ sceneTitle(choice.nextNodeId) }}</button></div>
+            }
+          </fieldset>
+        }
+        <div class="branch-actions">
+          @if (!runtime().selectedNode().choices.length) {
+            <button type="button" (click)="changeBranch('branch')">{{ runtime().selectedScene().parkedChoices?.length ? 'Restore continuation' : 'Add two branches' }}</button>
+          }
+          @if (runtime().selectedNode().id !== week().startNodeId) {
+            <button type="button" (click)="changeBranch('finish')">Make this an ending</button>
+          }
+          <button type="button" (click)="chooseTool('map')">See the branch map</button>
+        </div>
+        <p class="sample-note">Fictional sample writing is editable. Ending a path keeps its later drafts in memory so you can restore the continuation.</p>
+      }
+    </section>
+    <p class="memory-note">Nothing is saved to student records. Edits and path tests last only while this workspace stays open.</p>
+  </section>
+  <aside class="planning" aria-label="Weekly products and tutor planning">
+    <details class="plan-card" open><summary><span class="eyebrow">WEEK {{ week().week }}</span><h2>Proposed weekly products</h2></summary>
+      <p>Potential work · no completion tracking</p>
+      <ol class="products">@for (item of week().sessions; track $index; let index = $index) {
+        <li [class.current]="sessionIndex() === index"><strong>Session {{ index + 1 }} · {{ index === 0 ? 'Individual learning' : 'Group activity' }}</strong><p>{{ item.product }}</p></li>
+      }</ol>
+      <p class="footnote">A future tutor will guide and review work before any completion is recorded. Group sessions are writing-circle plans; shared editing is not connected.</p>
+    </details>
+    <details class="plan-card tutor-card" open><summary><span class="eyebrow">BUILD PLANNING</span><h2>AI Tutor</h2><span class="offline">Not connected</span></summary>
+      <h3>Questions and concepts</h3><ul>@for (question of week().questions; track question) { <li>{{ question }}</li> }</ul>
+      <h3>Evidence to inspect</h3><ul>@for (item of week().evidence; track item) { <li>{{ item }}</li> }</ul>
+      <h3>Future model controls</h3><ul>@for (item of week().controls; track item) { <li>{{ item }}</li> }</ul>
+      <p class="footnote">Planning only. No tutor responses, automatic revision, assessment, or mastery decisions run in this test.</p>
+    </details>
+  </aside>
+</main>

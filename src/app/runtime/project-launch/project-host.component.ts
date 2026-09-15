@@ -10,6 +10,7 @@ import {
   type Type,
 } from '@angular/core';
 import { NgComponentOutlet } from '@angular/common';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DomSanitizer, Title, type SafeResourceUrl } from '@angular/platform-browser';
 import type { Subscription } from 'rxjs';
@@ -33,15 +34,28 @@ import {
   PROJECT_SESSION_RESOLVER,
 } from './project-launch.tokens';
 import { createLocalTemplateLauncherRegistry } from './template-launcher.registry';
+import { projectLessonRegistry } from './project-lesson.registry';
+import {
+  lessonNumber,
+  type ProjectLessonPlan,
+} from '../../shared/project-lessons/project-lesson.models';
+import { ProjectLessonNavComponent } from '../../shared/project-lessons/project-lesson-nav.component';
+import { PROJECT_LESSON_FOCUS } from '../../shared/project-lessons/project-lesson-focus';
+import { StandardsReviewComponent } from '../../shared/project-lessons/standards-review.component';
+import { CurriculumDisclosureComponent } from '../../shared/project-lessons/curriculum-disclosure.component';
+import { findProjectStandardsReview, forgeReviewStandards, curriculumConnections } from './project-standards.registry';
 
 @Component({
   selector: 'app-project-host',
-  imports: [NgComponentOutlet, RouterLink],
+  imports: [NgComponentOutlet, RouterLink, ProjectLessonNavComponent, StandardsReviewComponent, CurriculumDisclosureComponent],
   templateUrl: './project-host.component.html',
   styleUrl: './project-host.component.scss',
 })
 export class ProjectHostComponent implements OnDestroy {
   private readonly route = inject(ActivatedRoute);
+  private readonly query = toSignal(this.route.queryParamMap, {
+    initialValue: this.route.snapshot.queryParamMap,
+  });
   private readonly parentInjector = inject(EnvironmentInjector);
   private readonly documentTitle = inject(Title);
   private readonly sanitizer = inject(DomSanitizer);
@@ -54,6 +68,27 @@ export class ProjectHostComponent implements OnDestroy {
   private generation = 0;
 
   readonly project = signal<ProjectCatalogEntry | undefined>(undefined);
+  readonly lessonPlan = signal<ProjectLessonPlan | undefined>(undefined);
+  readonly standardsReview = computed(() =>
+    findProjectStandardsReview(this.project(), this.lessonPlan()),
+  );
+  readonly reviewStandards = forgeReviewStandards;
+  readonly curriculumConnections = curriculumConnections;
+  readonly isLessonView = signal(false);
+  readonly currentRoute = signal<readonly string[]>([]);
+  readonly lessonFocus = computed(() => this.lessonPlan()?.lessons[this.selectedLesson() - 1]);
+  readonly workspaceFocus = computed(() =>
+    this.isActivity() && (this.isLessonView() || this.query().has('lesson'))
+      ? this.lessonFocus()
+      : undefined,
+  );
+  readonly workspaceRoute = computed(() =>
+    (this.isActivity() || this.isLessonView()) &&
+    !['final-demo', 'builder-info'].includes(this.currentRoute().at(-1) ?? '')
+      ? this.currentRoute()
+      : ['/projects', this.project()?.id ?? '', 'lessons'],
+  );
+  readonly selectedLesson = computed(() => lessonNumber(this.query().get('lesson')));
   readonly component = signal<Type<unknown> | null>(null);
   readonly projectInjector = signal<EnvironmentInjector | undefined>(undefined);
   readonly loading = signal(true);
@@ -91,6 +126,11 @@ export class ProjectHostComponent implements OnDestroy {
     this.loading.set(true);
     this.previewUrl.set(null);
     this.integratedHeader.set(false);
+    this.lessonPlan.set(undefined);
+    this.isLessonView.set(false);
+    this.hasIntro.set(false);
+    this.hasFinalExample.set(false);
+    this.isActivity.set(false);
     this.error.set(undefined);
     this.component.set(null);
     this.projectInjector()?.destroy();
@@ -106,26 +146,47 @@ export class ProjectHostComponent implements OnDestroy {
       return;
     }
     this.project.set(project);
+    const currentView = this.route.snapshot.paramMap.get('view');
+    this.currentRoute.set(['/projects', project.id, ...(currentView ? [currentView] : [])]);
     this.documentTitle.setTitle(`${project.title} | Forge PBL`);
 
     try {
+      const plan = projectLessonRegistry.find(project.id, project.projectVersion);
+      this.lessonPlan.set(plan);
+      this.hasFinalExample.set(
+        project.entryMode === 'preview' ||
+          !!projectIntroRegistry.find(project.id) ||
+          project.finalExampleMode === 'template',
+      );
+      if (this.route.snapshot.paramMap.get('view') === 'lessons') {
+        if (!plan)
+          throw new Error(
+            'LESSON_PLAN_UNAVAILABLE: This project version has no reviewed eight-lesson plan.',
+          );
+        this.isLessonView.set(true);
+      }
       // Content-only previews never resolve a student session or load a runtime package.
       if (project.entryMode === 'preview') {
         const view = this.route.snapshot.paramMap.get('view');
-        if (!/^[a-z0-9][a-z0-9-]*$/.test(project.id) || (view !== null && view !== 'final-demo')) {
+        if (
+          !/^[a-z0-9][a-z0-9-]*$/.test(project.id) ||
+          (view !== null && view !== 'final-demo' && view !== 'lessons')
+        ) {
           throw new Error('This project offers an introduction and a mock showcase only.');
         }
         const page = view === 'final-demo' ? 'showcase' : 'launch';
-        this.previewUrl.set(this.sanitizer.bypassSecurityTrustResourceUrl(
-          `/projects/${project.id}/${page}.html`,
-        ));
+        this.previewUrl.set(
+          this.sanitizer.bypassSecurityTrustResourceUrl(`/projects/${project.id}/${page}.html`),
+        );
         return;
       }
       const intro = projectIntroRegistry.find(project.id);
       const directEntry = project.entryMode === 'activity';
       this.hasIntro.set(!directEntry);
       this.hasFinalExample.set(!!intro || project.finalExampleMode === 'template');
-      const view = this.route.snapshot.paramMap.get('view');
+      const view = this.isLessonView()
+        ? (plan?.workspaceView ?? 'experience')
+        : this.route.snapshot.paramMap.get('view');
       this.isActivity.set(view !== null && view !== 'final-demo');
       const session =
         view === 'final-demo'
@@ -138,7 +199,10 @@ export class ProjectHostComponent implements OnDestroy {
       }
       let definition: unknown;
       let target: ProjectLaunchTarget;
-      if ((view === 'final-demo' && project.finalExampleMode !== 'template') || (view === null && !directEntry)) {
+      if (
+        (view === 'final-demo' && project.finalExampleMode !== 'template') ||
+        (view === null && !directEntry)
+      ) {
         if (view === 'final-demo' && !intro)
           throw new Error(
             'CAPABILITY_NOT_INSTALLED: This project has no final-example configuration.',
@@ -181,6 +245,7 @@ export class ProjectHostComponent implements OnDestroy {
           { provide: PROJECT_CATALOG_ENTRY, useValue: project },
           { provide: PROJECT_DEFINITION, useValue: definition },
           { provide: PROJECT_SESSION_CONTEXT, useValue: session },
+          { provide: PROJECT_LESSON_FOCUS, useValue: this.workspaceFocus },
           ...target.providers,
         ],
         this.parentInjector,

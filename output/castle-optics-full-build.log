@@ -1,0 +1,60 @@
+> Building...
+√ Building...
+Application bundle generation failed. [59.824 seconds] - 2026-09-15T18:42:31.920Z
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/time-repair/invention/knowledge/assembly.component.ts:13:53:
+      13 │ ..."'translate(0 '+((k.state().values['screw']??0)*12)+')'"><path ...
+         ╵                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/time-repair/invention/knowledge/assembly.component.ts:16:163:
+      16 │ ... [attr.opacity]="(k.state().values['mold']??0)>i ? 1:.15"><rect...
+         ╵                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/time-repair/invention/knowledge/assembly.component.ts:16:253:
+      16 │ ...="3" [attr.fill]="(k.state().values['ink']??0)>=2?'#1b292a':'#a...
+         ╵                       ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8107: NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator. Find more at https://v22.angular.dev/extended-diagnostics/NG8107 [plugin angular-compiler]
+
+    src/app/templates/time-repair/invention/knowledge/assembly.component.ts:28:273:
+      28 │ ...='none'?1:fault()==='ink'?.2:fault()==='type'&&i>=(k.state().va...
+         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Expected identifier for property access at column 84 in [fault()==='none'?1:fault()==='ink'?.2:fault()==='type'&&i>=(k.state().values['mold']??0)?0:.55] in C:/Users/erich/Desktop/pbl-lms/forge-pbl-template/src/app/templates/time-repair/invention/knowledge/assembly.component.ts@27:254 [plugin angular-compiler]
+
+    src/app/templates/time-repair/invention/knowledge/assembly.component.ts:28:254:
+      28 │ ...opacity]="fault()==='none'?1:fault()==='ink'?.2:fault()==='type...
+         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Parser Error: Unexpected token 2, expected identifier or keyword at column 37 in [fault()==='none'?1:fault()==='ink'?.2:fault()==='type'&&i>=(k.state().values['mold']??0)?0:.55] in C:/Users/erich/Desktop/pbl-lms/forge-pbl-template/src/app/templates/time-repair/invention/knowledge/assembly.component.ts@27:254 [plugin angular-compiler]
+
+    src/app/templates/time-repair/invention/knowledge/assembly.component.ts:28:254:
+      28 │ ...opacity]="fault()==='none'?1:fault()==='ink'?.2:fault()==='type...
+         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'l' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/invention/knowledge/people.activities.ts:4:539:
+      4 │ ...Array(p.links) && p.links.every(l => l !== p.id && c.places!.som...
+        ╵                                    ^
+
+
+X [ERROR] TS7006: Parameter 'l' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/invention/knowledge/people.activities.ts:4:875:
+      4 │ ...seen.has(p.id)) p.links.forEach(l => seen.add(l)); return seen.s...
+        ╵                                    ^
+
+

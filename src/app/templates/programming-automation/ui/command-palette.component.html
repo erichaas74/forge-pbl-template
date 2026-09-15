@@ -1,35 +1,64 @@
 <aside class="palette" aria-label="Code block library">
-  <header>
-    <span class="eyebrow">BLOCK LIBRARY</span>
-    <h3>Click to add</h3>
-    <p>{{ readOnly() ? 'Return to an editable program to add blocks.' : 'Pick a block. Set its values in your program.' }}</p>
-  </header>
+  <h3>Which block comes next?</h3>
   <div class="categories" role="group" aria-label="Block categories">
-    <button type="button" [attr.aria-pressed]="activeFilter() === 'all'" (click)="filter.set('all')">All</button>
+    <button
+      type="button"
+      [attr.aria-pressed]="activeFilter() === 'all'"
+      (click)="filter.set('all')"
+    >
+      All
+    </button>
     @for (group of groups(); track group.id) {
-      <button type="button" [attr.data-group]="group.id" [attr.aria-pressed]="activeFilter() === group.id" (click)="filter.set(group.id)">
+      <button
+        type="button"
+        [attr.data-group]="group.id"
+        [attr.aria-pressed]="activeFilter() === group.id"
+        (click)="filter.set(group.id)"
+      >
         <i aria-hidden="true"></i>{{ group.label }}
       </button>
     }
   </div>
   <div class="destination" [class.inside-loop]="inLoop()">
-    <span>ADDING TO <strong>{{ destination() }}</strong></span>
-    @if (inLoop()) { <button type="button" [disabled]="readOnly()" (click)="programEnd.emit()">Use program end</button> }
+    @if (inLoop()) {
+      <strong>{{ destination() }}</strong>
+    }
+    @if (inLoop()) {
+      <button type="button" [disabled]="readOnly()" (click)="programEnd.emit()">
+        Use program end
+      </button>
+    }
   </div>
   <div class="palette-list">
     @for (group of visibleGroups(); track group.id) {
       <section [attr.data-group]="group.id">
-        <h4><i aria-hidden="true"></i>{{ group.label }} <span>{{ group.types.length }}</span></h4>
+        <h4>
+          <i aria-hidden="true"></i>{{ group.label }} <span>{{ group.types.length }}</span>
+        </h4>
         @for (type of group.types; track type) {
-          <button class="palette-block" type="button" [disabled]="readOnly()" [attr.aria-label]="'Add ' + labels[type] + ' to ' + destination()" (click)="add(type)">
-            <span class="block-title"><app-command-graphic [type]="type" /><strong>{{ labels[type] }}</strong><b aria-hidden="true">+</b></span>
+          <button
+            class="palette-block"
+            type="button"
+            [title]="descriptions[type]"
+            [disabled]="readOnly()"
+            [attr.aria-label]="'Add ' + labels[type] + ' to ' + destination()"
+            (click)="add(type)"
+          >
+            <span class="block-title"
+              ><app-command-graphic [type]="type" /><strong>{{ labels[type] }}</strong
+              ><b aria-hidden="true">+</b></span
+            >
             @if (mathPreview(type); as math) {
-              <span class="math-preview"><span>{{ math.given }} {{ math.symbol }}</span><b>?</b><span>{{ math.unit }}</span></span>
+              <span class="math-preview"
+                ><span>{{ math.given }} {{ math.symbol }}</span
+                ><b>?</b><span>{{ math.unit }}</span></span
+              >
             }
-            <span class="block-description">{{ descriptions[type] }}</span>
           </button>
         }
       </section>
-    } @empty { <p>No blocks are available for this mission.</p> }
+    } @empty {
+      <p>No blocks are available for this mission.</p>
+    }
   </div>
 </aside>

@@ -40,6 +40,45 @@ function answer(r: ExpeditionRuntime, value: EscapeAnswer): void {
   else for (const index of value) r.input({ type: 'weight', index });
 }
 describe('Phaser expedition orchestration', () => {
+  it('visits unsolved locks, keeps drafts separate, and cannot finish by visiting the final lock', () => {
+    const r = create();
+    expect(r.visitLock(7)).toBe(false);
+    r.start();
+    r.visitLock(0);
+    r.input({ type: 'balance-place', index: 0, side: 2 });
+    expect(r.visitLock(1)).toBe(true);
+    r.setDeparture(20);
+    expect(r.visitLock(7)).toBe(true);
+    expect(r.current().id).toBe('boat');
+    expect(r.phase()).toBe('puzzle');
+    expect(r.engine().solved.size).toBe(0);
+    expect(r.engine().attempts).toHaveLength(0);
+    expect(r.engine().rescued).toBe(0);
+    expect(r.engine().complete).toBe(false);
+    r.setNumber(3);
+    expect(r.submit()).toBe('correct');
+    r.next();
+    expect(r.engine().complete).toBe(false);
+    expect(r.current().id).toBe('census');
+    expect(r.draft().placements?.[0]).toBe(2);
+    r.visitLock(1);
+    expect(r.draft().departure).toBe(20);
+    r.paused.set(true);
+    expect(r.visitLock(2)).toBe(false);
+    r.paused.set(false);
+    for (const index of [-1, 8, NaN, 1.5]) expect(r.visitLock(index)).toBe(false);
+  });
+  it('restores a visited lock without fabricating earlier solutions', () => {
+    const r = create([
+      { id: 'start-visit', command: { type: 'start' } },
+      { id: 'visit-last', command: { type: 'visit', stepId: 'boat' } },
+    ]);
+    expect(r.progress.restoreBlocked()).toBe(false);
+    r.start();
+    expect(r.current().id).toBe('boat');
+    expect(r.engine().solved.size).toBe(0);
+    expect(r.engine().rescued).toBe(0);
+  });
   it('restores a completed gear train and rejects invalid or paused gear changes', () => {
     const history: EscapeEnvelope[] = [{ id: 'gear-start', command: { type: 'start' } }];
     const values: EscapeAnswer[] = [[2, 2, 0, 0, 0, 2, 2, 2, 0, 0, 2, 2, 0, 0, 0], 25, 12];
@@ -74,7 +113,7 @@ describe('Phaser expedition orchestration', () => {
     expect(restored.draft().placements).toEqual([2, 1, 3]);
     expect(restored.engine().rescued).toBe(10);
   });
-  it('restores a released balance lock with its exact placements and relocks the entrance on reset', () => {
+  it('restores exact placements and clears rescue evidence on reset while paths remain visitable', () => {
     const placements = [2, 2, 0, 0, 0, 2, 2, 2, 0, 0, 2, 2, 0, 0, 0];
     const r = create([
       { id: 'start-lock', command: { type: 'start' } },
@@ -87,7 +126,8 @@ describe('Phaser expedition orchestration', () => {
     expect(r.navigation.navigate(inside)).toBe(true);
     r.reset();
     expect(r.draft().placements).toBeUndefined();
-    expect(r.navigation.navigate(inside)).toBe(false);
+    expect(r.navigation.navigate(inside)).toBe(true);
+    expect(r.engine().solved.size).toBe(0);
   });
   it('requires walking, math, and explicit continuation for all eight rescues', () => {
     const r = create();

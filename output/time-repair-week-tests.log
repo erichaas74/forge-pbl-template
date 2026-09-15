@@ -1,0 +1,14 @@
+Using Vitest configuration file: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\scripts\time-repair-vitest.config.ts
+> Building...
+√ Building...
+Application bundle generation complete. [7.175 seconds] - 2026-09-14T23:27:29.056Z
+
+
+ RUN  v4.1.11 C:/Users/erich/Desktop/pbl-lms/forge-pbl-template
+
+
+ Test Files  3 passed (3)
+      Tests  29 passed (29)
+   Start at  17:27:29
+   Duration  4.78s (transform 698ms, setup 658ms, import 896ms, tests 1.49s, environment 1.38s)
+

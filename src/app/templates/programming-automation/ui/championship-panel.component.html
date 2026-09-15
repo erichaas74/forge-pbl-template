@@ -1,0 +1,325 @@
+<div class="review-layout">
+  <section class="visual-panel" aria-label="Championship course">
+    <app-robot-course
+      [course]="shownCourse()"
+      [robotRadiusCm]="runtime.config.robot.radiusCm"
+      [targetIndex]="
+        finalTrial()?.version?.targetIndex ??
+        (runtime.isChampionship() || !runtime.state().championship.revealed
+          ? runtime.draft().targetIndex
+          : 0)
+      "
+      [sample]="finalTrial()?.pathSamples?.at(-1)"
+      [samples]="finalTrial()?.pathSamples ?? []"
+      [events]="finalTrial()?.events ?? []"
+      [result]="finalTrial()"
+    />
+    <p class="visual-caption">
+      {{
+        runtime.state().championship.revealed
+          ? 'Final course · local rehearsal'
+          : 'Your current practice course'
+      }}
+    </p>
+    @if (finalTrial(); as trial) {
+      <button (click)="replay.emit(trial)">▶ Replay final run</button>
+    }
+    <button (click)="practice()">
+      {{
+        !runtime.canEdit()
+          ? 'View recorded program'
+          : runtime.state().championship.revealed
+            ? 'Practice this course'
+            : 'Keep practicing'
+      }}
+    </button>
+  </section>
+  <section class="question-card">
+    @if (!runtime.state().championship.revealed) {
+      <h2 tabindex="-1">Your teacher will reveal the final course.</h2>
+      <p>Keep testing your program while you wait.</p>
+    } @else if (!runtime.isChampionship()) {
+      <h2 tabindex="-1">How will you complete the final route?</h2>
+      <p>{{ finalChallenge().mission }}</p>
+      <button class="primary" (click)="begin()">Plan the final run</button>
+    } @else if (activeStep() === 5) {
+      <h2 tabindex="-1">
+        {{
+          runtime.draft().lockedVersionId
+            ? finalTrial()
+              ? 'Your final run is recorded'
+              : 'Your program is locked'
+            : 'Ready for your final run?'
+        }}
+      </h2>
+      @if (runtime.draft().lockedVersionId) {
+        <p role="status">
+          {{
+            finalTrial()
+              ? runtime.sample
+                ? 'Review the recorded run and its saved defense.'
+                : 'Review your recorded run and explain your design in the final defense.'
+              : 'Your recorded version is in the launch queue.'
+          }}
+        </p>
+      } @else {
+        <ul class="readiness">
+          @for (problem of runtime.readiness(); track problem) {
+            <li>{{ problem }}</li>
+          } @empty {
+            <li>Your evidence is ready.</li>
+          }
+        </ul>
+        <p>Locking keeps this exact code and evidence for the final run.</p>
+      }
+      <details>
+        <summary>Your predictions</summary>
+        <p>{{ runtime.draft().prediction.route }}</p>
+        <dl>
+          @for (field of predictionFields; track field.key) {
+            <dt>{{ field.label }}</dt>
+            <dd>{{ runtime.draft().prediction[field.key] || 'Not recorded' }}</dd>
+          }
+        </dl>
+      </details>
+      @if (!runtime.draft().lockedVersionId) {
+        <div class="actions">
+          <button (click)="go(0)">Edit predictions</button
+          ><button
+            class="primary"
+            [disabled]="
+              runtime.sample ||
+              runtime.readiness().length > 0 ||
+              runtime.state().championship.finalized
+            "
+            (click)="lockDialog.showModal()"
+          >
+            Review & lock program
+          </button>
+        </div>
+      }
+    } @else {
+      @if (activeStep() === 0) {
+        <h2 tabindex="-1">What route will your robot follow?</h2>
+        <label
+          >Your route<textarea
+            aria-label="Planned route"
+            rows="5"
+            [value]="runtime.draft().prediction.route"
+            (input)="runtime.updatePrediction('route', $any($event.target).value)"
+            [disabled]="!runtime.canEdit()"
+            placeholder="First… Then… Finally…"
+          ></textarea>
+        </label>
+      } @else {
+        @let field = predictionFields[activeStep() - 1];
+        <h2 tabindex="-1">{{ field.question }}</h2>
+        <label
+          >{{ field.label
+          }}<input
+            type="number"
+            min="0"
+            [attr.aria-label]="field.label"
+            [value]="runtime.draft().prediction[field.key]"
+            (input)="runtime.updatePrediction(field.key, $any($event.target).value)"
+            [disabled]="!runtime.canEdit()"
+        /></label>
+      }
+      <div class="actions">
+        @if (activeStep() > 0) {
+          <button (click)="go(activeStep() - 1)">Back</button>
+        }
+        <button class="primary" [disabled]="!canContinue()" (click)="go(activeStep() + 1)">
+          Continue
+        </button>
+      </div>
+    }
+  </section>
+</div>
+<div class="review-support">
+  <details>
+    <summary>Launch queue & results</summary>
+    <h3>
+      Launch queue ·
+      {{
+        runtime.state().championship.finalized
+          ? 'Finalized'
+          : runtime.state().championship.paused
+            ? 'Paused'
+            : 'Ready'
+      }}
+    </h3>
+    <ol>
+      @for (id of runtime.state().championship.queue; track id) {
+        <li>{{ owner(id) }} · {{ status(id) }}</li>
+      } @empty {
+        <li>No programs locked yet.</li>
+      }
+    </ol>
+    @if (runtime.state().championship.showStandings) {
+      <h3>Rehearsal standings</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Place</th>
+            <th>Engineer</th>
+            <th>Performance</th>
+            <th>Time</th>
+            <th>Review</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (trial of runtime.standings(); track trial.id; let i = $index) {
+            <tr>
+              <td>{{ i + 1 }}</td>
+              <td>{{ trial.version.ownerName }}</td>
+              <td>{{ trial.score.toFixed(1) }} / 100</td>
+              <td>{{ trial.elapsedSeconds.toFixed(1) }} s</td>
+              <td><button (click)="replay.emit(trial)">Replay</button></td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5">Launch a locked program to record a result.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      <p>
+        Performance: delivery 35 · navigation 20 · efficiency 20 · reliability 15 · prediction 10.
+        Academic assessment uses the portfolio.
+      </p>
+    }
+  </details>
+  @if (runtime.canControl()) {
+    <details>
+      <summary>Teacher tools</summary>
+      @if (runtime.canControl()) {
+        <details>
+          <summary>Teacher rehearsal controls</summary>
+          <div class="settings">
+            <label
+              ><input
+                type="checkbox"
+                [checked]="runtime.state().championship.revealed"
+                (change)="runtime.control({ revealed: $any($event.target).checked })"
+                [disabled]="runtime.state().championship.finalized"
+              />Reveal course</label
+            ><label
+              ><input
+                type="checkbox"
+                [checked]="runtime.state().championship.practiceOpen"
+                (change)="runtime.control({ practiceOpen: $any($event.target).checked })"
+                [disabled]="runtime.state().championship.finalized"
+              />Practice open</label
+            ><label
+              >Practice limit (0 = unlimited)<input
+                type="number"
+                min="0"
+                max="100"
+                [value]="runtime.state().championship.practiceLimit"
+                (change)="limit($any($event.target).value)"
+                [disabled]="runtime.state().championship.finalized" /></label
+            ><label
+              ><input
+                type="checkbox"
+                [checked]="runtime.state().championship.showStandings"
+                (change)="runtime.control({ showStandings: $any($event.target).checked })"
+              />Show standings</label
+            >
+          </div>
+          <div class="actions">
+            <button
+              (click)="runtime.control({ paused: !runtime.state().championship.paused })"
+              [disabled]="runtime.state().championship.finalized"
+            >
+              {{ runtime.state().championship.paused ? 'Resume queue' : 'Pause queue' }}</button
+            ><button
+              (click)="launch()"
+              [disabled]="
+                runtime.state().championship.paused || runtime.state().championship.finalized
+              "
+            >
+              Launch next locked program</button
+            ><button
+              (click)="finalizeDialog.showModal()"
+              [disabled]="runtime.state().championship.finalized || !runtime.standings().length"
+            >
+              Finalize rehearsal
+            </button>
+          </div>
+        </details>
+      }
+      @if (runtime.canControl()) {
+        <details>
+          <summary>Unlock or record a technical rerun</summary>
+          <p>
+            Original versions and results stay in the history. A technical rerun excludes the
+            original result from standings and queues that same program again.
+          </p>
+          <label
+            >Reason<input
+              placeholder="Describe what happened (at least 8 characters)"
+              [value]="reason()"
+              (input)="reason.set($any($event.target).value)"
+          /></label>
+          <div class="actions">
+            @if (runtime.draft().lockedVersionId; as versionId) {
+              <button
+                [disabled]="reason().trim().length < 8 || runtime.state().championship.finalized"
+                (click)="runtime.unlock(versionId, reason()); reason.set('')"
+              >
+                Unlock current version
+              </button>
+            }
+            @for (trial of runtime.standings(); track trial.id) {
+              <button
+                [disabled]="reason().trim().length < 8 || runtime.state().championship.finalized"
+                (click)="runtime.technicalRerun(trial.id, reason()); reason.set('')"
+              >
+                Technical rerun · {{ trial.version.ownerName }}
+              </button>
+            }
+          </div>
+        </details>
+        <details>
+          <summary>Rehearsal audit history ({{ runtime.state().audit.length }})</summary>
+          @for (event of runtime.state().audit; track event.id) {
+            <p>
+              <strong>{{ event.action }}</strong> · {{ event.reason }}
+            </p>
+          }
+        </details>
+      }
+    </details>
+  }
+</div>
+<dialog #lockDialog aria-labelledby="robot-lock-title">
+  <h2 id="robot-lock-title">Lock version {{ runtime.draft().program.version }}?</h2>
+  <p>
+    Your code and evidence will become read-only. Your teacher can unlock the program with a
+    recorded reason.
+  </p>
+  <p>
+    {{ runtime.draft().program.commands.length }} top-level commands ·
+    {{ runtime.state().math.length }} calculations.
+  </p>
+  <div class="actions">
+    <button (click)="lockDialog.close()">Keep editing</button
+    ><button (click)="confirmLock(lockDialog)">Confirm lock</button>
+  </div>
+</dialog>
+<dialog #finalizeDialog>
+  <h2>Finalize these rehearsal results?</h2>
+  <p>This closes launches, practice, and unlocks for this rehearsal.</p>
+  <div class="actions">
+    <button (click)="finalizeDialog.close()">Keep rehearsal open</button
+    ><button
+      (click)="
+        runtime.control({ finalized: true, practiceOpen: false, paused: true });
+        finalizeDialog.close()
+      "
+    >
+      Confirm final results
+    </button>
+  </div>
+</dialog>

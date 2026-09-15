@@ -1,15 +1,21 @@
 <div
   class="debate-studio"
+  [class.inquiry-setting]="!!runtime.config.inquiry"
   [class.opponent-active]="runtime.chamberStage() === 'opponent'"
   [class.moderator-active]="runtime.chamberStage() === 'moderator'"
   [class.faction-active]="runtime.chamberStage() === 'your-turn'"
   [class.crossfire-active]="runtime.session().status === 'crossfire'"
   [style.--chamber-image]="'url(' + runtime.config.chamberImageUrl + ')'"
 >
-  <a class="skip-link" href="#senate-floor">Skip to the Senate floor</a>
+  <a class="skip-link" href="#senate-floor">Skip to the {{ runtime.assembly }} floor</a>
 
-  @if (runtime.state().room === 'chamber') {
-    <header class="chamber-order">
+  @if (runtime.config.inquiry && inquiryOpen()) {
+    <main id="senate-floor" tabindex="-1"><app-debate-inquiry (hearingRequested)="enterHearing()" /></main>
+  } @else if (runtime.state().room === 'chamber') {
+    @if (runtime.config.inquiry && runtime.config.viewer.mode === 'preview') {
+      <p class="hearing-preview-label">{{ runtime.config.title }} · Practice hearing · Local preview</p>
+    }
+    <app-workspace-tools><header class="chamber-order">
       <div class="session-title">
         <span>{{ runtime.config.historicalSetting }}</span>
         <strong>{{ runtime.config.title }}</strong>
@@ -28,7 +34,7 @@
         <span>
           {{
             runtime.connectionState() === 'shared'
-              ? 'Shared Senate live'
+              ? 'Shared ' + runtime.assembly + ' live'
               : runtime.connectionState() === 'connecting'
                 ? 'Opening shared record'
                 : 'Shared record paused'
@@ -36,7 +42,8 @@
         </span>
         <small>Revision {{ runtime.session().revision }}</small>
       </div>
-      <nav class="senate-tools" aria-label="Senate tools">
+      <nav class="senate-tools" aria-label="{{ runtime.assembly }} tools">
+        @if (runtime.config.inquiry) { <button type="button" (click)="inquiryOpen.set(true)">Back to my lesson</button> }
         <button
           type="button"
           [attr.aria-expanded]="docketOpen()"
@@ -46,7 +53,7 @@
           Docket
         </button>
       </nav>
-      <app-task-guide title="Senate guide"
+      <app-task-guide title="{{ runtime.assembly }} guide"
         ><p>{{ runtime.config.centralQuestion }}</p>
         <p>
           Hear the other side. Mark the words you want to answer. Use evidence to build your
@@ -58,7 +65,7 @@
           </button>
         }
       </app-task-guide>
-    </header>
+    </header></app-workspace-tools>
 
     <main id="senate-floor" class="chamber persistent-debate" tabindex="-1">
       <span class="sr-only">{{ runtime.config.chamberImageAlt }}</span>
@@ -78,8 +85,8 @@
         @if (docketOpen()) {
           <aside id="debate-docket" class="docket-details">
             <header>
-              <span>Question before the Senate</span>
-              <button type="button" (click)="toggleDocket()" aria-label="Close Senate docket">
+              <span>Question before the {{ runtime.assembly }}</span>
+              <button type="button" (click)="toggleDocket()" aria-label="Close {{ runtime.assembly }} docket">
                 ×
               </button>
             </header>
@@ -140,7 +147,7 @@
 
       @if (runtime.filingAnimation()) {
         <div class="filing-flight" role="status">
-          <div class="flying-scroll"><span>SPQR</span></div>
+          <div class="flying-scroll"><span>{{ runtime.seal }}</span></div>
           <strong>Sealed into the record</strong>
           <small>The argument crosses the chamber to the opposing rail.</small>
         </div>

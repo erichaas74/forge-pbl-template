@@ -1,0 +1,97 @@
+<main class="week-workspace">
+  <section class="activity" aria-label="Weekly build workspace">
+    <div class="solar-toolbar"><ng-container *ngTemplateOutlet="chrome()?.toolbar ?? null" /></div>
+    <section #stage class="stage" tabindex="-1" aria-label="Interactive solar model">
+      <ng-container
+        *ngComponentOutlet="simulation; inputs: simulationInputs(); injector: simulationInjector"
+      />
+      @if (editing()) {
+        <aside
+          #editorPanel
+          class="build-panel"
+          tabindex="-1"
+          aria-label="Edit weekly build"
+          (keydown.escape)="setEditing(false)"
+        >
+          <button class="close" (click)="setEditing(false)">Done editing ×</button>
+          <app-block-builder [design]="design()" [editor]="editor" (changed)="saveDesign($event)" />
+        </aside>
+      }
+    </section>
+    <p class="draft-note">
+      Editable sample starting build · Your changes stay with this week. {{ runtime.saveStatus() }}
+    </p>
+    @if (notice()) {
+      <p role="status">{{ notice() }}</p>
+    }
+    <details class="trials">
+      <summary>Saved tests · {{ draft()?.trials?.length ?? 0 }}</summary>
+      <p>
+        Up to 40 recent observations per week. Replaying loads that test’s design for further
+        editing.
+      </p>
+      @for (trial of draft()?.trials ?? []; track trial.id) {
+        <details>
+          <summary>
+            {{ trial.settings['localDate'] }} ·
+            {{
+              trial.settings['localTime'] ||
+                trial.settings['observationRule'] ||
+                'Saved observation'
+            }}
+          </summary>
+          <dl>
+            @for (reading of trial.measurements; track reading.label) {
+              <dt>{{ reading.label }}</dt>
+              <dd>{{ reading.value }}</dd>
+            }
+          </dl>
+          <button (click)="replay(trial)">Replay this design & Sun</button>
+        </details>
+      } @empty {
+        <p>Pause at an interesting moment and choose Save test.</p>
+      }
+    </details>
+  </section>
+  <aside class="planning" aria-label="Weekly planning">
+    <details open class="products">
+      <summary>Proposed weekly products</summary>
+      <p>{{ week().title }}</p>
+      <ul>
+        @for (product of week().products; track product) {
+          <li>{{ product }}</li>
+        }
+      </ul>
+      <small
+        >Potential deliverables for this week. No submission or completion is required in this
+        preview.</small
+      >
+    </details>
+    <details open class="tutor">
+      <summary>AI Tutor <span>Disconnected</span></summary>
+      <p>
+        Planning only. Questions and evidence for a future tutor; no review, assessment or model
+        control is connected.
+      </p>
+      <h2>Questions & concepts</h2>
+      <ul>
+        @for (question of week().questions; track question) {
+          <li>{{ question }}</li>
+        }
+      </ul>
+      <h2>Evidence to inspect</h2>
+      <ul>
+        @for (item of week().evidence; track item) {
+          <li>{{ item }}</li>
+        }
+      </ul>
+      <h2>Future model controls</h2>
+      <ul>
+        @for (control of week().controls; track control) {
+          <li>{{ control }}</li>
+        }
+      </ul>
+      <small>Group sessions use this local draft. Shared work is deferred.</small>
+    </details>
+  </aside>
+</main>

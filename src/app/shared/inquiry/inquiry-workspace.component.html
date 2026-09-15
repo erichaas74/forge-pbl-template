@@ -1,0 +1,321 @@
+<section class="inquiry" aria-labelledby="inquiry-title">
+  <div class="scene-introduction">
+    <span>{{ runtime.config.historicalSetting }}</span>
+    <h1 id="inquiry-title">{{ runtime.config.title }}</h1>
+    <p>{{ runtime.config.centralQuestion }}</p>
+  </div>
+  <div class="learning-desk">
+    <div class="desk-top">
+      <div>
+        <span class="eyebrow"
+          >Week {{ (lessonNumber() + 1 - (lessonNumber() % 2 === 0 ? 1 : 0)) / 2 }} ·
+          {{ lessonNumber() % 2 ? 'Learn on your own' : 'Work together' }}</span
+        >
+        <h2>{{ lesson().title }}</h2>
+      </div>
+      <span class="save-status" role="status"
+        >Practice preview ·
+        {{
+          runtime.saveState() === 'saving'
+            ? 'Saving…'
+            : runtime.saveState() === 'local'
+              ? 'Not saved · keep this page open'
+              : 'Saved on this device'
+        }}</span
+      >
+    </div>
+    <nav class="desk-tabs" aria-label="My work">
+      <button type="button" [attr.aria-pressed]="tab() === 'work'" (click)="changeTab('work')">
+        Today’s task
+      </button>
+      <button type="button" [attr.aria-pressed]="tab() === 'record'" (click)="changeTab('record')">
+        My learning record
+      </button>
+      <details class="help-menu">
+        <summary>About this project</summary>
+        <div>
+          <p>{{ config.introduction }}</p>
+          <p>{{ config.artworkCaption }}</p>
+          <p>
+            <strong>Local pilot:</strong> work saves on this device. Tutor questions are scripted;
+            live AI and school submission are not connected. Teacher preview demonstrates reviews
+            only.
+          </p>
+          <p>{{ lesson().workload }}</p>
+          <button type="button" (click)="exportPortfolio()">Download my portfolio</button>
+        </div>
+      </details>
+    </nav>
+    @if (tab() === 'work' && !checking()) {
+      @for (example of examples(); track example.id) {
+        <app-inquiry-example [example]="example" [sources]="runtime.config.evidence" />
+      }
+    }
+    @if (tab() === 'record') {
+      <div class="record-heading">
+        <label for="concept">Choose one learning target</label>
+        <select id="concept" [ngModel]="targetId()" (ngModelChange)="selectTarget($event)">
+          @for (target of config.targets; track target.id) {
+            <option [value]="target.id">
+              {{ target.label }}{{ targetReady(target.id) ? ' · reviewed in demo' : '' }}
+            </option>
+          }
+        </select>
+        <p>
+          {{ confirmedCount() }} of {{ config.targets.length }} targets reviewed as ready in this
+          demo. {{ config.recordSummary }}
+        </p>
+      </div>
+    } @else {
+      <p class="task-instruction">{{ lesson().task }}</p>
+    }
+    @if (blocked()) {
+      <aside class="gate-note" role="status">
+        <strong>Teacher checkpoint before this task</strong>
+        <p>
+          {{ lesson().requiresGate?.toUpperCase() }} needs review. You can keep reading sources and
+          getting help. Return to the earlier checkpoint for a fresh response.
+        </p>
+        @for (gate of config.gates; track gate.id) {
+          @if (gate.id === lesson().requiresGate) {
+            <p>Lesson {{ gate.afterLesson }} · {{ gate.criteria }}</p>
+          }
+        }
+      </aside>
+    }
+    <div class="desk-columns">
+      <aside class="source-card" aria-label="Historical source">
+        <label for="source-select">Read a source</label>
+        <select
+          id="source-select"
+          [ngModel]="source().id"
+          (ngModelChange)="selectedSourceId.set($event)"
+        >
+          @for (source of runtime.config.evidence; track source.id) {
+            <option [value]="source.id">{{ source.title }}</option>
+          }
+        </select>
+        <span class="source-kind">{{ source().sourceType }} · {{ source().dateLabel }}</span>
+        <h3>{{ source().title }}</h3>
+        @if (source().imageUrl) {
+          <img
+            class="source-image"
+            [src]="source().imageUrl"
+            [alt]="source().imageAlt || source().title"
+          />
+        }
+        <p class="small-note">Read the whole passage. Scroll inside the reading for more.</p>
+        <p class="source-excerpt" tabindex="0" role="region" aria-label="Source reading">
+          {{ source().excerpt }}
+        </p>
+        <p class="source-context">{{ source().context }}</p>
+        <details>
+          <summary>Where this source comes from</summary>
+          <p>{{ source().citation }}</p>
+          <p>{{ source().perspective }}</p>
+          @if (source().sourceUrl) {
+            <a [href]="source().sourceUrl" target="_blank" rel="noopener noreferrer"
+              >Open source reference ↗</a
+            >
+          }
+        </details>
+      </aside>
+      <section class="response-card" aria-label="My response" tabindex="-1">
+        @if (checking()) {
+          <span class="eyebrow">Independent check · sources allowed</span>
+          <h3>Show your thinking</h3>
+          <p>{{ checkPrompt() }}</p>
+          <p class="small-note">
+            Answer on your own. Practice hints are closed during this check. If you need support,
+            return to practice and ask for a fresh check afterward.
+          </p>
+          <label for="independent-response">My answer</label>
+          <textarea
+            id="independent-response"
+            rows="7"
+            [disabled]="blocked()"
+            [ngModel]="draft(checkKey())"
+            (ngModelChange)="runtime.updateInquiryDraft(checkKey(), $event)"
+            (blur)="runtime.saveInquiryDrafts()"
+          ></textarea>
+          <div class="actions">
+            <button
+              type="button"
+              class="primary"
+              [disabled]="blocked() || !draft(checkKey()).trim()"
+              (click)="submit()"
+            >
+              Save for review
+            </button>
+            <button type="button" (click)="checking.set(false)">Back to practice</button>
+          </div>
+        } @else {
+          @if (tab() === 'record') {
+            <span class="eyebrow">{{ target().standardId }}</span>
+            <h3>{{ target().label }}</h3>
+            <p>{{ target().prompt }}</p>
+            <label for="concept-note">My practice explanation and source</label>
+            <textarea
+              id="concept-note"
+              rows="5"
+              [ngModel]="draft('target-' + targetId())"
+              (ngModelChange)="runtime.updateInquiryDraft('target-' + targetId(), $event)"
+              (blur)="runtime.saveInquiryDrafts()"
+            ></textarea>
+          } @else {
+            @for (field of lesson().fields; track field.id) {
+              <label [for]="field.id">{{ field.label }}</label>
+              <p class="field-prompt">{{ field.prompt }}</p>
+              <textarea
+                [id]="field.id"
+                rows="3"
+                [disabled]="blocked()"
+                [ngModel]="draft(fieldKey(field.id))"
+                (ngModelChange)="runtime.updateInquiryDraft(fieldKey(field.id), $event)"
+                (blur)="runtime.saveInquiryDrafts()"
+              ></textarea>
+            }
+          }
+          <details class="practice-help">
+            <summary>I need a little help</summary>
+            <p>{{ lesson().help }}</p>
+            <p>Use this in practice, then complete an independent check.</p>
+          </details>
+          <div class="actions">
+            <button type="button" class="primary" [disabled]="blocked()" (click)="startCheck()">
+              {{ latest() ? 'Try a fresh check' : 'Try my checkpoint' }}
+            </button>
+            <button type="button" (click)="saveWork()">Save my work</button>
+          </div>
+          @if (latest() && runtime.inquiryState().reviews[latest()!.id]?.decision === 'ready') {
+            <details class="side-quest">
+              <summary>Ready for a side quest?</summary>
+              <p>{{ lesson().sideQuest }}</p>
+              <label for="side-quest">My extension</label
+              ><textarea
+                id="side-quest"
+                rows="3"
+                [ngModel]="draft(fieldKey('side-quest'))"
+                (ngModelChange)="runtime.updateInquiryDraft(fieldKey('side-quest'), $event)"
+                (blur)="runtime.saveInquiryDrafts()"
+              ></textarea>
+              <p>A side quest adds depth. It does not complete a checkpoint for you.</p>
+            </details>
+          }
+        }
+        @if (!checking() && latest(); as attempt) {
+          <details class="review-result">
+            <summary>
+              {{
+                runtime.inquiryState().reviews[attempt.id]?.decision === 'ready'
+                  ? 'Reviewed as ready · demo only'
+                  : runtime.inquiryState().reviews[attempt.id]?.decision === 'revise'
+                    ? 'Try again with feedback'
+                    : 'Response waiting for review'
+              }}
+            </summary>
+            <p>{{ attempt.response }}</p>
+            <p>{{ runtime.inquiryState().reviews[attempt.id]?.feedback }}</p>
+            <small>Earlier responses are preserved in your portfolio download.</small>
+          </details>
+        }
+      </section>
+    </div>
+    @if (message()) {
+      <p role="status" class="status-message">{{ message() }}</p>
+    }
+    @if (lessonNumber() >= (config.studioFromLesson ?? 8) && !blocked()) {
+      <div class="final-action">
+        <button type="button" class="primary" (click)="hearingRequested.emit()">
+          {{ config.finalActionLabel || 'Enter the hearing' }}
+        </button>
+        <p>
+          {{
+            config.finalActionNote ||
+              'Local demonstration of the debate room. Shared class filing and recordings require the school gateway.'
+          }}
+        </p>
+      </div>
+    }
+    @if (!checking()) {
+      <details class="teacher-guide">
+        <summary>Teacher & tutor guide</summary>
+        <p><strong>Teacher:</strong> {{ lesson().teacher }}</p>
+        <p><strong>Tutor task:</strong> {{ lesson().tutor }}</p>
+        <p>
+          Scripted practice is available here. A connected AI tutor should recommend readiness from
+          individual evidence; only an authorized teacher can confirm official completion.
+        </p>
+        <p>{{ lesson().workload }}</p>
+        <ul>
+          @for (gate of config.gates; track gate.id) {
+            <li>
+              {{ runtime.inquiryGate(gate.id) ? '✓ Demo reviewed' : '○ Review needed' }} ·
+              {{ gate.label }}: {{ gate.criteria }}
+            </li>
+          }
+        </ul>
+        <ul>
+          @for (standard of standards; track standard) {
+            <li>
+              {{
+                standardReady(standard)
+                  ? '✓ All targets reviewed in demo'
+                  : '○ Evidence still needed'
+              }}
+              · {{ standard }}
+            </li>
+          }
+        </ul>
+        @if (runtime.config.viewer.allowTeacherPreview) {
+          <button type="button" (click)="runtime.toggleTeacherPreview()">
+            {{ runtime.teacherPreview() ? 'Close teacher preview' : 'Open teacher preview' }}
+          </button>
+        }
+        @if (runtime.canManageModerator() && latest()) {
+          <div class="demo-review">
+            <strong>Demo review — this learner’s latest response</strong>
+            <p>
+              Read the response and cited work before deciding. These controls cannot issue official
+              grades or unlock a live school session.
+            </p>
+            <label for="review-feedback">Feedback tied to the evidence</label
+            ><textarea
+              id="review-feedback"
+              rows="3"
+              [ngModel]="feedback()"
+              (ngModelChange)="feedback.set($event)"
+            ></textarea>
+            <p>
+              Review the complete saved work against the standard, including each required part.
+            </p>
+            @if (needsPerformance()) {
+              <label for="performance-evidence">Observed presentation or discussion evidence</label>
+              <textarea
+                id="performance-evidence"
+                rows="3"
+                [ngModel]="performanceEvidence()"
+                (ngModelChange)="performanceEvidence.set($event)"
+                placeholder="Record the learner, observed skill, lesson/date or recording timestamp. Text answers alone do not demonstrate speaking or listening."
+              ></textarea>
+            }
+            <div class="actions">
+              <button
+                type="button"
+                [disabled]="
+                  !feedback().trim() || (needsPerformance() && !performanceEvidence().trim())
+                "
+                (click)="review('ready')"
+              >
+                Demo: ready</button
+              ><button type="button" [disabled]="!feedback().trim()" (click)="review('revise')">
+                Demo: needs revision
+              </button>
+            </div>
+          </div>
+        }
+      </details>
+    }
+  </div>
+  <p class="artwork-caption">{{ config.artworkCaption }}</p>
+</section>

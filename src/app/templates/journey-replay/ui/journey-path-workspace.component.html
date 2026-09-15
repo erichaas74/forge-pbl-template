@@ -1,0 +1,94 @@
+<div class="path-workspace">
+  <section class="activity" tabindex="-1" [attr.aria-label]="node().kind === 'map' ? 'Choose the next passage on the map' : node().title" [attr.data-node]="node().id" [attr.data-session]="session()">
+    @if (node().kind === 'map') {
+      <app-living-journey-map [map]="runtime.config.map" [team]="runtime.config.team" [route]="routeTrace()" [candidateRouteIds]="routeIds()" [candidateRouteLabels]="routeLabels()" [selectedRouteId]="selectedRoute()?.routeId" [activeLocationId]="node().locationId" [immersive]="true" [showRouteLabels]="false" mapLabel="Your Atlantic passage. Inspect a highlighted route, then choose it in AI Tutor." (routeInspected)="inspectRoute($event)" (locationInspected)="inspectPlace($event)" />
+      <details class="map-tools"><summary aria-label="Map tools">⌖</summary><div>
+        <button type="button" aria-label="Zoom map in" (click)="map()?.zoomBy(.25)">+</button>
+        <button type="button" aria-label="Zoom map out" (click)="map()?.zoomBy(-.25)">−</button>
+        <button type="button" (click)="map()?.resetView()">Fit chart</button>
+        <button type="button" [attr.aria-pressed]="map()?.lensOn('weather')" (click)="map()?.toggleLens('weather')">Wind</button>
+      </div></details>
+    } @else {
+      <app-journey-location-scene [node]="node()" [selections]="currentChoices()" [activeEventId]="activeEventId()" (inspected)="inspectEvent($event)" />
+    }
+    <button class="show-options" type="button" (click)="revealTutor()">{{ node().kind === 'map' ? 'Passage choices' : 'Event options' }} ↗</button>
+  </section>
+  <aside class="planning-column" aria-label="Weekly tasks and AI Tutor">
+    <details class="weekly-tasks" open>
+      <summary><span>Week {{ (session() + session() % 2) / 2 }} · Session {{ session() }}</span><b>Tasks & product</b></summary>
+      <div class="tasks-body">
+        <h2>{{ node().title }}</h2>
+        <ul>@for (task of node().tasks; track task) { <li>{{ task }}</li> }</ul>
+        @if (!previewing() && incoming().length) {
+          <div class="carried-task"><span>From your choices</span>@for (choice of incoming(); track choice.id) { <p>{{ choice.nextTask }}</p> }</div>
+        }
+        <p class="product"><b>Make</b> {{ node().product }}</p>
+      </div>
+    </details>
+    <details #tutor class="tutor" open>
+      <summary><span class="tutor-emblem" aria-hidden="true">✦</span><b>AI Tutor</b><small>Options only</small></summary>
+      <div class="tutor-body" tabindex="-1">
+        <p class="connection">AI not connected · choose the next event here.</p>
+        @if (previewing()) { <p class="practice-note">Scene preview · changes stay in this preview. <button (click)="backToPath()">Return to your path</button></p> }
+        @else if (pathEntry().provisional && session() > 1) { <p class="practice-note">Practice entry · earlier choices have not been recorded.</p> }
+        <div class="resource-meters" aria-label="Modeled expedition resources">
+          @for (resource of runtime.config.resources; track resource.id) {
+            <div><span>{{ resource.label }}</span><strong>{{ resources()[resource.id] }}<small>{{ resource.unit }}</small></strong><meter [min]="resource.minimum" [max]="resource.maximum" [value]="resources()[resource.id]" [attr.aria-label]="resource.label"></meter></div>
+          }
+        </div>
+        @if (node().kind === 'map') {
+          <section class="route-options" aria-label="Passage choices" tabindex="-1">
+            <h3>Choose where to explore</h3>
+            @for (choice of availableRoutes(); track choice.id) {
+              <button type="button" class="choice" [attr.aria-pressed]="selectedRoute()?.id === choice.id" (click)="selectRoute(choice.id)">
+                <span>{{ choice.label }}</span><small>{{ choice.summary }}</small>
+                @if (choice.requiresAny?.length) { <em>{{ previewing() ? 'Alternate path' : 'Revealed by earlier choices' }}</em> }
+              </button>
+            }
+            @if (selectedRoute(); as choice) {
+              <div class="choice-result" aria-live="polite"><p>{{ choice.nextTask }}</p><small>{{ effectLabel(choice) }}</small></div>
+              <button class="continue" type="button" (click)="enterLocation()">Enter location · Session {{ session() + 1 }} →</button>
+            }
+          </section>
+          @if (inspectedPlace(); as place) { <section class="place-report" tabindex="-1"><h3>{{ place.name }}</h3><p>{{ place.description }}</p></section> }
+        } @else {
+          <nav class="event-tabs" aria-label="Location events">
+            @for (event of node().events; track event.id; let index = $index) { <button type="button" [attr.aria-pressed]="activeEvent()?.id === event.id" (click)="inspectEvent(event.id)">{{ index + 1 }} · {{ event.label }}</button> }
+          </nav>
+          @if (activeEvent(); as event) {
+            <section class="event-options" tabindex="-1" [attr.aria-label]="event.label">
+              <h3>{{ event.label }}</h3><p class="observation-text">{{ event.observation }}</p>
+              <button #sourceTrigger type="button" class="source-button" (click)="openSources()">Inspect source evidence ↗</button>
+              @for (choice of event.choices; track choice.id) {
+                <button type="button" class="choice" [attr.aria-pressed]="selected(event.id, choice.id)" (click)="choose(event.id, choice)"><span>{{ choice.label }}</span><small>{{ choice.summary }}</small><em>{{ effectLabel(choice) }}</em></button>
+              }
+              @if (eventSelected(); as choice) { <div class="choice-result" aria-live="polite"><p>{{ preview(choice).consequence }}</p><small><b>Next investigation</b> {{ choice.nextTask }}</small><button type="button" class="scene-return" (click)="showScene()">See ship & shore ↑</button></div> }
+            </section>
+          }
+          @if (nextNode()) { <button class="continue" type="button" (click)="next()">Next map · Session {{ session() + 1 }} →</button><p class="testing-cue">{{ completedEvents() }} / {{ node().events.length }} event choices · all sessions remain open.</p> }
+          @else { <p class="testing-cue">Your route and event choices remain available to inspect or revise.</p> }
+        }
+        <details class="tutor-plan"><summary>Learning & future tutor plan</summary>
+          <p>{{ node().learning }}</p>
+          @for (choice of incoming(); track choice.id) { <p>{{ choice.learning }}</p> }
+          @if (activeEvent(); as event) { <p><b>Question</b> {{ event.question }}</p><p><b>Evidence to inspect</b> @for (id of event.evidenceIds; track id) { <span>{{ sourceText(id) }}. </span> }</p> }
+          <p>Future controls: ask about evidence, compare predictions, explain a revision. No AI responses, assessment or automatic adaptation are connected.</p>
+        </details>
+        <details class="path-tools"><summary>Explore paths & records</summary>
+          <label for="path-scene">Inspect any scene</label>
+          <select id="path-scene" [value]="previewNodeId() ?? ''" (change)="previewScene($any($event.target).value)"><option value="">Your current path</option>@for (scene of definition.nodes; track scene.id) { <option [value]="scene.id">{{ scene.session }} · {{ scene.kind === 'map' ? 'Map' : 'Location' }} · {{ placeName(scene.locationId) }} · {{ scene.title }}</option> }</select>
+          <p>Alternate scenes are available for testing. Preview choices leave your saved path intact.</p>
+          <ol class="path-record">@for (entry of runtime.path(); track entry.node.id) { <li><b>{{ entry.node.session }} · {{ entry.node.title }}</b>@for (choice of entry.choices; track choice.id) { <span>{{ choice.label }}</span> } @empty { <small>No choice recorded</small> }</li> }</ol>
+          <details><summary>Earlier path revisions · {{ runtime.state().previousPaths.length }}</summary>@for (branch of runtime.state().previousPaths; track $index) { <p><b>Revision {{ $index + 1 }}</b> @for (decision of branch; track decision.nodeId + decision.eventId) { <span>{{ decisionLabel(decision) }} · </span> }</p> }</details>
+          @if (runtime.config.historicalFrame; as history) { <app-journey-history-context [history]="history" [includeEpilogue]="session() === 8" /> }
+          <p class="save-note">Local practice · {{ runtime.saved() ? 'choices retained' : 'not saved' }}. No classroom submission or grade.</p>
+        </details>
+        @if (runtime.error()) { <p class="error" role="alert">{{ runtime.error() }} <button (click)="runtime.retrySave()">Retry save</button></p> }
+      </div>
+    </details>
+  </aside>
+</div>
+<dialog #sources class="source-dialog" aria-label="Location source evidence" (close)="closeSources()">
+  <header><h2>Source evidence</h2><button type="button" (click)="sources.close()" aria-label="Close source evidence">Close</button></header>
+  @for (source of evidence(); track source.id) { <article><h3>{{ source.title }}</h3><small>{{ source.sourceLabel }}</small>@for (paragraph of source.paragraphs; track paragraph.id) { <blockquote>@if (paragraph.perspective) { <b>{{ paragraph.perspective }}</b> }{{ paragraph.text }}</blockquote> }@if (source.sourceUrl) { <a [href]="source.sourceUrl" target="_blank" rel="noopener noreferrer">{{ source.attribution ?? source.sourceLabel }} ↗</a> }</article> }
+</dialog>

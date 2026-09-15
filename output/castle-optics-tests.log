@@ -1,0 +1,38 @@
+Using Vitest configuration file: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\output\castle-week-vitest.config.mjs
+> Building...
+√ Building...
+Application bundle generation complete. [13.329 seconds] - 2026-09-15T18:31:22.421Z
+
+
+ RUN  v4.1.11 C:/Users/erich/Desktop/pbl-lms/forge-pbl-template
+
+ ❯ |forge-pbl-template| src/app/templates/heist/escape/locks/optics-cage/optics-cage.spec.ts (7 tests | 1 failed) 365ms
+     × preserves exact two- and three-bounce solutions for all four grade pathways 18ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |forge-pbl-template| src/app/templates/heist/escape/locks/optics-cage/optics-cage.spec.ts > Moon-tower optics > preserves exact two- and three-bounce solutions for all four grade pathways
+AssertionError: expected undefined to deeply equal []
+
+- Expected:
+[]
+
++ Received:
+undefined
+
+ ❯ src/app/templates/heist/escape/locks/optics-cage/optics-cage.spec.ts:47:39
+     45|       const stage = p.lock.stages[0],
+     46|         answer = machineWitness(stage);
+     47|       expect(validateMachine(p.lock)).toEqual([]);
+       |                                       ^
+     48|       expect(isCageDiorama(stage)).toBe(true);
+     49|       expect(stage.presentation).toEqual({ kind: 'optics-cage', owls: …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 passed (7)
+   Start at  12:31:24
+   Duration  18.12s (transform 242ms, setup 486ms, import 356ms, tests 365ms, environment 16.11s)
+

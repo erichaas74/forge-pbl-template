@@ -1,5 +1,7 @@
 # Robot Delivery Code Lab — Programming & Automation 1.0
 
+The current interface is described in [Focused workspace](FOCUSED_WORKSPACE.md). It supersedes the older persistent-header and mobile-pane layout described below.
+
 Move commands now support a mission-defined given number and operation with one student
 operand. See [Move math](MOVE_MATH.md) for configuration, execution, and saved-program compatibility.
 

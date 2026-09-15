@@ -1,3 +1,4 @@
+import { WorkspaceToolsComponent } from '../../../../shared/project-lessons/workspace-tools.component';
 import { MachineWorkshopComponent } from '../locks/machine-workshop.component';
 import { GearLockComponent } from '../gear-lock/gear-lock.component';
 import { BalanceLockComponent } from '../balance-lock/balance-lock.component';
@@ -30,6 +31,7 @@ export const EXPEDITION_SCENE_LOADER = new InjectionToken<
 @Component({
   selector: 'app-heist-expedition',
   imports: [
+    WorkspaceToolsComponent,
     FormsModule,
     RouterLink,
     BalanceLockComponent,
@@ -214,6 +216,12 @@ export class ExpeditionComponent implements AfterViewInit {
     return p.type === 'balance'
       ? this.runtime.draft().weights.reduce((sum, i) => sum + p.weights[i], 0)
       : 0;
+  }
+  visitLock(index: number): void {
+    if (this.runtime.visitLock(index)) {
+      this.overview.set(false);
+      this.scene?.follow();
+    }
   }
   toggleMap(): void {
     this.overview.update((v) => !v);

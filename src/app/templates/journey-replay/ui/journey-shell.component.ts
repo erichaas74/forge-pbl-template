@@ -1,3 +1,5 @@
+import { bindLessonFocus } from '../../../shared/project-lessons/project-lesson-focus';
+import { WorkspaceToolsComponent } from '../../../shared/project-lessons/workspace-tools.component';
 import {
   Component,
   computed,
@@ -28,7 +30,7 @@ type JourneyUtility = 'mission' | 'location' | 'manifest' | 'log' | 'records';
 
 @Component({
   selector: 'app-journey-replay-page',
-  imports: [
+  imports: [WorkspaceToolsComponent,
     ClassJourneyMapComponent,
     JourneyDecisionPanelComponent,
     JourneyReplayPlayerComponent,
@@ -120,6 +122,14 @@ export class JourneyReplayPageComponent {
   private lastFocusedGoalId?: string;
 
   constructor() {
+    bindLessonFocus((lesson) => {
+      if (lesson.focusTarget === 'journey') this.openDecision();
+      else if (lesson.focusTarget === 'log') this.openUtility('log');
+      else if (lesson.focusTarget === 'replay') {
+        if (this.runtime.state().replayTimeline.length) this.openReplay();
+        else this.openDecision();
+      }
+    });
     effect(() => {
       const map = this.livingMap();
       const choice = this.runtime.choice();

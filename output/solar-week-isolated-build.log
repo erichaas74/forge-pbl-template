@@ -1,0 +1,12 @@
+> Building...
+√ Building...
+Initial chunk files | Names         |  Raw size | Estimated transfer size
+main-SI4WMDGY.js    | main          | 470.28 kB |               119.44 kB
+styles-PWEBVAZL.css | styles        | 865 bytes |               865 bytes
+
+                    | Initial total | 471.15 kB |               120.31 kB
+
+Application bundle generation complete. [2138.508 seconds] - 2026-09-14T23:00:47.480Z
+
+Output location: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\output\solar-week-isolated-build
+

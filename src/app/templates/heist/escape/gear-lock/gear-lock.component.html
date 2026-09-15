@@ -1,13 +1,13 @@
-<section class="workshop" aria-label="Gear restoration workshop">
+<section class="workshop" [class.gear-diorama]="diorama() && !error()" aria-label="Gear restoration workshop">
   <header>
-    <button (click)="leave.emit()" [disabled]="running() || paused()">
+    @if (!authoringPreview()) { <button (click)="leave.emit()" [disabled]="running() || paused()">
       &#8592; {{ completed() ? 'Return to rescue' : 'Back to map' }}
-    </button>
+    </button> }
     <div class="heading">
       <span>CLOCKWORK RESCUE / GEAR RESTORATION</span>
       <h1 #heading tabindex="-1">{{ definition().title }}</h1>
     </div>
-    <button (click)="pauseRequested.emit()">Pause</button>
+    @if (!authoringPreview()) { <button (click)="pauseRequested.emit()">Pause</button> }
   </header>
   <div class="calibrations" aria-label="Machine calibration clues">
     <div>
@@ -39,6 +39,12 @@
       </p>
     </div>
   </div>
+  @if (authoringPreview()) {
+    <div class="preview-action">
+      <button class="primary" (click)="test()" [disabled]="locked()">Test gear train</button>
+      <div><strong>{{ positions()[2] }} input turns</strong><p aria-live="polite">{{ notice() }}</p></div>
+    </div>
+  }
   <div class="stage-shell">
     <div
       #stage
@@ -147,6 +153,12 @@
         </div>
       </div>
     }
+  </footer>
+  @if (diorama() && !error() && !authoringPreview()) {
+    <button (click)="leave.emit()" [disabled]="running() || paused()">
+      {{ completed() ? 'Return to rescue' : 'Back to map' }}
+    </button>
+  }
     @if (saveWarning()) {
       <p class="save-warning" role="alert">
         {{ saveWarning() }}
@@ -155,5 +167,4 @@
         </button>
       </p>
     }
-  </footer>
 </section>

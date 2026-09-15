@@ -2,7 +2,12 @@ import { emptyGears, validGearDraft } from '../gear-lock/gear-lock.domain';
 import { initialMachine, validMachineAnswer } from '../locks/machine.rules';
 import type { MathGrade } from '../locks/machine.models';
 import { stepForGrade } from '../domain/escape.models';
-import { allBalancePieces, emptyBalance } from '../balance-lock/balance-lock.domain';
+import {
+  allBalancePieces,
+  emptyBalance,
+  balancePlacements,
+  canPlaceBalanceWeight,
+} from '../balance-lock/balance-lock.domain';
 import { Injectable, InjectionToken, computed, inject, signal } from '@angular/core';
 import type { EscapeAnswer, EscapeStep } from '../domain/escape.models';
 import type {
@@ -36,7 +41,7 @@ export class ExpeditionRuntime {
   readonly mission = this.progress.mission;
   readonly localIdentity = inject(EXPEDITION_PLAYER);
   readonly definition = this.mission.world!;
-  readonly navigation = new ExpeditionNavigation(this.definition);
+  readonly navigation = new ExpeditionNavigation(this.definition, this.definition.spawn, true);
   readonly engine = computed(
     () => {
       this.progress.revision();
@@ -66,29 +71,62 @@ export class ExpeditionRuntime {
   private remotePresence: readonly ExpeditionPlayer[] = [];
   private pendingInteraction: string | null = null;
   private walkingTo = false;
+  private readonly drafts = new Map<string, ExpeditionDraft>();
   constructor() {
     this.navigation.setSolved(this.engine().solved);
-    const restored = this.engine()
-      .attempts.slice()
-      .reverse()
-      .find((attempt) => attempt.stepId === this.current().id && attempt.correct);
-    if (
-      ['balance-lock', 'gear-lock'].includes(this.current().puzzle.type) &&
-      restored &&
-      Array.isArray(restored.answer)
-    )
-      this.draft.update((d) => ({ ...d, placements: restored.answer as readonly number[] }));
+    this.restoreDraft();
     if (this.engine().started) {
       this.navigation.position = this.point(this.current());
       this.nearby.set(true);
     }
-    const puzzle = this.current().puzzle;
-    if (puzzle.type === 'machine-lock') {
-      const checkpoint = restored?.answer ?? this.engine().checkpoints.get(this.current().id);
-      if (validMachineAnswer(puzzle.lock, checkpoint))
-        this.draft.update((d) => ({ ...d, machine: checkpoint }));
+  }
+  private restoreDraft(): void {
+    const step = this.current();
+    const saved = this.drafts.get(step.id);
+    this.draft.set(saved ? structuredClone(saved) : blankDraft());
+    const answer = this.engine()
+      .attempts.slice()
+      .reverse()
+      .find((attempt) => attempt.stepId === step.id && attempt.correct)?.answer;
+    if (['balance-lock', 'gear-lock'].includes(step.puzzle.type) && Array.isArray(answer))
+      this.draft.update((d) => ({ ...d, placements: answer }));
+    if (step.puzzle.type === 'machine-lock') {
+      const checkpoint = answer ?? this.engine().checkpoints.get(step.id);
+      if (validMachineAnswer(step.puzzle.lock, checkpoint))
+        this.draft.update((d) => ({ ...d, machine: structuredClone(checkpoint) }));
     }
   }
+  /** Visit without recording an answer, a rescue, or completion. */
+  visitLock(index: number, open = true): boolean {
+    if (
+      this.paused() ||
+      !this.engine().started ||
+      !Number.isInteger(index) ||
+      index < 0 ||
+      index >= this.mission.steps.length
+    )
+      return false;
+    const oldId = this.current().id;
+    const draft = structuredClone(this.draft());
+    if (!this.progress.send({ type: 'visit', stepId: this.mission.steps[index].id })) return false;
+    this.drafts.set(oldId, draft);
+    this.restoreDraft();
+    this.navigation.stop();
+    this.pendingInteraction = null;
+    this.walkingTo = false;
+    this.hint.set(false);
+    this.message.set('');
+    if (open) this.navigation.position = this.point(this.current());
+    this.nearby.set(
+      worldDistance(this.navigation.position, this.point(this.current())) <=
+        this.definition.interactionRadius,
+    );
+    this.phase.set(
+      open ? (this.engine().solved.has(this.current().id) ? 'celebrate' : 'puzzle') : 'explore',
+    );
+    return true;
+  }
+
   get players(): readonly ExpeditionPlayer[] {
     return [
       {
@@ -176,8 +214,8 @@ export class ExpeditionRuntime {
     }
     if (input.type === 'interact' && this.phase() === 'explore') {
       if (input.stepId !== this.current().id) {
-        this.message.set(`Your next clue is at ${this.current().place}.`);
-        return;
+        const index = this.mission.steps.findIndex((step) => step.id === input.stepId);
+        if (!this.visitLock(index, false)) return;
       }
       if (this.nearby()) this.openPuzzle();
       else {
@@ -213,12 +251,12 @@ export class ExpeditionRuntime {
       Number.isInteger(input.index) &&
       input.index >= 0 &&
       input.index < allBalancePieces(p.lock).length &&
-      [0, 1, 2].includes(input.side)
+      canPlaceBalanceWeight(p.lock, input.side)
     ) {
       this.draft.update((d) => ({
         ...d,
-        placements: (d.placements ?? emptyBalance(p.lock)).map((side, i) =>
-          i === input.index ? input.side : side,
+        placements: balancePlacements(p.lock, d.placements ?? emptyBalance(p.lock)).map(
+          (side, i) => (i === input.index ? input.side : side),
         ),
       }));
       this.message.set('');
@@ -272,7 +310,7 @@ export class ExpeditionRuntime {
     this.input({ type: 'interact', stepId: this.current().id });
   }
   private openPuzzle(): void {
-    this.phase.set('puzzle');
+    this.phase.set(this.engine().solved.has(this.current().id) ? 'celebrate' : 'puzzle');
     this.message.set('');
     this.navigation.stop();
   }
@@ -331,8 +369,11 @@ export class ExpeditionRuntime {
   }
   next(): void {
     if (this.paused() || this.phase() !== 'celebrate') return;
-    if (!this.progress.send({ type: 'continue', stepId: this.current().id })) return;
-    this.draft.set(blankDraft());
+    const oldId = this.current().id;
+    const draft = structuredClone(this.draft());
+    if (!this.progress.send({ type: 'continue', stepId: oldId })) return;
+    this.drafts.set(oldId, draft);
+    this.restoreDraft();
     this.hint.set(false);
     this.nearby.set(false);
     this.navigation.stop();
@@ -358,6 +399,7 @@ export class ExpeditionRuntime {
   }
   reset(): void {
     this.progress.reset();
+    this.drafts.clear();
     this.navigation.setSolved(this.engine().solved);
     this.navigation.position = { ...this.definition.spawn };
     this.navigation.stop();

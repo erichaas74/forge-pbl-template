@@ -1,0 +1,176 @@
+<div class="debate-layout">
+  <main class="debate-stage" aria-label="Ongoing debate" [attr.data-session]="runtime.lesson().number">
+    <nav class="stage-controls" aria-label="Debate tools">
+      <div class="views">
+        <button type="button" [attr.aria-pressed]="view() === 'debate'" (click)="view.set('debate')">Debate</button>
+        <button type="button" [attr.aria-pressed]="view() === 'case'" (click)="view.set('case')">Build case</button>
+        <button type="button" [attr.aria-pressed]="view() === 'critique'" (click)="view.set('critique')">Peer critique</button>
+        <button type="button" [attr.aria-pressed]="view() === 'judging'" (click)="view.set('judging')">Judging</button>
+      </div>
+      <button type="button" class="skill-button" (click)="skill.showModal()">Skill example ↗</button>
+    </nav>
+
+    @if (view() === 'case' || (view() === 'debate' && !runtime.state().contributions.length)) {
+      <section class="case-workspace" aria-label="Build your debate case">
+        <div class="resolution"><span class="eyebrow">The question before the room</span><h1>{{ config.centralQuestion }}</h1>
+          <button type="button" (click)="hearPrompt()">{{ reading() ? 'Stop prompt' : 'Hear prompt' }}</button>
+        </div>
+        <div class="side-picker" aria-label="Choose your side">
+          @for (faction of config.factions; track faction.id) {
+            <button type="button" [style.--side-accent]="faction.accent" [attr.aria-pressed]="runtime.side() === faction.id" (click)="runtime.chooseSide(faction.id)">
+              <span class="emblem">{{ faction.emblem }}</span><span><b>{{ faction.name }}</b><small>{{ faction.position }}</small></span>
+              @if (runtime.side() === faction.id) { <span aria-label="Selected">✓</span> }
+            </button>
+          }
+        </div>
+        <div class="argument-construction">
+          <section class="points"><h2>Your argument order</h2>
+            @for (point of runtime.draft().points; track $index) {
+              <div class="point"><span class="point-number">{{ $index + 1 }}</span><p>{{ point }}</p><span class="order-buttons">
+                <button type="button" [disabled]="$first" [attr.aria-label]="'Move point ' + ($index + 1) + ' up'" (click)="runtime.movePoint($index, -1)">↑</button>
+                <button type="button" [disabled]="$last" [attr.aria-label]="'Move point ' + ($index + 1) + ' down'" (click)="runtime.movePoint($index, 1)">↓</button>
+              </span></div>
+            } @empty { <div class="empty-object"><span class="outline-symbol">01 → 02 → 03</span><p>Add your first points in the tutor-area editor, then arrange them here.</p></div> }
+            @if (runtime.draft().replyTo) { <button type="button" (click)="selectedId.set(runtime.draft().replyTo!); view.set('debate')">↳ Answering {{ author(runtime.draft().replyTo) }}</button> }
+            @if (runtime.draft().revises) { <button type="button" (click)="selectedId.set(runtime.draft().revises!); view.set('debate')">↺ Revising {{ author(runtime.draft().revises) }}</button> }
+          </section>
+          <section class="source-rack"><h2>Connect evidence</h2>
+            @for (source of config.evidence; track source.id) {
+              <div class="source-tile" [class.attached]="runtime.draft().evidenceIds.includes(source.id)">
+                <button type="button" (click)="inspectSource(source.id, sourcePanel)">{{ source.title }} <small>{{ source.sourceType }}</small></button>
+                <button type="button" [attr.aria-label]="(runtime.draft().evidenceIds.includes(source.id) ? 'Detach ' : 'Attach ') + source.title" [attr.aria-pressed]="runtime.draft().evidenceIds.includes(source.id)" (click)="runtime.toggleSource(source.id)">{{ runtime.draft().evidenceIds.includes(source.id) ? '✓' : '+' }}</button>
+              </div>
+            }
+          </section>
+        </div>
+        @if (runtime.draft().speech) { <details class="draft-preview"><summary>Preview your speech</summary><p>{{ runtime.draft().speech }}</p></details> }
+      </section>
+    } @else if (view() === 'judging') {
+      <section class="judging-workspace" aria-label="Judge debate performers">
+        <div class="judging-pool"><h2>Review a performer</h2>
+          @for (performer of runtime.performers(); track performer.actorId) {
+            <button class="performer" type="button" (click)="selectedId.set(performer.id); view.set('debate')"><span class="avatar">{{ performer.name.slice(0, 1) }}</span><span><b>{{ performer.name }}</b><small>{{ factionName(performer.side) }} · {{ performer.kind }}</small></span><span>Review →</span></button>
+          } @empty { <p>No submitted performances yet. Import an exchange or open the practice debate from the side tools.</p> }
+        </div>
+        <section class="ballot"><h2>Your ranking</h2><p class="subtle">Up to three individuals · both sides</p>
+          @for (judgment of ballot(); track judgment.performerId) {
+            <div class="rank-row"><strong>{{ $index + 1 }}</strong><span>{{ author(judgment.contributionId) }}</span>
+              <button type="button" [disabled]="$first" [attr.aria-label]="'Move rank ' + ($index + 1) + ' up'" (click)="moveRank($index, -1)">↑</button>
+              <button type="button" [disabled]="$last" [attr.aria-label]="'Move rank ' + ($index + 1) + ' down'" (click)="moveRank($index, 1)">↓</button>
+              <button type="button" [attr.aria-label]="'Remove ' + author(judgment.contributionId) + ' from ranking'" (click)="removeRank(judgment.performerId)">×</button>
+            </div>
+          } @empty { <p>Read a performance, then use “Judge performer” to add your reasons.</p> }
+          <button type="button" class="primary" [disabled]="!ballot().length" (click)="runtime.rank(ballot())">Submit ranking</button>
+          <details><summary>How rankings work</summary><p>First gets 3 points, second 2, third 1. Each voter’s latest ballot counts. Equal points share a place. Rankings recognize performances; they do not award standards mastery.</p></details>
+        </section>
+        <section class="results"><h2>{{ runtime.practice() ? 'Practice results' : 'Imported classroom results' }}</h2>
+          @for (rank of runtime.ranks(); track rank.id) { <div class="result-row"><strong>{{ rank.place }}</strong><b>{{ rank.name }}</b><span>{{ rank.points }} points · {{ rank.ballots }} ballots</span></div> }
+          @empty { <p>Results appear after a ballot is submitted or imported.</p> }
+        </section>
+      </section>
+    } @else {
+      <div class="debate-floor">
+        <nav class="timeline" aria-label="Debate history"><h2>{{ view() === 'critique' ? 'Your side’s speakers' : 'Argument exchange' }}</h2>
+          @for (entry of entries(); track entry.id) {
+            <button type="button" [class.selected]="selected()?.id === entry.id" [attr.aria-current]="selected()?.id === entry.id ? 'true' : null" (click)="selectedId.set(entry.id)">
+              <span class="timeline-dot" [class.your-side]="entry.side === runtime.side()"></span>
+              <span><small>S{{ entry.lesson }} · {{ entry.kind }}</small><b>{{ entry.name }}</b><small>{{ entry.group || factionName(entry.side) }}</small></span>
+            </button>
+          } @empty { <p>No same-side peer work yet. Exchange files with a classmate or open the separate practice debate.</p> }
+        </nav>
+        @if (selected(); as entry) {
+          <article class="performance" aria-label="Selected debate argument">
+            <div class="performance-heading"><span class="avatar">{{ entry.name.slice(0, 1) }}</span><div><span class="eyebrow">{{ factionName(entry.side) }} · Session {{ entry.lesson }}</span><h2>{{ entry.name }}</h2><small>{{ entry.group ? entry.group + ' · ' : '' }}{{ entry.kind }}</small></div></div>
+            <div class="argument-links">
+              @if (entry.replyTo) { <button type="button" (click)="selectedId.set(entry.replyTo!); view.set('debate')">↳ Response to {{ author(entry.replyTo) }}</button> }
+              @if (entry.revises) { <button type="button" (click)="selectedId.set(entry.revises!); view.set('debate')">↺ Earlier version</button> }
+            </div>
+            <ol class="speech-points">@for (point of entry.points; track $index) { <li>{{ point }}</li> }</ol>
+            <p class="speech">{{ entry.speech }}</p>
+            @if (entry.mediaId) { <app-debate-recording [mediaId]="entry.mediaId" /> }
+            <div class="evidence-links">@for (id of entry.evidenceIds; track id) { <button type="button" (click)="inspectSource(id, sourcePanel)">↗ {{ sourceName(id) }}</button> }</div>
+            @if (entry.changeNote) { <details open><summary>Revision reasoning</summary><p>{{ entry.changeNote }}</p><small>{{ entry.reviewIds.length }} peer critiques used</small></details> }
+            <div class="performance-actions">
+              @if (entry.side !== runtime.side() && runtime.side()) { <button type="button" class="primary" (click)="runtime.updateDraft({replyTo: entry.id}); view.set('case')">Answer this argument</button> }
+              @if (entry.actorId === runtime.actorId) { <button type="button" (click)="runtime.revise(entry); view.set('case')">Use as revision</button> }
+              @if (entry.side === runtime.side() && entry.actorId !== runtime.actorId) { <button type="button" class="primary" (click)="prepareCritique(entry, critiquePanel)">Critique this peer</button> }
+              @if (entry.actorId !== runtime.actorId) { <button type="button" (click)="prepareJudgment(entry, judgmentPanel)">Judge performer</button> }
+            </div>
+            @for (review of feedback(); track review.id) {
+              <details class="peer-feedback"><summary>Peer critique · {{ review.name }}</summary><blockquote>{{ review.moment }}</blockquote><p><b>Strength:</b> {{ review.strength }}</p><p><b>Try next:</b> {{ review.suggestion }}</p><small>Evidence {{ review.ratings.evidence }}/4 · Reasoning {{ review.ratings.reasoning }}/4 · Response {{ review.ratings.response }}/4</small></details>
+            }
+          </article>
+        }
+      </div>
+    }
+  </main>
+
+  <aside class="planning" aria-label="Tasks and tutor area">
+    <details class="task-box" open><summary>Week {{ (runtime.lesson().number + runtime.lesson().number % 2) / 2 }} · {{ runtime.lesson().number % 2 ? 'Individual' : 'Group exchange' }}</summary>
+      <h2>{{ runtime.lesson().title }}</h2><ul>@for (task of runtime.lesson().tasks; track task) { <li>{{ task }}</li> }</ul><p class="product"><b>Produce</b>{{ runtime.lesson().product }}</p>
+    </details>
+    <details class="tutor-box" open><summary>AI Tutor <span>Disconnected</span></summary>
+      <p class="tutor-status">Planning only. Manual tools are available below.</p>
+      <ul><li>Inspect claims, sources and an opponent’s argument.</li><li>Ask what changed after peer feedback.</li><li>Future teacher controls: model, hints and review.</li></ul>
+      <button type="button" class="primary" (click)="openAuthor(authorPanel)">Open argument editor</button>
+      @if (config.inquiry) { <button type="button" (click)="contextPanel.showModal()">Context evidence &amp; defense</button> }
+      <details class="received"><summary>Feedback received · {{ runtime.received().length }}</summary>
+        @for (review of runtime.received(); track review.id) { <button type="button" (click)="selectedId.set(review.contributionId); view.set('debate')">{{ review.name }} · review argument</button> }
+      </details>
+      <details class="exchange-tools"><summary>Class exchange &amp; practice</summary>
+        <p>Local workspace · live classroom connection unavailable. Export submitted arguments, critiques and ballots; exchange files with your class and import their replies.</p>
+        <button type="button" (click)="exportExchange()">Export class exchange</button>
+        <label>Import class exchange<input type="file" accept="application/json,.json" (change)="importExchange($event)" /></label>
+        <small>Drafts and context answers stay private. Recordings stay in this browser; exchange transcripts travel in the file. Import only files for your classroom.</small>
+        @if (runtime.practice()) { <button type="button" (click)="runtime.closePractice()">Return to classroom work</button> }
+        @else { <button type="button" (click)="runtime.openPractice()">Open practice debate</button> }
+        <small>All sessions and examples are open for testing.</small>
+      </details>
+    </details>
+    @if (runtime.practice()) { <p class="mode-notice">Fictional practice debate · separate from classroom work</p> }
+    @else { <p class="mode-notice">Local classroom workspace · file exchange</p> }
+    <p class="action-status" role="status">{{ runtime.message() }}</p>
+  </aside>
+</div>
+
+<dialog #authorPanel aria-labelledby="author-title" (close)="authorOpen.set(false)"><header><h2 id="author-title">Argument editor · Tutor area</h2><button type="button" (click)="authorPanel.close()">Close</button></header>
+  @if (authorOpen()) { <app-debate-author (submitted)="authorPanel.close(); view.set('debate'); selectedId.set(runtime.own().at(-1)!.id)" /> }
+</dialog>
+<dialog #sourcePanel aria-labelledby="source-title"><header><h2 id="source-title">{{ source()?.title }}</h2><button type="button" (click)="sourcePanel.close()">Close</button></header>
+  @if (source(); as item) { <p class="eyebrow">{{ item.dateLabel }} · {{ item.sourceType }}</p><blockquote>{{ item.excerpt }}</blockquote><h3>Context</h3><p>{{ item.context }}</p><h3>Perspective and limits</h3><p>{{ item.perspective }}</p><p><b>Citation:</b> {{ item.citation }}</p>
+    @if (item.sourceUrl) { <a [href]="item.sourceUrl" target="_blank" rel="noopener noreferrer">Open original source ↗</a> }
+    <button type="button" class="primary" (click)="runtime.toggleSource(item.id)">{{ runtime.draft().evidenceIds.includes(item.id) ? 'Detach from your argument' : 'Attach to your argument' }}</button>
+  }
+</dialog>
+<dialog #skill aria-labelledby="skill-title"><header><h2 id="skill-title">{{ runtime.lesson().skill.title }}</h2><button type="button" (click)="skill.close()">Close</button></header>
+  <p class="skill-challenge">{{ runtime.lesson().skill.claim }}</p><div class="skill-choices">@for (choice of runtime.lesson().skill.choices; track $index) { <button type="button" [attr.aria-pressed]="skillChoice() === $index" (click)="skillChoice.set($index)">{{ choice.text }}</button> }</div>
+  @if (skillChoice() !== undefined) { <div class="skill-feedback" role="status"><b>{{ skillChoice() === runtime.lesson().skill.strongest ? 'Stronger reasoning' : 'Test the reasoning' }}</b><p>{{ runtime.lesson().skill.choices[skillChoice()!].feedback }}</p></div> }
+  <div class="evidence-links">@for (id of runtime.lesson().skill.sourceIds; track id) { <button type="button" (click)="inspectSource(id, sourcePanel)">{{ sourceName(id) }} ↗</button> }</div>
+  <p class="subtle">Authored teaching example · discuss the reasoning, then apply it to your own argument.</p>
+</dialog>
+<dialog #critiquePanel aria-labelledby="critique-title"><header><h2 id="critique-title">Peer critique · Tutor area</h2><button type="button" (click)="critiquePanel.close()">Close</button></header>
+  @if (critiqueTarget(); as target) {
+    <p>{{ target.name }} · {{ factionName(target.side) }}</p>
+    <fieldset><legend>Select the moment you are critiquing</legend>@for (sentence of target.speech.split('. '); track $index) {
+      <button type="button" [attr.aria-pressed]="moment() === sentence" (click)="moment.set(sentence)">{{ sentence }}</button>
+    }</fieldset>
+    @for (criterion of criteria; track criterion) { <label>{{ criterion }} · {{ ratings()[criterion] }}/4<input type="range" min="1" max="4" step="1" [value]="ratings()[criterion]" (input)="rate(criterion, $any($event.target).value)" /><small>{{ criterionHelp[criterion] }}</small></label> }
+    <label>What works?<textarea rows="2" maxlength="2000" [ngModel]="strength()" (ngModelChange)="strength.set($event)"></textarea></label>
+    <label>One specific improvement<textarea rows="3" maxlength="2000" [ngModel]="suggestion()" (ngModelChange)="suggestion.set($event)"></textarea></label>
+    <p role="status">{{ runtime.message() }}</p><button type="button" class="primary" (click)="submitCritique(critiquePanel)">Submit peer critique</button>
+  }
+</dialog>
+<dialog #judgmentPanel aria-labelledby="judgment-title"><header><h2 id="judgment-title">Judge performer · Tutor area</h2><button type="button" (click)="judgmentPanel.close()">Close</button></header>
+  @if (judgmentTarget(); as target) { <p>{{ target.name }} · Session {{ target.lesson }} {{ target.kind }}</p><blockquote>{{ target.speech }}</blockquote>
+    @for (criterion of criteria; track criterion) { <label>{{ criterion }} · {{ ratings()[criterion] }}/4<input type="range" min="1" max="4" step="1" [value]="ratings()[criterion]" (input)="rate(criterion, $any($event.target).value)" /><small>{{ criterionHelp[criterion] }}</small></label> }
+    <label>Why does this performance deserve its place?<textarea rows="3" maxlength="2000" [ngModel]="reason()" (ngModelChange)="reason.set($event)"></textarea></label>
+    <small>Judge the evidence, reasoning and response you can observe. Agreement with the side is not a scoring criterion.</small>
+    <p role="status">{{ runtime.message() }}</p><button type="button" class="primary" [disabled]="!reason().trim()" (click)="saveJudgment(judgmentPanel)">Add to my ranking</button>
+  }
+</dialog>
+<dialog #contextPanel aria-labelledby="context-title"><header><h2 id="context-title">Context evidence · Tutor area</h2><button type="button" (click)="contextPanel.close()">Close</button></header>
+  @if (config.inquiry; as inquiry) { <p>{{ inquiry.recordSummary }} These responses require teacher review.</p><label>Context target<select [ngModel]="contextTarget()?.id" (ngModelChange)="contextId.set($event)">@for (target of inquiry.targets; track target.id) { <option [value]="target.id">{{ target.label }}</option> }</select></label>
+    @if (contextTarget(); as target) { <p>{{ target.prompt }}</p><div class="evidence-links">@for (id of target.sourceIds; track id) { <button type="button" (click)="inspectSource(id, sourcePanel)">{{ sourceName(id) }}</button> }</div><label>Independent evidence and explanation<textarea rows="7" maxlength="6000" [ngModel]="contextDraft()" (ngModelChange)="saveContext($event)"></textarea></label> }
+    <p role="status">{{ runtime.message() }}</p>
+  }
+</dialog>

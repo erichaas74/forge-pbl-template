@@ -20,6 +20,8 @@ import {
   JOURNEY_REPLAY_PERSISTENCE,
 } from '../../../templates/journey-replay/runtime/journey-replay.tokens';
 import type { TemplateLauncher } from '../project-launch.contracts';
+import { BrowserJourneyPathPersistence, JOURNEY_PATH_PERSISTENCE } from '../../../templates/journey-replay/persistence/journey-path.persistence';
+import { validateJourneyPaths } from '../../../templates/journey-replay/package/journey-path.validation';
 
 export const journeyReplayLauncher: TemplateLauncher = {
   templateId: 'journey-replay',
@@ -45,6 +47,19 @@ export const journeyReplayLauncher: TemplateLauncher = {
         request.session.mode === 'preview' ? 'Local demonstration' : request.session.classId,
       mode: request.session.mode === 'preview' ? 'demo' : request.session.mode,
     };
+    if (config.experience) {
+      const issues = validateJourneyPaths(config.experience, config.map, config.resources, config.evidence);
+      if (issues.length) throw new Error(issues.map(issue => `${issue.code}: ${issue.message}`).join('\n'));
+      const module = await import('../../../templates/journey-replay/ui/journey-path-workspace.component');
+      return {
+        component: module.JourneyPathWorkspaceComponent,
+        providers: [
+          { provide: JOURNEY_REPLAY_CONFIG, useValue: config },
+          { provide: JOURNEY_REPLAY_ENROLLMENT, useValue: enrollment },
+          { provide: JOURNEY_PATH_PERSISTENCE, useFactory: () => new BrowserJourneyPathPersistence() },
+        ],
+      };
+    }
     const module = await import('../../../templates/journey-replay/ui/journey-shell.component');
     return {
       component: module.JourneyReplayPageComponent,

@@ -1,0 +1,65 @@
+<section class="week-standards" [class.compact]="compact()" aria-label="Selected week standards">
+  <header>
+    <div><h2>Week {{ week() }} standards</h2>@if (!compact()) { <p>Evidence reviewed: {{ checkedCount() }} / {{ total() }}</p> }</div>
+    <button #trigger type="button" aria-haspopup="dialog" (click)="panel.showModal()">Full breakdown &amp; curriculum connections</button>
+  </header>
+  @if (!compact()) { <div class="standard-summary">
+    @for (entry of lessons(); track entry.number) {
+      <article [class.current-lesson]="entry.number === selected()">
+        <h3>Lesson {{ entry.number }} · {{ entry.number % 2 === 1 ? 'Individual' : 'Group' }} @if (entry.number === selected()) { <small>Selected lesson</small> }</h3>
+        <p>{{ entry.lesson.title }}</p>
+        @for (target of entry.targets; track target.standardId) {
+          <p><b>{{ target.standardId }}</b> — {{ target.standard.title }}</p>
+        }
+      </article>
+    }
+  </div> }
+</section>
+<dialog #panel class="review-panel" aria-label="Full standards breakdown and curriculum connections"
+  (close)="trigger.focus()" (cancel)="$event.stopPropagation()"
+  (keydown.escape)="panel.close(); $event.stopPropagation()">
+    <header>
+      <div>
+        <h2>Week {{ week() }} · Grade {{ review().grade }} · Standards breakdown</h2>
+        <p>Check a box after reviewing that lesson’s evidence. These are testing checks, not student grades or mastery. Checks reset on reload.</p>
+      </div>
+      <button type="button" aria-label="Close standards review" (click)="panel.close()">Close</button>
+    </header>
+    <p class="scope">{{ review().scope }}</p>
+    <button type="button" class="reset" (click)="reset()">Reset project checks</button>
+    <div class="lesson-columns">
+      @for (entry of lessons(); track entry.number) {
+        <article class="review-lesson" [attr.data-lesson]="entry.number">
+          <h3>Lesson {{ entry.number }} · {{ entry.lesson.title }} @if (entry.number === selected()) { <small>Current lesson</small> }</h3>
+          <p><strong>Project work:</strong> {{ entry.lesson.output }}</p>
+          @for (target of entry.targets; track target.standardId) {
+            <div class="standard-target" [class.reviewed]="isChecked(entry.number, target.standardId)">
+              <label>
+                <input type="checkbox" [checked]="isChecked(entry.number, target.standardId)" (change)="toggle(entry.number, target.standardId)" />
+                <span><b>{{ target.standardId }}</b> — {{ target.standard.title }}<small>Lesson {{ entry.number }} evidence reviewed</small></span>
+              </label>
+              <p class="standard-description">{{ target.standard.description }}</p>
+              <p><strong>How it is addressed:</strong> {{ target.addressed }}</p>
+              <p><strong>Evidence to check:</strong> {{ target.evidence }}</p>
+              @if (target.addition) {
+                <p class="addition"><strong>Added check needed:</strong> {{ target.addition }}</p>
+              }
+            </div>
+          }
+          <p class="checkpoint"><strong>Lesson checkpoint:</strong> {{ entry.lesson.checkpoint }}</p>
+        </article>
+      }
+    </div>
+    <section class="curriculum-connections" aria-label="Curriculum connections">
+      <h3>Connections to other curriculum</h3>
+      <p>Other configured lessons addressing the same standards as Week {{ week() }}.</p>
+      @for (connection of weekConnections(); track connection.projectId + ':' + connection.lessonNumber + ':' + connection.standardId) {
+        <article class="standard-target">
+          <b>{{ connection.standardId }} · {{ connection.projectTitle }}</b>
+          <p>Week {{ (connection.lessonNumber + connection.lessonNumber % 2) / 2 }} · Lesson {{ connection.lessonNumber }}: {{ connection.lessonTitle }}</p>
+          <p>{{ connection.addressed }}</p>
+        </article>
+      } @empty { <p>No other curriculum lessons are currently mapped to these standards.</p> }
+    </section>
+    <footer>Source: supplied Forge School Master Standards Framework, Grades 4–6 (draft). Full source wording is shown above. Coverage notes apply to the listed activity, not every component of a bundled standard.</footer>
+</dialog>

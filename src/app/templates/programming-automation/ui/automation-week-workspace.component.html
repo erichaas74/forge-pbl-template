@@ -1,0 +1,205 @@
+<main class="week-workspace" [attr.data-week]="week().week">
+  <section class="interactive" aria-label="Interactive robot workspace">
+    <header class="mission-header">
+      <div>
+        <p class="eyebrow">ROBOT DELIVERY CODE LAB · WEEK {{ week().week }}</p>
+        <h1>{{ week().title }}</h1>
+        <p>{{ week().setting }}</p>
+      </div>
+      <span class="preview-badge">Testing · all access</span>
+    </header>
+    <div class="challenge-bar">
+      <label
+        >Challenge
+        <select
+          aria-label="Robot challenge"
+          [value]="runtime.challenge().id"
+          (change)="choose($any($event.target).value)"
+        >
+          @for (challenge of runtime.config.challenges; track challenge.id) {
+            <option [value]="challenge.id" [selected]="challenge.id === runtime.challenge().id">
+              {{ challenge.title }}
+            </option>
+          }
+        </select>
+      </label>
+      <label
+        >Target
+        <select
+          aria-label="Parking target"
+          [value]="target()"
+          (change)="setTarget($any($event.target).value)"
+        >
+          @for (target of runtime.course().targets; track $index) {
+            <option [value]="$index" [selected]="$index === runtime.draft().targetIndex">
+              {{ target.label }}
+            </option>
+          }
+        </select>
+      </label>
+      <label class="trace"
+        ><input
+          type="checkbox"
+          [checked]="trace()"
+          (change)="trace.set($any($event.target).checked)"
+        />Path</label
+      >
+    </div>
+    @if (extraChallenge()) {
+      <p class="extra-note">
+        Extra challenge open. The planning panel still describes Week {{ week().week }}.
+      </p>
+    }
+    <div class="activity-grid">
+      <section class="course-stage" aria-label="Live course and replay">
+        <app-robot-course
+          [course]="course()"
+          [robotRadiusCm]="runtime.config.robot.radiusCm"
+          [targetIndex]="target()"
+          [sample]="replay.current()"
+          [samples]="replay.trial()?.pathSamples ?? []"
+          [events]="replay.trial()?.events ?? []"
+          [result]="replay.trial()"
+          [showTrace]="trace()"
+        />
+        @if (replay.trial(); as trial) {
+          <div class="replay-panel">
+            <div class="replay-actions">
+              <button (click)="replay.playing() ? replay.pause() : replay.play()">
+                {{ replay.playing() ? 'Pause' : 'Play replay' }}
+              </button>
+              <button (click)="replay.step()" [disabled]="replay.playing()">Step</button>
+              <button (click)="edit()">Back to live code</button>
+            </div>
+            <label class="timeline"
+              >Replay timeline
+              <input
+                aria-label="Replay timeline"
+                type="range"
+                min="0"
+                [max]="replay.duration()"
+                step="50"
+                [value]="replay.timeMs()"
+                (input)="replay.seek(+$any($event.target).value)"
+              />
+            </label>
+            <p role="status">
+              {{
+                finished()
+                  ? trial.completedMission
+                    ? 'Course goal reached'
+                    : trial.stoppedReason
+                  : 'Replaying this trial'
+              }}
+            </p>
+            <div class="metrics">
+              <span>{{ trial.distanceCm | number: '1.0-1' }} cm</span
+              ><span>{{ trial.elapsedSeconds | number: '1.0-1' }} s</span
+              ><span>{{ trial.collisions }} collisions</span
+              ><span>{{ trial.deliveriesCompleted }} deliveries</span>
+            </div>
+          </div>
+        }
+        <details class="trial-history">
+          <summary>Trial replays ({{ runtime.currentTrials().length }})</summary>
+          @for (trial of runtime.currentTrials(); track trial.id; let i = $index) {
+            <button (click)="watch(trial)">
+              Replay {{ i + 1 }} · {{ trial.distanceCm | number: '1.0-0' }} cm ·
+              {{ trial.collisions }} collisions
+            </button>
+          } @empty {
+            <p>Run the program to create a local test replay.</p>
+          }
+        </details>
+      </section>
+      <section class="code-panel" aria-label="Robot program">
+        <header>
+          <h2>{{ replay.trial() ? 'Recorded code' : 'Your program' }}</h2>
+          <span>{{ replay.trial() ? 'Replay only' : 'Editable test code' }}</span>
+        </header>
+        <p class="mission">{{ runtime.challenge().mission }}</p>
+        <div class="run-actions">
+          @if (replay.trial()) {
+            <button class="primary" (click)="edit()">Edit program</button>
+          } @else {
+            <button
+              class="primary"
+              (click)="run()"
+              [disabled]="!runtime.draft().program.commands.length"
+            >
+              ▶ Run program
+            </button>
+          }
+        </div>
+        <p class="save-status" role="status">{{ runtime.message() || runtime.saveStatus() }}</p>
+        <div class="code-scroll">
+          <app-command-editor
+            [snapshot]="replay.trial()?.version?.program"
+            [activeId]="replay.current()?.activeCommandId ?? ''"
+            [assessmentLinks]="false"
+          />
+        </div>
+        <p class="sample-note">
+          Starter code is a sample to experiment with. Test runs do not complete or assess a lesson.
+        </p>
+      </section>
+    </div>
+  </section>
+  <aside class="planning" aria-label="Weekly work and AI tutor planning">
+    <details class="plan-card weekly-card" open>
+      <summary>
+        <span class="eyebrow">WEEK {{ week().week }}</span>
+        <h2>To be completed</h2>
+      </summary>
+      <p class="muted">Proposed products · no completion tracking yet</p>
+      <ol class="products">
+        @for (session of week().sessions; track session.challengeId; let i = $index) {
+          <li [class.current]="sessionIndex() === i">
+            <strong
+              >Session {{ i + 1 }} ·
+              {{ i === 0 ? 'Individual learning' : 'Group activity' }}</strong
+            >
+            <p>{{ session.product }}</p>
+          </li>
+        }
+      </ol>
+      <p class="footnote">
+        The future tutor will guide and review each product for standards alignment before
+        completion is recorded.
+      </p>
+    </details>
+    <details class="plan-card tutor-card" open>
+      <summary>
+        <span class="eyebrow">BUILD PLANNING</span>
+        <h2>AI Tutor</h2>
+        <span class="offline">Not connected</span>
+      </summary>
+      <h3>Questions the tutor will use</h3>
+      <ul>
+        @for (question of week().questions; track question) {
+          <li>{{ question }}</li>
+        }
+      </ul>
+      <h3>Evidence to review</h3>
+      <ul>
+        @for (item of week().evidence; track item) {
+          <li>{{ item }}</li>
+        }
+      </ul>
+      <h3>Future model control</h3>
+      <ul>
+        @for (item of week().adjustments; track item) {
+          <li>{{ item }}</li>
+        }
+      </ul>
+      @if (extraChallenge()) {
+        <h3>Extra challenge focus</h3>
+        <p>{{ runtime.challenge().discovery?.reasoningPrompt ?? runtime.challenge().hint }}</p>
+      }
+      <p class="footnote">
+        Planning lists only. Tutor conversations, automatic adjustments, assessment, and shared work
+        are future builds.
+      </p>
+    </details>
+  </aside>
+</main>

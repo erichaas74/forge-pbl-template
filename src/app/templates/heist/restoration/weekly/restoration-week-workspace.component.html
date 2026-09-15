@@ -1,0 +1,91 @@
+<main class="week-workspace" [attr.data-week]="week().week">
+  <section class="activity" aria-label="Interactive picture restoration workspace">
+    <header class="mission-header">
+      <p class="eyebrow">THE RESTORATION STUDIO · WEEK {{ week().week }} · {{ lesson() % 2 ? 'INDIVIDUAL EXPLORATION' : 'GROUP ACTIVITY' }}</p>
+      <h1 #sessionHeading class="session-heading" tabindex="-1">{{ session().title }}</h1>
+      <p>{{ week().setting }}</p>
+    </header>
+    <ol class="directions" aria-label="Project steps">
+      @for (step of session().steps; track $index) { <li><b>{{ $index + 1 }}</b><span>{{ step }}</span></li> }
+    </ol>
+    <nav class="tools" aria-label="Activity tools">
+      <button [attr.aria-pressed]="mode() === 'picture'" (click)="showPicture()">⌕ Inspect & repair</button>
+      @if (!scene()) { <button [attr.aria-pressed]="mode() === 'film'" (click)="showFilm()">▶ Watch scene film</button> }
+      <button [attr.aria-pressed]="mode() === 'exhibit'" (click)="showExhibit()">▧ Build exhibition</button>
+    </nav>
+    @if (runtime.warning()) { <p class="warning" role="alert">{{ runtime.warning() }} <button (click)="downloadDraft()">Download draft</button></p> }
+    @if (message()) { <p class="notice" role="status">{{ message() }}</p> }
+    @if (mode() !== 'exhibit') {
+      <div class="work-bar"><div><strong>{{ scene()?.title ?? work().title }}</strong><span>{{ work().location }} · {{ work().date }}</span></div><details><summary>All 16 paintings</summary><label>Open another commission<select aria-label="Restoration painting" [value]="work().id" (change)="choose($any($event.target).value)">@for (w of runtime.mission.works; track w.id) { <option [value]="w.id" [selected]="w.id === work().id">{{ w.title }}</option> }</select></label></details></div>
+      @if (extra()) { <p class="extra">Extra commission open. The steps and planning boxes describe Week {{ week().week }}; the repair tools and sources below match this picture. <button (click)="choose(session().workId)">Return to session picture</button></p> }
+      @if (scene(); as activeScene) {
+        @for (d of [activeScene]; track d.id) { <app-panorama-encounter [scene]="d" [state]="runtime.sceneState(d.id)" (action)="runtime.sceneAction(d.id, $event)" (tutorRequested)="openTutor()" /> }
+        <button (click)="runtime.toggleExhibit(work().id)">{{ (runtime.state().exhibit ?? []).includes(work().id) ? 'Remove from exhibition' : 'Add restored picture to exhibition' }}</button>
+      } @else {
+      <div class="studio-grid">
+        <div class="visual">
+          @if (mode() === 'film') {
+            @for (filmSession of [session()]; track filmSession.workId) { <app-restoration-scene-film [film]="filmSession.film" [startTime]="filmTime()" (position)="runtime.saveFilmTime(lesson(), $event)" (region)="inspect($event)" /> }
+          } @else {
+            <div class="image-viewport">
+              <div class="image-wrap" [style.transform]="zoom() ? 'scale(1.65)' : 'scale(1)'" [style.transform-origin]="region() ? (region()!.x + region()!.width / 2) + '% ' + (region()!.y + region()!.height / 2) + '%' : 'center'">
+                <app-restoration-canvas [definition]="work()" [state]="displayState()" [interactive]="!replay()" [guides]="guides()" (select)="inspect($event)" />
+                @if (compare()) { <div class="original-layer" [style.clip-path]="'inset(0 ' + (100 - wipe()) + '% 0 0)'" aria-hidden="true"><app-restoration-canvas [definition]="work()" [state]="displayState()" [original]="true" [interactive]="false" /></div> }
+              </div>
+              @if (compare()) { <span class="image-tag before">Original</span><span class="image-tag after">Your version</span><div class="wipe-line" [style.left.%]="wipe()"></div> }
+              @if (replay()) { <span class="replay-tag">Saved version · viewing only</span> }
+            </div>
+            @if (compare()) { <label class="wipe-control">Compare original ↔ your version<input aria-label="Before and after comparison" type="range" min="0" max="100" [value]="wipe()" (input)="wipe.set(+$any($event.target).value)"></label> }
+            <div class="picture-tools">
+              <button [attr.aria-pressed]="compare()" (click)="compare.set(!compare())">Before / after</button>
+              <button [attr.aria-pressed]="zoom()" (click)="zoom.set(!zoom())">{{ zoom() ? 'Zoom out' : 'Zoom into detail' }}</button>
+              <button [attr.aria-pressed]="guides()" (click)="guides.set(!guides())">Detail outlines</button>
+            </div>
+            <p class="media-note">{{ work().attribution }} · Select a numbered area or use the detail buttons.</p>
+          }
+        </div>
+        <section class="inspector" #inspector tabindex="-1" aria-label="Selected picture detail">
+          <p class="eyebrow">ON THE PICTURE</p>
+          <div class="detail-buttons">@for (r of work().regions; track r.id; let i = $index) { <button [attr.aria-pressed]="region()?.id === r.id" (click)="inspect(r.id)">{{ i + 1 }} · {{ r.title }}</button> }</div>
+          @if (region(); as r) {
+            <h2>{{ r.title }}</h2><p class="claim">The picture claims: <strong>{{ r.claim }}</strong></p>
+            <p>Check the source desk, then choose an image layer below. Your choice changes this part of the picture.</p>
+            <div class="repair-options" aria-label="Image repair choices">@for (o of r.options; track o.id) {
+              <button [attr.aria-pressed]="option(r.id) === o.id" (click)="edit(o.id)">
+                @if (o.image) { <img [src]="o.image" alt=""> } @else { <span class="option-icon" aria-hidden="true">{{ o.tool === 'remove' ? '−' : o.tool === 'keep' ? '◈' : '✎' }}</span> }
+                <span><b>{{ o.label }}</b><small>{{ o.text ?? o.description }}</small></span>
+              </button>
+            }</div>
+          } @else { <div class="start-card"><span aria-hidden="true">⌕</span><h2>Start with one detail.</h2><p>Select a numbered area in the artwork. Read what it claims, inspect its sources, then try a visible repair.</p></div> }
+          <div class="edit-actions"><button [disabled]="!state().undo.length" (click)="undo()">Undo repair</button><button class="primary" (click)="saveVersion()">Save picture version</button></div>
+          <p class="feedback" role="status">{{ runtime.feedback() }}</p>
+        </section>
+      </div>
+      <details class="sources" [open]="week().week === 1"><summary>Source desk · pin evidence to this picture</summary><p>Read the source before deciding what to change. The scene illustration is not proof of its own accuracy.</p><div class="source-grid">@for (source of sources(); track source.id) { <article><h3>{{ source.title }}</h3><p>{{ source.text }}</p><a [href]="source.sourceUrl" target="_blank" rel="noopener noreferrer">{{ source.sourceTitle }} ↗</a><button [attr.aria-pressed]="pinnedSources().includes(source.id)" (click)="runtime.pinSource(work().id, source.id)">{{ pinnedSources().includes(source.id) ? 'Unpin source' : 'Pin source to picture' }}</button></article> }</div></details>
+      <details class="replays"><summary>Replay versions ({{ trials().length }})</summary><div class="trial-list">@for (trial of trials(); track trial.id; let i = $index) { <button [attr.aria-pressed]="replayId() === trial.id" (click)="replayId.set(trial.id); mode.set('picture')">Version {{ i + 1 }}<app-restoration-canvas [definition]="work()" [state]="trial.state" [interactive]="false" /></button> } @empty { <p>Use Save picture version after a repair to keep an image you can revisit.</p> }</div>@if (replay()) { <button (click)="replayId.set(undefined)">Return to current draft</button> }</details>
+      <div class="downloads"><button [disabled]="busy()" (click)="downloadComparison()">Download before / after</button><button (click)="runtime.toggleExhibit(work().id)">{{ (runtime.state().exhibit ?? []).includes(work().id) ? 'Remove from exhibition' : 'Add to exhibition' }}</button><button (click)="downloadDraft()">Download draft</button></div>
+      }
+    } @else {
+      <section class="exhibition" aria-label="Visual exhibition builder">
+        <div class="exhibit-heading"><div><p class="eyebrow">YOUR GALLERY</p><h2>History, back in the picture</h2></div><button [attr.aria-pressed]="presentation()" (click)="saveCaptions(); presentation.set(!presentation())">{{ presentation() ? 'Edit exhibition' : 'Preview exhibition' }}</button></div>
+        <p class="sample-note">{{ runtime.state().sampleWorkIds.length ? 'Sample starting exhibition: example images and captions were added only for untouched work. Edit, remove or replace them.' : 'Your local exhibition draft. Add paintings, arrange them, and write museum captions.' }} No earlier work is marked complete.</p>
+        <div class="exhibit-grid" [class.presentation]="presentation()">@for (w of exhibit(); track w.id; let i = $index) {
+          <article><h3>{{ i + 1 }} · {{ sceneFor(w.id)?.title ?? w.title }}</h3><small>{{ w.location }} · {{ w.date }}</small><div class="exhibit-pair"><figure>@if (sceneFor(w.id); as d) { <app-panorama-painting [scene]="d" [state]="runtime.sceneState(d.id)" [original]="true" /> } @else { <app-restoration-canvas [definition]="w" [state]="runtime.image(w.id)" [original]="true" [interactive]="false" /> }<figcaption>Original</figcaption></figure><figure>@if (sceneFor(w.id); as d) { <app-panorama-painting [scene]="d" [state]="runtime.sceneState(d.id)" /> } @else { <app-restoration-canvas [definition]="w" [state]="runtime.image(w.id)" [interactive]="false" /> }<figcaption>Student reconstruction</figcaption></figure></div>
+            @if (presentation()) { <p class="museum-caption">{{ caption(w.id) }}</p> } @else {
+              <label>Museum caption<textarea [attr.aria-label]="'Museum caption for ' + w.title" rows="3" maxlength="1500" [value]="caption(w.id)" (input)="draftCaption(w.id, $any($event.target).value)" (blur)="saveCaptions()" placeholder="Write the label your gallery visitors will read."></textarea></label>
+              <div class="edit-actions"><button [disabled]="i === 0" [attr.aria-label]="'Move ' + w.title + ' earlier'" (click)="runtime.move(w.id, -1)">↑ Earlier</button><button [disabled]="i === exhibit().length - 1" [attr.aria-label]="'Move ' + w.title + ' later'" (click)="runtime.move(w.id, 1)">↓ Later</button><button (click)="choose(w.id)">Edit picture</button><button (click)="runtime.toggleExhibit(w.id)">Remove</button></div>
+            }
+          </article>
+        } @empty { <p class="empty-gallery">Your exhibition is empty. Choose a picture below to add it. Returning to this session keeps your empty draft.</p> }</div>
+        @if (!presentation()) { <label class="add-picture">Add a painting<select aria-label="Add a painting to exhibition" (change)="runtime.toggleExhibit($any($event.target).value); $any($event.target).value = ''"><option value="">Choose from the collection…</option>@for (w of runtime.mission.works; track w.id) { @if (!(runtime.state().exhibit ?? []).includes(w.id)) { <option [value]="w.id">{{ w.title }}</option> } }</select></label> }
+        <div class="downloads"><button class="primary" [disabled]="busy() || !exhibit().length" (click)="downloadExhibit()">Download illustrated exhibition</button><button (click)="downloadDraft()">Download draft</button></div>
+      </section>
+    }
+  </section>
+  <aside class="planning" aria-label="Weekly planning">
+    <details class="products" open><summary>Proposed weekly products</summary><p class="eyebrow">WEEK {{ week().week }} · {{ week().title }}</p><ul>@for (s of week().sessions; track s.title; let i = $index) { <li><strong>{{ i ? 'Group activity' : 'Individual exploration' }}</strong><span>{{ s.product }}</span></li> }</ul><p>Potential deliverables. No submission or completion is required in this preview. Group activities use local drafts; shared editing is deferred.</p></details>
+    <details class="tutor" #tutorPanel tabindex="-1" open><summary>AI Tutor <span>Disconnected</span></summary><p>Builder planning only. No AI review, adaptation or mastery recording is connected.</p>@if (scene()?.questionOwner === 'tutor') { <p>Scene questions belong here. The scene has no question buttons or chat form.</p>@if (activePerson(); as person) { <h3>Selected person: {{ person.name }}</h3><p>{{ person.activity }}</p> } }
+<h3>Questions & concepts</h3><ul>@for (question of week().questions; track question) { <li>{{ question }}</li> }</ul><h3>Evidence to inspect</h3><ul>@for (evidence of week().evidence; track evidence) { <li>{{ evidence }}</li> }</ul><h3>Future model controls</h3><ul>@for (control of week().controls; track control) { <li>{{ control }}</li> }</ul></details>
+    <p class="preview-note">Local authoring preview · All sessions and paintings accessible. Drafts save in this browser.</p>
+  </aside>
+</main>

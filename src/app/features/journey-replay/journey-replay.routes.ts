@@ -20,11 +20,13 @@ import {
 } from '../../templates/journey-replay/runtime/journey-replay.tokens';
 import { journeyAuthorityLocator } from '../../templates/journey-replay/persistence/journey-replay.authority';
 import { demoJourneyEnrollment } from '../../runtime/project-launch/template-launchers/journey-replay.preview';
+import { BrowserJourneyPathPersistence, JOURNEY_PATH_PERSISTENCE } from '../../templates/journey-replay/persistence/journey-path.persistence';
 
 export const JOURNEY_REPLAY_ROUTES: Routes = [
   {
     path: '',
     providers: [
+      { provide: JOURNEY_PATH_PERSISTENCE, useFactory: () => new BrowserJourneyPathPersistence() },
       { provide: JOURNEY_REPLAY_CONFIG, useValue: ageOfExplorationJourneyConfig },
       {
         provide: JOURNEY_REPLAY_DEMO_CLASS_SUMMARY,
@@ -74,8 +76,8 @@ export const JOURNEY_REPLAY_ROUTES: Routes = [
       JourneyReplayRuntimeService,
     ],
     loadComponent: () =>
-      import('../../templates/journey-replay/ui/journey-shell.component').then(
-        (module) => module.JourneyReplayPageComponent,
+      import('../../templates/journey-replay/ui/journey-path-workspace.component').then(
+        (module) => module.JourneyPathWorkspaceComponent,
       ),
   },
 ];

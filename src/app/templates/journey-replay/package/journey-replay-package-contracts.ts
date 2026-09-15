@@ -1,4 +1,5 @@
 import type { BaseEntity } from '../../../core/models/base-entity';
+import type { JourneyPathDefinition } from '../domain/journey-path.models';
 import type {
   ClassVoyageRecord,
   JourneyEvidenceDefinition,
@@ -22,6 +23,7 @@ export interface JourneyReplayProjectManifest extends BaseEntity {
 }
 
 export interface JourneyPackageDefinition extends BaseEntity {
+  readonly experience?: JourneyPathDefinition;
   readonly historicalFrame?: JourneyHistoricalFrame;
   readonly subtitle: string;
   readonly gradeBand: string;

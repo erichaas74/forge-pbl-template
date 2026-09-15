@@ -1,0 +1,237 @@
+<div class="review-layout">
+  <section class="visual-panel" aria-label="Recorded robot evidence">
+    <app-robot-course
+      [course]="shownCourse()"
+      [robotRadiusCm]="shownTrial()?.version?.robot?.radiusCm ?? runtime.config.robot.radiusCm"
+      [targetIndex]="shownTrial()?.version?.targetIndex ?? runtime.draft().targetIndex"
+      [sample]="shownTrial()?.pathSamples?.at(-1)"
+      [samples]="shownTrial()?.pathSamples ?? []"
+      [events]="shownTrial()?.events ?? []"
+      [result]="shownTrial()"
+    />
+    @if (shownTrial(); as trial) {
+      <p class="visual-caption">Recorded run · {{ trial.distanceCm.toFixed(1) }} cm travelled</p>
+      <button (click)="replay.emit(trial)">▶ Replay this run</button>
+    } @else {
+      <p class="visual-caption">Run your program to collect evidence.</p>
+    }
+    <details>
+      <summary>All recorded trials ({{ runtime.currentTrials().length }})</summary>
+      <div class="trial-list">
+        @for (trial of runtime.currentTrials(); track trial.id; let i = $index) {
+          <article>
+            <div>
+              <strong
+                >Trial {{ i + 1 }} ·
+                {{ trial.completedMission ? 'Mission complete' : 'Keep testing' }}</strong
+              >
+              <small
+                >v{{ trial.version.program.version }} · {{ trial.stoppingErrorCm.toFixed(1) }} cm
+                from target</small
+              >
+            </div>
+            <button (click)="replay.emit(trial)">Replay trial {{ i + 1 }}</button>
+          </article>
+        } @empty {
+          <p>No trials yet.</p>
+        }
+      </div>
+    </details>
+  </section>
+  <section class="question-card">
+    @if (view() === 'trials') {
+      @if (step() === 'explain') {
+        <h2 tabindex="-1">
+          {{
+            runtime.currentTrials().length >= 2
+              ? 'What changed between your runs?'
+              : 'What happened in your run?'
+          }}
+        </h2>
+        @if (runtime.currentTrials().length >= 2) {
+          <div class="compare-select">
+            @for (side of [0, 1]; track side) {
+              <label
+                >Trial {{ side === 0 ? 'A' : 'B'
+                }}<select
+                  [value]="comparison()[side]"
+                  (change)="selectComparison(side, $any($event.target).value)"
+                >
+                  @for (trial of runtime.currentTrials(); track trial.id; let i = $index) {
+                    <option [value]="trial.id" [selected]="trial.id === comparison()[side]">
+                      Trial {{ i + 1 }} · v{{ trial.version.program.version }}
+                    </option>
+                  }
+                </select></label
+              >
+            }
+          </div>
+          <table>
+            <caption>
+              Run comparison
+            </caption>
+            <thead>
+              <tr>
+                <th>Measure</th>
+                <th>A</th>
+                <th>B</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (metric of metrics.slice(0, 3); track metric.key) {
+                <tr>
+                  <th>{{ metric.label }}</th>
+                  <td>{{ metricValue(compared()[0], metric.key) }}</td>
+                  <td>{{ metricValue(compared()[1], metric.key) }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+          <label
+            >Your explanation<textarea
+              aria-label="Trial comparison explanation"
+              rows="4"
+              [value]="runtime.draft().reflection"
+              (input)="runtime.updateDraft({ reflection: $any($event.target).value })"
+              [disabled]="!runtime.canEdit()"
+              placeholder="I changed… The two runs show…"
+            ></textarea>
+          </label>
+        } @else {
+          <label
+            >Your observation<textarea
+              aria-label="Trial observation"
+              rows="4"
+              [value]="runtime.draft().diagnosis"
+              (input)="runtime.updateDraft({ diagnosis: $any($event.target).value })"
+              [disabled]="!runtime.canEdit()"
+              placeholder="The robot… Next I will…"
+            ></textarea>
+          </label>
+        }
+        <button class="primary" (click)="go('review')">Review mission</button>
+        <details>
+          <summary>More evidence</summary>
+          @if (runtime.currentTrials().length >= 2) {
+            <table>
+              <thead>
+                <tr>
+                  <th>Measure</th>
+                  <th>A</th>
+                  <th>B</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (metric of metrics.slice(3); track metric.key) {
+                  <tr>
+                    <th>{{ metric.label }}</th>
+                    <td>{{ metricValue(compared()[0], metric.key) }}</td>
+                    <td>{{ metricValue(compared()[1], metric.key) }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+            <label
+              >Earlier observation<textarea
+                rows="3"
+                [value]="runtime.draft().diagnosis"
+                (input)="runtime.updateDraft({ diagnosis: $any($event.target).value })"
+                [disabled]="!runtime.canEdit()"
+              ></textarea>
+            </label>
+          } @else {
+            <label
+              >Testing explanation<textarea
+                rows="3"
+                [value]="runtime.draft().reflection"
+                (input)="runtime.updateDraft({ reflection: $any($event.target).value })"
+                [disabled]="!runtime.canEdit()"
+              ></textarea>
+            </label>
+          }
+        </details>
+      } @else {
+        <h2 tabindex="-1">
+          {{ runtime.draft().completedAt ? 'Mission saved' : 'Is your evidence ready?' }}
+        </h2>
+        <ul class="readiness">
+          @for (problem of runtime.readiness(); track problem) {
+            <li>{{ problem }}</li>
+          } @empty {
+            <li>Your code, test and explanation are ready.</li>
+          }
+        </ul>
+        <div class="actions">
+          <button (click)="go('explain')">Back</button>
+          @if (!runtime.draft().completedAt) {
+            <button
+              class="primary"
+              [disabled]="runtime.readiness().length > 0 || !runtime.canEdit()"
+              (click)="runtime.completeChallenge()"
+            >
+              Save completed mission
+            </button>
+          }
+        </div>
+      }
+    } @else {
+      <h2 tabindex="-1">How does your evidence support your design?</h2>
+      <label
+        >Your final defense<textarea
+          aria-label="Final engineering defense"
+          rows="6"
+          [value]="runtime.state().defense"
+          (input)="runtime.updateCalibration('defense', $any($event.target).value)"
+          [disabled]="runtime.sample"
+          placeholder="My design works because… My tests show…"
+        ></textarea>
+      </label>
+      <button class="primary" (click)="download()">Download portfolio</button>
+      <details>
+        <summary>Your collected evidence</summary>
+        <p>{{ runtime.session.actorDisplayName }} · {{ runtime.config.title }}</p>
+        <p>
+          {{ runtime.state().trials.length }} trials ·
+          {{ runtime.state().math.length }} calculations ·
+          {{ runtime.state().versions.length }} locked versions
+        </p>
+        <h3>Testing explanation</h3>
+        <p>{{ runtime.draft().reflection || 'No explanation recorded yet.' }}</p>
+        <h3>Current program · v{{ runtime.draft().program.version }}</h3>
+        <ol>
+          @for (command of flatProgram(); track command.id) {
+            <li>
+              {{ labels[command.type] }} {{ expression(command) }} {{ command.packageId ?? '' }}
+              {{ command.disabled ? '(disabled)' : '' }}
+            </li>
+          }
+        </ol>
+        <h3>Math evidence</h3>
+        <ul class="mastery">
+          @for (skill of runtime.mastery(); track skill.title) {
+            <li>
+              {{ skill.achieved ? '✓' : '○' }} {{ skill.title
+              }}<small>{{ skill.achieved ? 'Evidence recorded' : 'Evidence needed' }}</small>
+            </li>
+          }
+        </ul>
+        <p>Robot performance and academic reasoning are assessed separately.</p>
+        <h3>Calibration</h3>
+        <p>
+          {{ runtime.state().measuredDistancePerRotation || '—' }} cm/rotation ·
+          {{ runtime.state().measuredTurnRate || '—' }} °/s
+        </p>
+        <p>
+          {{ runtime.state().measurementExplanation || 'No measurement explanation recorded.' }}
+        </p>
+        <h3>Calculations</h3>
+        @for (evidence of runtime.state().math; track evidence.id) {
+          <article>
+            <strong>{{ evidence.tool }}: {{ evidence.answer }} {{ evidence.unit }}</strong>
+            <p>{{ evidence.status }} · {{ evidence.explanation }}</p>
+          </article>
+        }
+      </details>
+    }
+  </section>
+</div>

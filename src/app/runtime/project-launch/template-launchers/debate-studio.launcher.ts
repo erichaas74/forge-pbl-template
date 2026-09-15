@@ -1,4 +1,5 @@
 import type { DebateStudioProjectConfig } from '../../../templates/debate-studio/domain/debate-studio.models';
+import { validateDebateInquiry } from '../../../templates/debate-studio/domain/debate-inquiry.models';
 import {
   BrowserDebateWorkspacePersistenceAdapter,
   DEBATE_STUDIO_MEDIA,
@@ -13,6 +14,9 @@ import {
   DEBATE_STUDIO_TENANT_ID,
 } from '../../../templates/debate-studio/runtime/debate-studio.tokens';
 import type { ProjectLaunchRequest, TemplateLauncher } from '../project-launch.contracts';
+import { validateExchangeConfig } from '../../../templates/debate-studio/exchange/debate-exchange.models';
+import { BrowserDebateExchangeAdapter, DEBATE_EXCHANGE_PORT } from '../../../templates/debate-studio/exchange/debate-exchange.persistence';
+import { DEBATE_EXCHANGE_EXAMPLE, DebateExchangeRuntime } from '../../../templates/debate-studio/exchange/debate-exchange-runtime.service';
 
 export const debateStudioLauncher: TemplateLauncher = {
   templateId: 'debate-studio',
@@ -21,6 +25,7 @@ export const debateStudioLauncher: TemplateLauncher = {
       throw new Error('A server-authoritative Debate Studio gateway must be configured.');
     }
     const definition = requireDebateConfig(request.projectDefinition, request.project.id);
+    if (definition.inquiry) validateDebateInquiry(definition.inquiry, definition.evidence.map(e => e.id));
     const config: DebateStudioProjectConfig = {
       ...definition,
       sessionId: request.session.attemptId ?? definition.sessionId,
@@ -32,6 +37,22 @@ export const debateStudioLauncher: TemplateLauncher = {
         mode: request.session.mode,
       },
     };
+    if (config.exchange) {
+      validateExchangeConfig(config);
+      const module = await import('../../../templates/debate-studio/exchange/debate-exchange.component');
+      return {
+        component: module.DebateExchangeComponent,
+        providers: [
+          { provide: DEBATE_STUDIO_CONFIG, useValue: config },
+          { provide: DEBATE_EXCHANGE_EXAMPLE, useValue: request.view === 'final-demo' },
+          { provide: DEBATE_EXCHANGE_PORT, useFactory: () => new BrowserDebateExchangeAdapter(config, {
+            tenantId: request.session.tenantId, projectId: config.projectId, projectVersion: config.projectVersion,
+            actorId: config.viewer.studentId, classId: config.viewer.classId, attemptId: request.session.attemptId,
+          }) },
+          DebateExchangeRuntime,
+        ],
+      };
+    }
     const module = await import('../../../templates/debate-studio/ui/debate-studio-page.component');
     return {
       component: module.DebateStudioPageComponent,

@@ -4,6 +4,7 @@ import { validateBalanceLock } from '../balance-lock/balance-lock.domain';
 import { escapePuzzleEvaluators } from './escape-puzzles';
 import { validateExpeditionWorld } from './expedition.validation';
 import type { EscapeMission } from './escape.models';
+import { validatePreviewWeeks } from '../weekly/expedition-preview.models';
 
 type Row = Record<string, unknown>;
 const fail = (path: string): never => {
@@ -157,5 +158,9 @@ export function requireEscapeMission(value: unknown): EscapeMission {
       });
   } else if (rows(m['steps'], 'steps').some((s) => s['gradePuzzles'] !== undefined))
     fail('gradePuzzles requires mathGrades');
+  if (m['previewWeeks'] !== undefined) {
+    if (!m['world']) fail('previewWeeks requires expedition presentation');
+    validatePreviewWeeks(m['previewWeeks'], (value as EscapeMission).steps);
+  }
   return structuredClone(value) as EscapeMission;
 }

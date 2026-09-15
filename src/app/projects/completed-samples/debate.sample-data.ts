@@ -169,7 +169,7 @@ export const debateSampleGuide: SampleGuide = {
   title: 'Watch a Finished Senate Debate Take Shape',
   subtitle:
     'An animated walkthrough adds each argument to the shared thread, opens the response builder, demonstrates the student work, and files the finished response.',
-  audience: 'History & argument · Grades 5–6',
+  audience: 'History & argument · Grade 6',
   duration: 'Play, pause, or step through · about 45 seconds',
   trail: [
     {

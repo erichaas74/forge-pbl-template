@@ -1,0 +1,14 @@
+Using Vitest configuration file: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\output\solar-week-vitest.config.mjs
+> Building...
+√ Building...
+Application bundle generation complete. [20.443 seconds] - 2026-09-14T23:13:05.040Z
+
+
+ RUN  v4.1.11 C:/Users/erich/Desktop/pbl-lms/forge-pbl-template
+
+
+ Test Files  4 passed (4)
+      Tests  48 passed (48)
+   Start at  17:13:09
+   Duration  25.20s (transform 3.85s, setup 2.43s, import 5.02s, tests 11.95s, environment 4.64s)
+

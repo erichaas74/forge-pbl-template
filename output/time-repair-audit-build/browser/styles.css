@@ -1,0 +1,43 @@
+/* src/styles.scss */
+html {
+  background: #071018;
+}
+body {
+  margin: 0;
+}
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+}
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+.workspace-tools-panel > :is(header, nav) {
+  position: static !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  height: auto !important;
+  min-height: 0 !important;
+  width: auto !important;
+  gap: 12px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.workspace-tools-panel :is(.project-identity, .agency-brand, .pilot-label, .brand, .wordmark, .practice, .save-dot, .current-vial) {
+  display: none !important;
+}
+.workspace-tools-panel :is(nav, .header-controls, .header-actions, .project-tools, .actions) {
+  flex-wrap: wrap !important;
+}
+.workspace-tools-panel :is(button, select, a, summary) {
+  min-height: 44px;
+}
+
+/* angular:styles/global:styles */
+/*# sourceMappingURL=styles.css.map */

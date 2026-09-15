@@ -1,0 +1,56 @@
+// Project-specific authoring content. Run from repository root; never rewrites other projects.
+import fs from 'node:fs';
+const packagePath = 'public/projects/shadow-gallery/versions/2.0.0/project.json';
+const mission = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
+const session = (title, workId, activity, steps, product, number, cue1, cue2) => ({
+  title, workId, activity, steps, product,
+  film: { src: `/projects/shadow-gallery/weekly/scene-${number}.mp4`, captions: `/projects/shadow-gallery/weekly/scene-${number}.vtt`, cues: [
+    { at: 0, regionId: 'detail', label: 'the disputed detail', transcript: cue1 },
+    { at: 6, regionId: 'context', label: 'the surrounding context', transcript: cue2 },
+  ] },
+});
+const weeks = [
+  { week: 1, title: 'Look inside the picture', setting: 'A Caribbean shore. Separate what you can see from what the image claims.', sessions: [
+    session('What does not belong?', 'shore-painting-0-restoration', 'inspect', ['Select the horse detail in the picture.', 'Read a source; try removing the added layer.', 'Compare both images and save a picture version.'], 'A shore reconstruction with a pinned reference and a saved before-and-after version.', 1, 'Look at the added horse herd on the shore. The assigned scene is before European arrival. Can a picture establish when an animal arrived?', 'Now look at the island-community caption. Investigate what belongs as well as what might need repair. Use the linked sources to check the claims.'),
+    session('Whose island story?', 'shore-painting-2-restoration', 'inspect', ['Watch the island film and inspect its caption.', 'Use place evidence to choose an inscription.', 'Keep supported context and save your image.'], 'A relabeled island picture that preserves supported context.', 2, 'Read the inscription naming a community and a place. The painting cannot establish identity from a person’s appearance.', 'Inspect the maize caption. A repair should preserve details that the evidence supports. Compare source claims before editing.'),
+  ], questions: ['What is directly visible, and what is only claimed by the inscription?', 'Which source establishes the time and place? What can it not establish?', 'Whose perspective is absent from this classroom reconstruction?'], evidence: ['Inspected regions, removed or retained image layers, and pinned sources.', 'Before-and-after image versions and changes to the island inscription.'], controls: ['Select any commission, region, guide outlines, zoom, or film cue.', 'Choose evidence cards and available repair layers; change the comparison position.'] },
+  { week: 2, title: 'The time detective’s workshop', setting: 'A navigator’s desk in 1500. Test objects against the period, then rebuild the scene.', sessions: [
+    session('An instrument out of time', 'workshop-painting-0-restoration', 'compare', ['Inspect the instrument and its dated reference.', 'Try the compass layer; slide before / after.', 'Save two versions to compare your choices.'], 'An instrument comparison with two saved image trials.', 3, 'The navigator’s desk contains an added reflecting sextant. The target year is 1500. Inspect the object, then check when this technology was available.', 'A magnetic-compass caption supplies another claim to check. Compare the source with both the object and the surrounding context.'),
+    session('The clock that arrived early', 'workshop-painting-1-restoration', 'compare', ['Pause the film at the clock and inspect it.', 'Try removal or replacement; use Undo to compare.', 'Pin a useful source and save a picture version.'], 'A restored workshop scene and a replayable sequence of repair trials.', 4, 'A marine timekeeper has been added to a workshop assigned to 1500. Its polished appearance is not evidence that it belongs in that century.', 'Inspect the surrounding navigation context. Use the date of a technology to evaluate the scene, keeping independently supported details.'),
+  ], questions: ['What makes an object an anachronism in this assigned setting?', 'Does removing a doubtful object establish what actually occupied that space?', 'Why keep one navigation detail while changing another?'], evidence: ['Original and replacement objects, image wipe comparisons, and undo history.', 'Pinned dated sources and saved versions before and after revision.'], controls: ['Select object layers, keep/remove/replace tools, source cards, and hotspot visibility.', 'Control zoom, film inspection points, comparison wipe and saved-version replay.'] },
+  { week: 3, title: 'Repair the historical record', setting: 'Harbor registers and market cargo. Inspect the date, origin and destination inside each image.', sessions: [
+    session('Repair the departure register', 'port-painting-1-restoration', 'restore', ['Inspect the date written in the harbor picture.', 'Compare the voyage source; choose a new inscription.', 'Preserve the port context and save the record.'], 'A corrected departure-register image with its source pinned.', 5, 'The harbor register labels the departure of a particular voyage. Read the date painted into the scene; separate departure from arrival.', 'Inspect the port caption. A useful source must match the voyage, event and location named by the picture.'),
+    session('Where did the cargo begin?', 'market-painting-0-restoration', 'restore', ['Inspect the crate’s origin label in the market.', 'Use the exchange source to revise the inscription.', 'Compare the wheat detail; save the complete image.'], 'A revised cargo image distinguishing origin from later trade.', 6, 'A potato crate carries an origin claim. A crop being sold in a place does not establish that it originated there.', 'Inspect the wheat caption beside it. Compare both crop origins using the reference before deciding what to keep.'),
+  ], questions: ['How do departure and arrival differ when authenticating a date?', 'How is a crop’s origin different from where it is later traded?', 'Which part of a source supports this exact inscription, and which remains uncertain?'], evidence: ['Edited inscription layers, preserved context, and selected source cards.', 'Saved harbor and cargo versions showing which claims changed.'], controls: ['Select harbor, market or other commissions; switch evidence and inscription choices.', 'Set guide visibility, picture zoom, comparison position and film cue.'] },
+  { week: 4, title: 'Curate the recovered gallery', setting: 'One final picture, then a visitor-ready exhibition of your reconstructions.', sessions: [
+    session('Restore the final coastal picture', 'vault-painting-0-restoration', 'restore', ['Inspect the coastal clock against the target date.', 'Repair the image and pin a supporting source.', 'Save a version and add the picture to your exhibition.'], 'A final coastal reconstruction with a saved comparison image.', 7, 'This coastal scene is assigned to 1492, but an added marine clock invites investigation. Transfer your workshop method to a new setting.', 'Look beyond the clock to the crop-origin caption. Do not change every detail simply because one layer is doubtful.'),
+    session('Build the recovered gallery', 'vault-painting-1-restoration', 'exhibit', ['Inspect the sample gallery; add or remove pictures.', 'Arrange the images and edit their museum captions.', 'Preview the exhibition and download an illustrated copy.'], 'An illustrated before-and-after exhibition with editable captions and pinned references.', 8, 'The final coastal inscription links a named community with a place. Your exhibition should make a visible repair understandable to a visitor.', 'Look at the second geographic claim. Keep the original and the student reconstruction together, so visitors can compare changes and uncertainties.'),
+  ], questions: ['How do your image changes and source choices support the museum caption?', 'Which supported detail did you preserve, and what uncertainty remains?', 'How will a visitor distinguish an illustrative reconstruction from historical evidence?'], evidence: ['Exhibition image selection and order, captions, pinned sources and comparisons.', 'Final picture versions, revisions and preserved historical context.'], controls: ['Choose all sixteen paintings, image layers, evidence, zoom and comparison.', 'Control exhibition selection/order, captions, preview, film cues and saved-version replay.'] },
+];
+mission.previewWeeks = { capability: 'restoration.preview-weeks.v1', weeks, sampleExhibit: [
+  { workId: 'shore-painting-0-restoration', choices: { detail: 'remove' }, caption: 'Sample caption — The added European horse herd has been removed from this pre-contact shore reconstruction. Compare the original with the revision and consult the exchange reference. The illustration is not a surviving record of this scene.' },
+  { workId: 'workshop-painting-0-restoration', choices: { detail: 'compass' }, caption: 'Sample caption — A magnetic compass replaces the added reflecting sextant in this classroom reconstruction of a workshop in 1500. The original remains alongside the revision so visitors can inspect the change.' },
+] };
+fs.writeFileSync(packagePath, JSON.stringify(mission, null, 2) + '\n');
+// Find just the top-level entry boundaries, leaving concurrent entries byte-for-byte intact.
+const lessonPath = 'src/app/projects/project-lesson-plans.json';
+const raw = fs.readFileSync(lessonPath, 'utf8');
+let depth = 0, quoted = false, escaped = false, start = -1, range;
+for (let i = 0; i < raw.length; i++) {
+  const ch = raw[i];
+  if (quoted) { if (escaped) escaped = false; else if (ch === '\\') escaped = true; else if (ch === '"') quoted = false; continue; }
+  if (ch === '"') { quoted = true; continue; }
+  if (ch === '{') { if (depth === 0) start = i; depth++; }
+  if (ch === '}') { depth--; if (depth === 0 && start >= 0) { const entry = JSON.parse(raw.slice(start, i + 1)); if (entry.projectId === 'shadow-gallery') { range = [start, i + 1, entry]; break; } } }
+}
+if (!range) throw new Error('Shadow Gallery lesson entry not found');
+const [from, to, plan] = range;
+plan.planVersion = '1.1.0';
+plan.finalProduct = 'An illustrated historical reconstruction exhibition with before-and-after pictures, captions and sources.';
+plan.grouping = 'Two sessions each week: individual exploration, then a group activity. Drafts are local; shared editing is deferred.';
+plan.availability = 'All eight sessions, all sixteen paintings and the exhibition are directly accessible in local authoring preview. No assessment completion is recorded.';
+plan.evidenceCriteria = ['Distinguish observed image details from historical claims using dated, relevant evidence.', 'Support changed and preserved details while acknowledging the limits of a reconstruction.'];
+plan.lessons = weeks.flatMap(w => w.sessions.map((s, i) => ({ number: (w.week - 1) * 2 + i + 1, title: s.title, output: s.product, workspace: `${w.title}: ${s.activity}`, checkpoint: w.questions[i], criteria: [plan.evidenceCriteria[i]], focusTarget: ['studio', 'studio', 'studio', 'studio', 'studio', 'ledger', 'ledger', 'heist'][(w.week - 1) * 2 + i] })));
+const formatted = JSON.stringify(plan, null, 2).replace(/\n/g, '\n  ');
+fs.writeFileSync(lessonPath, raw.slice(0, from) + formatted + raw.slice(to));
+console.log('Updated only the Shadow Gallery package and lesson entry.');

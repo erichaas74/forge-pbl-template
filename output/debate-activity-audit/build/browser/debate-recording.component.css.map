@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/templates/debate-studio/exchange/debate-recording.component.ts"],
+  "sourcesContent": [":host{display:block} .controls{display:grid;gap:8px} button,input{font:inherit;max-width:100%} button{padding:8px 12px;cursor:pointer} label{display:grid;gap:5px} audio,video{display:block;width:100%;max-height:300px;margin:12px 0} small{display:block;margin:8px 0} p:empty{display:none}"],
+  "mappings": ";AAAA;AAAM,WAAA;;AAAe,CAAA;AAAU,WAAA;AAAa,OAAA;;AAAS;AAAA;AAAa,QAAA;AAAa,aAAA;;AAAgB;AAAO,WAAA,IAAA;AAAiB,UAAA;;AAAgB;AAAM,WAAA;AAAa,OAAA;;AAAS;AAAA;AAAY,WAAA;AAAc,SAAA;AAAW,cAAA;AAAiB,UAAA,KAAA;;AAAe;AAAM,WAAA;AAAc,UAAA,IAAA;;AAAc,CAAA;AAAQ,WAAA;;",
+  "names": []
+}

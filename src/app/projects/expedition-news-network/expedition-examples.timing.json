@@ -1,0 +1,57 @@
+{
+  "launch-news-piece": {
+    "durationSeconds": 55.273,
+    "chapters": [
+      {
+        "startSeconds": 0,
+        "durationSeconds": 23.14,
+        "label": "Anchor · the lead"
+      },
+      {
+        "startSeconds": 23.14,
+        "durationSeconds": 32.133,
+        "label": "Reporter · evidence and conclusion"
+      }
+    ]
+  },
+  "final-news-broadcast": {
+    "durationSeconds": 212.411,
+    "chapters": [
+      {
+        "startSeconds": 0,
+        "durationSeconds": 30.628,
+        "label": "Anchor · opening"
+      },
+      {
+        "startSeconds": 30.628,
+        "durationSeconds": 31.093,
+        "label": "Research reporter · the changing goal"
+      },
+      {
+        "startSeconds": 61.721,
+        "durationSeconds": 27.657,
+        "label": "Research reporter · a primary source"
+      },
+      {
+        "startSeconds": 89.378,
+        "durationSeconds": 29.753,
+        "label": "Field reporter · a route toward help"
+      },
+      {
+        "startSeconds": 119.132,
+        "durationSeconds": 29.993,
+        "label": "Field reporter · people and purpose"
+      },
+      {
+        "startSeconds": 149.125,
+        "durationSeconds": 29.203,
+        "label": "Research reporter · checking our sources"
+      },
+      {
+        "startSeconds": 178.328,
+        "durationSeconds": 34.082,
+        "label": "Anchor · conclusion"
+      }
+    ]
+  }
+}

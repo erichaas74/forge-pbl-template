@@ -1,24 +1,15 @@
 <main class="league">
-  <nav class="masthead" aria-label="Main navigation">
-    <a routerLink="/projects" class="back">← Projects</a>
-    <span class="wordmark">LSL <span>/ LIVE STRATEGY LEAGUE</span></span>
-    <span class="practice">LOCAL PRACTICE · {{ league.config.teams.length }} DEMO TEAMS</span>
-  </nav>
 
-  <header class="project-header" tabindex="-1" aria-label="Project title and controls">
+
+  <app-workspace-tools><header class="project-header" tabindex="-1" aria-label="Project title and controls">
+    <span class="practice">LOCAL PRACTICE · {{ league.config.teams.length }} DEMO TEAMS</span>
     <div class="project-title"><h1>{{ league.config.title }}</h1><span>Round {{ league.state().round + 1 }} / {{ league.config.rounds.length }}</span></div>
     <div class="actions">
       <a class="example-link" [routerLink]="['/projects', league.config.projectId]">League lobby</a>
       <a class="example-link" [routerLink]="['/projects', league.config.projectId, 'final-demo']">Final example ↗</a>
       <button [attr.aria-expanded]="history()" aria-controls="round-history" (click)="toggleHistory()">{{ history() ? 'Hide history' : 'Round history' }}</button>
       <button [attr.aria-expanded]="controls()" aria-controls="teacher-controls" (click)="toggleControls()">Teacher controls {{ controls() ? '−' : '+' }}</button>
-      @switch (league.state().phase) {
-        @case ('preview') { <button class="primary" [disabled]="league.blocked()" (click)="league.command({type: 'start'})">Open round →</button> }
-        @case ('decision-open') { <button class="primary" type="submit" form="team-decision" [disabled]="!league.editable() || !!league.validation()">Lock team decision →</button> }
-        @case ('decision-locked') { <button class="primary" (click)="league.command({type: 'calculate'})">Calculate results →</button> }
-        @case ('revealing') { <button class="primary" (click)="league.command({type: 'reveal'})">Reveal standings →</button> }
-        @case ('results') { <button class="primary" (click)="league.command({type: 'next'})">Next round →</button> }
-      }
+
     </div>
     @if (controls()) {
       <section id="teacher-controls" tabindex="-1" class="teacher-panel" aria-label="Teacher practice controls">
@@ -32,7 +23,7 @@
         <small>{{ league.state().phase === 'complete' ? 'Starting fresh replaces the saved results and history for this practice.' : 'At the deadline, your last valid saved decision is used. If unaffordable, a feasible practice decision is substituted.' }}</small>
       </section>
     }
-  </header>
+  </header></app-workspace-tools>
   @if (league.error()) { <p class="error" role="alert">{{ league.error() }}</p> }
 
   <div class="arena">
@@ -46,7 +37,6 @@
         <div class="round-status"><strong class="clock" [class.urgent]="league.seconds() < 30 && league.state().phase === 'decision-open'" aria-label="Time remaining">{{ league.timer() }}</strong><span class="phase" aria-live="polite">{{ league.state().pausedSeconds !== null ? 'Timer paused' : labels[league.state().phase] }}</span></div>
       </div>
       <p class="current-event">{{ league.round().headline }}</p>
-      <div class="next-round"><span>UP NEXT</span><strong>{{ nextRound()?.title ?? 'Final league standings' }}</strong><small>{{ nextRound() ? 'Round ' + (league.state().round + 2) : 'All ' + league.config.rounds.length + ' rounds complete the league' }}</small></div>
       <div class="team-heading"><h3>{{ teamName(league.team().id) }} <span>YOUR TEAM</span></h3><span class="saved">Saved on this browser</span></div>
       <div class="metrics">@for (metric of league.config.metrics; track metric.id) {
         <div><span>{{ metric.label }}</span><strong>{{ metric.unit }}{{ league.team().state[metric.id] | number:'1.0-2' }}</strong></div>
@@ -65,11 +55,18 @@
             </div>
           </fieldset>
           @if (league.validation() && league.editable()) { <p class="error" role="alert">{{ league.validation() }}</p> }
-          <p class="form-note">{{ league.team().decision.lockedAt !== undefined ? '✓ Decision locked. Continue using the project header.' : league.state().phase === 'preview' ? 'Open the round above to enter your decisions.' : 'Use Lock team decision in the project header when ready. Locking is final for this round.' }}</p>
+          <p class="form-note">{{ league.team().decision.lockedAt !== undefined ? '✓ Decision locked.' : league.state().phase === 'preview' ? 'Open the round to begin.' : 'Lock your decision when ready. It is final for this round.' }}</p>
         </form>
       } @else {
         <div class="champion"><p class="eyebrow">LEAGUE COMPLETE</p><h3>{{ teamName(league.ranking()[0].id) }} wins the league.</h3><p>{{ league.ranking()[0].score | number:'1.0-2' }} points across {{ league.config.rounds.length }} rounds.</p></div>
       }
+      <div class="focus-round-action">      @switch (league.state().phase) {
+        @case ('preview') { <button class="primary" [disabled]="league.blocked()" (click)="league.command({type: 'start'})">Open round →</button> }
+        @case ('decision-open') { <button class="primary" type="submit" form="team-decision" [disabled]="!league.editable() || !!league.validation()">Lock team decision →</button> }
+        @case ('decision-locked') { <button class="primary" (click)="league.command({type: 'calculate'})">Calculate results →</button> }
+        @case ('revealing') { <button class="primary" (click)="league.command({type: 'reveal'})">Reveal standings →</button> }
+        @case ('results') { <button class="primary" (click)="league.command({type: 'next'})">Next round →</button> }
+      }</div>
     </section>
 
     <div class="round-information">

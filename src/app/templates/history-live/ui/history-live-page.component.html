@@ -1,3 +1,6 @@
+@if (runtime.config.fieldStudio) {
+  <app-field-newsroom />
+} @else {
 <div
   (focusout)="runtime.flushDrafts()"
   class="history-live"
@@ -6,11 +9,7 @@
   @if (runtime.state().stage === 'opening') {
     <main class="opening" aria-labelledby="history-live-title">
       <div class="opening-grain" aria-hidden="true"></div>
-      <header class="opening-bar">
-        <a routerLink="/projects" aria-label="Back to project library">FORGE / PROJECTS</a>
-        <span>{{ runtime.config.historicalWindow }}</span>
-        <span>{{ runtime.isDemo ? 'LOCAL DEMONSTRATION' : 'CLASSROOM EDITION' }}</span>
-      </header>
+
       <section class="opening-copy">
         <p class="kicker"><span></span> A History Live Special Report</p>
         <div class="title-lockup">
@@ -26,26 +25,11 @@
           <span><i></i> Special broadcast scheduled {{ runtime.config.broadcastDateLabel }}</span>
         </div>
       </section>
-      <aside class="opening-rundown" aria-label="Project overview">
-        <span>01</span>
-        <p>Choose your network</p>
-        <span>02</span>
-        <p>Claim a developing story</p>
-        <span>03</span>
-        <p>Verify every major claim</p>
-        <span>04</span>
-        <p>Take your report live</p>
-      </aside>
-      <footer class="opening-ticker">
-        <strong>COMING UP</strong>
-        <div>
-          <span>Two networks</span><span>One historical record</span
-          ><span>Your story decides what makes air</span>
-        </div>
-      </footer>
+
+
     </main>
   } @else {
-    <header class="newsroom-header">
+    <app-workspace-tools><header class="newsroom-header">
       <a class="brand" routerLink="/projects" aria-label="Back to project library">
         <span>HL</span>
         <div>
@@ -170,7 +154,7 @@
           <p>Local practice: reviews are simulated and your work stays on this device.</p>
         }
       </app-task-guide>
-    </header>
+    </header></app-workspace-tools>
 
     @if (runtime.notification() || runtime.error()) {
       <div class="notice" [class.error]="runtime.error()" role="status">
@@ -254,3 +238,5 @@
     </div>
   }
 </div>
+
+}

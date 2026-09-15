@@ -1,0 +1,21 @@
+<div [hidden]="!!active().inspection">
+<nav class="viewpoints" aria-label="Scene viewpoints">@for (v of viewpoints(); track v.id) { <button [attr.aria-pressed]="active().id === v.id" (click)="choose(v.id)">{{ v.title }}</button> }</nav>
+<div class="sphere" #surface tabindex="0" role="group" aria-label="360 degree scene. Drag or use arrow keys to look around; plus and minus to zoom." (pointerdown)="down($event)" (pointermove)="move($event)" (pointerup)="up($event)" (pointercancel)="cancel()" (keydown)="key($event)">
+  <canvas #canvas [attr.aria-label]="active().title + ' spherical panorama'" role="img"></canvas>
+  <span class="location">{{ active().title }} · 360°</span>
+  @if (!loading() && !error()) {
+    @for (place of placeMarkers(); track place.targetId) {
+      <button class="place-marker" [style.left.%]="place.x" [style.top.%]="place.y" (pointerdown)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" (click)="choose(place.targetId)"><span aria-hidden="true">↗</span> {{ place.label }}</button>
+    }
+  }
+  @if (loading()) { <p class="notice" role="status">Opening this viewpoint…</p> }
+  @if (error()) { <div class="failure"><p role="alert">{{ error() }}</p><img [src]="active().image" alt="Full equirectangular image, displayed flat"><button (pointerdown)="$event.stopPropagation()" (click)="retry()">Retry 360° image</button></div> }
+</div>
+<div class="controls" aria-label="360 view controls"><button aria-label="Look left" (click)="look(-30)">←</button><button aria-label="Look right" (click)="look(30)">→</button><button aria-label="Look up" (click)="look(0,30)">↑</button><button aria-label="Look down" (click)="look(0,-30)">↓</button><button aria-label="Zoom in" [disabled]="fov() <= 35" (click)="zoom(-10)">＋</button><button aria-label="Zoom out" [disabled]="fov() >= 100" (click)="zoom(10)">−</button><button (click)="fullscreen()">Fullscreen</button></div>
+<p class="hint">Drag to look around. Click a place marker inside the scene to move closer and explore a detailed panorama. Use the viewpoint buttons above as another way to travel. Interviews will be added later.</p>
+@if (fullscreenNotice()) { <p role="status">{{ fullscreenNotice() }}</p> }
+<output class="direction" aria-label="Viewing direction">Turn {{ yaw().toFixed(0) }}° · Tilt {{ pitch().toFixed(0) }}° · View {{ fov().toFixed(0) }}°</output>
+
+</div>
+@if (active().inspection; as inspection) { <app-spatial-inspection [definition]="inspection" (leave)="choose(active().places?.[0]?.targetId ?? viewpoints()[0].id)" /> }
+

@@ -1,0 +1,8 @@
+{
+  "extends": "../tsconfig.spec.json",
+  "include": [
+    "../src/app/templates/time-repair/**/*.spec.ts",
+    "../src/app/runtime/project-launch/project-lesson.registry.spec.ts",
+    "../src/app/shared/project-lessons/curriculum-disclosure.component.spec.ts"
+  ]
+}

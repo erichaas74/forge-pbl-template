@@ -1,3 +1,5 @@
+import { bindLessonFocus } from '../../../shared/project-lessons/project-lesson-focus';
+import { WorkspaceToolsComponent } from '../../../shared/project-lessons/workspace-tools.component';
 import { TaskGuideComponent } from '../../../shared/learning/task-guide.component';
 import { Component, inject, afterRenderEffect, ElementRef, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
@@ -13,11 +15,12 @@ import { ScriptDeskComponent } from './script-desk.component';
 import { SourceWallComponent } from './source-wall.component';
 import { ResearchPanelComponent } from './research-panel.component';
 import { ResearchShelfState } from './research-shelf-state';
+import { FieldNewsroomComponent } from './field-newsroom.component';
 
 @Component({
   selector: 'app-history-live-page',
   providers: [ResearchShelfState],
-  imports: [
+  imports: [FieldNewsroomComponent, WorkspaceToolsComponent,
     TaskGuideComponent,
     RouterLink,
     AssignmentDeskComponent,
@@ -38,6 +41,11 @@ export class HistoryLivePageComponent {
   private readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
   private priorStage?: string;
   constructor() {
+    if (this.runtime.config.fieldStudio) return;
+    bindLessonFocus((lesson) => {
+      const target = lesson.focusTarget;
+      if (target === 'side' || target === 'pitch' || target === 'sources' || target === 'script' || target === 'production' || target === 'broadcast') this.runtime.goTo(target);
+    });
     // The shared project launch already provides the invitation and project overview.
     if (this.runtime.state().stage === 'opening') this.runtime.goTo('side');
     afterRenderEffect(() => {

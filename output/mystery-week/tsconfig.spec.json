@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.spec.json",
+  "compilerOptions": { "outDir": "./test-tsc" },
+  "include": [
+    "../../src/**/*.d.ts",
+    "../../src/app/projects/mystery-substance/**/*.spec.ts",
+    "../../src/app/features/mystery-investigation/**/*.spec.ts"
+  ]
+}

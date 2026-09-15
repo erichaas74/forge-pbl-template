@@ -1,5 +1,8 @@
+@if (weeklyPreview) {
+  <app-time-repair-week-workspace />
+} @else {
 <div class="time-room">
-  <header class="agency-header">
+  <app-workspace-tools><header class="agency-header">
     <a routerLink="/projects" class="back-link" aria-label="Back to projects"
       >← <span>Projects</span></a
     >
@@ -11,39 +14,10 @@
     <button class="log-button" (click)="showReport()">
       Repair log <span>{{ verifiedCount() }}/{{ config.missions.length }}</span>
     </button>
-  </header>
+  </header></app-workspace-tools>
 
   <main>
-    <section class="room-heading" aria-labelledby="room-title">
-      <div>
-        <span class="eyebrow"
-          >{{ config.subject === 'history' ? 'Historical' : 'Literary' }} investigation /
-          {{ config.subtitle }}</span
-        >
-        <h1 id="room-title">
-          Timeline Control Room<span class="live-dot" aria-hidden="true"></span>
-        </h1>
-        <p>Every change has a consequence. Make yours count.</p>
-      </div>
-      <div class="stability-meter">
-        <div class="stability-ring" [style.--stability]="runtime.stability() + '%'">
-          <strong>{{ runtime.stability() }}<small>%</small></strong>
-        </div>
-        <div>
-          <span class="eyebrow">Timeline stability</span
-          ><strong>{{
-            runtime.completed()
-              ? 'Repair verified'
-              : progress().repaired
-                ? 'Awaiting verification'
-                : 'Breach detected'
-          }}</strong
-          ><small
-            >{{ runtime.charges() }} of {{ config.settings.repairCharges }} charges remaining</small
-          >
-        </div>
-      </div>
-    </section>
+
 
     <section class="timeline" aria-label="Interactive timeline">
       <div class="timeline-heading">
@@ -382,3 +356,4 @@
   }
   <button class="primary" (click)="exportReport()">Export case file · JSON</button>
 </dialog>
+}

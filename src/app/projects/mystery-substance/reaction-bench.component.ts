@@ -20,6 +20,7 @@ import { reactionOutcomeTable } from './mystery-science.config';
 import { mysteryVials } from './mystery-substance.package';
 import type { StationCapture } from './station-workspaces';
 import { persistWorkspaceDraft } from '../../shared/drafts/persist-workspace-draft';
+import { LAB_AUTHORING_PREVIEW } from './lab-week.models';
 
 interface BenchDraft {
   vialId: string | undefined;
@@ -93,8 +94,10 @@ const solutionColor = 'rgba(206, 236, 243, 0.5)';
   templateUrl: './reaction-bench.component.html',
   styleUrl: './reaction-bench.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '[class.lab-preview]': 'preview' },
 })
 export class ReactionBenchComponent implements OnDestroy {
+  readonly preview = inject(LAB_AUTHORING_PREVIEW);
   readonly captured = output<StationCapture>();
   readonly selectedVialId = input<string>();
   readonly active = input(true);
@@ -341,7 +344,7 @@ export class ReactionBenchComponent implements OnDestroy {
   readonly stepHint = computed(() => {
     switch (this.step()) {
       case 'select':
-        return 'Drag one sealed vial from the tray onto the bench. The rig runs a single vessel at a time.';
+        return 'Select a sealed vial, then place it on the bench. The rig runs a single vessel at a time.';
       case 'fill':
         return this.volumeOver()
           ? `Over the line at ${this.volumeMl().toFixed(2)} mL. Drain the beaker and pour again.`
@@ -359,7 +362,7 @@ export class ReactionBenchComponent implements OnDestroy {
       case 'indicator':
         return `Add ${requiredDrops} drops of Indicator B — no more, no fewer.`;
       case 'complete':
-        return 'Both stages are done. Write down what you saw.';
+        return this.preview ? 'Both stages are recorded in the local procedure log. Compare another vial or restart.' : 'Both stages are done. Write down what you saw.';
     }
   });
 
@@ -707,7 +710,7 @@ export class ReactionBenchComponent implements OnDestroy {
     const indicator = this.indicatorStage()?.output ?? {};
     this.procedureLog.update((current) => [
       {
-        id: current.length + 1,
+        id: Math.max(0, ...current.map(entry => entry.id)) + 1,
         vialCode,
         volumeMl: this.recordedVolumeMl(),
         massG: this.recordedMassG(),
@@ -716,7 +719,7 @@ export class ReactionBenchComponent implements OnDestroy {
         clean: this.tightRun(),
         headline: headlineFor(solution, indicator),
       },
-      ...current,
+      ...current.slice(0, 39),
     ]);
   }
 }

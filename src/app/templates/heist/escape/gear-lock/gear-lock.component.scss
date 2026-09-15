@@ -9,7 +9,7 @@
   box-sizing: border-box;
 }
 .workshop {
-  height: 100dvh;
+  height: var(--expedition-lock-height, 100dvh);
   display: flex;
   flex-direction: column;
   background: #071b21;

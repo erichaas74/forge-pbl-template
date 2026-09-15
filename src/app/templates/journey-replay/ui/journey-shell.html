@@ -1,5 +1,5 @@
 <main class="journey-page">
-  <header class="command-bar">
+  <app-workspace-tools><header class="command-bar">
     <a class="project-return-link" routerLink="/projects">← Projects</a>
     <div class="project-title">
       <span>Forge PBL · {{ runtime.step()?.title || 'Journey complete' }}</span>
@@ -83,7 +83,7 @@
         </div>
       </details>
     </nav>
-  </header>
+  </header></app-workspace-tools>
 
   <section
     class="map-experience"

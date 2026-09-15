@@ -39,6 +39,7 @@ export class LivingJourneyMapComponent {
   readonly selectedCandidateLocationId = input<string | undefined>(undefined);
   readonly activeLocationId = input<string | undefined>(undefined);
   readonly immersive = input(false);
+  readonly showRouteLabels = input(true);
   readonly classVoyages = input<readonly ClassVoyageRecord[]>([]);
   readonly featuredVoyageId = input<string | undefined>(undefined);
   readonly intersections = input<readonly VoyageIntersection[]>([]);

@@ -23,7 +23,8 @@ it('renders the practice boundary and completes a decision-to-reveal interaction
   const root: HTMLElement = fixture.nativeElement;
   const button = (label: string) => Array.from(root.querySelectorAll('button')).find(b => b.textContent?.includes(label))!;
   expect(root.textContent).toContain('LOCAL PRACTICE');
-  expect(root.querySelectorAll('nav')).toHaveLength(1);
+  expect(root.querySelectorAll('nav')).toHaveLength(0);
+  expect(root.querySelector<HTMLDetailsElement>('app-workspace-tools details')?.open).toBe(false);
   expect(root.querySelectorAll('header')).toHaveLength(1);
   expect(root.querySelectorAll('tbody tr')).toHaveLength(5);
   expect(root.querySelector('.recap')?.textContent).toContain('Your first result goes here');
@@ -35,7 +36,8 @@ it('renders the practice boundary and completes a decision-to-reveal interaction
   price.value = '25'; price.dispatchEvent(new Event('input')); fixture.detectChanges();
   await fixture.whenStable();
   const lock = button('Lock team decision');
-  expect(lock.closest('header')).not.toBeNull();
+  expect(lock.closest('.focus-round-action')).not.toBeNull();
+  expect(lock.closest('app-workspace-tools')).toBeNull();
   expect(lock.form?.id).toBe('team-decision');
   lock.click(); fixture.detectChanges();
   expect(root.textContent).toContain('Decision locked');
@@ -49,7 +51,7 @@ it('renders the practice boundary and completes a decision-to-reveal interaction
   button('Next round').click(); fixture.detectChanges();
   expect(root.querySelector('.recap')?.textContent).toContain('+8,000');
   expect(root.querySelector('.recap')?.textContent).toContain('Round 1');
-  expect(root.querySelector('.next-round')?.textContent).toContain(config.rounds[2].title);
+  expect(root.querySelector('#command-title')?.textContent).toContain(config.rounds[1].title);
 });
 
 it('restores an expired timer, closes once and retains history through persistence', () => {

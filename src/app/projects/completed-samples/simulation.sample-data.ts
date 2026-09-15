@@ -202,7 +202,7 @@ export function simulationSampleGuide(state: SimulationDecisionState): SampleGui
     title: 'The Company Defense',
     subtitle:
       'One season on the trail, presented through the company’s own route, ledger, forecast, and revised strategy. Follow the five-part defense.',
-    audience: 'Mathematics · Grades 5–6',
+    audience: 'Mathematics · Grade 6',
     duration: 'Five slides · 2–3 minutes',
     trail: [
       {

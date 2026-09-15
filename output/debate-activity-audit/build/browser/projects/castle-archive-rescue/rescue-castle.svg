@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 760" fill="none">
+<defs>
+  <linearGradient id="night" x2="0" y2="1"><stop stop-color="#173a3d"/><stop offset="1" stop-color="#38615b"/></linearGradient>
+  <linearGradient id="stone" x2="0" y2="1"><stop stop-color="#64736b"/><stop offset="1" stop-color="#3b5550"/></linearGradient>
+  <linearGradient id="river" x2="1" y2="1"><stop stop-color="#447f80"/><stop offset="1" stop-color="#214f5b"/></linearGradient>
+  <radialGradient id="glow"><stop stop-color="#f9d487" stop-opacity=".55"/><stop offset="1" stop-color="#f9d487" stop-opacity="0"/></radialGradient>
+  <pattern id="blocks" width="50" height="30" patternUnits="userSpaceOnUse"><path d="M0 0h50M0 30h50M25 0v15M0 15h50M0 15v15M50 15v15" stroke="#c1c9b0" stroke-opacity=".1"/></pattern>
+  <g id="pine"><path d="M0-92-29-40h15L-39 0h32v22H7V0h32L14-40h15Z" fill="#173e37"/><path d="M0-92v114H7V0h32L14-40h15Z" fill="#102f30" opacity=".45"/></g>
+  <g id="window"><path d="M-9 11V-8a9 9 0 0 1 18 0v19Z" fill="#e8c17c"/><path d="M0-14v25M-9-2H9" stroke="#525c50" stroke-width="3"/></g>
+  <g id="tower"><path d="M-40-92h80V36h-80Z" fill="url(#stone)"/><path d="M-40-92h80V36h-80Z" fill="url(#blocks)"/><path d="m-52-92 52-72 52 72Z" fill="#1a3b3c"/><path d="m0-164 52 72H0Z" fill="#122f34"/><path d="M0-166v-29l36 9-36 10" stroke="#b1b792" stroke-width="2" fill="#b59353"/><use href="#window" y="-40"/><path d="M-44 33h88v10h-88Z" fill="#314d47"/></g>
+</defs>
+<path fill="url(#night)" d="M0 0h1000v760H0z"/>
+<g fill="#d8dec2" opacity=".65"><circle cx="68" cy="69" r="1.5"/><circle cx="299" cy="49" r="1.5"/><circle cx="650" cy="36" r="2"/><circle cx="912" cy="164" r="1.5"/><circle cx="850" cy="45" r="1.5"/><circle cx="447" cy="66" r="1.5"/><circle cx="141" cy="144" r="1.5"/></g>
+<circle cx="818" cy="105" r="92" fill="url(#glow)"/><circle cx="818" cy="105" r="39" fill="#dcdcb2"/><circle cx="834" cy="92" r="36" fill="#214346"/>
+<path d="M0 210 99 153l124 62 105-91 99 84 151-77 128 90 121-65 173 73v531H0Z" fill="#294e47"/>
+<path d="M0 333q169-162 359-85t334-9q139-49 307 38v483H0Z" fill="#32584b"/>
+<path d="M867 254q-90 107-32 188t-68 105q-108 17-81 103t-81 110h395V286Z" fill="url(#river)"/>
+<g stroke="#9dbeb0" stroke-opacity=".22" stroke-width="2"><path d="m878 372 50-4m-74 106 84-8m-172 130 54-4m-8 38 83-5m-114 65 88-6m-123 33 44-2m-12-192 58-4m35-216 49 2"/></g>
+<path d="m110 598 98-99 65-111 182-57 220-19 67 110-133 88 90 88 160 64" stroke="#183e33" stroke-width="60" stroke-linejoin="round"/>
+<path d="m110 598 98-99 65-111 182-57 220-19 67 110-133 88 90 88 160 64" stroke="#827f5b" stroke-width="45" stroke-linejoin="round"/>
+<path d="m110 598 98-99 65-111 182-57 220-19 67 110-133 88 90 88 160 64" stroke="#b4a47b" stroke-opacity=".3" stroke-width="3" stroke-dasharray="6 18"/>
+<!-- Enclosing walls and three distinct animal courtyards. -->
+<path d="M207 451V241h456l86 102v106" stroke="#24433c" stroke-width="56"/>
+<path d="M207 439V227h456l86 102v108" stroke="url(#stone)" stroke-width="42"/>
+<path d="M207 439V227h456l86 102v108" stroke="url(#blocks)" stroke-width="42"/>
+<path d="M220 249h444v165H220Z" fill="#4e6950"/>
+<path d="M379 242v171m225-171v171" stroke="#9c946d" stroke-width="7"/>
+<path d="M224 420h504" stroke="#7f8766" stroke-width="12"/>
+<g fill="#425f51"><path d="M226 194h24v46h-24zm48 0h24v46h-24zm48 0h24v46h-24zm48 0h24v46h-24zm48 0h24v46h-24zm48 0h24v46h-24zm48 0h24v46h-24zm48 0h24v46h-24zm48 0h24v46h-24z"/></g>
+<use href="#tower" x="207" y="251"/><use href="#tower" x="668" y="233" transform="translate(-100 -74) scale(1.16)"/>
+<use href="#tower" x="207" y="459"/><use href="#tower" x="749" y="421"/>
+<path d="M275 350v-37q0-20 20-20h33q20 0 20 20v37Z" fill="#8b7b56"/><path d="m264 306 48-38 48 38Z" fill="#b18b5a"/>
+<path d="M438 343v-51h97v51" fill="#75664b"/><path d="m425 296 61-47 62 47Z" fill="#283e35"/><path d="M472 344v-27a15 15 0 0 1 30 0v27" fill="#203a31"/>
+<path d="M626 350h57v-51h-57Z" fill="#75664b"/><path d="m623 300 31-34 32 34Z" fill="#b18b5a"/>
+<g stroke="#c4b383" stroke-width="4"><path d="M245 365h110m-100-16v35m24-35v35m25-35v35m25-35v35m24-35v35M427 364h124m-111-17v37m25-37v37m25-37v37m25-37v37m25-37v37"/></g>
+<path d="m769 438 75-6 7 39-75 6Z" fill="#aa875b"/><path d="m780 438 7 36m8-38 6 37m8-38 6 37m8-38 6 37m8-38 6 37" stroke="#503f32" stroke-width="4"/>
+<!-- Water landing and boat. -->
+<path d="m846 594 90 39-22 42-90-39Z" fill="#917853"/><path d="m856 600-21 41m36-34-21 41m36-34-21 41m36-34-21 41m36-34-21 41" stroke="#514f3c" stroke-width="3"/>
+<path d="M883 707q59-79 103-58-4 54-76 72Z" fill="#b18d5c"/><path d="M898 704q45-57 73-47-7 33-63 51Z" fill="#3a5146"/><path d="m929 670 14 22m-28-8 13 21" stroke="#9a8057" stroke-width="6"/>
+<g><use href="#pine" x="72" y="281"/><use href="#pine" x="122" y="329"/><use href="#pine" x="55" y="434" transform="translate(8 85) scale(.8)"/><use href="#pine" x="72" y="520"/><use href="#pine" x="137" y="681"/><use href="#pine" x="216" y="711"/><use href="#pine" x="314" y="644"/><use href="#pine" x="385" y="709"/><use href="#pine" x="456" y="595"/><use href="#pine" x="514" y="685"/><use href="#pine" x="944" y="324"/><use href="#pine" x="974" y="517"/></g>
+<g fill="#f9d487"><circle cx="207" cy="429" r="3"/><circle cx="738" cy="392" r="3"/><circle cx="323" cy="525" r="2"/><circle cx="582" cy="589" r="2"/></g>
+<g fill="url(#glow)"><circle cx="207" cy="429" r="34"/><circle cx="738" cy="392" r="34"/></g>
+<path d="M0 729q127-51 252-10t256 21 228-5 264 15v10H0Z" fill="#153c35"/>
+</svg>

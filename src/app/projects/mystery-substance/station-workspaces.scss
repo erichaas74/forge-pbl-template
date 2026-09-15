@@ -1,3 +1,4 @@
+@use './lab-preview' as preview;
 :host {
   position: absolute;
   inset: 0;
@@ -815,3 +816,35 @@ textarea:focus {
   margin: 1rem 1rem 1rem auto;
   overflow: visible;
 }
+
+/* One question beside the specimen, with the restored lab scene in view. */
+:host(.workbench-station) .restoration-workspace { min-height: 100dvh; }
+.restoration-workspace .atlas { filter: saturate(1.05) brightness(.9); }
+.restoration-workspace .station-shade { background: linear-gradient(90deg, #03101a33, #03101a22 40%, #03101aaa); }
+.restoration-stage { position: relative; z-index: 3; min-height: 100dvh; box-sizing: border-box;
+  display: grid; grid-template-columns: 1fr minmax(300px, 470px); align-items: center;
+  gap: clamp(24px, 7vw, 110px); max-width: 1160px; margin: auto; padding: 86px 36px 40px; }
+:host(.workbench-station) .restoration-console { width: auto; margin: 0; padding: clamp(24px, 3vw, 40px);
+  background: #081c29e8; border-radius: 22px; box-shadow: 0 24px 80px #0007; }
+.restoration-console h1 { font-size: clamp(25px, 3vw, 38px); line-height: 1.12; margin: 0 0 26px; }
+.restoration-console h1:focus { outline: none; }
+.focus-specimen { display: grid; justify-items: center; gap: 22px; margin: 0; }
+.focus-specimen > img { display: block; max-width: 100%; width: 250px; height: min(48dvh, 410px); object-fit: contain; filter: drop-shadow(0 24px 34px #0009); }
+.focus-specimen select { padding: 10px 16px; min-height: 44px; color: #f0fafa; background: #102b35e8;
+  border: 1px solid #7ea4ad; border-radius: 24px; }
+.restoration-console .decision-grid { grid-template-columns: 1fr; gap: 10px; }
+.restoration-console .decision-grid button { min-height: 56px; padding: 14px 16px; font-size: 16px; }
+.restoration-console .decision-grid small { font-size: 12px; line-height: 1.4; }
+.decision-actions { display: flex; align-items: center; gap: 16px; margin-top: 24px; }
+.decision-actions .station-primary { margin: 0 0 0 auto; width: auto; min-width: 140px; min-height: 48px; font-size: 15px; }
+.decision-actions button:disabled { opacity: .4; cursor: default; }
+.confidence-details { margin-top: 16px; font-size: 13px; }
+.confidence-details summary { cursor: pointer; }
+@media (max-width: 700px) {
+  .restoration-stage { grid-template-columns: 1fr; gap: 20px; padding: 82px 18px 24px; }
+  .focus-specimen { gap: 10px; }
+  .focus-specimen > img { height: 190px; width: 160px; }
+  :host(.workbench-station) .restoration-console { width: auto; padding: 24px; }
+}
+
+@include preview.station('restoration');

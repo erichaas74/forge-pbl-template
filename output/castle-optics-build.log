@@ -1,0 +1,22 @@
+> Building...
+√ Building...
+Initial chunk files | Names              |  Raw size | Estimated transfer size
+main-7XLAWRWJ.js    | main               | 543.58 kB |               122.48 kB
+styles-PWEBVAZL.css | styles             | 865 bytes |               865 bytes
+
+                    | Initial total      | 544.45 kB |               123.35 kB
+
+Lazy chunk files    | Names              |  Raw size | Estimated transfer size
+chunk-BDci9w_q.js   | -                  |   1.44 MB |               309.07 kB
+chunk-BKyrrU8U.js   | -                  | 603.91 kB |               128.41 kB
+chunk-DMOPyAY5.js   | machine-scene      | 100.65 kB |                30.64 kB
+chunk-Bz18J_HB.js   | gear-lock-scene    |  40.57 kB |                14.03 kB
+chunk-BHoY-n9E.js   | balance-lock-scene |  21.01 kB |                 7.32 kB
+
+Application bundle generation complete. [14.120 seconds] - 2026-09-15T18:47:37.862Z
+
+▲ [WARNING] bundle initial exceeded maximum budget. Budget 500.00 kB was not met by 44.45 kB with a total of 544.45 kB.
+
+
+Output location: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\output\castle-optics-code-build
+

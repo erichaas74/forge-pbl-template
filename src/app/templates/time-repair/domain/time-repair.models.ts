@@ -1,4 +1,5 @@
 import type { RuntimeEvent } from '../../../core/events/runtime-event';
+import type { RepairPreviewConfig } from './time-repair-preview.models';
 
 export interface TimeRepairEvidence {
   readonly id: string;
@@ -76,6 +77,8 @@ export interface TimeRepairMission {
   };
 }
 export interface TimeRepairConfig {
+  /** Optional local authoring capability; never grants assessed runtime authorization. */
+  readonly previewWeeks?: RepairPreviewConfig;
   readonly schemaVersion: '1.0';
   readonly projectId: string;
   readonly projectVersion: string;

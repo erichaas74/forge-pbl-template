@@ -1,0 +1,1 @@
+function r(e){return{load:()=>structuredClone(e),save:()=>{},clear:()=>{}}}export{r as t};

@@ -8,6 +8,7 @@ import {
   OnDestroy,
   output,
   signal,
+  untracked,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
@@ -19,6 +20,7 @@ import { RenderQualityService } from './lab-kit/render-quality.service';
 import { stationArt } from './station-art.config';
 import type { StationCapture } from './station-workspaces';
 import { persistWorkspaceDraft } from '../../shared/drafts/persist-workspace-draft';
+import { LAB_AUTHORING_PREVIEW } from './lab-week.models';
 
 export type PhysicalTestId = (typeof physicalTests)[number]['id'];
 export type TrialPhase = 'idle' | 'running' | 'settled';
@@ -40,8 +42,11 @@ const waterTrialSeconds = 60;
   templateUrl: './properties-lab.component.html',
   styleUrl: './properties-lab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '[class.lab-preview]': 'preview' },
 })
 export class PropertiesLabComponent implements OnDestroy {
+  readonly preview = inject(LAB_AUTHORING_PREVIEW);
+  readonly initialTestId = input<PhysicalTestId>();
   readonly captured = output<StationCapture>();
   readonly selectedVialId = input<string>();
   readonly vialChanged = output<string>();
@@ -77,6 +82,7 @@ export class PropertiesLabComponent implements OnDestroy {
   private timer?: ReturnType<typeof setInterval>;
 
   constructor() {
+    let restored = false;
     this.simulation.initialize({
       id: 'physical-property-comparison',
       settings: { keyFields: ['specimen', 'test'], outcomeTable: physicalOutcomeTable },
@@ -89,8 +95,14 @@ export class PropertiesLabComponent implements OnDestroy {
         observation: this.observation(),
         result: this.phase() === 'settled' ? this.result() : undefined,
         drafts: [...this.drafts.entries()],
+        trials: this.trials(), covered: this.covered(), lightAngle: this.lightAngle(), zoom: this.zoom(),
       }),
       (saved) => {
+        restored = true;
+        if (Array.isArray(saved.trials)) this.trials.set(saved.trials);
+        if (Array.isArray(saved.covered)) this.covered.set(saved.covered);
+        if (typeof saved.lightAngle === 'number') this.lightAngle.set(saved.lightAngle);
+        if (typeof saved.zoom === 'number') this.zoom.set(saved.zoom);
         if (this.vials.some((v) => v.vialId === saved.vialId)) this.vialId.set(saved.vialId);
         if (this.tests.some((t) => t.id === saved.testId)) this.testId.set(saved.testId);
         if (typeof saved.observation === 'string') this.observation.set(saved.observation);
@@ -103,6 +115,10 @@ export class PropertiesLabComponent implements OnDestroy {
           for (const [key, value] of saved.drafts) this.drafts.set(key, value);
       },
     );
+    effect(() => {
+      const initial = this.initialTestId();
+      if (!restored && initial) untracked(() => this.selectTest(initial));
+    });
     effect(() => {
       const id = this.selectedVialId();
       if (id && id !== this.vialId()) this.selectVial(id);
@@ -192,6 +208,7 @@ export class PropertiesLabComponent implements OnDestroy {
       return 'Instrument running under equal conditions. Watch what changes.';
     }
     if (this.phase() === 'settled') {
+      if (this.preview) return 'Trial retained locally. Change a specimen or instrument, or run again.';
       return 'Describe what the instrument showed, then file it.';
     }
     switch (this.testId()) {
@@ -323,12 +340,12 @@ export class PropertiesLabComponent implements OnDestroy {
     this.covered.update((current) => [...new Set([...current, key])]);
     this.trials.update((current) => [
       {
-        id: current.length + 1,
+        id: Math.max(0, ...current.map(entry => entry.id)) + 1,
         vialCode: this.activeVial().code,
         testTitle: this.activeTest().title,
         headline: String(outputs['reading'] ?? 'Recorded'),
       },
-      ...current,
+      ...current.slice(0, 39),
     ]);
   }
 

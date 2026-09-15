@@ -122,7 +122,7 @@ export function validateHistoryLiveContent(config: HistoryLiveProjectConfig): re
   for (const source of config.sources) {
     if (!source.url || !/^https:\/\//.test(source.url))
       issues.push(`SOURCE_URL_MISSING: ${source.id}`);
-    if (!source.availableOn || !/^\d{4}-\d{2}-\d{2}$/.test(source.availableOn))
+    if (!config.fieldStudio && (!source.availableOn || !/^\d{4}-\d{2}-\d{2}$/.test(source.availableOn)))
       issues.push(`SOURCE_DATE_MISSING: ${source.id}`);
   }
   for (const lead of config.storyLeads) {
@@ -135,8 +135,8 @@ export function validateHistoryLiveContent(config: HistoryLiveProjectConfig): re
     if (!packet.some((source) => source?.primary))
       issues.push(`PRIMARY_SOURCE_MISSING: ${lead.id}`);
     if (
-      !lead.asOfDate ||
-      packet.some((source) => source?.availableOn && source.availableOn > lead.asOfDate!)
+      !config.fieldStudio && (!lead.asOfDate ||
+      packet.some((source) => source?.availableOn && source.availableOn > lead.asOfDate!))
     )
       issues.push(`SOURCE_PACKET_DATE_CONFLICT: ${lead.id}`);
   }

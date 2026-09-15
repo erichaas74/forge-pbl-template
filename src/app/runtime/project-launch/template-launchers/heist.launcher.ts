@@ -12,6 +12,17 @@ export const heistLauncher: TemplateLauncher = {
       const { RESTORATION_MISSION, RESTORATION_PERSISTENCE, RestorationCollectionRuntime, LocalRestorationAdapter } = await import('../../../templates/heist/restoration/restoration-collection.runtime');
       const mission = requireRestorationMission(request.projectDefinition);
       if (mission.projectId !== request.project.id || mission.projectVersion !== request.project.projectVersion) throw new Error('PROJECT_ID_MISMATCH: Restoration package does not match this project.');
+      if (mission.previewWeeks && request.session.mode === 'preview' && request.view !== 'final-demo') {
+        const { RestorationWeekWorkspaceComponent } = await import('../../../templates/heist/restoration/weekly/restoration-week-workspace.component');
+        const { RestorationPreviewRuntime } = await import('../../../templates/heist/restoration/weekly/restoration-preview.runtime');
+        const { RESTORATION_PREVIEW_SESSION, RESTORATION_PREVIEW_PERSISTENCE, LocalRestorationPreviewAdapter } = await import('../../../templates/heist/restoration/weekly/restoration-preview.persistence');
+        return { component: RestorationWeekWorkspaceComponent, integratedHeader: true, providers: [
+          { provide: RESTORATION_MISSION, useValue: mission },
+          { provide: RESTORATION_PREVIEW_SESSION, useValue: request.session },
+          { provide: RESTORATION_PREVIEW_PERSISTENCE, useFactory: () => new LocalRestorationPreviewAdapter(request.session, mission) },
+          RestorationPreviewRuntime,
+        ] };
+      }
       const { RestorationCollectionComponent } = await import('../../../templates/heist/restoration/restoration-collection.component');
       return { component: RestorationCollectionComponent, integratedHeader: true, providers: [
         { provide: RESTORATION_MISSION, useValue: mission },
@@ -23,6 +34,23 @@ export const heistLauncher: TemplateLauncher = {
       const { ESCAPE_MISSION, ESCAPE_PERSISTENCE, EscapeRuntime, LocalEscapeAdapter } = await import('../../../templates/heist/escape/runtime/escape-runtime');
       const mission = requireEscapeMission(request.projectDefinition);
       if (mission.projectId !== request.project.id || mission.projectVersion !== request.project.projectVersion) throw new Error('PROJECT_ID_MISMATCH: Escape package does not match this project.');
+      if (request.view === 'final-demo' && mission.world) {
+        const { ExpeditionExampleComponent } = await import('../../../templates/heist/escape/expedition/expedition-example.component');
+        return { component: ExpeditionExampleComponent, integratedHeader: true, providers: [
+          { provide: ESCAPE_MISSION, useValue: mission },
+        ] };
+      }
+      if (mission.world && mission.previewWeeks && request.session.mode === 'preview') {
+        const { ExpeditionWeekWorkspaceComponent } = await import('../../../templates/heist/escape/weekly/expedition-week-workspace.component');
+        const { ExpeditionPreviewRuntime } = await import('../../../templates/heist/escape/weekly/expedition-preview.runtime');
+        const { EXPEDITION_PREVIEW_SESSION, EXPEDITION_PREVIEW_PERSISTENCE, LocalExpeditionPreviewAdapter } = await import('../../../templates/heist/escape/weekly/expedition-preview.persistence');
+        return { component: ExpeditionWeekWorkspaceComponent, integratedHeader: true, providers: [
+          { provide: ESCAPE_MISSION, useValue: mission },
+          { provide: EXPEDITION_PREVIEW_SESSION, useValue: request.session },
+          { provide: EXPEDITION_PREVIEW_PERSISTENCE, useFactory: () => new LocalExpeditionPreviewAdapter(request.session, mission) },
+          ExpeditionPreviewRuntime,
+        ] };
+      }
       if (mission.world) {
         const { ExpeditionComponent } = await import('../../../templates/heist/escape/expedition/expedition.component');
         const { ExpeditionRuntime, EXPEDITION_PLAYER } = await import('../../../templates/heist/escape/runtime/expedition-runtime');

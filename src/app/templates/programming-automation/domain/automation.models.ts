@@ -175,6 +175,8 @@ export interface AutomationProjectConfig {
   challenges: readonly RobotChallenge[];
   initialChallengeId: string;
   championshipChallengeId: string;
+  /** Optional authoring preview. Never grants access in an assessed student session. */
+  previewWeeks?: readonly AutomationPreviewWeek[];
   scoring: {
     delivery: number;
     navigation: number;
@@ -182,6 +184,21 @@ export interface AutomationProjectConfig {
     reliability: number;
     prediction: number;
   };
+}
+export interface AutomationPreviewWeek {
+  week: number;
+  title: string;
+  setting: string;
+  sessions: readonly [AutomationPreviewSession, AutomationPreviewSession];
+  questions: readonly string[];
+  evidence: readonly string[];
+  adjustments: readonly string[];
+}
+export interface AutomationPreviewSession {
+  challengeId: string;
+  product: string;
+  starterCommands?: readonly RobotCommand[];
+  starterVariables?: readonly RobotVariable[];
 }
 export interface CompiledCommand {
   id: string;

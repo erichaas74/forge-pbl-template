@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balance Puzzle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a202c; /* Dark slate matching image */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            color: #e2e8f0;
+        }
+
+        #game-container {
+            position: relative;
+            width: 1000px;
+            height: 700px;
+            background-color: #1e293b;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Let clicks pass through to canvas when not on UI */
+        }
+
+        .weight-option {
+            pointer-events: auto;
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #fbbf24 0%, #b45309 100%);
+            border: 2px solid #fcd34d;
+            border-radius: 8px 8px 4px 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #111827;
+            font-size: 14px;
+            cursor: grab;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(255,255,255,0.4);
+            user-select: none;
+            transition: transform 0.1s;
+        }
+
+        .weight-option:active {
+            cursor: grabbing;
+            transform: scale(0.95);
+        }
+
+        .weight-option::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 10px;
+            border: 2px solid #fcd34d;
+            border-bottom: none;
+            border-radius: 10px 10px 0 0;
+        }
+
+        #weight-palette {
+            pointer-events: auto;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            padding: 15px 30px;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 16px;
+            border: 1px solid #334155;
+            backdrop-filter: blur(4px);
+        }
+
+        .palette-slot {
+            width: 60px;
+            height: 60px;
+            position: relative;
+        }
+
+        #success-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 12px;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        #success-message.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        button.action-btn {
+            pointer-events: auto;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: background 0.2s;
+        }
+        button.action-btn:hover {
+            background: #2563eb;
+        }
+
+        .latch-btn {
+            pointer-events: auto;
+            position: absolute;
+            right: 40px;
+            top: 450px;
+            width: 80px;
+            height: 40px;
+            background: linear-gradient(to bottom, #94a3b8, #64748b);
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: inset 0 2px 5px rgba(255,255,255,0.5), 0 5px 10px rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #1e293b;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+        }
+        .latch-btn:active {
+            transform: translateY(2px);
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.5), 0 2px 4px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        
+        <div id="ui-layer">
+            <button class="action-btn" onclick="resetLevel()">Reset Level</button>
+            <div id="weight-palette">
+                <!-- Weights will be generated here -->
+            </div>
+            
+            <div id="success-message">Mechanism Unlocked!</div>
+            
+            <div class="latch-btn" id="latch-btn" onclick="checkSolution()">PULL</div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const uiLayer = document.getElementById('ui-layer');
+        const paletteContainer = document.getElementById('weight-palette');
+        const successMsg = document.getElementById('success-message');
+
+        // Fixed game dimensions for logical coordinate system
+        const GAME_WIDTH = 1000;
+        const GAME_HEIGHT = 700;
+
+        // Set actual canvas resolution
+        canvas.width = GAME_WIDTH;
+        canvas.height = GAME_HEIGHT;
+
+        // Colors based on image
+        const COLORS = {
+            bg: '#1a202c',
+            goldLight: '#fcd34d',
+            goldDark: '#b45309',
+            goldBase: '#d97706',
+            silverLight: '#e2e8f0',
+            silverDark: '#64748b',
+            boxGreen: '#3f4e42', // Darker, muted green/grey for the main box
+            boxDark: '#1e293b',
+            rope: '#fef3c7'
+        };
+
+        // --- Core Game State ---
+        let weights = [];
+        let scales = [];
+        let draggedWeight = null;
+        let dragOffset = { x: 0, y: 0 };
+        let isSolved = false;
+        let mainBarX = 0; // Animation for the locking bar
+
+        // --- Classes ---
+        class Weight {
+            constructor(id, value, displayStr, initialX, initialY) {
+                this.id = id;
+                this.value = value;
+                this.displayStr = displayStr;
+                this.x = initialX;
+                this.y = initialY;
+                this.startX = initialX;
+                this.startY = initialY;
+                this.width = 60;
+                this.height = 60;
+                this.isDragging = false;
+                this.currentPan = null; // Which pan it rests on, if any
+
+                // Create DOM element for visual representation to handle easy dragging
+                this.el = document.createElement('div');
+                this.el.className = 'weight-option';
+                this.el.innerText = displayStr;
+                this.el.id = `weight-${id}`;
+                uiLayer.appendChild(this.el);
+                
+                this.updatePosition();
+
+                // Mouse events for DOM element
+                this.el.addEventListener('mousedown', (e) => this.startDrag(e));
+                
+                // For touch
+                this.el.addEventListener('touchstart', (e) => {
+                    e.preventDefault(); // Prevent scrolling
+                    const touch = e.touches[0];
+                    this.startDrag({ clientX: touch.clientX, clientY: touch.clientY });
+                }, {passive: false});
+            }
+
+            updatePosition() {
+                this.el.style.left = `${this.x}px`;
+                this.el.style.top = `${this.y}px`;
+            }
+
+            startDrag(e) {
+                if (isSolved) return;
+                this.isDragging = true;
+                draggedWeight = this;
+                
+                // Calculate offset from mouse to top-left of weight
+                const rect = this.el.getBoundingClientRect();
+                const containerRect = canvas.getBoundingClientRect();
+                
+                // Scale factor if canvas is resized by CSS
+                const scaleX = canvas.width / containerRect.width;
+                const scaleY = canvas.height / containerRect.height;
+
+                const mouseX = (e.clientX - containerRect.left) * scaleX;
+                const mouseY = (e.clientY - containerRect.top) * scaleY;
+
+                dragOffset.x = mouseX - this.x;
+                dragOffset.y = mouseY - this.y;
+
+                // Bring to front
+                this.el.style.zIndex = 100;
+                
+                // Remove from pan if it was on one
+                if (this.currentPan) {
+                    this.currentPan.removeWeight(this);
+                    this.currentPan = null;
+                }
+            }
+            
+            snapToHome() {
+                this.x = this.startX;
+                this.y = this.startY;
+                this.updatePosition();
+            }
+        }
+
+        class Pan {
+            constructor(scale, side, offsetX) {
+                this.scale = scale;
+                this.side = side; // 'left' or 'right'
+                this.offsetX = offsetX; // Offset from scale center
+                this.y = 0; // Calculated dynamically based on scale angle
+                this.width = 80;
+                this.height = 15;
+                this.weights = [];
+            }
+
+            addWeight(weight) {
+                if (!this.weights.includes(weight)) {
+                    this.weights.push(weight);
+                    weight.currentPan = this;
+                    this.repositionWeights();
+                }
+            }
+
+            removeWeight(weight) {
+                const index = this.weights.indexOf(weight);
+                if (index > -1) {
+                    this.weights.splice(index, 1);
+                    this.repositionWeights();
+                }
+            }
+
+            getTotalWeight() {
+                return this.weights.reduce((sum, w) => sum + w.value, 0);
+            }
+
+            repositionWeights() {
+                // Stack weights or place them side by side
+                const baseY = this.y - 60; // 60 is weight height
+                let currentX = this.getGlobalX() - (this.weights.length * 65) / 2 + 5;
+                
+                this.weights.forEach(w => {
+                    w.x = currentX;
+                    w.y = baseY;
+                    w.updatePosition();
+                    currentX += 65;
+                });
+            }
+
+            getGlobalX() {
+                return this.scale.x + this.offsetX;
+            }
+            
+            updateY(scaleAngle, pivotY) {
+                // Calculate y based on angle and distance from center
+                // Simple geometry: deltaY = distance * sin(angle)
+                this.y = pivotY + Math.tan(scaleAngle) * this.offsetX + 80; // 80 is string length
+                this.repositionWeights();
+            }
+
+            draw(ctx) {
+                const x = this.getGlobalX();
+                const pivotY = this.scale.y + 20; // Top of scale pole
+                
+                // Draw strings
+                const attachmentY = pivotY + Math.tan(this.scale.angle) * this.offsetX;
+                ctx.strokeStyle = COLORS.rope;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(x, attachmentY);
+                ctx.lineTo(x - 30, this.y);
+                ctx.moveTo(x, attachmentY);
+                ctx.lineTo(x + 30, this.y);
+                ctx.stroke();
+
+                // Draw pan
+                ctx.fillStyle = COLORS.goldLight;
+                ctx.beginPath();
+                ctx.ellipse(x, this.y + 5, 40, 10, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = COLORS.goldBase;
+                ctx.beginPath();
+                ctx.ellipse(x, this.y, 40, 10, 0, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            checkCollision(wx, wy, wWidth, wHeight) {
+                // Generous hit area around the pan
+                const hitX = this.getGlobalX() - 50;
+                const hitY = this.y - 60;
+                return (wx + wWidth / 2 > hitX && wx + wWidth / 2 < hitX + 100 &&
+                        wy + wHeight > hitY && wy < this.y + 20);
+            }
+        }
+
+        class Scale {
+            constructor(id, x, y, fixedWeights = {}) {
+                this.id = id;
+                this.x = x;
+                this.y = y;
+                this.angle = 0; // Current tilt angle in radians
+                this.targetAngle = 0;
+                
+                this.leftPan = new Pan(this, 'left', -90);
+                this.rightPan = new Pan(this, 'right', 90);
+                
+                this.armLength = 180; // Total length
+                
+                // Mechanism specific values
+                this.mechNumber = fixedWeights.mechNumber || 0; // Number displayed on top cylinder
+                
+                // Initial setup if it has fixed weights (removed fixed weights on pans)
+                this.fixedLeftWeight = 0;
+                this.fixedRightWeight = 0;
+                
+                // Bottom mechanism values
+                this.mechY = 420; // Base Y for the cylinders
+                this.mechState = 0; // -1, 0, 1 (up, aligned, down)
+            }
+
+            update() {
+                // Calculate balance. 
+                // Left pan weight pulls mechanism UP.
+                // Right pan weight (if any) or mechanism's inherent weight pulls DOWN.
+                // To balance, left pan weight must equal mechNumber.
+                
+                let leftW = this.leftPan.getTotalWeight();
+                let targetW = this.mechNumber; 
+                
+                // Simple physics: diff determines angle
+                const maxAngle = 0.4; // radians
+                const sensitivity = 0.5; // How much a unit of weight tilts it
+                
+                // If leftW equals targetW, diff is 0. 
+                // If leftW < targetW, it tilts right (mechanism is heavier).
+                // If leftW > targetW, it tilts left.
+                let diff = targetW - leftW; 
+                
+                if (diff > 0) this.targetAngle = Math.min(diff * sensitivity, maxAngle);
+                else if (diff < 0) this.targetAngle = Math.max(diff * sensitivity, -maxAngle);
+                else this.targetAngle = 0;
+
+                // Smooth animation
+                this.angle += (this.targetAngle - this.angle) * 0.1;
+                
+                // Determine mechanism state based on balance
+                // Allow a tiny margin of error in angle for "perfectly balanced" visual
+                if (Math.abs(this.angle) < 0.05) {
+                    this.mechState = 0; // Aligned
+                } else if (this.angle < 0) {
+                    this.mechState = -1; // Left heavy, right cylinder goes UP
+                } else {
+                    this.mechState = 1;  // Right heavy, right cylinder goes DOWN
+                }
+
+                // Update pan positions
+                this.leftPan.updateY(this.angle, this.y + 20);
+                this.rightPan.updateY(this.angle, this.y + 20);
+            }
+
+            draw(ctx) {
+                // Draw Base and Pole
+                ctx.fillStyle = COLORS.goldBase;
+                ctx.fillRect(this.x - 10, this.y + 20, 20, 160); // Vertical pole
+                
+                ctx.fillStyle = COLORS.goldLight;
+                ctx.fillRect(this.x - 30, this.y + 175, 60, 15); // Base plate
+                
+                // Draw center pivot decoration
+                ctx.fillStyle = COLORS.silverLight;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y + 20, 15, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = COLORS.goldBase;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y + 20, 8, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Save context for rotated arm
+                ctx.save();
+                ctx.translate(this.x, this.y + 20);
+                ctx.rotate(this.angle);
+
+                // Draw Arm
+                ctx.fillStyle = COLORS.goldBase;
+                ctx.fillRect(-this.armLength/2, -10, this.armLength, 20);
+                
+                // Draw attachment points on arm
+                ctx.fillStyle = COLORS.silverLight;
+                ctx.beginPath(); ctx.arc(-90, 0, 5, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(-60, 0, 5, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(-30, 0, 5, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(30, 0, 5, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(60, 0, 5, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(90, 0, 5, 0, Math.PI*2); ctx.fill();
+
+                ctx.restore();
+
+                // Draw pans
+                this.leftPan.draw(ctx);
+                this.rightPan.draw(ctx);
+                
+            }
+            
+            drawMechanism(ctx) {
+                // Drawing the bottom locking mechanism linked to this scale
+                const mechX = this.x + 40; // Offset relative to scale center
+                const baseY = 450;
+                
+                // The moving parts based on balance state
+                let upperCylY = baseY;
+                let lowerCylY = baseY + 120;
+                
+                const moveAmount = 40;
+                
+                if (this.mechState === -1) { // Left heavy, gap moves up
+                    upperCylY -= moveAmount;
+                    lowerCylY -= moveAmount;
+                } else if (this.mechState === 1) { // Right heavy, gap moves down
+                    upperCylY += moveAmount;
+                    lowerCylY += moveAmount;
+                }
+                // If 0, they stay at base (gap is in middle)
+
+                // Background slot
+                ctx.fillStyle = COLORS.boxDark;
+                ctx.fillRect(mechX - 45, baseY - 50, 90, 240);
+                
+                // Guide rails
+                ctx.fillStyle = COLORS.silverDark;
+                ctx.fillRect(mechX - 45, baseY - 50, 5, 240);
+                ctx.fillRect(mechX + 40, baseY - 50, 5, 240);
+                
+                // The gap through which the locking bar passes
+                // Gap is between upperCyl bottom and lowerCyl top
+                
+                // String connecting scale right pan to mechanism
+                const attachmentY = this.rightPan.y;
+                ctx.strokeStyle = COLORS.rope;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(this.rightPan.getGlobalX(), attachmentY + 10);
+                ctx.lineTo(this.rightPan.getGlobalX(), baseY - 60);
+                ctx.lineTo(mechX, baseY - 60);
+                ctx.lineTo(mechX, upperCylY);
+                ctx.stroke();
+
+                // Upper cylinder
+                this.drawCylinder(ctx, mechX, upperCylY, 60, 70);
+                
+                // Draw number on upper cylinder
+                ctx.fillStyle = 'rgba(0,0,0,0.7)';
+                ctx.font = '20px Arial bold';
+                ctx.textAlign = 'center';
+                ctx.fillText(this.mechNumber, mechX, upperCylY + 40);
+                
+                // Lower cylinder
+                this.drawCylinder(ctx, mechX, lowerCylY, 60, 70);
+                
+                // Scale Label
+                ctx.fillStyle = '#64748b';
+                ctx.fillRect(mechX - 35, baseY + 200, 70, 25);
+                ctx.fillStyle = 'black';
+                ctx.font = '12px Courier bold';
+                ctx.textAlign = 'center';
+                ctx.fillText(`SCALE ${this.id}`, mechX, baseY + 217);
+            }
+            
+            drawCylinder(ctx, x, y, width, height) {
+                // Gold cylinder
+                const rad = width/2;
+                
+                // Body
+                const grad = ctx.createLinearGradient(x - rad, 0, x + rad, 0);
+                grad.addColorStop(0, '#b45309');
+                grad.addColorStop(0.5, '#fcd34d');
+                grad.addColorStop(1, '#b45309');
+                
+                ctx.fillStyle = grad;
+                ctx.fillRect(x - rad, y, width, height);
+                
+                // Top cap
+                ctx.fillStyle = '#fcd34d';
+                ctx.beginPath();
+                ctx.ellipse(x, y, rad, 10, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Bottom cap
+                ctx.fillStyle = '#b45309';
+                ctx.beginPath();
+                ctx.ellipse(x, y + height, rad, 10, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Ring on top cylinder (if this is top one, simplified assumption based on y)
+                if (y < 500) {
+                     ctx.strokeStyle = COLORS.goldLight;
+                     ctx.lineWidth = 2;
+                     ctx.beginPath();
+                     ctx.arc(x, y - 8, 5, 0, Math.PI*2);
+                     ctx.stroke();
+                }
+            }
+        }
+
+        function initLevel() {
+            // Setup scales based on new logic:
+            // Top cylinder has a number. Left pan needs that much weight to align the gap.
+            
+            scales = [];
+            weights = [];
+            
+            // Clear UI weights
+            const existingWeights = document.querySelectorAll('.weight-option');
+            existingWeights.forEach(w => w.remove());
+            
+            // Define Scales (ID, x, y) with target weights on mechanisms
+            scales.push(new Scale(1, 200, 150, { mechNumber: 1 })); 
+            scales.push(new Scale(2, 480, 100, { mechNumber: 1.5 }));             
+            scales.push(new Scale(3, 750, 100, { mechNumber: 2.5 }));             
+            
+            // Provide weights to balance the mechanisms.
+            // Needs: 1, 1.5, 2.5
+            // Let's provide: 1, 1, 0.5, 2, 0.5
+            
+            const paletteStartX = GAME_WIDTH / 2 - 200;
+            const paletteY = GAME_HEIGHT - 90;
+            
+            // Create draggable weights
+            weights.push(new Weight(1, 1, "1", paletteStartX, paletteY));
+            weights.push(new Weight(2, 1, "1", paletteStartX + 75, paletteY));
+            weights.push(new Weight(3, 0.5, "1/2", paletteStartX + 150, paletteY));
+            weights.push(new Weight(4, 2, "2", paletteStartX + 225, paletteY));
+            weights.push(new Weight(5, 0.5, "1/2", paletteStartX + 300, paletteY));
+            
+            isSolved = false;
+            mainBarX = 0;
+            successMsg.classList.remove('visible');
+        }
+
+        function drawBackground() {
+            // Main machine housing
+            ctx.fillStyle = COLORS.boxGreen;
+            ctx.fillRect(50, 350, 850, 300);
+            
+            // Housing border/screws
+            ctx.strokeStyle = COLORS.silverLight;
+            ctx.lineWidth = 10;
+            ctx.strokeRect(55, 355, 840, 290);
+            
+            // Screws
+            ctx.fillStyle = 'gray';
+            [
+                [65, 365], [880, 365], [65, 635], [880, 635]
+            ].forEach(pos => {
+                ctx.beginPath(); ctx.arc(pos[0], pos[1], 4, 0, Math.PI*2); ctx.fill();
+            });
+
+            // Vertical dividers
+            ctx.fillStyle = COLORS.silverLight;
+            ctx.fillRect(230, 355, 15, 290);
+            ctx.fillRect(380, 355, 15, 290);
+            ctx.fillRect(520, 355, 15, 290);
+            ctx.fillRect(660, 355, 15, 290);
+            ctx.fillRect(800, 355, 15, 290);
+            
+            // Small details/vents in housing
+            ctx.fillStyle = '#2f3d32'; // Darker green
+            ctx.fillRect(100, 480, 60, 5);
+            ctx.fillRect(100, 500, 60, 5);
+            
+            ctx.fillRect(300, 480, 60, 5);
+            ctx.fillRect(300, 500, 60, 5);
+        }
+
+        function drawLockingBar() {
+            // The main horizontal bar that tries to pass through the gaps
+            const barY = 530; // Center of gaps when balanced
+            const barHeight = 25;
+            
+            ctx.fillStyle = COLORS.silverLight;
+            // Bar extends from left, length changes based on animation
+            ctx.fillRect(20 + mainBarX, barY, 930, barHeight);
+            
+            // Draw a handle on the left end
+            ctx.fillStyle = COLORS.silverDark;
+            ctx.fillRect(10 + mainBarX, barY - 10, 20, barHeight + 20);
+            
+            // Add highlights to bar
+            ctx.fillStyle = 'rgba(255,255,255,0.5)';
+            ctx.fillRect(20 + mainBarX, barY + 2, 930, 5);
+        }
+
+        // Global Mouse/Touch Event Listeners on the container
+        const container = document.getElementById('game-container');
+        
+        function handleMove(e) {
+            if (!draggedWeight || isSolved) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+
+            let clientX, clientY;
+            if (e.touches) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+
+            const mouseX = (clientX - rect.left) * scaleX;
+            const mouseY = (clientY - rect.top) * scaleY;
+
+            draggedWeight.x = mouseX - dragOffset.x;
+            draggedWeight.y = mouseY - dragOffset.y;
+            draggedWeight.updatePosition();
+        }
+
+        function handleUp(e) {
+            if (!draggedWeight) return;
+            
+            let droppedOnPan = false;
+
+            // Check if dropped on any scale pan
+            for (let scale of scales) {
+                // Check left pan
+                if (scale.leftPan.checkCollision(draggedWeight.x, draggedWeight.y, draggedWeight.width, draggedWeight.height)) {
+                    scale.leftPan.addWeight(draggedWeight);
+                    droppedOnPan = true;
+                    break;
+                }
+                // Check right pan
+                if (scale.rightPan.checkCollision(draggedWeight.x, draggedWeight.y, draggedWeight.width, draggedWeight.height)) {
+                    scale.rightPan.addWeight(draggedWeight);
+                    droppedOnPan = true;
+                    break;
+                }
+            }
+
+            if (!droppedOnPan) {
+                // Return to home position if not dropped on a pan
+                draggedWeight.snapToHome();
+            }
+
+            draggedWeight.el.style.zIndex = '';
+            draggedWeight.isDragging = false;
+            draggedWeight = null;
+        }
+
+        // Mouse events
+        window.addEventListener('mousemove', handleMove);
+        window.addEventListener('mouseup', handleUp);
+
+        // Touch events
+        window.addEventListener('touchmove', handleMove, {passive: false});
+        window.addEventListener('touchend', handleUp);
+
+        function resetLevel() {
+            initLevel();
+        }
+
+        function checkSolution() {
+            if (isSolved) return;
+            
+            // Check if all scales are balanced (mechState === 0)
+            let allBalanced = true;
+            for (let s of scales) {
+                if (s.mechState !== 0) {
+                    allBalanced = false;
+                    break;
+                }
+            }
+
+            if (allBalanced) {
+                isSolved = true;
+                // Animate bar moving right slightly then success message
+                animateBar();
+            } else {
+                // Visual feedback of failure (bar jiggles or stops)
+                mainBarX = 10;
+                setTimeout(() => mainBarX = -10, 100);
+                setTimeout(() => mainBarX = 0, 200);
+            }
+        }
+
+        function animateBar() {
+            if (mainBarX < 50) {
+                mainBarX += 2;
+                requestAnimationFrame(animateBar);
+            } else {
+                successMsg.classList.add('visible');
+            }
+        }
+
+        function gameLoop() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawBackground();
+
+            // Update and draw scales
+            scales.forEach(scale => {
+                scale.update();
+                scale.drawMechanism(ctx); // Draw back mechanisms first
+            });
+
+            drawLockingBar();
+
+            // Draw scales on top of mechanisms
+            scales.forEach(scale => {
+                scale.draw(ctx);
+            });
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Initialize and start
+        window.onload = () => {
+            initLevel();
+            gameLoop();
+        };
+
+    </script>
+</body>
+</html>

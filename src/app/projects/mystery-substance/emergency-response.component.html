@@ -55,11 +55,21 @@
       </div>
 
       <button type="button" class="ghost" (click)="showPrior.set(!showPrior())">
-        {{ showPrior() ? 'Hide' : 'Open' }} your shelf records
+        {{ showPrior() ? 'Hide' : 'Open' }} {{ preview ? 'supplied comparison records' : 'your shelf records' }}
       </button>
+      @if (preview) {
+        <p>Supplied C/D comparison records · sample reference data</p>
+        <button type="button" class="primary" [disabled]="!!running()" (click)="restartPreview()">Restart with 25 minutes</button>
+        <details><summary>Earlier attempts ({{ attemptHistory().length }})</summary>
+          @for (entry of attemptHistory(); track entry.attempt) {
+            <p>Attempt {{ entry.attempt }} · {{ entry.minutesLeft }} minutes left · {{ entry.call ?? 'No response chosen' }}</p>
+            <ul>@for (test of entry.tests; track test.id) { <li>{{ test.title }}: {{ test.reading }}</li> }</ul>
+          }
+        </details>
+      }
 
       @if (showPrior()) {
-        <table class="prior" aria-label="What your shelf investigation recorded">
+        <table class="prior" aria-label="Supplied specimen comparison records">
           <thead>
             <tr>
               <th scope="col">Test</th>
@@ -159,7 +169,7 @@
     <!-- ---- The call ------------------------------------------------------- -->
     <aside class="console" aria-labelledby="console-title">
       <span class="kicker">Radio · fire marshal</span>
-      <h2 id="console-title">File your call</h2>
+      <h2 id="console-title">{{ preview ? 'Try a response' : 'File your call' }}</h2>
 
       <div class="call-options">
         @for (option of calls; track option.id) {
@@ -192,6 +202,7 @@
         </div>
       }
 
+      @if (!preview) {
       <label class="reasoning-field">
         Why does your evidence say that?
         <textarea
@@ -217,9 +228,10 @@
         />
       </label>
 
+      }
       @if (verdict() === undefined) {
         <button type="button" class="primary" [disabled]="!canFile()" (click)="fileCall()">
-          Radio the marshal
+          {{ preview ? 'Simulate response' : 'Radio the marshal' }}
         </button>
       }
 
@@ -245,6 +257,7 @@
           }
 
           <div class="verdict-actions">
+            @if (!preview) {
             @if (result.id === 'wrong') {
               <button type="button" class="ghost" (click)="tryAgain()">
                 The crew is still outside — {{ retryMinutes }} minutes left
@@ -253,6 +266,7 @@
             <button type="button" class="primary" (click)="captureRecord()">
               File the incident record
             </button>
+            } @else { <p>Simulated consequence only. No assessment or submission recorded.</p> }
           </div>
         </article>
       }

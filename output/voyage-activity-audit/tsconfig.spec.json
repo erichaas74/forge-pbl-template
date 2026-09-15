@@ -1,0 +1,5 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": { "outDir": "./out-tsc-spec", "types": ["vitest/globals"] },
+  "include": ["../../src/app/templates/journey-replay/**/*.spec.ts", "../../src/app/runtime/project-showcase/journey.sample.spec.ts", "../../src/**/*.d.ts"]
+}

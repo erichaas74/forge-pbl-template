@@ -1,0 +1,283 @@
+:host {
+  display: block;
+  color: #293f3b;
+  background: #e7e8df;
+  font:
+    13px/1.55 Arial,
+    sans-serif;
+}
+* {
+  box-sizing: border-box;
+}
+.invention-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 306px;
+  gap: 0;
+  min-height: calc(100dvh - 102px);
+}
+.activity-panel {
+  min-width: 0;
+  height: max(580px, calc(100dvh - 102px));
+  position: sticky;
+  top: 68px;
+  overflow: hidden;
+  border-right: 1px solid #8c917d;
+}
+.mission-column {
+  padding: 19px 17px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: #edeee6;
+  min-width: 0;
+}
+.task-box,
+.tutor-box {
+  border: 1px solid #bdc7bc;
+  border-radius: 10px;
+  background: #f8f6ed;
+  overflow: hidden;
+}
+.task-box > summary,
+.tutor-box > summary {
+  cursor: pointer;
+  padding: 17px 16px 13px;
+  list-style: none;
+  position: relative;
+}
+.task-box > summary::after,
+.tutor-box > summary::after {
+  content: '+';
+  position: absolute;
+  top: 10px;
+  right: 13px;
+  color: #637b6d;
+  font-size: 16px;
+}
+details[open] > summary::after {
+  content: '−';
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+summary > span {
+  display: block;
+  font:
+    700 9px/1.5 Arial,
+    sans-serif;
+  letter-spacing: 0.12em;
+  color: #687b6c;
+  margin-bottom: 6px;
+}
+h2 {
+  font:
+    500 21px/1.2 Georgia,
+    serif;
+  margin: 0;
+  color: #263e38;
+}
+h3 {
+  font:
+    700 13px/1.4 Arial,
+    sans-serif;
+  margin: 16px 0 7px;
+}
+p {
+  margin: 8px 0 14px;
+}
+.task-content,
+.tutor-content {
+  padding: 0 16px 13px;
+}
+.coordinates {
+  display: flex;
+  flex-direction: column;
+  margin: 1px 0 12px;
+  color: #788374;
+  font-size: 10px;
+}
+.coordinates b {
+  font:
+    16px/1.4 Georgia,
+    serif;
+  color: #826640;
+}
+.inside-detail {
+  border-top: 1px solid #d8ddcf;
+  margin-top: 10px;
+}
+.inside-detail > summary {
+  padding: 11px 0;
+  cursor: pointer;
+  font-size: 11px;
+  color: #446654;
+  list-style: none;
+}
+.inside-detail > summary::before {
+  content: '›';
+  margin-right: 8px;
+  color: #8c7348;
+}
+.inside-detail[open] > summary::before {
+  content: '⌄';
+}
+.inside-detail p,
+.inside-detail li {
+  font-size: 12px;
+  line-height: 1.6;
+}
+ul {
+  padding-left: 17px;
+}
+li + li {
+  margin-top: 8px;
+}
+.feedback {
+  border-left: 2px solid #b99257;
+  padding-left: 10px;
+  font-size: 12px;
+  color: #725f40;
+  margin: 10px 0;
+}
+.tutor-box {
+  background: #e4ebe2;
+  border-color: #b6c7b5;
+}
+.tutor-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.tutor-title b {
+  font:
+    500 9px Arial,
+    sans-serif;
+  padding: 5px 7px;
+  border: 1px solid #bdcab9;
+  border-radius: 9px;
+  color: #586b59;
+}
+.tutor-question {
+  font:
+    15px/1.5 Georgia,
+    serif;
+  color: #3b5548;
+  margin-top: 4px;
+}
+.source {
+  margin: 5px 0 15px;
+}
+.source a {
+  color: #315f54;
+  font-weight: 600;
+  font-size: 12px;
+}
+.source p {
+  font-size: 11px;
+}
+.time-jump {
+  min-height: 44px;
+  width: 100%;
+  padding: 8px;
+  background: #254b43;
+  color: #f2e6c9;
+  border: 1px solid #1b453b;
+  border-radius: 6px;
+  cursor: pointer;
+  font:
+    600 12px Arial,
+    sans-serif;
+}
+.time-jump:disabled {
+  cursor: default;
+  color: #748275;
+  background: #dfe4d8;
+  border-color: #bdc6b3;
+}
+.batch-note {
+  text-align: center;
+  font-size: 10px;
+  color: #697b67;
+  margin-top: 7px;
+}
+.notebook {
+  min-height: 40px;
+  background: #f8f6ed;
+  border: 1px solid #9daa97;
+  border-radius: 5px;
+  padding: 7px 10px;
+  color: #37533f;
+  font:
+    11px Arial,
+    sans-serif;
+  cursor: pointer;
+}
+@media (min-width: 951px) {
+  .mission-column {
+    max-height: max(580px, calc(100dvh - 102px));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .task-box,
+  .tutor-box {
+    flex: 0 0 auto;
+  }
+}
+summary:focus-visible,
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid #167890;
+  outline-offset: 3px;
+}
+@media (min-width: 1600px) {
+  .invention-layout {
+    grid-template-columns: minmax(0, 1fr) 350px;
+  }
+  .mission-column {
+    padding: 24px;
+  }
+}
+@media (max-width: 950px) {
+  .invention-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .activity-panel {
+    position: relative;
+    top: auto;
+    height: 620px;
+    border-right: 0;
+  }
+  .mission-column {
+    display: flex;
+    align-items: stretch;
+    gap: 16px;
+  }
+  .task-box {
+    order: 0;
+  }
+  .tutor-box {
+    order: 1;
+  }
+}
+@media (max-width: 600px) {
+  .knowledge-panel {
+    overflow-x: auto;
+  }
+  .knowledge-panel app-knowledge-host {
+    min-width: 660px;
+  }
+  .activity-panel {
+    height: 440px;
+  }
+  .mission-column {
+    padding: 14px;
+  }
+  .task-box,
+  .tutor-box {
+    width: 100%;
+  }
+  .invention-layout {
+    min-height: auto;
+  }
+}

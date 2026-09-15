@@ -1,4 +1,5 @@
 import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { emptyInquiryState, inquiryGateReady, type DebateInquiryState, type InquiryAttempt, type InquiryReview } from '../domain/debate-inquiry.models';
 
 import {
   approveModeratorPrompt,
@@ -57,6 +58,9 @@ export interface DebateChoiceView {
 @Injectable()
 export class DebateStudioRuntimeService {
   readonly config = inject(DEBATE_STUDIO_CONFIG);
+  readonly assembly = this.config.presentation?.assembly ?? 'Senate';
+  readonly seal = this.config.presentation?.seal ?? 'SPQR';
+  readonly speakerLabel = this.config.presentation?.speaker ?? 'Student Senator';
   private readonly tenantId = inject(DEBATE_STUDIO_TENANT_ID, { optional: true }) ?? 'local-preview';
   private readonly sessionAdapter = inject(DEBATE_STUDIO_SESSION);
   private readonly mediaAdapter = inject(DEBATE_STUDIO_MEDIA);
@@ -150,6 +154,7 @@ export class DebateStudioRuntimeService {
     const round = this.currentRound();
     return (
       round !== undefined &&
+      (!this.config.inquiry || this.inquiryGate(this.config.inquiry.hearingGateId)) &&
       canFileTurn(round, this.state(), this.previousOpponentTurn() !== undefined)
     );
   });
@@ -190,26 +195,26 @@ export class DebateStudioRuntimeService {
       case 'opponent':
         return `${this.opponentFaction()?.shortName ?? 'The opposing faction'} has answered`;
       case 'moderator':
-        return 'The Consul calls the next question';
+        return `${this.config.moderator.displayName} calls the next question`;
       case 'your-turn':
         return 'The floor passes to your faction';
       case 'premiere-ready':
-        return 'Senate session ready';
+        return `${this.assembly} session ready`;
       default:
-        return 'The Senate awaits the opposing faction';
+        return `The ${this.assembly.toLowerCase()} awaits the opposing faction`;
     }
   });
   readonly chamberDetail = computed(() => {
     const current = this.currentTurn();
     switch (this.chamberStage()) {
       case 'opponent':
-        return `Hear ${this.previousOpponentTurn()?.speakerDisplayName ?? 'the previous senator'} at the opposing lectern.`;
+        return `Hear ${this.previousOpponentTurn()?.speakerDisplayName ?? this.speakerLabel} at the opposing lectern.`;
       case 'moderator':
         return 'The presiding dais is illuminated. Hear the question before taking the floor.';
       case 'your-turn':
         return `${current?.roundLabel ?? 'Your round'} · ${this.roleLabel(current)}`;
       case 'premiere-ready':
-        return 'The doors are closed. The teacher may now convene the complete Senate broadcast.';
+        return `The doors are closed. The teacher may now convene the complete ${this.assembly} broadcast.`;
       default:
         return this.pendingModeratorPrompt() !== undefined
           ? 'A moderator question is awaiting teacher approval.'
@@ -287,7 +292,7 @@ export class DebateStudioRuntimeService {
     }
     this.updateWorkspace({ opponentHeardTurnId: opponent.id });
     this.notice.set(
-      'The previous argument is now part of your listening record. The Consul calls the next question.',
+      `The previous argument is now part of your listening record. The ${this.config.moderator.displayName} calls the next question.`,
     );
     this.state.update((state) => ({ ...state, activeStation: undefined }));
   }
@@ -544,7 +549,7 @@ export class DebateStudioRuntimeService {
     } catch {
       this.recordingState.set('ready');
       this.error.set(
-        'The shared Senate record did not accept the filing. Your draft and recording remain available.',
+        `The shared ${this.assembly} record did not accept the filing. Your draft and recording remain available.`,
       );
     }
   }
@@ -592,7 +597,7 @@ export class DebateStudioRuntimeService {
           now,
         ),
     );
-    this.notice.set('The Consul’s question has been released. The next faction has the floor.');
+    this.notice.set(`The ${this.config.moderator.displayName}’s question has been released. The next faction has the floor.`);
   }
 
   castPreOpinion(choiceId: string): void {
@@ -602,7 +607,7 @@ export class DebateStudioRuntimeService {
       (session) =>
         castOpinionVote(session, 'pre', { studentId: this.actorId(), choiceId, castAt: now }),
     ).catch(() =>
-      this.error.set('Your initial opinion could not reach the shared Senate. Please try again.'),
+      this.error.set(`Your initial opinion could not reach the shared ${this.assembly}. Please try again.`),
     );
   }
 
@@ -614,7 +619,7 @@ export class DebateStudioRuntimeService {
         castOpinionVote(session, 'post', { studentId: this.actorId(), choiceId, castAt: now }),
     ).catch(() =>
       this.error.set(
-        'Your post-debate opinion could not reach the shared Senate. Please try again.',
+        `Your post-debate opinion could not reach the shared ${this.assembly}. Please try again.`,
       ),
     );
   }
@@ -670,7 +675,7 @@ export class DebateStudioRuntimeService {
       void this.mutateSession(this.event('debate.premiereConvened', 'teacher'), (session) =>
         conveneDebatePremiere(session, now),
       ).catch(() =>
-        this.error.set('The shared Senate could not be convened. The sealed record is unchanged.'),
+        this.error.set(`The shared ${this.assembly} could not be convened. The sealed record is unchanged.`),
       );
     } else if (this.session().status === 'premiere-ready') {
       this.notice.set(
@@ -682,7 +687,7 @@ export class DebateStudioRuntimeService {
   playSession(): void {
     if (!this.premiereCanPlay()) {
       this.error.set(
-        'Continuous playback begins when the teacher convenes the completed Senate session.',
+        `Continuous playback begins when the teacher convenes the completed ${this.assembly} session.`,
       );
       return;
     }
@@ -763,7 +768,7 @@ export class DebateStudioRuntimeService {
 
   openBallot(): void {
     if (!['voting', 'complete'].includes(this.session().status)) {
-      this.error.set('The voting urns remain sealed until the complete Senate premiere has ended.');
+      this.error.set(`The voting urns remain sealed until the complete ${this.assembly} premiere has ended.`);
       return;
     }
     this.enterRoom('ballot');
@@ -794,7 +799,7 @@ export class DebateStudioRuntimeService {
               turn.speakerId as string,
               {
                 id: turn.speakerId as string,
-                label: turn.speakerDisplayName ?? 'Student senator',
+                label: turn.speakerDisplayName ?? this.speakerLabel,
                 detail: this.faction(turn.factionId)?.shortName,
               },
             ]),
@@ -803,7 +808,7 @@ export class DebateStudioRuntimeService {
     }
     return turns.map((turn) => ({
       id: turn.id,
-      label: `${turn.speakerDisplayName ?? 'Student senator'} · ${turn.roundLabel}`,
+      label: `${turn.speakerDisplayName ?? this.speakerLabel} · ${turn.roundLabel}`,
       detail: excerpt(turn.transcript ?? '', 90),
     }));
   }
@@ -825,7 +830,7 @@ export class DebateStudioRuntimeService {
   roleLabel(turn: DebateTurn | undefined): string {
     const faction = this.faction(turn?.factionId);
     return (
-      faction?.roles.find((role) => role.id === turn?.assignedRoleId)?.label ?? 'Student Senator'
+      faction?.roles.find((role) => role.id === turn?.assignedRoleId)?.label ?? this.speakerLabel
     );
   }
 
@@ -852,7 +857,7 @@ export class DebateStudioRuntimeService {
   clearLocalDraft(): void {
     this.resetTurnWorkspace();
     this.notice.set(
-      'Only your unfiled local preparation was cleared. The shared Senate record was not changed.',
+      `Only your unfiled local preparation was cleared. The shared ${this.assembly} record was not changed.`,
     );
   }
 
@@ -891,14 +896,14 @@ export class DebateStudioRuntimeService {
         () => {
           this.connectionState.set('error');
           this.error.set(
-            'The shared Senate connection was interrupted. Official actions are paused.',
+            `The shared ${this.assembly} connection was interrupted. Official actions are paused.`,
           );
         },
       );
     } catch {
       this.connectionState.set('error');
       this.error.set(
-        'Firebase could not open the shared Senate. Check Anonymous Authentication and database rules.',
+        `Firebase could not open the shared ${this.assembly}. Check Anonymous Authentication and database rules.`,
       );
     }
   }
@@ -1053,17 +1058,47 @@ export class DebateStudioRuntimeService {
     };
   }
 
+  readonly inquiryState = computed(() => this.state().inquiry ?? emptyInquiryState());
+
+  inquiryGate(id: string): boolean {
+    return !!this.config.inquiry && inquiryGateReady(this.config.inquiry, this.inquiryState(), id);
+  }
+
+  updateInquiryDraft(key: string, value: string): void {
+    const inquiry = this.inquiryState();
+    this.state.update(state => ({ ...state, inquiry: { ...inquiry, drafts: { ...inquiry.drafts, [key]: value } } }));
+    this.scheduleWorkspaceSave();
+  }
+
+  saveInquiryDrafts(): void { this.flushWorkspaceSave(); }
+
+  submitInquiryAttempt(lesson: number, prompt: string, response: string, targetId?: string): boolean {
+    const definition = this.config.inquiry?.lessons.find(l => l.number === lesson);
+    if (!definition || !response.trim() || (definition.requiresGate && !this.inquiryGate(definition.requiresGate))) return false;
+    if (targetId && !this.config.inquiry?.targets.some(t => t.id === targetId)) return false;
+    const inquiry = this.inquiryState();
+    const attempt: InquiryAttempt = { id: crypto.randomUUID(), lesson, prompt, response: response.trim(), targetId, mode: 'independent', createdAt: new Date().toISOString() };
+    this.updateWorkspace({ inquiry: { ...inquiry, attempts: [...inquiry.attempts, attempt] } });
+    return true;
+  }
+
+  reviewInquiryAttempt(attemptId: string, decision: 'ready' | 'revise', feedback: string): void {
+    if (!this.canManageModerator() || !this.config.viewer.allowTeacherPreview || !feedback.trim()) return;
+    const inquiry = this.inquiryState();
+    if (!inquiry.attempts.some(a => a.id === attemptId)) return;
+    const review: InquiryReview = {
+      attemptId, decision, feedback: feedback.trim(), reviewerId: this.actorId(), createdAt: new Date().toISOString(), authority: 'demo',
+    };
+    const next: DebateInquiryState = { ...inquiry, reviews: { ...inquiry.reviews, [attemptId]: review }, reviewHistory: [...(inquiry.reviewHistory ?? []), review] };
+    this.updateWorkspace({ inquiry: next });
+  }
+
   private resetTurnWorkspace(activeStation?: DebateStation): void {
     this.clearRecording();
     const room = this.state().room;
-    const next = { ...createInitialDebateWorkspace(), room, activeStation };
+    const next = { ...createInitialDebateWorkspace(), room, activeStation, inquiry: this.state().inquiry };
     this.state.set(next);
-    this.workspacePersistence.clear(
-      this.config.projectId,
-      this.config.projectVersion,
-      this.config.sessionId,
-      this.config.viewer.studentId,
-    );
+    this.saveWorkspace(next);
   }
 
   private clearRecording(): void {

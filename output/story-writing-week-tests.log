@@ -1,0 +1,14 @@
+Using Vitest configuration file: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\vitest.serial.config.mjs
+> Building...
+√ Building...
+Application bundle generation complete. [14.545 seconds] - 2026-09-14T23:13:45.087Z
+
+
+ RUN  v4.1.11 C:/Users/erich/Desktop/pbl-lms/forge-pbl-template
+
+
+ Test Files  6 passed (6)
+      Tests  27 passed (27)
+   Start at  17:13:48
+   Duration  11.20s (transform 840ms, setup 2.05s, import 1.05s, tests 2.58s, environment 4.28s)
+

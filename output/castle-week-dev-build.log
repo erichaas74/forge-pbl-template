@@ -1,0 +1,18 @@
+> Building...
+√ Building...
+Application bundle generation failed. [36.215 seconds] - 2026-09-14T22:02:13.674Z
+
+X [ERROR] TS2339: Property 'findLast' does not exist on type 'readonly DesignCapture[]'. [plugin angular-compiler]
+
+    src/app/templates/engineering-design/ui/engineering-week-workspace.component.ts:58:38:
+      58 │ ...last = this.draft()?.trials.findLast(t => t.settings['previewSe...
+         ╵                                ~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 't' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/engineering-design/ui/engineering-week-workspace.component.ts:58:47:
+      58 │ ... this.draft()?.trials.findLast(t => t.settings['previewSession'...
+         ╵                                   ^
+
+

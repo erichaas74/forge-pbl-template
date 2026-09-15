@@ -181,7 +181,7 @@ export const broadcastSampleGuide: SampleGuide = {
       captions: '/history-live/final-presentations/presentation-reel.vtt',
     },
   ],
-  audience: 'History & media literacy · Grades 5–6',
+  audience: 'History & media literacy · Grade 8',
   duration: 'Three scenes · 75-second report transcript',
   trail: [
     {

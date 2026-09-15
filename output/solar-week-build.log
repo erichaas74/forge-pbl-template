@@ -1,0 +1,91 @@
+> Building...
+√ Building...
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:24:141:
+      24 │ ...startTime]="runtime.state().filmTimes[lesson()] ?? 0" (position...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:492:
+      60 │ ...ria-pressed]="(runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:609:
+      60 │ ...ource.id)">{{ (runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: TimeRepairWeekWorkspaceComponent is not used within the template of TimeRepairPageComponent [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-page.component.ts:25:12:
+      25 │   imports: [TimeRepairWeekWorkspaceComponent, WorkspaceToolsCompon...
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: WorkspaceToolsComponent is not used within the template of TimeRepairPageComponent [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-page.component.ts:25:46:
+      25 │ ...WorkspaceComponent, WorkspaceToolsComponent,FormsModule, Router...
+         ╵                        ~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: RouterLink is not used within the template of TimeRepairPageComponent [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-page.component.ts:25:83:
+      25 │ ...oolsComponent,FormsModule, RouterLink, TimeRepairInvestigationC...
+         ╵                               ~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: TimeRepairInvestigationComponent is not used within the template of TimeRepairPageComponent [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-page.component.ts:25:95:
+      25 │ ...le, RouterLink, TimeRepairInvestigationComponent, TimeRepairSce...
+         ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: TimeRepairSceneComponent is not used within the template of TimeRepairPageComponent [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-page.component.ts:25:129:
+      25 │ ...Link, TimeRepairInvestigationComponent, TimeRepairSceneComponent],
+         ╵                                            ~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Unclosed block "else" [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-page.component.html:3:2:
+      3 │ } @else {
+        ╵   ~~~~~~~
+
+  Error occurs in the template of component TimeRepairPageComponent.
+
+    src/app/templates/time-repair/ui/time-repair-page.component.ts:26:15:
+      26 │   templateUrl: './time-repair-page.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Application bundle generation failed. [318.337 seconds] - 2026-09-14T22:26:24.835Z
+

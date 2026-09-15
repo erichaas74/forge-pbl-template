@@ -1,0 +1,67 @@
+@mixin station($kind: 'lab') {
+  :host(.lab-preview) {
+    position: relative; inset: auto; display: block; container-type: inline-size;
+    .lab-canvas, .bench-canvas, .matter-canvas, .bay-canvas, .station-canvas {
+      position: relative; inset: auto; min-height: 0; overflow: visible;
+    }
+    .lab-grid, .bench-grid, .matter-grid, .bay-grid {
+      padding: 14px; min-height: 0; grid-template-columns: minmax(145px, .8fr) minmax(0, 2fr); gap: 12px;
+    }
+    .lab-grid.has-record, .bench-grid.has-record, .matter-grid.has-record {
+      grid-template-columns: minmax(145px, .8fr) minmax(0, 2fr);
+    }
+    .lab-grid.has-record .rack, .bench-grid.has-record .rack, .matter-grid.has-record .rack { display: block; }
+    .record, .console { grid-column: 1 / -1; }
+    .record[hidden] { display: none; }
+    .stage, .rig, .rack, .record, .console { min-width: 0; }
+    .kicker, .instrument-copy small, .trial-log, .procedure-log { display: block; }
+    .trial-log, .procedure-log { max-height: 200px; overflow: auto; }
+    .instrument-well, .chamber-well { min-height: 230px; }
+    .instrument-well { height: 245px; }
+    .stage-controls { margin-top: 10px; }
+    .preview-run { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 8px 0; }
+    .preview-run .primary-action { width: auto; }
+    .preview-run p { flex-basis: 100%; margin: 0; }
+    h1 { font-size: 1.2rem; }
+    h2 { font-size: 1rem; }
+    button, select { min-height: 44px; font-size: .87rem; }
+    small, .record-note, .stage-hint, .rig-hint, .hint, .readout small, .readout strong, .readout-stack small, .readout-stack strong, .rack-note { font-size: .8rem; line-height: 1.45; }
+    input[type='range'] { min-height: 32px; }
+    @if $kind == 'restoration' {
+    .restoration-stage { position: relative; inset: auto; display: grid; grid-template-columns: minmax(110px, .6fr) minmax(0, 1.7fr); padding: 20px; min-height: 0; gap: 20px; }
+    .restoration-console { position: relative; width: auto; max-width: none; min-width: 0; }
+    .restoration-console label { display: grid; gap: 6px; margin: 12px 0; }
+    .restoration-console select { width: 100%; background: #102b38; border: 1px solid #527888; color: #eefaff; padding: 8px; border-radius: 6px; }
+    .focus-specimen { width: auto; align-self: start; margin: 0; }
+    .focus-specimen img { max-width: 100%; max-height: 260px; object-fit: contain; }
+    .focus-specimen select { max-width: 100%; }
+    .shelf-plan { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 20px; }
+    .shelf-plan button { display: grid; gap: 5px; text-align: left; border: 1px solid #4b7181; border-radius: 8px; background: #173848; color: #e9f6fb; padding: 10px; overflow-wrap: anywhere; }
+    .shelf-plan button[aria-pressed='true'] { border: 2px solid #8be5d7; }
+    }
+    @if $kind == 'emergency' {
+    .prior { width: 100%; table-layout: fixed; overflow-wrap: anywhere; }
+    .bay-grid .rack { grid-column: 1 / -1; }
+    .bay-grid .stage { grid-column: 1 / -1; }
+    .test-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .test { height: 100%; min-width: 0; }
+    .briefing-scrim { position: relative; }
+    }
+    :is(button, select, summary, input):focus-visible { outline: 3px solid #a9efdc; outline-offset: 3px; }
+  }
+  @container (max-width: 640px) {
+    :host(.lab-preview) {
+      .lab-grid, .bench-grid, .matter-grid, .bay-grid, .lab-grid.has-record, .bench-grid.has-record, .matter-grid.has-record, .restoration-stage { grid-template-columns: minmax(0, 1fr); padding: 10px; }
+      .stage, .rig { grid-row: 1; }
+      .rack { grid-row: 2; }
+      .bay-grid .rack { grid-row: 1; }
+      .bay-grid .stage { grid-row: 2; }
+      .test-list, .shelf-plan { grid-template-columns: minmax(0, 1fr); }
+      .instrument-list, .chamber-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .focus-specimen { max-width: 130px; justify-self: center; }
+      .focus-specimen img { max-height: 150px; }
+      .chamber-well { gap: 8px; }
+      .probe-rig { grid-template-columns: minmax(0, 1fr); }
+    }
+  }
+}

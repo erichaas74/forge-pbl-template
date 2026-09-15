@@ -81,7 +81,7 @@ export class BrowserDebateWorkspacePersistenceAdapter implements DebateWorkspace
   private readonly store: ScopedBrowserStore<DebateWorkspaceState>;
 
   constructor(
-    storage: Storage | undefined = safeBrowserStorage(),
+    private readonly storage: Storage | undefined = safeBrowserStorage(),
     private readonly context?: ProjectSessionContext,
   ) {
     this.store = new ScopedBrowserStore(
@@ -111,6 +111,7 @@ export class BrowserDebateWorkspacePersistenceAdapter implements DebateWorkspace
     studentId: string,
     state: DebateWorkspaceState,
   ): void {
+    if (!this.storage) throw new Error('DRAFT_STORAGE_UNAVAILABLE');
     this.store.save(this.scope(projectId, projectVersion, sessionId, studentId), state);
   }
 

@@ -1,0 +1,14 @@
+> Building...
+√ Building...
+X [ERROR] Could not resolve "C:/Users/erich/Desktop/pbl-lms/forge-pbl-template/src/app/projects/mystery-substance/lab-week-workspace.component.spec.ts"
+
+
+X [ERROR] NG2008: Could not find template file './narrative-week-workspace.component.html'. [plugin angular-compiler]
+
+    src/app/templates/narrative-studio/ui/narrative-week-workspace.component.ts:20:15:
+      20 │   templateUrl: './narrative-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Application bundle generation failed. [95.054 seconds] - 2026-09-14T22:11:32.970Z
+

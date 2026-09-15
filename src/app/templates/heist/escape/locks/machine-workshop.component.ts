@@ -13,6 +13,7 @@ import {
   signal,
 } from '@angular/core';
 import { initialMachine, machineReading, reduceMachine } from './machine.rules';
+import { isBridgeDiorama, isCageDiorama } from './machine-presentation';
 import type { MachineAnswer, MachineDefinition, MachineInput, MathGrade } from './machine.models';
 import type { MachineSceneHandle, MountMachineScene } from './machine.scene';
 export const MACHINE_SCENE_LOADER = new InjectionToken<
@@ -21,11 +22,15 @@ export const MACHINE_SCENE_LOADER = new InjectionToken<
 @Component({
   selector: 'app-machine-workshop',
   templateUrl: './machine-workshop.component.html',
-  styleUrl: './machine-workshop.component.scss',
+  styleUrls: ['./machine-workshop.component.scss', '../weekly/preview-machine.scss', './timing-cage/timing-cage.host.scss', './optics-cage/optics-cage.host.scss', './bridge-cage/bridge-cage.host.scss'],
+  host: { '[class.week-preview]': 'authoringPreview()' },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MachineWorkshopComponent implements AfterViewInit {
   readonly definition = input.required<MachineDefinition>();
+  readonly authoringPreview = input(false);
+  readonly initialStage = input(0);
+  readonly tested = output<number>();
   readonly answer = input<MachineAnswer | null>(null);
   readonly grade = input<MathGrade>(5);
   readonly completed = input(false);
@@ -51,10 +56,11 @@ export class MachineWorkshopComponent implements AfterViewInit {
   readonly notice = signal('Explore the mechanism. Its measurements are your clues.');
   readonly state = computed(() => this.answer() ?? initialMachine(this.definition()));
   readonly stage = computed(() => this.definition().stages[this.active()]);
+  readonly diorama = computed(() => isCageDiorama(this.stage()) || isBridgeDiorama(this.definition()));
   readonly stageAnswer = computed(() => this.state().stages[this.active()]);
   readonly reading = computed(() => machineReading(this.stage(), this.stageAnswer()));
   readonly sealed = computed(
-    () => this.completed() || this.state().seals.includes(this.stage().id),
+    () => !this.authoringPreview() && (this.completed() || this.state().seals.includes(this.stage().id)),
   );
   readonly locked = computed(() => this.paused() || this.testing() || this.sealed());
   readonly Math = Math;
@@ -71,12 +77,14 @@ export class MachineWorkshopComponent implements AfterViewInit {
   }
   async ngAfterViewInit(): Promise<void> {
     this.active.set(Math.min(this.state().seals.length, this.definition().stages.length - 1));
+    if (this.authoringPreview() && Number.isInteger(this.initialStage()) && this.definition().stages[this.initialStage()])
+      this.active.set(this.initialStage());
     this.controls.set(
       this.host.nativeElement.clientWidth > 0 && this.host.nativeElement.clientWidth < 700,
     );
     this.heading.nativeElement.focus({ preventScroll: true });
     // A reload can occur between the last saved seal and the final submit command.
-    if (!this.completed() && this.state().seals.length === this.definition().stages.length)
+    if (!this.authoringPreview() && !this.completed() && this.state().seals.length === this.definition().stages.length)
       this.solved.emit();
     try {
       const { mountMachineScene } = await this.loader();
@@ -85,6 +93,8 @@ export class MachineWorkshopComponent implements AfterViewInit {
         this.host.nativeElement,
         this.definition(),
         () => ({
+          stages: this.state().stages,
+          freelySelectStages: this.authoringPreview(),
           active: this.active(),
           answer: this.stageAnswer(),
           selected: this.selected(),
@@ -96,6 +106,10 @@ export class MachineWorkshopComponent implements AfterViewInit {
           reducedMotion: this.reducedMotion(),
         }),
         {
+          stage: (i) => {
+            if (this.authoringPreview()) this.selectStage(i);
+            else if (i === this.active() + 1) this.nextStage();
+          },
           input: (i) => this.operate(i),
           select: (i) => this.select(i),
           ready: () => this.ready.set(true),
@@ -106,6 +120,9 @@ export class MachineWorkshopComponent implements AfterViewInit {
           },
           settled: (v) => this.settled.set(v),
           finished: () => this.finish(),
+          engage: () => this.test(),
+          replay: () => this.replay(),
+          pause: () => this.pauseRequested.emit(),
         },
       );
     } catch {
@@ -189,7 +206,8 @@ export class MachineWorkshopComponent implements AfterViewInit {
     this.trial.update((n) => n + 1);
     this.selected.set(null);
     this.sound.emit(reading.solved ? 'open' : 'turn');
-    if (reading.solved) {
+    this.tested.emit(this.active());
+    if (reading.solved && !this.authoringPreview()) {
       const state = { ...this.state(), seals: [...this.state().seals, this.stage().id] };
       this.changed.emit(state);
       if (state.seals.length === this.definition().stages.length) this.solved.emit();
@@ -212,8 +230,15 @@ export class MachineWorkshopComponent implements AfterViewInit {
       this.notice.set(this.stage().instruction);
     }
   }
+  selectStage(index: number): void {
+    if (!this.authoringPreview() || this.paused() || this.testing() || !this.definition().stages[index]) return;
+    this.active.set(index);
+    this.selected.set(null);
+    this.settled.set(true);
+    this.notice.set(this.stage().instruction);
+  }
   replay(): void {
-    if (!this.sealed() || this.testing() || this.paused()) return;
+    if ((!this.sealed() && !(this.diorama() && this.reading().solved)) || this.testing() || this.paused()) return;
     this.passed.set(true);
     this.testing.set(true);
     this.trial.update((n) => n + 1);

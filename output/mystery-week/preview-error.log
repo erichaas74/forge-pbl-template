@@ -1,0 +1,2279 @@
+X [ERROR] NG2008: Could not find template file './narrative-week-workspace.component.html'. [plugin angular-compiler]
+
+    src/app/templates/narrative-studio/ui/narrative-week-workspace.component.ts:20:15:
+      20 │   templateUrl: './narrative-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG8002: Can't bind to 'initialScale' since it isn't a known property of 'app-balance-lock'.
+1. If 'app-balance-lock' is an Angular component and it has 'initialScale' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'app-balance-lock' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component. Find more at https://next.angular.dev/errors/NG8002 [plugin angular-compiler]
+
+    src/app/templates/heist/escape/weekly/expedition-week-workspace.component.html:53:16:
+      53 │                 [initialScale]="restoredStage()"
+         ╵                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component ExpeditionWeekWorkspaceComponent.
+
+    src/app/templates/heist/escape/weekly/expedition-week-workspace.component.ts:20:15:
+      20 │   templateUrl: './expedition-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'restoredStage' does not exist on type 'ExpeditionWeekWorkspaceComponent'. [plugin angular-compiler]
+
+    src/app/templates/heist/escape/weekly/expedition-week-workspace.component.html:53:32:
+      53 │                 [initialScale]="restoredStage()"
+         ╵                                 ~~~~~~~~~~~~~
+
+  Error occurs in the template of component ExpeditionWeekWorkspaceComponent.
+
+    src/app/templates/heist/escape/weekly/expedition-week-workspace.component.ts:20:15:
+      20 │   templateUrl: './expedition-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'restoredStage' does not exist on type 'ExpeditionWeekWorkspaceComponent'. [plugin angular-compiler]
+
+    src/app/templates/heist/escape/weekly/expedition-week-workspace.component.html:77:32:
+      77 │                 [initialStage]="restoredStage()"
+         ╵                                 ~~~~~~~~~~~~~
+
+  Error occurs in the template of component ExpeditionWeekWorkspaceComponent.
+
+    src/app/templates/heist/escape/weekly/expedition-week-workspace.component.ts:20:15:
+      20 │   templateUrl: './expedition-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find template file './narrative-week-workspace.component.html'. [plugin angular-compiler]
+
+    src/app/templates/narrative-studio/ui/narrative-week-workspace.component.ts:20:15:
+      20 │   templateUrl: './narrative-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.models.ts:60:35:
+      60 │ ...panels: structuredClone(config.previewWeeks?.sampleExhibit ?? []),
+         ╵                                   ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:19:
+      51 │   const s = config.previewWeeks?.weeks.flatMap(w => w.sessions).fi...
+         ╵                    ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'w' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:47:
+      51 │ ...ig.previewWeeks?.weeks.flatMap(w => w.sessions).find(s => s.id ...
+         ╵                                   ^
+
+
+X [ERROR] TS7006: Parameter 's' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:69:
+      51 │ ...eks?.weeks.flatMap(w => w.sessions).find(s => s.id === sessionId);
+         ╵                                             ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:61:24:
+      61 │   const sample = config.previewWeeks!.sampleExhibit;
+         ╵                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'item' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:170:
+      62 │ ...s.every(p => p && sample.some(item => item.id === p.id) && shor...
+         ╵                                  ~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:244:
+      62 │ ...hort(p.caption) && config.previewWeeks!.illustrations.some(i =>...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'i' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:277:
+      62 │ ...eviewWeeks!.illustrations.some(i => i.id === p.imageId) && (p.e...
+         ╵                                   ^
+
+
+X [ERROR] NG2008: Could not find template file './narrative-week-workspace.component.html'. [plugin angular-compiler]
+
+    src/app/templates/narrative-studio/ui/narrative-week-workspace.component.ts:20:15:
+      20 │   templateUrl: './narrative-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.models.ts:60:35:
+      60 │ ...panels: structuredClone(config.previewWeeks?.sampleExhibit ?? []),
+         ╵                                   ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:19:
+      51 │   const s = config.previewWeeks?.weeks.flatMap(w => w.sessions).fi...
+         ╵                    ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'w' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:47:
+      51 │ ...ig.previewWeeks?.weeks.flatMap(w => w.sessions).find(s => s.id ...
+         ╵                                   ^
+
+
+X [ERROR] TS7006: Parameter 's' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:69:
+      51 │ ...eks?.weeks.flatMap(w => w.sessions).find(s => s.id === sessionId);
+         ╵                                             ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:61:24:
+      61 │   const sample = config.previewWeeks!.sampleExhibit;
+         ╵                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'item' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:170:
+      62 │ ...s.every(p => p && sample.some(item => item.id === p.id) && shor...
+         ╵                                  ~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:244:
+      62 │ ...hort(p.caption) && config.previewWeeks!.illustrations.some(i =>...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'i' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:277:
+      62 │ ...eviewWeeks!.illustrations.some(i => i.id === p.imageId) && (p.e...
+         ╵                                   ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:17:31:
+      17 │   readonly weeks = this.config.previewWeeks!.weeks;
+         ╵                                ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:36:102:
+      36 │ ...ontext.authorityMode !== 'localDemo' || !this.config.previewWeeks)
+         ╵                                                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:107:169:
+      107 │ ...lustrations: this.config.previewWeeks!.illustrations, sources:...
+          ╵                             ~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module '../../../projects/mystery-substance/lab-week-workspace.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/runtime/project-launch/template-launchers/investigation.launcher.ts:13:59:
+      13 │ ...it import('../../../projects/mystery-substance/lab-week-workspa...
+         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find template file './narrative-week-workspace.component.html'. [plugin angular-compiler]
+
+    src/app/templates/narrative-studio/ui/narrative-week-workspace.component.ts:20:15:
+      20 │   templateUrl: './narrative-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.models.ts:60:35:
+      60 │ ...panels: structuredClone(config.previewWeeks?.sampleExhibit ?? []),
+         ╵                                   ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:19:
+      51 │   const s = config.previewWeeks?.weeks.flatMap(w => w.sessions).fi...
+         ╵                    ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'w' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:47:
+      51 │ ...ig.previewWeeks?.weeks.flatMap(w => w.sessions).find(s => s.id ...
+         ╵                                   ^
+
+
+X [ERROR] TS7006: Parameter 's' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:69:
+      51 │ ...eks?.weeks.flatMap(w => w.sessions).find(s => s.id === sessionId);
+         ╵                                             ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:61:24:
+      61 │   const sample = config.previewWeeks!.sampleExhibit;
+         ╵                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'item' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:170:
+      62 │ ...s.every(p => p && sample.some(item => item.id === p.id) && shor...
+         ╵                                  ~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:244:
+      62 │ ...hort(p.caption) && config.previewWeeks!.illustrations.some(i =>...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'i' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:277:
+      62 │ ...eviewWeeks!.illustrations.some(i => i.id === p.imageId) && (p.e...
+         ╵                                   ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:17:31:
+      17 │   readonly weeks = this.config.previewWeeks!.weeks;
+         ╵                                ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:36:102:
+      36 │ ...ontext.authorityMode !== 'localDemo' || !this.config.previewWeeks)
+         ╵                                                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:107:169:
+      107 │ ...lustrations: this.config.previewWeeks!.illustrations, sources:...
+          ╵                             ~~~~~~~~~~~~
+
+
+X [ERROR] Could not resolve "../../../projects/mystery-substance/lab-week-workspace.component"
+
+    src/app/runtime/project-launch/template-launchers/investigation.launcher.ts:13:59:
+      13 │ ...it import('../../../projects/mystery-substance/lab-week-workspa...
+         ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.models.ts:60:35:
+      60 │ ...panels: structuredClone(config.previewWeeks?.sampleExhibit ?? []),
+         ╵                                   ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:19:
+      51 │   const s = config.previewWeeks?.weeks.flatMap(w => w.sessions).fi...
+         ╵                    ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'w' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:47:
+      51 │ ...ig.previewWeeks?.weeks.flatMap(w => w.sessions).find(s => s.id ...
+         ╵                                   ^
+
+
+X [ERROR] TS7006: Parameter 's' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:69:
+      51 │ ...eks?.weeks.flatMap(w => w.sessions).find(s => s.id === sessionId);
+         ╵                                             ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:61:24:
+      61 │   const sample = config.previewWeeks!.sampleExhibit;
+         ╵                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'item' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:170:
+      62 │ ...s.every(p => p && sample.some(item => item.id === p.id) && shor...
+         ╵                                  ~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:244:
+      62 │ ...hort(p.caption) && config.previewWeeks!.illustrations.some(i =>...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'i' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:277:
+      62 │ ...eviewWeeks!.illustrations.some(i => i.id === p.imageId) && (p.e...
+         ╵                                   ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:17:31:
+      17 │   readonly weeks = this.config.previewWeeks!.weeks;
+         ╵                                ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:36:102:
+      36 │ ...ontext.authorityMode !== 'localDemo' || !this.config.previewWeeks)
+         ╵                                                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:107:169:
+      107 │ ...lustrations: this.config.previewWeeks!.illustrations, sources:...
+          ╵                             ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.models.ts:60:35:
+      60 │ ...panels: structuredClone(config.previewWeeks?.sampleExhibit ?? []),
+         ╵                                   ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:19:
+      51 │   const s = config.previewWeeks?.weeks.flatMap(w => w.sessions).fi...
+         ╵                    ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'w' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:47:
+      51 │ ...ig.previewWeeks?.weeks.flatMap(w => w.sessions).find(s => s.id ...
+         ╵                                   ^
+
+
+X [ERROR] TS7006: Parameter 's' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:69:
+      51 │ ...eks?.weeks.flatMap(w => w.sessions).find(s => s.id === sessionId);
+         ╵                                             ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:61:24:
+      61 │   const sample = config.previewWeeks!.sampleExhibit;
+         ╵                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'item' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:170:
+      62 │ ...s.every(p => p && sample.some(item => item.id === p.id) && shor...
+         ╵                                  ~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:244:
+      62 │ ...hort(p.caption) && config.previewWeeks!.illustrations.some(i =>...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'i' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:277:
+      62 │ ...eviewWeeks!.illustrations.some(i => i.id === p.imageId) && (p.e...
+         ╵                                   ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:17:31:
+      17 │   readonly weeks = this.config.previewWeeks!.weeks;
+         ╵                                ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:36:102:
+      36 │ ...ontext.authorityMode !== 'localDemo' || !this.config.previewWeeks)
+         ╵                                                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:107:169:
+      107 │ ...lustrations: this.config.previewWeeks!.illustrations, sources:...
+          ╵                             ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.models.ts:60:35:
+      60 │ ...panels: structuredClone(config.previewWeeks?.sampleExhibit ?? []),
+         ╵                                   ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:19:
+      51 │   const s = config.previewWeeks?.weeks.flatMap(w => w.sessions).fi...
+         ╵                    ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'w' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:47:
+      51 │ ...ig.previewWeeks?.weeks.flatMap(w => w.sessions).find(s => s.id ...
+         ╵                                   ^
+
+
+X [ERROR] TS7006: Parameter 's' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:69:
+      51 │ ...eks?.weeks.flatMap(w => w.sessions).find(s => s.id === sessionId);
+         ╵                                             ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:61:24:
+      61 │   const sample = config.previewWeeks!.sampleExhibit;
+         ╵                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'item' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:170:
+      62 │ ...s.every(p => p && sample.some(item => item.id === p.id) && shor...
+         ╵                                  ~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:244:
+      62 │ ...hort(p.caption) && config.previewWeeks!.illustrations.some(i =>...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'i' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:277:
+      62 │ ...eviewWeeks!.illustrations.some(i => i.id === p.imageId) && (p.e...
+         ╵                                   ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:17:31:
+      17 │   readonly weeks = this.config.previewWeeks!.weeks;
+         ╵                                ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:36:102:
+      36 │ ...ontext.authorityMode !== 'localDemo' || !this.config.previewWeeks)
+         ╵                                                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:107:169:
+      107 │ ...lustrations: this.config.previewWeeks!.illustrations, sources:...
+          ╵                             ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.models.ts:60:35:
+      60 │ ...panels: structuredClone(config.previewWeeks?.sampleExhibit ?? []),
+         ╵                                   ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:19:
+      51 │   const s = config.previewWeeks?.weeks.flatMap(w => w.sessions).fi...
+         ╵                    ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'w' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:47:
+      51 │ ...ig.previewWeeks?.weeks.flatMap(w => w.sessions).find(s => s.id ...
+         ╵                                   ^
+
+
+X [ERROR] TS7006: Parameter 's' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:69:
+      51 │ ...eks?.weeks.flatMap(w => w.sessions).find(s => s.id === sessionId);
+         ╵                                             ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:61:24:
+      61 │   const sample = config.previewWeeks!.sampleExhibit;
+         ╵                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'item' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:170:
+      62 │ ...s.every(p => p && sample.some(item => item.id === p.id) && shor...
+         ╵                                  ~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:244:
+      62 │ ...hort(p.caption) && config.previewWeeks!.illustrations.some(i =>...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'i' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:277:
+      62 │ ...eviewWeeks!.illustrations.some(i => i.id === p.imageId) && (p.e...
+         ╵                                   ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:17:31:
+      17 │   readonly weeks = this.config.previewWeeks!.weeks;
+         ╵                                ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:36:102:
+      36 │ ...ontext.authorityMode !== 'localDemo' || !this.config.previewWeeks)
+         ╵                                                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:107:169:
+      107 │ ...lustrations: this.config.previewWeeks!.illustrations, sources:...
+          ╵                             ~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-scene.component.ts:7:68:
+      7 │ ...cene.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-source.component.ts:11:12:
+      11 │   styleUrl: './time-repair-week-activity.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-timeline.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:8:49:
+      8 │ ...eWorkbenchComponent } from './time-repair-week-timeline.component';
+        ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-ripple.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:9:47:
+      9 │ ...pleWorkbenchComponent } from './time-repair-week-ripple.component';
+        ╵                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-exhibit.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:10:48:
+      10 │ ...tWorkbenchComponent } from './time-repair-week-exhibit.component';
+         ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:55:
+      14 │ ...benchComponent, RepairTimelineWorkbenchComponent, RepairRippleW...
+         ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:55:
+      14 │ ...benchComponent, RepairTimelineWorkbenchComponent, RepairRippleW...
+         ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:89:
+      14 │ ...kbenchComponent, RepairRippleWorkbenchComponent, RepairExhibitW...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:89:
+      14 │ ...kbenchComponent, RepairRippleWorkbenchComponent, RepairExhibitW...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-workspace.component.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:17:12:
+      17 │   styleUrl: './time-repair-week-workspace.component.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.models.ts:60:35:
+      60 │ ...panels: structuredClone(config.previewWeeks?.sampleExhibit ?? []),
+         ╵                                   ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:19:
+      51 │   const s = config.previewWeeks?.weeks.flatMap(w => w.sessions).fi...
+         ╵                    ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'w' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:47:
+      51 │ ...ig.previewWeeks?.weeks.flatMap(w => w.sessions).find(s => s.id ...
+         ╵                                   ^
+
+
+X [ERROR] TS7006: Parameter 's' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:69:
+      51 │ ...eks?.weeks.flatMap(w => w.sessions).find(s => s.id === sessionId);
+         ╵                                             ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:61:24:
+      61 │   const sample = config.previewWeeks!.sampleExhibit;
+         ╵                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'item' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:170:
+      62 │ ...s.every(p => p && sample.some(item => item.id === p.id) && shor...
+         ╵                                  ~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:244:
+      62 │ ...hort(p.caption) && config.previewWeeks!.illustrations.some(i =>...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'i' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:277:
+      62 │ ...eviewWeeks!.illustrations.some(i => i.id === p.imageId) && (p.e...
+         ╵                                   ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:17:31:
+      17 │   readonly weeks = this.config.previewWeeks!.weeks;
+         ╵                                ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:36:102:
+      36 │ ...ontext.authorityMode !== 'localDemo' || !this.config.previewWeeks)
+         ╵                                                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:107:169:
+      107 │ ...lustrations: this.config.previewWeeks!.illustrations, sources:...
+          ╵                             ~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-scene.component.ts:7:68:
+      7 │ ...cene.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-source.component.ts:11:12:
+      11 │   styleUrl: './time-repair-week-activity.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-timeline.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:8:49:
+      8 │ ...eWorkbenchComponent } from './time-repair-week-timeline.component';
+        ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-ripple.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:9:47:
+      9 │ ...pleWorkbenchComponent } from './time-repair-week-ripple.component';
+        ╵                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-exhibit.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:10:48:
+      10 │ ...tWorkbenchComponent } from './time-repair-week-exhibit.component';
+         ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:55:
+      14 │ ...benchComponent, RepairTimelineWorkbenchComponent, RepairRippleW...
+         ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:55:
+      14 │ ...benchComponent, RepairTimelineWorkbenchComponent, RepairRippleW...
+         ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:89:
+      14 │ ...kbenchComponent, RepairRippleWorkbenchComponent, RepairExhibitW...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:89:
+      14 │ ...kbenchComponent, RepairRippleWorkbenchComponent, RepairExhibitW...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-workspace.component.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:17:12:
+      17 │   styleUrl: './time-repair-week-workspace.component.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.models.ts:60:35:
+      60 │ ...panels: structuredClone(config.previewWeeks?.sampleExhibit ?? []),
+         ╵                                   ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:19:
+      51 │   const s = config.previewWeeks?.weeks.flatMap(w => w.sessions).fi...
+         ╵                    ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'w' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:47:
+      51 │ ...ig.previewWeeks?.weeks.flatMap(w => w.sessions).find(s => s.id ...
+         ╵                                   ^
+
+
+X [ERROR] TS7006: Parameter 's' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:69:
+      51 │ ...eks?.weeks.flatMap(w => w.sessions).find(s => s.id === sessionId);
+         ╵                                             ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:61:24:
+      61 │   const sample = config.previewWeeks!.sampleExhibit;
+         ╵                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'item' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:170:
+      62 │ ...s.every(p => p && sample.some(item => item.id === p.id) && shor...
+         ╵                                  ~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:244:
+      62 │ ...hort(p.caption) && config.previewWeeks!.illustrations.some(i =>...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'i' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:277:
+      62 │ ...eviewWeeks!.illustrations.some(i => i.id === p.imageId) && (p.e...
+         ╵                                   ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:17:31:
+      17 │   readonly weeks = this.config.previewWeeks!.weeks;
+         ╵                                ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:36:102:
+      36 │ ...ontext.authorityMode !== 'localDemo' || !this.config.previewWeeks)
+         ╵                                                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:107:169:
+      107 │ ...lustrations: this.config.previewWeeks!.illustrations, sources:...
+          ╵                             ~~~~~~~~~~~~
+
+
+X [ERROR] TS2774: This condition will always return true since this function is always defined. Did you mean to call it instead? [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:11:277:
+      11 │ ... 1 }}</span>{{ r.config.nodes.find ? '' : '' }}{{ ripple.nodeId...
+         ╵                                  ~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previous' does not exist on type 'RepairRippleWorkbenchComponent'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:21:96:
+      21 │ ...lick)="r.rippleIndex.update(previous)">← Previous moment</but...
+         ╵                                ~~~~~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'next' does not exist on type 'RepairRippleWorkbenchComponent'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:21:308:
+      21 │ ..." (click)="r.rippleIndex.update(next)">Next moment →</button>...
+         ╵                                  ~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:69:
+      7 │ ...pple.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-scene.component.ts:7:68:
+      7 │ ...cene.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-source.component.ts:11:12:
+      11 │   styleUrl: './time-repair-week-activity.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:22:72:
+      22 │ ...hive-art" [src]="r.config.previewWeeks!.illustrations[2].src" [...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:22:124:
+      22 │ ...s[2].src" [alt]="r.config.previewWeeks!.illustrations[2].alt" /...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:27:12:
+      27 │   styleUrl: './time-repair-week-activity.scss', changeDetection: C...
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-exhibit.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:10:48:
+      10 │ ...tWorkbenchComponent } from './time-repair-week-exhibit.component';
+         ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-workspace.component.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:17:12:
+      17 │   styleUrl: './time-repair-week-workspace.component.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.models.ts:60:35:
+      60 │ ...panels: structuredClone(config.previewWeeks?.sampleExhibit ?? []),
+         ╵                                   ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:19:
+      51 │   const s = config.previewWeeks?.weeks.flatMap(w => w.sessions).fi...
+         ╵                    ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'w' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:47:
+      51 │ ...ig.previewWeeks?.weeks.flatMap(w => w.sessions).find(s => s.id ...
+         ╵                                   ^
+
+
+X [ERROR] TS7006: Parameter 's' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:69:
+      51 │ ...eks?.weeks.flatMap(w => w.sessions).find(s => s.id === sessionId);
+         ╵                                             ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:61:24:
+      61 │   const sample = config.previewWeeks!.sampleExhibit;
+         ╵                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'item' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:170:
+      62 │ ...s.every(p => p && sample.some(item => item.id === p.id) && shor...
+         ╵                                  ~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:244:
+      62 │ ...hort(p.caption) && config.previewWeeks!.illustrations.some(i =>...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'i' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:277:
+      62 │ ...eviewWeeks!.illustrations.some(i => i.id === p.imageId) && (p.e...
+         ╵                                   ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:17:31:
+      17 │   readonly weeks = this.config.previewWeeks!.weeks;
+         ╵                                ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:36:102:
+      36 │ ...ontext.authorityMode !== 'localDemo' || !this.config.previewWeeks)
+         ╵                                                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:107:169:
+      107 │ ...lustrations: this.config.previewWeeks!.illustrations, sources:...
+          ╵                             ~~~~~~~~~~~~
+
+
+X [ERROR] TS2774: This condition will always return true since this function is always defined. Did you mean to call it instead? [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:11:277:
+      11 │ ... 1 }}</span>{{ r.config.nodes.find ? '' : '' }}{{ ripple.nodeId...
+         ╵                                  ~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previous' does not exist on type 'RepairRippleWorkbenchComponent'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:21:96:
+      21 │ ...lick)="r.rippleIndex.update(previous)">← Previous moment</but...
+         ╵                                ~~~~~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'next' does not exist on type 'RepairRippleWorkbenchComponent'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:21:308:
+      21 │ ..." (click)="r.rippleIndex.update(next)">Next moment →</button>...
+         ╵                                  ~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:69:
+      7 │ ...pple.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-scene.component.ts:7:68:
+      7 │ ...cene.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-source.component.ts:11:12:
+      11 │   styleUrl: './time-repair-week-activity.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:22:72:
+      22 │ ...hive-art" [src]="r.config.previewWeeks!.illustrations[2].src" [...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:22:124:
+      22 │ ...s[2].src" [alt]="r.config.previewWeeks!.illustrations[2].alt" /...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:27:12:
+      27 │   styleUrl: './time-repair-week-activity.scss', changeDetection: C...
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-exhibit.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:10:48:
+      10 │ ...tWorkbenchComponent } from './time-repair-week-exhibit.component';
+         ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-workspace.component.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:17:12:
+      17 │   styleUrl: './time-repair-week-workspace.component.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:24:141:
+      24 │ ...startTime]="runtime.state().filmTimes[lesson()] ?? 0" (position...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:492:
+      60 │ ...ria-pressed]="(runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:609:
+      60 │ ...ource.id)">{{ (runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.models.ts:60:35:
+      60 │ ...panels: structuredClone(config.previewWeeks?.sampleExhibit ?? []),
+         ╵                                   ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:19:
+      51 │   const s = config.previewWeeks?.weeks.flatMap(w => w.sessions).fi...
+         ╵                    ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'w' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:47:
+      51 │ ...ig.previewWeeks?.weeks.flatMap(w => w.sessions).find(s => s.id ...
+         ╵                                   ^
+
+
+X [ERROR] TS7006: Parameter 's' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:69:
+      51 │ ...eks?.weeks.flatMap(w => w.sessions).find(s => s.id === sessionId);
+         ╵                                             ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:61:24:
+      61 │   const sample = config.previewWeeks!.sampleExhibit;
+         ╵                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'item' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:170:
+      62 │ ...s.every(p => p && sample.some(item => item.id === p.id) && shor...
+         ╵                                  ~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:244:
+      62 │ ...hort(p.caption) && config.previewWeeks!.illustrations.some(i =>...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'i' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:277:
+      62 │ ...eviewWeeks!.illustrations.some(i => i.id === p.imageId) && (p.e...
+         ╵                                   ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:17:31:
+      17 │   readonly weeks = this.config.previewWeeks!.weeks;
+         ╵                                ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:36:102:
+      36 │ ...ontext.authorityMode !== 'localDemo' || !this.config.previewWeeks)
+         ╵                                                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:107:169:
+      107 │ ...lustrations: this.config.previewWeeks!.illustrations, sources:...
+          ╵                             ~~~~~~~~~~~~
+
+
+X [ERROR] TS2774: This condition will always return true since this function is always defined. Did you mean to call it instead? [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:11:277:
+      11 │ ... 1 }}</span>{{ r.config.nodes.find ? '' : '' }}{{ ripple.nodeId...
+         ╵                                  ~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previous' does not exist on type 'RepairRippleWorkbenchComponent'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:21:96:
+      21 │ ...lick)="r.rippleIndex.update(previous)">← Previous moment</but...
+         ╵                                ~~~~~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'next' does not exist on type 'RepairRippleWorkbenchComponent'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:21:308:
+      21 │ ..." (click)="r.rippleIndex.update(next)">Next moment →</button>...
+         ╵                                  ~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:69:
+      7 │ ...pple.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-scene.component.ts:7:68:
+      7 │ ...cene.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-source.component.ts:11:12:
+      11 │   styleUrl: './time-repair-week-activity.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:22:72:
+      22 │ ...hive-art" [src]="r.config.previewWeeks!.illustrations[2].src" [...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:22:124:
+      22 │ ...s[2].src" [alt]="r.config.previewWeeks!.illustrations[2].alt" /...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:27:12:
+      27 │   styleUrl: './time-repair-week-activity.scss', changeDetection: C...
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-exhibit.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:10:48:
+      10 │ ...tWorkbenchComponent } from './time-repair-week-exhibit.component';
+         ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-workspace.component.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:17:12:
+      17 │   styleUrl: './time-repair-week-workspace.component.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:24:141:
+      24 │ ...startTime]="runtime.state().filmTimes[lesson()] ?? 0" (position...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:492:
+      60 │ ...ria-pressed]="(runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:609:
+      60 │ ...ource.id)">{{ (runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.models.ts:60:35:
+      60 │ ...panels: structuredClone(config.previewWeeks?.sampleExhibit ?? []),
+         ╵                                   ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:19:
+      51 │   const s = config.previewWeeks?.weeks.flatMap(w => w.sessions).fi...
+         ╵                    ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'w' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:47:
+      51 │ ...ig.previewWeeks?.weeks.flatMap(w => w.sessions).find(s => s.id ...
+         ╵                                   ^
+
+
+X [ERROR] TS7006: Parameter 's' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:69:
+      51 │ ...eks?.weeks.flatMap(w => w.sessions).find(s => s.id === sessionId);
+         ╵                                             ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:61:24:
+      61 │   const sample = config.previewWeeks!.sampleExhibit;
+         ╵                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'item' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:170:
+      62 │ ...s.every(p => p && sample.some(item => item.id === p.id) && shor...
+         ╵                                  ~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:244:
+      62 │ ...hort(p.caption) && config.previewWeeks!.illustrations.some(i =>...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'i' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:277:
+      62 │ ...eviewWeeks!.illustrations.some(i => i.id === p.imageId) && (p.e...
+         ╵                                   ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:17:31:
+      17 │   readonly weeks = this.config.previewWeeks!.weeks;
+         ╵                                ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:36:102:
+      36 │ ...ontext.authorityMode !== 'localDemo' || !this.config.previewWeeks)
+         ╵                                                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:107:169:
+      107 │ ...lustrations: this.config.previewWeeks!.illustrations, sources:...
+          ╵                             ~~~~~~~~~~~~
+
+
+X [ERROR] TS2774: This condition will always return true since this function is always defined. Did you mean to call it instead? [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:11:277:
+      11 │ ... 1 }}</span>{{ r.config.nodes.find ? '' : '' }}{{ ripple.nodeId...
+         ╵                                  ~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previous' does not exist on type 'RepairRippleWorkbenchComponent'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:21:96:
+      21 │ ...lick)="r.rippleIndex.update(previous)">← Previous moment</but...
+         ╵                                ~~~~~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'next' does not exist on type 'RepairRippleWorkbenchComponent'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:21:308:
+      21 │ ..." (click)="r.rippleIndex.update(next)">Next moment →</button>...
+         ╵                                  ~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:69:
+      7 │ ...pple.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-scene.component.ts:7:68:
+      7 │ ...cene.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-source.component.ts:11:12:
+      11 │   styleUrl: './time-repair-week-activity.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:22:72:
+      22 │ ...hive-art" [src]="r.config.previewWeeks!.illustrations[2].src" [...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:22:124:
+      22 │ ...s[2].src" [alt]="r.config.previewWeeks!.illustrations[2].alt" /...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:27:12:
+      27 │   styleUrl: './time-repair-week-activity.scss', changeDetection: C...
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-exhibit.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:10:48:
+      10 │ ...tWorkbenchComponent } from './time-repair-week-exhibit.component';
+         ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-workspace.component.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:17:12:
+      17 │   styleUrl: './time-repair-week-workspace.component.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:24:141:
+      24 │ ...startTime]="runtime.state().filmTimes[lesson()] ?? 0" (position...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:492:
+      60 │ ...ria-pressed]="(runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:609:
+      60 │ ...ource.id)">{{ (runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.models.ts:60:35:
+      60 │ ...panels: structuredClone(config.previewWeeks?.sampleExhibit ?? []),
+         ╵                                   ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:19:
+      51 │   const s = config.previewWeeks?.weeks.flatMap(w => w.sessions).fi...
+         ╵                    ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'w' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:47:
+      51 │ ...ig.previewWeeks?.weeks.flatMap(w => w.sessions).find(s => s.id ...
+         ╵                                   ^
+
+
+X [ERROR] TS7006: Parameter 's' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:69:
+      51 │ ...eks?.weeks.flatMap(w => w.sessions).find(s => s.id === sessionId);
+         ╵                                             ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:61:24:
+      61 │   const sample = config.previewWeeks!.sampleExhibit;
+         ╵                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'item' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:170:
+      62 │ ...s.every(p => p && sample.some(item => item.id === p.id) && shor...
+         ╵                                  ~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:244:
+      62 │ ...hort(p.caption) && config.previewWeeks!.illustrations.some(i =>...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'i' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:277:
+      62 │ ...eviewWeeks!.illustrations.some(i => i.id === p.imageId) && (p.e...
+         ╵                                   ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:17:31:
+      17 │   readonly weeks = this.config.previewWeeks!.weeks;
+         ╵                                ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:36:102:
+      36 │ ...ontext.authorityMode !== 'localDemo' || !this.config.previewWeeks)
+         ╵                                                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:107:169:
+      107 │ ...lustrations: this.config.previewWeeks!.illustrations, sources:...
+          ╵                             ~~~~~~~~~~~~
+
+
+X [ERROR] TS2774: This condition will always return true since this function is always defined. Did you mean to call it instead? [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.html:11:277:
+      11 │ ... 1 }}</span>{{ r.config.nodes.find ? '' : '' }}{{ ripple.nodeId...
+         ╵                                  ~~~~
+
+  Error occurs in the template of component RepairRippleWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-ripple.component.html', styleUrl:...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-ripple.component.ts:7:69:
+      7 │ ...pple.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-scene.component.ts:7:68:
+      7 │ ...cene.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-source.component.ts:11:12:
+      11 │   styleUrl: './time-repair-week-activity.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:22:72:
+      22 │ ...hive-art" [src]="r.config.previewWeeks!.illustrations[2].src" [...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:22:124:
+      22 │ ...s[2].src" [alt]="r.config.previewWeeks!.illustrations[2].alt" /...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:27:12:
+      27 │   styleUrl: './time-repair-week-activity.scss', changeDetection: C...
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2307: Cannot find module './time-repair-week-exhibit.component' or its corresponding type declarations. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:10:48:
+      10 │ ...tWorkbenchComponent } from './time-repair-week-exhibit.component';
+         ╵                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Unknown reference.
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:14:121:
+      14 │ ... RepairRippleWorkbenchComponent, RepairExhibitWorkbenchComponent],
+         ╵                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-workspace.component.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-workspace.component.ts:17:12:
+      17 │   styleUrl: './time-repair-week-workspace.component.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:24:141:
+      24 │ ...startTime]="runtime.state().filmTimes[lesson()] ?? 0" (position...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:492:
+      60 │ ...ria-pressed]="(runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:609:
+      60 │ ...ource.id)">{{ (runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.models.ts:60:35:
+      60 │ ...panels: structuredClone(config.previewWeeks?.sampleExhibit ?? []),
+         ╵                                   ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:19:
+      51 │   const s = config.previewWeeks?.weeks.flatMap(w => w.sessions).fi...
+         ╵                    ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'w' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:47:
+      51 │ ...ig.previewWeeks?.weeks.flatMap(w => w.sessions).find(s => s.id ...
+         ╵                                   ^
+
+
+X [ERROR] TS7006: Parameter 's' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:69:
+      51 │ ...eks?.weeks.flatMap(w => w.sessions).find(s => s.id === sessionId);
+         ╵                                             ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:61:24:
+      61 │   const sample = config.previewWeeks!.sampleExhibit;
+         ╵                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'item' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:170:
+      62 │ ...s.every(p => p && sample.some(item => item.id === p.id) && shor...
+         ╵                                  ~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:244:
+      62 │ ...hort(p.caption) && config.previewWeeks!.illustrations.some(i =>...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'i' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:277:
+      62 │ ...eviewWeeks!.illustrations.some(i => i.id === p.imageId) && (p.e...
+         ╵                                   ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:17:31:
+      17 │   readonly weeks = this.config.previewWeeks!.weeks;
+         ╵                                ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:36:102:
+      36 │ ...ontext.authorityMode !== 'localDemo' || !this.config.previewWeeks)
+         ╵                                                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:107:169:
+      107 │ ...lustrations: this.config.previewWeeks!.illustrations, sources:...
+          ╵                             ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-exhibit.component.html:18:189:
+      18 │ ...)">@for(image of r.config.previewWeeks!.illustrations; track im...
+         ╵                              ~~~~~~~~~~~~
+
+  Error occurs in the template of component RepairExhibitWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-exhibit.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-exhibit.component.html', styleUrl...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-exhibit.component.ts:13:55:
+      13 │ ...puted(() => this.r.config.previewWeeks!.illustrations.find(i =>...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'i' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-exhibit.component.ts:13:88:
+      13 │ ...eviewWeeks!.illustrations.find(i => i.id === this.r.activePanel...
+         ╵                                   ^
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-scene.component.ts:7:68:
+      7 │ ...cene.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-source.component.ts:11:12:
+      11 │   styleUrl: './time-repair-week-activity.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:22:72:
+      22 │ ...hive-art" [src]="r.config.previewWeeks!.illustrations[2].src" [...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:22:124:
+      22 │ ...s[2].src" [alt]="r.config.previewWeeks!.illustrations[2].alt" /...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:27:12:
+      27 │   styleUrl: './time-repair-week-activity.scss', changeDetection: C...
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:24:141:
+      24 │ ...startTime]="runtime.state().filmTimes[lesson()] ?? 0" (position...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:492:
+      60 │ ...ria-pressed]="(runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8102: NG8102: The left side of this nullish coalescing operation does not include 'null' or 'undefined' in its type, therefore the '??' operator can be safely removed. Find more at https://v22.angular.dev/extended-diagnostics/NG8102 [plugin angular-compiler]
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.html:60:609:
+      60 │ ...ource.id)">{{ (runtime.state().sources[work().id] ?? []).includ...
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Warning occurs in the template of component RestorationWeekWorkspaceComponent.
+
+    src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.ts:12:15:
+      12 │   templateUrl: './restoration-week-workspace.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: TimeRepairWeekWorkspaceComponent is not used within the template of TimeRepairPageComponent [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-page.component.ts:25:12:
+      25 │   imports: [TimeRepairWeekWorkspaceComponent, WorkspaceToolsCompon...
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: WorkspaceToolsComponent is not used within the template of TimeRepairPageComponent [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-page.component.ts:25:46:
+      25 │ ...WorkspaceComponent, WorkspaceToolsComponent,FormsModule, Router...
+         ╵                        ~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: RouterLink is not used within the template of TimeRepairPageComponent [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-page.component.ts:25:83:
+      25 │ ...oolsComponent,FormsModule, RouterLink, TimeRepairInvestigationC...
+         ╵                               ~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: TimeRepairInvestigationComponent is not used within the template of TimeRepairPageComponent [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-page.component.ts:25:95:
+      25 │ ...le, RouterLink, TimeRepairInvestigationComponent, TimeRepairSce...
+         ╵                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+▲ [WARNING] NG8113: TimeRepairSceneComponent is not used within the template of TimeRepairPageComponent [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-page.component.ts:25:129:
+      25 │ ...Link, TimeRepairInvestigationComponent, TimeRepairSceneComponent],
+         ╵                                            ~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.models.ts:60:35:
+      60 │ ...panels: structuredClone(config.previewWeeks?.sampleExhibit ?? []),
+         ╵                                   ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:19:
+      51 │   const s = config.previewWeeks?.weeks.flatMap(w => w.sessions).fi...
+         ╵                    ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'w' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:47:
+      51 │ ...ig.previewWeeks?.weeks.flatMap(w => w.sessions).find(s => s.id ...
+         ╵                                   ^
+
+
+X [ERROR] TS7006: Parameter 's' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:51:69:
+      51 │ ...eks?.weeks.flatMap(w => w.sessions).find(s => s.id === sessionId);
+         ╵                                             ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:61:24:
+      61 │   const sample = config.previewWeeks!.sampleExhibit;
+         ╵                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'item' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:170:
+      62 │ ...s.every(p => p && sample.some(item => item.id === p.id) && shor...
+         ╵                                  ~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:244:
+      62 │ ...hort(p.caption) && config.previewWeeks!.illustrations.some(i =>...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'i' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/domain/time-repair-preview.validation.ts:62:277:
+      62 │ ...eviewWeeks!.illustrations.some(i => i.id === p.imageId) && (p.e...
+         ╵                                   ^
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:17:31:
+      17 │   readonly weeks = this.config.previewWeeks!.weeks;
+         ╵                                ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:36:102:
+      36 │ ...ontext.authorityMode !== 'localDemo' || !this.config.previewWeeks)
+         ╵                                                         ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/runtime/time-repair-preview.runtime.ts:107:169:
+      107 │ ...lustrations: this.config.previewWeeks!.illustrations, sources:...
+          ╵                             ~~~~~~~~~~~~
+
+
+X [ERROR] NG5002: Unclosed block "else" [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-page.component.html:3:2:
+      3 │ } @else {
+        ╵   ~~~~~~~
+
+  Error occurs in the template of component TimeRepairPageComponent.
+
+    src/app/templates/time-repair/ui/time-repair-page.component.ts:26:15:
+      26 │   templateUrl: './time-repair-page.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-page.component.ts:40:41:
+      40 │ ...lyPreview = !!this.config.previewWeeks && this.sessionContext.m...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-exhibit.component.html:18:189:
+      18 │ ...)">@for(image of r.config.previewWeeks!.illustrations; track im...
+         ╵                              ~~~~~~~~~~~~
+
+  Error occurs in the template of component RepairExhibitWorkbenchComponent.
+
+    src/app/templates/time-repair/ui/time-repair-week-exhibit.component.ts:7:15:
+      7 │ ...mplateUrl: './time-repair-week-exhibit.component.html', styleUrl...
+        ╵               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-exhibit.component.ts:13:55:
+      13 │ ...puted(() => this.r.config.previewWeeks!.illustrations.find(i =>...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS7006: Parameter 'i' implicitly has an 'any' type. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-exhibit.component.ts:13:88:
+      13 │ ...eviewWeeks!.illustrations.find(i => i.id === this.r.activePanel...
+         ╵                                   ^
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-scene.component.ts:7:68:
+      7 │ ...cene.component.html', styleUrl: './time-repair-week-activity.scss',
+        ╵                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-source.component.ts:11:12:
+      11 │   styleUrl: './time-repair-week-activity.scss',
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:22:72:
+      22 │ ...hive-art" [src]="r.config.previewWeeks!.illustrations[2].src" [...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'previewWeeks' does not exist on type 'TimeRepairConfig'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:22:124:
+      22 │ ...s[2].src" [alt]="r.config.previewWeeks!.illustrations[2].alt" /...
+         ╵                              ~~~~~~~~~~~~
+
+
+X [ERROR] NG2008: Could not find stylesheet file './time-repair-week-activity.scss'. [plugin angular-compiler]
+
+    src/app/templates/time-repair/ui/time-repair-week-timeline.component.ts:27:12:
+      27 │   styleUrl: './time-repair-week-activity.scss', changeDetection: C...
+         ╵             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+

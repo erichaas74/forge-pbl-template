@@ -1,0 +1,7 @@
+{
+  "extends": "../tsconfig.app.json",
+  "compilerOptions": { "outDir": "./solar-week-isolated-tsc" },
+  "files": ["solar-week-preview-main.ts"],
+  "include": [],
+  "exclude": ["../src/**/*.spec.ts"]
+}

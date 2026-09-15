@@ -400,12 +400,12 @@ a {
 .support-panel {
   position: fixed;
   right: 18px;
-  top: 78px;
+  top: calc(var(--project-navigation-height, 0px) + 78px);
   z-index: 40;
   box-sizing: border-box;
   width: 370px;
   max-width: calc(100vw - 24px);
-  max-height: calc(100dvh - 96px);
+  max-height: calc(100dvh - var(--project-navigation-height, 0px) - 96px);
   overflow: auto;
   padding: 14px;
   border: 1px solid #b8aa8e;
@@ -492,8 +492,8 @@ dd {
   }
   .support-panel {
     right: 8px;
-    top: 62px;
-    max-height: calc(100dvh - 76px);
+    top: calc(var(--project-navigation-height, 0px) + 62px);
+    max-height: calc(100dvh - var(--project-navigation-height, 0px) - 76px);
   }
   .menu-items {
     left: auto;

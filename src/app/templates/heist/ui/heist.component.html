@@ -1,10 +1,10 @@
 <main class="heist" [class.guided]="guided">
-  <header class="masthead">
+  <app-workspace-tools><header class="masthead">
     <a routerLink="/projects" class="back">← Projects</a>
     <div class="identity"><span class="eyebrow">{{ guided ? 'A CASTLE MATH ADVENTURE' : 'A MATHEMATICAL RECOVERY MISSION' }}</span><h1>{{ mission.title }}</h1></div>
     <div class="mode"><span class="dot"></span>{{ replay() ? 'Replay' : guided ? stageLabel() : engine().mode }}<small>Local practice</small></div>
     <div class="clock"><strong>{{ clock(guided ? Math.max(0, mission.deadline - time()) : time()) }}</strong><small>{{ guided ? 'GAME TIME LEFT' : 'LOCKDOWN ' + clock(mission.deadline) }}</small></div>
-  </header>
+  </header></app-workspace-tools>
   <div class="status-strip">
     @if (guided) {
       <span [class.current-step]="guideStep() === 1">① Choose a path</span>

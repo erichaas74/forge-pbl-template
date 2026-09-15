@@ -1,10 +1,12 @@
 import type { DebateStudioProjectConfig } from '../../templates/debate-studio/domain/debate-studio.models';
+import { romanDebateExchange } from './roman-senate-debate.exchange';
 
 export const romanSenateDebateConfig: DebateStudioProjectConfig = {
   schemaVersion: '2.0',
   template: { id: 'debate-studio', version: '2.0' },
   projectId: 'the-fate-of-the-republic',
-  projectVersion: '2.0.0',
+  projectVersion: '3.0.0',
+  exchange: romanDebateExchange,
   sessionId: 'period-3-senate-session',
   title: 'The Fate of the Republic',
   subtitle: 'A shared Roman Senate debate',

@@ -9,7 +9,7 @@
     [class.family-view]="runtime.role() === 'family'"
   >
     <div [hidden]="runtime.composerOpen()">
-      <header class="topbar">
+      <app-workspace-tools><header class="topbar">
         <div class="project-title">
           <span>{{ runtime.config.classLabel }}</span>
           <strong>{{ runtime.config.title }}</strong>
@@ -85,7 +85,7 @@
             build the labels that help a visitor see it.
           </p></app-task-guide
         >
-      </header>
+      </header></app-workspace-tools>
 
       <div class="hall-status" role="status">
         <div>

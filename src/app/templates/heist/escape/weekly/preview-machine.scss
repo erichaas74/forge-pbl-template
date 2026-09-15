@@ -1,0 +1,114 @@
+/* Embedded authoring presentation only; fullscreen rescue clients retain their styling. */
+:host(.week-preview) {
+  .preview-action {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 16px;
+    background: #23443f;
+    border-block: 1px solid #8c9e7555;
+    flex-shrink: 0;
+    font-size: 13px;
+    .primary { flex-shrink: 0; min-height: 44px; }
+    p { margin: 3px 0 0; font-size: 12px; color: #d1dfd4; }
+    @media (max-width: 600px) { flex-wrap: wrap; }
+  }
+  display: block;
+  position: relative;
+  inset: auto;
+  z-index: auto;
+  min-width: 0;
+  .workshop,
+  .chamber {
+    height: auto;
+    overflow: visible;
+  }
+  header,
+  .workshop-header {
+    padding: 12px 18px;
+    gap: 10px;
+  }
+  h1 {
+    font-size: clamp(20px, 2vw, 26px);
+  }
+  nav,
+  .seals {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px;
+  }
+  nav button[aria-pressed='true'] {
+    background: #315850;
+    border-color: #efcb82;
+  }
+  .stage-shell {
+    flex: 0 0 auto;
+    height: clamp(250px, 30vw, 400px);
+    min-height: 250px;
+  }
+  .stage {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  footer,
+  .workbench {
+    flex: 0 0 auto;
+    padding: 12px 16px;
+  }
+  .operation,
+  .equilibrium,
+  .toolbar,
+  .tools-row,
+  .calibrations {
+    flex-wrap: wrap;
+  }
+  .mission,
+  .stage-instruction {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .control-card,
+  .inventory,
+  .actions,
+  .operation > div {
+    min-width: 0;
+  }
+  .loading {
+    left: 8%;
+    right: 8%;
+    padding: 12px;
+  }
+  @media (max-width: 600px) {
+    header,
+    .workshop-header {
+      flex-wrap: wrap;
+    }
+    .workshop-header > div {
+      text-align: left;
+    }
+    .stage-shell {
+      height: 270px;
+    }
+    .run-caption {
+      left: 8px;
+      right: 8px;
+    }
+    .calibrations {
+      gap: 8px;
+      padding: 10px;
+    }
+    .calibrations > div {
+      min-width: 0;
+      flex: 1 1 130px;
+    }
+    .seals button {
+      flex: 1 1 95px;
+      min-width: 0;
+    }
+    button {
+      overflow-wrap: anywhere;
+    }
+  }
+}

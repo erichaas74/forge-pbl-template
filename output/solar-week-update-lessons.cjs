@@ -1,0 +1,23 @@
+const fs = require('node:fs');
+const path = 'src/app/projects/project-lesson-plans.json';
+const source = fs.readFileSync(path, 'utf8');
+const marker = source.indexOf('"projectId": "calendar-monument"');
+const start = source.lastIndexOf('\n  {', marker) + 1;
+const end = source.indexOf('\n  },', marker) + 4;
+if (marker < 0 || start < 0 || end < start) throw Error('Entry not found');
+const entry = JSON.parse(source.slice(start, end));
+entry.planVersion = '1.1.0';
+entry.finalProduct = 'Four editable solar builds and a replayable seasonal test collection.';
+entry.grouping = 'Individual learning followed by group activity planning; all edits remain local in this preview.';
+entry.availability = 'All eight sessions open directly with a sample build. Four separate weekly drafts preserve edits and recorded tests; AI Tutor is disconnected.';
+const titles = ['Build a shadow clock', 'Calibrate the dial', 'Align the summer window', 'Compare the two windows', 'Aim a colored window', 'Compare colors and faces', 'Arrange the calendar gates', 'Play the final solar calendar'];
+const builds = ['Daily sundial', 'Solstice windows', 'Colored-light sculpture', 'Stone-circle calendar'];
+const targets = ['daily-sundial', 'solstice-windows', 'colored-sculpture', 'stone-calendar'];
+const outputs = ['Measured post and editable shadow-tip marks.', 'Morning, noon and afternoon dial marks.', 'Revised summer window and a fixed pillar light test.', 'June and December morning light observations.', 'Colored window and sculpture installation.', 'Controlled filter and sculpture-face comparisons.', 'Stone circle with seasonal light or shadow markers.', 'Four seasonal observations and an editable final calendar.'];
+const questions = ['Why does the shadow point away from the Sun?', 'Why can an old mark miss the shadow in another season?', 'How does moving the window change light at a fixed target?', 'Does this alignment identify one day or a range?', 'Which light passes through a colored filter?', 'Which comparison isolates color from geometry?', 'Which feature marks the season rather than the hour?', 'What can your calendar distinguish, and what are its limits?'];
+entry.lessons = entry.lessons.map((lesson, i) => ({ ...lesson, title: titles[i], output: outputs[i], workspace: builds[Math.floor(i / 2)], focusTarget: targets[Math.floor(i / 2)], checkpoint: questions[i] }));
+const replacement = JSON.stringify(entry, null, 2).split('\n').map(line => '  ' + line).join('\n');
+// Only replace this project entry; retain every byte of all concurrent neighbors.
+if (fs.readFileSync(path, 'utf8') !== source) throw Error('Lesson file changed; retry from current data');
+fs.writeFileSync(path, source.slice(0, start) + replacement + source.slice(end));
+console.log('Updated only calendar-monument lesson entry');

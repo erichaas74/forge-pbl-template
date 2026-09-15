@@ -1,0 +1,68 @@
+ M docs/heist/build-math-workshops.py
+ M public/projects/castle-archive-rescue/project.json
+ M src/app/templates/heist/escape/balance-lock/balance-lock.component.html
+ M src/app/templates/heist/escape/balance-lock/balance-lock.component.scss
+ M src/app/templates/heist/escape/balance-lock/balance-lock.component.spec.ts
+ M src/app/templates/heist/escape/balance-lock/balance-lock.component.ts
+ M src/app/templates/heist/escape/balance-lock/balance-lock.domain.spec.ts
+ M src/app/templates/heist/escape/balance-lock/balance-lock.domain.ts
+ M src/app/templates/heist/escape/balance-lock/balance-lock.scene.ts
+ M src/app/templates/heist/escape/domain/escape.engine.ts
+ M src/app/templates/heist/escape/domain/escape.models.ts
+ M src/app/templates/heist/escape/domain/escape.validation.ts
+ M src/app/templates/heist/escape/domain/expedition.navigation.ts
+ M src/app/templates/heist/escape/expedition/expedition.component.html
+ M src/app/templates/heist/escape/expedition/expedition.component.scss
+ M src/app/templates/heist/escape/expedition/expedition.component.spec.ts
+ M src/app/templates/heist/escape/expedition/expedition.component.ts
+ M src/app/templates/heist/escape/gear-lock/gear-lock.component.html
+ M src/app/templates/heist/escape/gear-lock/gear-lock.component.scss
+ M src/app/templates/heist/escape/gear-lock/gear-lock.component.ts
+ M src/app/templates/heist/escape/locks/machine-surface.ts
+ M src/app/templates/heist/escape/locks/machine-workshop.component.html
+ M src/app/templates/heist/escape/locks/machine-workshop.component.scss
+ M src/app/templates/heist/escape/locks/machine-workshop.component.spec.ts
+ M src/app/templates/heist/escape/locks/machine-workshop.component.ts
+ M src/app/templates/heist/escape/locks/machine.models.ts
+ M src/app/templates/heist/escape/locks/machine.scene.ts
+ M src/app/templates/heist/escape/locks/machine.validation.ts
+ M src/app/templates/heist/escape/runtime/escape-runtime.ts
+ M src/app/templates/heist/escape/runtime/expedition-runtime.spec.ts
+ M src/app/templates/heist/escape/runtime/expedition-runtime.ts
+?? docs/heist/CASTLE_2_5D_ART_DIRECTION.md
+?? docs/heist/CASTLE_BALANCE_3D_WORKSHOP.md
+?? docs/heist/CASTLE_BALANCE_LOCK_REBUILD.md
+?? docs/heist/CASTLE_INTERACTIVE_WEEK_REDESIGN.md
+?? docs/heist/CASTLE_PATROL_2_5D_WORKSHOP.md
+?? docs/heist/CASTLE_PISTON_COUNTERWEIGHTS.md
+?? docs/heist/CASTLE_RABBIT_2_5D_WORKSHOP.md
+?? docs/heist/CASTLE_REMAINING_LOCK_CONCEPTS.md
+?? docs/heist/COASTAL_360_VIEWER.md
+?? docs/heist/COASTAL_PANORAMA_IMPLEMENTATION.md
+?? docs/heist/SHADOW_GALLERY_INTERACTIVE_WEEK_REDESIGN.md
+?? docs/heist/configure-coastal-panorama.mjs
+?? docs/heist/configure-shadow-weeks.mjs
+?? docs/heist/preview-coastal-scene.mjs
+?? docs/heist/preview-shadow-weeks.mjs
+?? docs/heist/render-shadow-week-films.mjs
+?? public/projects/castle-archive-rescue/art/patrol/
+?? src/app/templates/heist/escape/balance-lock/balance-lock.3d-layout.ts
+?? src/app/templates/heist/escape/balance-lock/balance-lock.3d-materials.ts
+?? src/app/templates/heist/escape/balance-lock/balance-lock.3d-model.spec.ts
+?? src/app/templates/heist/escape/balance-lock/balance-lock.3d-model.ts
+?? src/app/templates/heist/escape/balance-lock/balance-lock.3d-scene.spec.ts
+?? src/app/templates/heist/escape/balance-lock/balance-lock.3d-scene.ts
+?? src/app/templates/heist/escape/balance-lock/balance-lock.migration.spec.ts
+?? src/app/templates/heist/escape/balance-lock/balance-lock.migration.ts
+?? src/app/templates/heist/escape/balance-lock/balance-lock.motion.ts
+?? src/app/templates/heist/escape/balance-lock/balance-lock.rebuild.scss
+?? src/app/templates/heist/escape/balance-lock/balance-lock.scene-contract.ts
+?? src/app/templates/heist/escape/domain/expedition-tour.ts
+?? src/app/templates/heist/escape/expedition/expedition-example.component.html
+?? src/app/templates/heist/escape/expedition/expedition-example.component.scss
+?? src/app/templates/heist/escape/expedition/expedition-example.component.spec.ts
+?? src/app/templates/heist/escape/expedition/expedition-example.component.ts
+?? src/app/templates/heist/escape/locks/fraction-cage/
+?? src/app/templates/heist/escape/locks/machine-presentation.ts
+?? src/app/templates/heist/escape/locks/timing-cage/
+?? src/app/templates/heist/escape/weekly/

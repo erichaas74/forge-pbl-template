@@ -1,3 +1,4 @@
+import { WorkspaceToolsComponent } from '../../../shared/project-lessons/workspace-tools.component';
 import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, ElementRef, InjectionToken, ViewChild, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -9,7 +10,7 @@ export const HEIST_MAP_LOADER = new InjectionToken<() => Promise<Pick<typeof imp
   providedIn: 'root', factory: () => () => import('../game/heist-map'),
 });
 @Component({
-  selector: 'app-heist', imports: [FormsModule, RouterLink], templateUrl: './heist.component.html', styleUrls: ['./heist.component.scss', './heist-guided.scss'], changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'app-heist', imports: [WorkspaceToolsComponent,FormsModule, RouterLink], templateUrl: './heist.component.html', styleUrls: ['./heist.component.scss', './heist-guided.scss'], changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeistComponent implements AfterViewInit {
   readonly Math = Math;

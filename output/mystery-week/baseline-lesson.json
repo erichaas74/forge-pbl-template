@@ -1,0 +1,105 @@
+  {
+    "schemaVersion": "1.0",
+    "planVersion": "1.0.0",
+    "projectId": "mystery-substance",
+    "projectVersion": "1.0.0",
+    "finalProduct": "restored-shelf case file and scientific defense.",
+    "grouping": "Teams build a shared product; each student explains and defends their own contribution.",
+    "availability": "Use the scanner, Properties Lab, Reaction Bench, Matter Tracker, Shelf Restoration, and Bay 3 in that order. Keep checkpoint explanations with the case evidence.",
+    "evidenceCriteria": [
+      "Separate an observation from an inference and support a claim with a discriminating test.",
+      "Describe a fair comparison and account for matter in open and closed systems."
+    ],
+    "lessons": [
+      {
+        "number": 1,
+        "title": "Observe the shelf",
+        "output": "Inventory observations and an initial prediction about the substances.",
+        "workspace": "Scanner and inventory",
+        "checkpoint": "Which detail did you observe, and which part of your identification is still an inference?",
+        "criteria": [
+          "Separate an observation from an inference and support a claim with a discriminating test."
+        ],
+        "focusTarget": "scanner"
+      },
+      {
+        "number": 2,
+        "title": "Plan the investigation",
+        "output": "Case-file notes, a shared working theory, and a test plan.",
+        "workspace": "Case notes and Properties Lab",
+        "checkpoint": "Which test will you contribute, and how could its result distinguish two possible substances?",
+        "criteria": [
+          "Separate an observation from an inference and support a claim with a discriminating test."
+        ],
+        "focusTarget": "theory"
+      },
+      {
+        "number": 3,
+        "title": "Compare properties",
+        "output": "Property-comparison record and an explanation of a useful difference.",
+        "workspace": "Properties Lab: water, conductivity, texture",
+        "checkpoint": "A fresh sample dissolves in water. Is that enough to identify it? Explain the next useful comparison.",
+        "criteria": [
+          "Separate an observation from an inference and support a claim with a discriminating test."
+        ],
+        "focusTarget": "properties"
+      },
+      {
+        "number": 4,
+        "title": "Build substance profiles",
+        "output": "Reaction-test evidence and updated substance profiles.",
+        "workspace": "Reaction Bench and comparison evidence",
+        "checkpoint": "If two samples react similarly, what other evidence would you need before choosing a label?",
+        "criteria": [
+          "Separate an observation from an inference and support a claim with a discriminating test."
+        ],
+        "focusTarget": "reaction"
+      },
+      {
+        "number": 5,
+        "title": "Account for the matter",
+        "output": "Conservation explanation supported by a model or test.",
+        "workspace": "Matter Tracker: open and closed chamber",
+        "checkpoint": "Explain an earlier mass-change error. Predict what a new closed-chamber trial should show and why.",
+        "criteria": [
+          "Describe a fair comparison and account for matter in open and closed systems."
+        ],
+        "focusTarget": "conservation"
+      },
+      {
+        "number": 6,
+        "title": "Rehearse the restoration",
+        "output": "Proposed shelf restoration, evidence links, and a remaining uncertainty.",
+        "workspace": "Shelf Restoration and evidence review",
+        "checkpoint": "Defend one revised label using a test result. What result would make you reconsider it?",
+        "criteria": [
+          "Separate an observation from an inference and support a claim with a discriminating test."
+        ],
+        "focusTarget": "restoration"
+      },
+      {
+        "number": 7,
+        "title": "Respond to Bay 3",
+        "output": "Bay 3 emergency-response reasoning showing transfer of learning.",
+        "workspace": "Bay 3 emergency response",
+        "checkpoint": "Use the available observations to justify a response to a new unknown and explain what remains uncertain.",
+        "criteria": [
+          "Describe a fair comparison and account for matter in open and closed systems."
+        ],
+        "focusTarget": "emergency"
+      },
+      {
+        "number": 8,
+        "title": "Present the case",
+        "output": "Final case file, evidence-based defense, and individual reflection.",
+        "workspace": "Final case file and shelf defense",
+        "checkpoint": "Defend one label using your own evidence. Explain a revision and what you would test next.",
+        "criteria": [
+          "Separate an observation from an inference and support a claim with a discriminating test.",
+          "Describe a fair comparison and account for matter in open and closed systems."
+        ],
+        "focusTarget": "final"
+      }
+    ],
+    "workspaceView": "experience"
+  }

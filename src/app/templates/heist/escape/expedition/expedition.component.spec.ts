@@ -1,4 +1,5 @@
 import { BALANCE_SCENE_LOADER } from '../balance-lock/balance-lock.component';
+import { MACHINE_SCENE_LOADER } from '../locks/machine-workshop.component';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { vi } from 'vitest';
@@ -30,6 +31,10 @@ describe('Expedition presentation boundary', () => {
       imports: [ExpeditionComponent],
       providers: [
         provideRouter([]),
+        {
+          provide: MACHINE_SCENE_LOADER,
+          useValue: async () => ({ mountMachineScene: () => ({ destroy: vi.fn() }) }),
+        },
         {
           provide: BALANCE_SCENE_LOADER,
           useValue: async () => ({ mountBalanceScene: () => ({ destroy: vi.fn() }) }),
@@ -74,6 +79,28 @@ describe('Expedition presentation boundary', () => {
     expect(fixture.nativeElement.querySelector('[role="dialog"]')).toBeNull();
     fixture.destroy();
     expect(destroy).toHaveBeenCalledOnce();
+  });
+  it('keeps skip controls available inside locks and mounts a fresh scene for each machine', async () => {
+    const fixture = TestBed.createComponent(ExpeditionComponent),
+      c = fixture.componentInstance;
+    fixture.detectChanges();
+    await fixture.whenStable();
+    c.start();
+    fixture.detectChanges();
+    fixture.nativeElement.querySelector('[aria-label="Next lock"]').click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const first = fixture.nativeElement.querySelector('app-machine-workshop');
+    expect(first).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('[aria-label="Next lock"]').disabled).toBe(false);
+    fixture.nativeElement.querySelector('[aria-label="Next lock"]').click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(fixture.nativeElement.querySelector('app-machine-workshop')).not.toBe(first);
+    expect(c.runtime.engine().index).toBe(2);
+    expect(c.runtime.engine().solved.size).toBe(0);
+    expect(c.runtime.engine().attempts).toHaveLength(0);
+    fixture.destroy();
   });
   it('surfaces renderer and asset failures instead of showing a pretend game', async () => {
     TestBed.overrideProvider(EXPEDITION_SCENE_LOADER, {

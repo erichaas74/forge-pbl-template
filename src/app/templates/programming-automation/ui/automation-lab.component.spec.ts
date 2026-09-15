@@ -3,7 +3,10 @@ import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest
 // jsdom cannot initialize Phaser's canvas probes. Browser verification covers the real renderer.
 vi.mock('phaser', () => ({}));
 import { createLocalPreviewSession } from '../../../core/context/project-session-context';
-import { robotDeliveryConfig as config } from '../../../projects/robot-delivery/robot-delivery.config';
+import { robotDeliveryConfig } from '../../../projects/robot-delivery/robot-delivery.config';
+// Preserve coverage of the legacy assessed workspace and finished examples.
+// The authoring workspace has its own session-navigation and full-access tests.
+const config = { ...robotDeliveryConfig, previewWeeks: undefined };
 import { AutomationLabComponent } from './automation-lab.component';
 import { AutomationRuntimeService } from '../runtime/automation-runtime.service';
 import { AUTOMATION_CONFIG, AUTOMATION_SESSION } from '../runtime/automation.tokens';
@@ -11,11 +14,18 @@ import { AUTOMATION_PERSISTENCE } from '../persistence/automation.persistence';
 import { loadSample } from '../../../runtime/project-showcase/automation.sample';
 import { By } from '@angular/platform-browser';
 import { MathWorkbenchComponent } from './math-workbench.component';
+import { CommandEditorComponent } from './command-editor.component';
 describe('Robot lab student workspace', () => {
   const scrollDescriptor = Object.getOwnPropertyDescriptor(Element.prototype, 'scrollIntoView');
-  beforeAll(() => Object.defineProperty(Element.prototype, 'scrollIntoView', { configurable: true, value: vi.fn() }));
+  beforeAll(() =>
+    Object.defineProperty(Element.prototype, 'scrollIntoView', {
+      configurable: true,
+      value: vi.fn(),
+    }),
+  );
   afterAll(() => {
-    if (scrollDescriptor) Object.defineProperty(Element.prototype, 'scrollIntoView', scrollDescriptor);
+    if (scrollDescriptor)
+      Object.defineProperty(Element.prototype, 'scrollIntoView', scrollDescriptor);
     else Reflect.deleteProperty(Element.prototype, 'scrollIntoView');
   });
   afterEach(() => TestBed.resetTestingModule());
@@ -40,9 +50,9 @@ describe('Robot lab student workspace', () => {
     expect(fixture.nativeElement.querySelector('[aria-label="Math calculation"]')).toBeNull();
     expect(fixture.nativeElement.textContent).not.toContain('Link a calculation');
     const runtime = TestBed.inject(AutomationRuntimeService);
-    expect(fixture.nativeElement.querySelector('[aria-label="Move rotations your number"]').value).toBe(
-      '1',
-    );
+    expect(
+      fixture.nativeElement.querySelector('[aria-label="Move rotations your number"]').value,
+    ).toBe('1');
     const root: HTMLElement = fixture.nativeElement;
     const guide = root.querySelector<HTMLDialogElement>('app-task-guide dialog')!;
     // jsdom does not implement native dialogs; browser checks cover focus and Escape.
@@ -70,18 +80,18 @@ describe('Robot lab student workspace', () => {
     view.dispatchEvent(new Event('change'));
     fixture.detectChanges();
     expect(root.querySelectorAll('h1')).toHaveLength(1);
-    expect(root.querySelector<HTMLInputElement>('[aria-label="Move rotations your number"]')!.value).toBe(
-      '1',
-    );
+    expect(
+      root.querySelector<HTMLInputElement>('[aria-label="Move rotations your number"]')!.value,
+    ).toBe('1');
     fixture.componentInstance.run();
     fixture.componentInstance.replay.pause();
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('Watch what your guess does');
+    expect(fixture.nativeElement.textContent).toContain('Where does the robot stop?');
     expect(fixture.nativeElement.querySelector('app-math-workbench')).toBeNull();
     expect(runtime.reasoningOpened()).toBe(false);
     fixture.componentInstance.replay.seek(fixture.componentInstance.replay.duration());
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain('A failed attempt is a clue.');
+    expect(fixture.nativeElement.textContent).toContain('Explain what happened');
     expect(fixture.nativeElement.querySelector('app-math-workbench')).toBeNull();
     fixture.componentInstance.openReasoning();
     fixture.detectChanges();
@@ -115,8 +125,9 @@ describe('Robot lab student workspace', () => {
     fixture.detectChanges();
     expect(runtime.draft().program.commands[0].type).toBe('wait');
     // Phaser is the default; the explicit accessible map remains available.
-    const map = Array.from(root.querySelectorAll<HTMLButtonElement>('app-robot-course button'))
-      .find(button => button.textContent?.trim() === 'Map view')!;
+    const map = Array.from(
+      root.querySelectorAll<HTMLButtonElement>('app-robot-course button'),
+    ).find((button) => button.textContent?.trim() === 'Map view')!;
     map.click();
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('svg[role="img"]')).toBeTruthy();
@@ -141,7 +152,9 @@ describe('Robot lab student workspace', () => {
     fixture.componentInstance.choose('cargo-delivery');
     fixture.detectChanges();
     expect(fixture.componentInstance.replay.trial()?.deliveriesCompleted).toBe(1);
-    const moveOperand: HTMLInputElement = fixture.nativeElement.querySelector('[aria-label="Move distance your number"]');
+    const moveOperand: HTMLInputElement = fixture.nativeElement.querySelector(
+      '[aria-label="Move distance your number"]',
+    );
     expect(moveOperand.disabled).toBe(true);
     expect(moveOperand.value).toBe('4');
     expect(fixture.nativeElement.querySelector('[aria-label="Your math answer"]')).toBeNull();
@@ -149,9 +162,13 @@ describe('Robot lab student workspace', () => {
   it('lets the learner edit only the second operand and shows the recorded math as read-only', async () => {
     await TestBed.configureTestingModule({
       imports: [AutomationLabComponent],
-      providers: [AutomationRuntimeService,
+      providers: [
+        AutomationRuntimeService,
         { provide: AUTOMATION_CONFIG, useValue: config },
-        { provide: AUTOMATION_SESSION, useValue: createLocalPreviewSession(config.projectId, config.projectVersion) },
+        {
+          provide: AUTOMATION_SESSION,
+          useValue: createLocalPreviewSession(config.projectId, config.projectVersion),
+        },
         { provide: AUTOMATION_PERSISTENCE, useValue: { load: () => undefined, save: () => {} } },
       ],
     }).compileComponents();
@@ -174,7 +191,9 @@ describe('Robot lab student workspace', () => {
     fixture.componentInstance.replay.pause();
     fixture.detectChanges();
     expect(fixture.componentInstance.replay.trial()?.distanceCm).toBe(120);
-    const replayInput = root.querySelector<HTMLInputElement>('[aria-label="Move rotations your number"]')!;
+    const replayInput = root.querySelector<HTMLInputElement>(
+      '.recorded-code [aria-label="Move rotations your number"]',
+    )!;
     expect(replayInput.disabled).toBe(true);
     expect(replayInput.value).toBe('3');
     replayInput.value = '9';
@@ -245,5 +264,128 @@ describe('Robot lab student workspace', () => {
     expect(collapse.getAttribute('aria-expanded')).toBe('false');
     expect(root.querySelector('.loop-body')).toBeNull();
     expect(runtime.draft().program.commands[0].commands).toHaveLength(2);
+  });
+  it('opens the block picker on demand, preserves nesting, and returns focus to the added block', async () => {
+    await TestBed.configureTestingModule({
+      imports: [AutomationLabComponent],
+      providers: [
+        AutomationRuntimeService,
+        { provide: AUTOMATION_CONFIG, useValue: config },
+        {
+          provide: AUTOMATION_SESSION,
+          useValue: createLocalPreviewSession(config.projectId, config.projectVersion),
+        },
+        { provide: AUTOMATION_PERSISTENCE, useValue: { load: () => undefined, save: () => {} } },
+      ],
+    }).compileComponents();
+    const fixture = TestBed.createComponent(AutomationLabComponent);
+    const root: HTMLElement = fixture.nativeElement;
+    const lab = fixture.componentInstance;
+    lab.choose('warehouse-pattern');
+    lab.runtime.setCommands([{ id: 'repeat', type: 'repeat', value: '2', commands: [] }]);
+    fixture.detectChanges();
+    const editor = fixture.debugElement.query(By.directive(CommandEditorComponent))
+      .componentInstance as CommandEditorComponent;
+    expect(root.querySelector<HTMLElement>('.palette-host')!.hidden).toBe(true);
+    const trigger = root.querySelector<HTMLButtonElement>(
+      '[aria-label="Add command inside loop"]',
+    )!;
+    trigger.focus();
+    trigger.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(root.querySelector<HTMLElement>('.palette-host')!.hidden).toBe(false);
+    expect(root.querySelector<HTMLElement>('.program-column')!.hidden).toBe(true);
+    expect(root.querySelector<HTMLElement>('.task-actions')!.hidden).toBe(true);
+    expect(document.activeElement).toBe(root.querySelector('.palette-host'));
+    editor.closePalette();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(document.activeElement).toBe(trigger);
+    trigger.click();
+    fixture.detectChanges();
+    root
+      .querySelector<HTMLButtonElement>('[aria-label="Add Wait to Inside Repeat (2 times)"]')!
+      .click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(editor.paletteOpen()).toBe(false);
+    expect(lab.runtime.draft().program.commands[0].commands).toMatchObject([{ type: 'wait' }]);
+    expect(document.activeElement?.getAttribute('aria-label')).toBe('Wait value');
+    expect(lab.runtime.currentTrials()).toHaveLength(0);
+  });
+
+  it('guides one reasoning step at a time and retains unfinished math when returning to code or evidence', async () => {
+    await TestBed.configureTestingModule({
+      imports: [AutomationLabComponent],
+      providers: [
+        AutomationRuntimeService,
+        { provide: AUTOMATION_CONFIG, useValue: config },
+        {
+          provide: AUTOMATION_SESSION,
+          useValue: createLocalPreviewSession(config.projectId, config.projectVersion),
+        },
+        { provide: AUTOMATION_PERSISTENCE, useValue: { load: () => undefined, save: () => {} } },
+      ],
+    }).compileComponents();
+    const fixture = TestBed.createComponent(AutomationLabComponent);
+    const lab = fixture.componentInstance;
+    const root: HTMLElement = fixture.nativeElement;
+    fixture.detectChanges();
+    lab.openReasoning();
+    expect(lab.reasoningView()).toBe(false);
+    lab.run();
+    lab.replay.pause();
+    fixture.detectChanges();
+    lab.openReasoning();
+    expect(lab.reasoningView()).toBe(false);
+    lab.replay.seek(lab.replay.duration());
+    fixture.detectChanges();
+    lab.openReasoning();
+    fixture.detectChanges();
+    const math = fixture.debugElement.query(By.directive(MathWorkbenchComponent))
+      .componentInstance as MathWorkbenchComponent;
+    expect(math.step()).toBe('observe');
+    expect(
+      root.querySelector<HTMLElement>('[aria-label="Math calculation"]')!.closest('[hidden]'),
+    ).not.toBeNull();
+    expect(root.querySelector<HTMLButtonElement>('.observation button')!.disabled).toBe(true);
+    lab.runtime.updateDraft({ diagnosis: 'The robot stopped before the target.' });
+    fixture.detectChanges();
+    root.querySelector<HTMLButtonElement>('.observation button')!.click();
+    fixture.detectChanges();
+    expect(math.step()).toBe('calculate');
+    math.setValue(0, '120');
+    math.setValue(1, '24');
+    math.answer.set('5');
+    fixture.detectChanges();
+    const next = root.querySelectorAll<HTMLButtonElement>(
+      'app-math-workbench .step-actions button',
+    )[1];
+    next.click();
+    fixture.detectChanges();
+    expect(math.step()).toBe('explain');
+    math.explanation.set('Unfinished explanation');
+    lab.edit();
+    fixture.detectChanges();
+    lab.panel.set('evidence');
+    fixture.detectChanges();
+    lab.panel.set('workspace');
+    fixture.detectChanges();
+    lab.openReasoning();
+    fixture.detectChanges();
+    expect(fixture.debugElement.query(By.directive(MathWorkbenchComponent)).componentInstance).toBe(
+      math,
+    );
+    expect(math.step()).toBe('explain');
+    expect(math.answer()).toBe('5');
+    expect(math.explanation()).toBe('Unfinished explanation');
+    expect(lab.runtime.state().math).toHaveLength(0);
+    expect(lab.runtime.draft().completedAt).toBeUndefined();
+    lab.showTrial(lab.runtime.currentTrials()[0]);
+    lab.replay.pause();
+    fixture.detectChanges();
+    expect(lab.reasoningView()).toBe(false);
+    expect(lab.replayMode()).toBe(true);
   });
 });

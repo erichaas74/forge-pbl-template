@@ -80,11 +80,11 @@ import { EngineeringExhibitComponent } from './engineering-exhibit.component';
       aside {
         position: fixed;
         right: 16px;
-        top: 72px;
+        top: calc(var(--project-navigation-height, 0px) + 72px);
         z-index: 40;
         width: 345px;
         max-width: calc(100vw - 48px);
-        max-height: calc(100dvh - 110px);
+        max-height: calc(100dvh - var(--project-navigation-height, 0px) - 110px);
         overflow: auto;
         padding: 14px;
         border: 1px solid #b8aa8e;

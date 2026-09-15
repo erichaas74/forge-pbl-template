@@ -16,6 +16,7 @@ interface ChallengeBase {
 }
 export interface FractionGear extends ChallengeBase {
   readonly kind: 'fraction-gear';
+  readonly presentation?: { readonly kind: 'fraction-cage'; readonly rabbits: number };
   readonly slots: number;
   readonly teeth: number;
   readonly pieces: readonly {
@@ -40,10 +41,22 @@ export interface Volume extends ChallengeBase {
 }
 export interface TimingWheels extends ChallengeBase {
   readonly kind: 'timing-wheels';
+  readonly presentation?: TimingCagePresentation;
   readonly periods: readonly number[];
   readonly phases: readonly number[];
   readonly maxSteps: number;
   readonly firstAlignment: boolean;
+}
+export interface TimingCagePresentation {
+  readonly kind: 'timing-cage';
+  readonly animal: {
+    readonly label: string;
+    readonly model: string;
+    readonly idle: string;
+    readonly walk: string;
+    readonly run: string;
+    readonly credits: string;
+  };
 }
 export interface Coordinate extends ChallengeBase {
   readonly kind: 'coordinate';
@@ -67,6 +80,7 @@ export interface Coordinate extends ChallengeBase {
 }
 export interface Reflection extends ChallengeBase {
   readonly kind: 'reflection';
+  readonly presentation?: { readonly kind: 'optics-cage'; readonly owls: number };
   readonly emitter: Point;
   readonly direction: number;
   readonly mirrors: readonly {
@@ -114,6 +128,7 @@ export type MachineKind = MachineChallenge['kind'];
 export interface MachineDefinition {
   readonly title: string;
   readonly backdrop: string;
+  readonly presentation?: { readonly kind: 'bridge-cage'; readonly rabbits: number };
   readonly stages: readonly MachineChallenge[];
 }
 export type StageAnswer =

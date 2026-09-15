@@ -3,6 +3,9 @@ import {
   Component,
   computed,
   inject,
+  input,
+  effect,
+  untracked,
   OnDestroy,
   output,
   signal,
@@ -14,6 +17,7 @@ import { RenderQualityService } from './lab-kit/render-quality.service';
 import { stationArt } from './station-art.config';
 import type { StationCapture } from './station-workspaces';
 import { persistWorkspaceDraft } from '../../shared/drafts/persist-workspace-draft';
+import { LAB_AUTHORING_PREVIEW } from './lab-week.models';
 
 export type ChamberId = (typeof conservationTrials)[number]['id'];
 export type ChamberPhase = 'idle' | 'running' | 'settled';
@@ -41,8 +45,11 @@ const vent = { left: 62, right: 98 };
   templateUrl: './conservation-chamber.component.html',
   styleUrl: './conservation-chamber.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '[class.lab-preview]': 'preview' },
 })
 export class ConservationChamberComponent implements OnDestroy {
+  readonly preview = inject(LAB_AUTHORING_PREVIEW);
+  readonly initialChamberId = input<ChamberId>();
   readonly captured = output<StationCapture>();
 
   readonly trials = conservationTrials;
@@ -63,6 +70,7 @@ export class ConservationChamberComponent implements OnDestroy {
   private readonly drafts = new Map<ChamberId, { observation: string; settled: boolean }>();
 
   constructor() {
+    let restored = false;
     persistWorkspaceDraft(
       'conservation-chamber',
       () => ({
@@ -71,8 +79,11 @@ export class ConservationChamberComponent implements OnDestroy {
         settled: this.phase() === 'settled',
         drafts: [...this.drafts.entries()],
         log: this.log(),
+        showBoundary: this.showBoundary(),
       }),
       (saved) => {
+        restored = true;
+        if (typeof saved.showBoundary === 'boolean') this.showBoundary.set(saved.showBoundary);
         if (Array.isArray(saved.drafts))
           for (const [id, draft] of saved.drafts) this.drafts.set(id, draft);
         if (Array.isArray(saved.log)) this.log.set(saved.log);
@@ -80,6 +91,10 @@ export class ConservationChamberComponent implements OnDestroy {
         this.restoreTrialDraft(saved);
       },
     );
+    effect(() => {
+      const id = this.initialChamberId();
+      if (!restored && id) untracked(() => this.selectTrial(id));
+    });
   }
 
   private restoreTrialDraft(draft: { observation: string; settled: boolean }): void {
@@ -137,6 +152,7 @@ export class ConservationChamberComponent implements OnDestroy {
         : 'Open. Watch what crosses the boundary — and what the balance does.';
     }
     if (this.phase() === 'settled') {
+      if (this.preview) return 'Trial retained locally. Switch the boundary or rerun to compare.';
       return 'Describe what happened to the particles and to the mass.';
     }
     return 'Choose a chamber and run the reaction. The boundary is what you are measuring.';
@@ -177,11 +193,11 @@ export class ConservationChamberComponent implements OnDestroy {
     this.phase.set('settled');
     this.log.update((current) => [
       {
-        id: current.length + 1,
+        id: Math.max(0, ...current.map(entry => entry.id)) + 1,
         title: trial.title,
         headline: `${trial.beforeParticles} → ${this.insideCount()} particles · ${trial.beforeMass.toFixed(1)} → ${this.mass().toFixed(1)} g`,
       },
-      ...current,
+      ...current.slice(0, 39),
     ]);
   }
 

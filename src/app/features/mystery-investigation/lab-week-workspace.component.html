@@ -1,0 +1,52 @@
+@if (errors.length) {
+  <p role="alert">{{ errors.join(' ') }}</p>
+} @else {
+  <main class="weekly-workspace" [attr.data-week]="week().week">
+    <section class="interactive" aria-label="Interactive science workspace">
+      <header class="week-heading">
+        <div><p class="eyebrow">MYSTERY SUBSTANCE · WEEK {{ week().week }}</p>
+          <h1>{{ week().title }}</h1><p>{{ week().setting }}</p></div>
+        <span class="badge">Local testing · all sessions open</span>
+      </header>
+      <div class="session-bar">
+        <label>Lab session
+          <select aria-label="Lab session" [value]="selectedLesson()" (change)="chooseLesson(+$any($event.target).value)">
+            @for (item of weeks; track item.week) {
+              @for (session of item.sessions; track $index; let i = $index) {
+                <option [value]="(item.week - 1) * 2 + i + 1" [selected]="selectedLesson() === (item.week - 1) * 2 + i + 1">Week {{ item.week }} · {{ i + 1 }} — {{ session.title }}</option>
+              }
+            }
+          </select>
+        </label>
+        <p>{{ sessionIndex() === 0 ? 'Individual learning' : 'Group activity plan' }} · local drafts only</p>
+      </div>
+      <p class="sample-note">Starting content: {{ session().sample }}</p>
+      @if (extraFocus(); as focus) { <p class="sample-note">Extra exploration: {{ focus }}. The planning panels still describe Week {{ week().week }}.</p> }
+      @for (entry of opened(); track entry.number) {
+        <section class="lab-slot" [hidden]="selectedLesson() !== entry.number" [attr.aria-label]="entry.session.title">
+          <ng-container *ngComponentOutlet="entry.component; inputs: inputsFor(entry); injector: entry.injector" />
+        </section>
+      }
+    </section>
+    <aside class="planning" aria-label="Weekly products and tutor planning">
+      <details open class="plan-card products">
+        <summary><span class="eyebrow">WEEK {{ week().week }}</span><h2>Proposed weekly products</h2></summary>
+        <p>Potential work · no completion tracking</p>
+        <ol>
+          @for (item of week().sessions; track $index; let i = $index) {
+            <li [class.current]="i === sessionIndex()"><strong>Session {{ i + 1 }} · {{ i === 0 ? 'Individual learning' : 'Group activity' }}</strong><p>{{ item.product }}</p></li>
+          }
+        </ol>
+        <p class="footnote">The future tutor will guide and review products before completion is recorded. Shared work is a future build.</p>
+      </details>
+      <details open class="plan-card tutor">
+        <summary><span class="eyebrow">BUILD PLANNING</span><h2>AI Tutor</h2><span class="badge">Not connected</span></summary>
+        <h3>Questions and concepts</h3><ul>@for (question of week().questions; track question) { <li>{{ question }}</li> }</ul>
+        <h3>Evidence to inspect</h3><ul>@for (item of week().evidence; track item) { <li>{{ item }}</li> }</ul>
+        <h3>Future model controls</h3><ul>@for (item of week().controls; track item) { <li>{{ item }}</li> }</ul>
+        @if (extraFocus(); as focus) { <p>Extra tool open: {{ focus }}. Compare its result with this session's intended test.</p> }
+        <p class="footnote">Manual instrument changes are extra exploration within Week {{ week().week }}. These lists keep that week's focus. There is no automatic review, adaptation or mastery assessment.</p>
+      </details>
+    </aside>
+  </main>
+}

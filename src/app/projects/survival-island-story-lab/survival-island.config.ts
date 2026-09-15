@@ -1,6 +1,8 @@
 import type { NarrativeStudioProjectConfig } from '../../templates/narrative-studio/domain/narrative-studio.models';
+import { survivalIslandPreviewWeeks } from './survival-island.weeks';
 
 export const survivalIslandStoryLabConfig: NarrativeStudioProjectConfig = {
+  previewWeeks: survivalIslandPreviewWeeks,
   schemaVersion: '1.0',
   template: { id: 'narrative-studio', version: '1.3' },
   authoringMode: 'student-branches',
