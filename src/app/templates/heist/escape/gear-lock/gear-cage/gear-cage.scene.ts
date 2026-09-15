@@ -69,9 +69,6 @@ export function mountGearCage(
   const feedback = q('.gc-feedback'),
     output = q('[data-output]'),
     turns = q<HTMLSelectElement>('[data-turns]');
-  const reducedInput = q<HTMLInputElement>('[data-motion]');
-  reducedInput.checked = snapshot().reducedMotion;
-  q<HTMLAnchorElement>('[data-credits]').href = d.presentation!.animal.credits;
   const labels = ['drive', 'a', 'b', 'pinion'].map((name) => {
     const element = document.createElement('span');
     element.className = 'gc-label';
@@ -265,7 +262,6 @@ export function mountGearCage(
         break;
       case 'reset':
         cb.reset?.();
-        viewer.closeOptions();
         break;
       case 'pause':
         cancelPointer();
@@ -274,21 +270,12 @@ export function mountGearCage(
       case 'expand':
         viewer.expand(!viewer.expanded);
         break;
-      case 'options': {
-        const panel = q('[data-options]');
-        panel.hidden = !panel.hidden;
-        button.setAttribute('aria-expanded', String(!panel.hidden));
-        break;
-      }
+
     }
   };
   const change = (event: Event) => {
     if (event.target === turns && !locked()) cb.crank?.(Number(turns.value) - snapshot().answer[2]);
-    if ((event.target as HTMLElement).matches('[data-sound]')) {
-      sound.enabled = (event.target as HTMLInputElement).checked;
-      if (!sound.enabled) sound.suspend();
-      else sound.unlock();
-    }
+
   };
   const key = (event: KeyboardEvent) => {
     if (event.key === 'Escape') cancelPointer();
@@ -303,7 +290,7 @@ export function mountGearCage(
   function tick(now: number): void {
     if (gone) return;
     const v = snapshot(),
-      reduced = v.reducedMotion || reducedInput.checked;
+      reduced = v.reducedMotion;
     const paused = v.paused || document.hidden,
       dt = paused ? 0 : Math.min(0.1, Math.max(0, (now - previous) / 1000));
     previous = now;
@@ -374,7 +361,7 @@ export function mountGearCage(
         const gear = d.gears[v.answer[socket]];
         q(`[data-${socket === 0 ? 'a' : 'b'}]`).textContent = gear
           ? `${gear.teeth} teeth fitted · tap to replace`
-          : 'Choose a cog, then tap here';
+          : 'Empty';
         q<HTMLButtonElement>(`[data-socket="${socket}"]`).disabled =
           disabled || v.selected === null;
       }

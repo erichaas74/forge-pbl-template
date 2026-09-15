@@ -6,6 +6,9 @@ export const KNOWLEDGE_KINDS = [
   'access',
   'apprentice',
   'circulation',
+  'timeline',
+  'newspaper',
+  'interview',
 ] as const;
 export type KnowledgeKind = (typeof KNOWLEDGE_KINDS)[number];
 export interface Fragment {
@@ -27,6 +30,33 @@ export interface Reader {
   readonly name: string;
   readonly barrier: 'cost' | 'language' | 'reading';
 }
+export interface TimelineNode {
+  readonly id: string;
+  readonly label: string;
+  readonly date: string;
+  readonly lane: 'before' | 'gap' | 'after' | 'documented';
+  readonly detail: string;
+  readonly signal: string;
+}
+export interface NewspaperEdition {
+  readonly id: string;
+  readonly masthead: string;
+  readonly date: string;
+  readonly headline: string;
+  readonly subhead: string;
+  readonly columns: readonly string[];
+  readonly signal: string;
+  readonly kind: 'alternate' | 'historical';
+}
+export interface InterviewWitness {
+  readonly id: string;
+  readonly name: string;
+  readonly role: string;
+  readonly date: string;
+  readonly statement: string;
+  readonly artifact: string;
+  readonly clue: string;
+}
 export interface KnowledgeDefinition {
   readonly version: '1.0';
   readonly kind: KnowledgeKind;
@@ -46,6 +76,25 @@ export interface KnowledgeDefinition {
     readonly date: string;
     readonly trace: string;
     readonly destinations: readonly { readonly id: string; readonly name: string }[];
+  };
+  readonly timeline?: {
+    readonly title: string;
+    readonly era: string;
+    readonly nodes: readonly TimelineNode[];
+    readonly candidates: readonly { readonly id: string; readonly label: string; readonly detail: string }[];
+    readonly answer: string;
+  };
+  readonly newspaper?: {
+    readonly title: string;
+    readonly era: string;
+    readonly editions: readonly NewspaperEdition[];
+    readonly answer: string;
+  };
+  readonly interview?: {
+    readonly title: string;
+    readonly era: string;
+    readonly witnesses: readonly InterviewWitness[];
+    readonly answer: string;
   };
 }
 /** Discrete physical operations only. Animation and the pointer are never persisted. */

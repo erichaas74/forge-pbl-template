@@ -32,9 +32,7 @@ export function mountFractionCage(
   parent.append(root);
   const q = <E extends HTMLElement>(selector: string) => root.querySelector<E>(selector)!;
   const action = (name: string) => q<HTMLButtonElement>(`[data-action=${name}]`);
-  const viewport = q<HTMLDivElement>('.fc-viewport'),
-    options = q('.fc-settings');
-  q('[data-clue]').textContent = d.hint;
+  const viewport = q<HTMLDivElement>('.fc-viewport');
   const art = new BalanceMetalwork(),
     sound = new TimingCageSound();
   let renderer: T.WebGLRenderer;
@@ -108,8 +106,7 @@ export function mountFractionCage(
     lastAnswer = '',
     message = '',
     messageUntil = 0;
-  let motion = snapshot().reducedMotion,
-    expanded = false,
+  let     expanded = false,
     oldOverflow = '',
     oldFocus: HTMLElement | null = null;
   let focus: 'all' | 'cog' | 'cage' = viewport.clientWidth < 620 ? 'cog' : 'all';
@@ -121,7 +118,7 @@ export function mountFractionCage(
     | undefined;
   const view = (): MachineView => ({
     ...snapshot(),
-    reducedMotion: motion || snapshot().reducedMotion,
+    reducedMotion: snapshot().reducedMotion,
   });
   const offsets = (): readonly number[] => {
     const a = view().answer;
@@ -217,10 +214,7 @@ export function mountFractionCage(
     const name = b.dataset['action'],
       next = b.dataset['focus'];
     if (b.dataset['piece'] !== undefined) select(Number(b.dataset['piece']));
-    if (name === 'options') {
-      options.hidden = !options.hidden;
-      b.setAttribute('aria-expanded', String(!options.hidden));
-    }
+
     if (name === 'expand') expand(!expanded);
     if (next === 'all' || next === 'cog' || next === 'cage') setFocus(next);
     if (name === 'pause') cb.pause?.();
@@ -237,20 +231,7 @@ export function mountFractionCage(
     if (name === 'reset') {
       cb.input({ type: 'reset' });
       selected = null;
-      options.hidden = true;
-      action('options').setAttribute('aria-expanded', 'false');
       notify('Empty cog. Try a new combination.');
-    }
-  }
-  function onChange(e: Event) {
-    const input = e.target as HTMLInputElement;
-    if (input.matches('[data-notch]') && operable())
-      candidate = Math.max(0, Math.min(d.slots - 1, Number(input.value)));
-    if (input.matches('[data-motion]')) motion = input.checked;
-    if (input.matches('[data-sound]')) {
-      sound.enabled = input.checked;
-      if (input.checked) sound.unlock();
-      else sound.suspend();
     }
   }
   function onKey(e: KeyboardEvent) {
@@ -260,11 +241,7 @@ export function mountFractionCage(
         drag = undefined;
         return;
       }
-      if (!options.hidden) {
-        options.hidden = true;
-        action('options').setAttribute('aria-expanded', 'false');
-        action('options').focus();
-      } else if (expanded) expand(false);
+      if (expanded) expand(false);
     }
     if (expanded && e.key === 'Tab') {
       const list = Array.from(
@@ -420,8 +397,7 @@ export function mountFractionCage(
     for (const name of ['left', 'right', 'seat'])
       action(name).disabled = !can || selected === null || reading.solved;
     action('lift').disabled = !can || selected === null || a[selected] < 0;
-    q<HTMLSelectElement>('[data-notch]').disabled = !can || selected === null || reading.solved;
-    q<HTMLSelectElement>('[data-notch]').value = String(candidate);
+    q<HTMLOutputElement>('[data-notch]').value = String(candidate);
     action('reset').disabled = !can;
     action('replay').hidden = !reading.solved;
     action('replay').disabled = v.paused || v.testing;
@@ -464,7 +440,6 @@ export function mountFractionCage(
     root.dataset['drawCalls'] = String(renderer.info.render.calls);
   }
   root.addEventListener('click', onClick);
-  root.addEventListener('change', onChange);
   root.addEventListener('keydown', onKey);
   root.addEventListener('pointerdown', onDown);
   root.addEventListener('pointermove', onMove);
@@ -478,7 +453,6 @@ export function mountFractionCage(
   }
   const observer = new ResizeObserver(resize);
   observer.observe(viewport);
-  q<HTMLInputElement>('[data-motion]').checked = motion;
   setFocus(focus);
   resize();
   cb.ready();
@@ -490,7 +464,6 @@ export function mountFractionCage(
     cancelAnimationFrame(frame);
     observer.disconnect();
     root.removeEventListener('click', onClick);
-    root.removeEventListener('change', onChange);
     root.removeEventListener('keydown', onKey);
     root.removeEventListener('pointerdown', onDown);
     root.removeEventListener('pointermove', onMove);

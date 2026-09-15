@@ -71,15 +71,20 @@ export function fractionCageLayout(d: FractionGear): string {
  [data-fraction-cage] .fc-title span{font-size:10px;max-width:155px}
  [data-fraction-cage].fc-expanded{inset:5px}
 }
+
+[data-fraction-cage] .fc-feedback{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+[data-fraction-cage] .fc-viewport{bottom:210px}
+[data-fraction-cage] .fc-bottom{height:210px;min-height:210px}
+[data-fraction-cage] output{display:inline-block;min-width:28px;text-align:center;font-variant-numeric:tabular-nums}
+@media(max-width:680px){[data-fraction-cage] .fc-viewport{bottom:238px}[data-fraction-cage] .fc-bottom{height:238px;min-height:238px}}
 </style>
 <div class="fc-viewport"></div>
-<div class="fc-top"><p class="fc-title">RABBIT COURTYARD<span>Build one whole. Open their path.</span></p><div><button type="button" data-action="expand" aria-label="Expand rabbit workshop">Expand</button> <button type="button" data-action="options" aria-expanded="false">Options</button></div></div>
-<div class="fc-focus" aria-label="Scene focus" role="group"><button type="button" data-focus="all" aria-pressed="true">Whole scene</button><button type="button" data-focus="cog" aria-pressed="false">Cog</button><button type="button" data-focus="cage" aria-pressed="false">Rabbits</button></div>
+<div class="fc-top"><p class="fc-title">RABBIT COURTYARD</p><div><button type="button" data-action="expand" aria-label="Expand rabbit workshop">Expand</button> <button type="button" data-action="reset" aria-label="Reset mechanism">↺</button></div></div>
 <div class="fc-bottom">
  <div class="fc-tray" aria-label="Fraction sector tray" role="group">${tray}</div>
  <div class="fc-assembly"><span><span class="fc-total" data-total>0 = 0</span><span class="fc-state" data-state></span></span><button type="button" data-action="pause">Pause</button></div>
- <div class="fc-buttons"><button type="button" data-action="left" aria-label="Rotate sector counterclockwise">↶</button><label>Start <select data-notch aria-label="Sector start notch">${Array.from({ length: d.slots }, (_, i) => `<option value="${i}">${i}</option>`).join('')}</select></label><button type="button" data-action="right" aria-label="Rotate sector clockwise">↷</button><button type="button" data-action="seat">Seat sector</button><button type="button" data-action="lift">Lift sector</button><button type="button" data-action="replay" hidden>Replay escape</button></div>
+ <div class="fc-buttons"><button type="button" data-action="left" aria-label="Rotate sector counterclockwise">↶</button><label>Start <output data-notch aria-label="Sector start notch"></output></label><button type="button" data-action="right" aria-label="Rotate sector clockwise">↷</button><button type="button" data-action="seat">Place</button><button type="button" data-action="lift">Lift</button><button type="button" data-action="replay" hidden>Replay escape</button></div>
  <div class="fc-feedback" aria-live="polite">Select a fraction sector, then place it on the cog.</div>
 </div>
-<div class="fc-settings" hidden><p data-clue></p><button type="button" data-action="reset">Empty the cog</button><label><input type="checkbox" data-motion>Reduce motion</label><label><input type="checkbox" data-sound checked>Mechanical sounds</label><small>Original articulated rabbit models. Six rabbits, one clear path.</small></div>`;
+`;
 }

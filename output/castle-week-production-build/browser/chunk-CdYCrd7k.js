@@ -1,1 +1,0 @@
-import{ht as R}from"./chunk-BJblw9Vk.js";var t=new R(`INVESTIGATION_RUNTIME_FACADE`);export{t};

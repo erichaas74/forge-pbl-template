@@ -360,3 +360,7 @@ aside {
     gap: 10px;
   }
 }
+
+:host(.week-preview) .workshop > header { display: none; }
+[hidden] { display: none !important; }
+.preview-operation { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 10px; }

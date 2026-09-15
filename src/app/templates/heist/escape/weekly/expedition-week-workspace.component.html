@@ -1,48 +1,6 @@
-<main class="weekly-workspace" [class.timing-scene]="timingScene()" [attr.data-week]="week().week">
-  <header class="week-heading">
-    <div>
-      <p class="eyebrow">RESCUE WORKSHOPS · WEEK {{ week().week }} / 4</p>
-      <h1>{{ week().title }}</h1>
-      <p>{{ week().setting }}</p>
-    </div>
-    <span class="session-label">{{
-      sessionIndex() === 0 ? 'Individual session' : 'Group activity · local practice'
-    }}</span>
-  </header>
+<main class="weekly-workspace" [attr.data-week]="week().week">
   <div class="workspace-grid">
     <section class="activity" aria-label="Interactive rescue workshop">
-      <div class="workshop-picker">
-        <label
-          >Explore a workshop
-          <select [value]="runtime.selected()" (change)="choose($any($event.target).value)">
-            @for (step of runtime.mission.steps; track step.id) {
-              <option [value]="step.id" [selected]="step.id === runtime.selected()">{{ step.title }}</option>
-            }
-          </select>
-        </label>
-        <label
-          >Math pathway
-          <select [value]="runtime.grade()" (change)="runtime.setGrade(+$any($event.target).value)">
-            @for (grade of runtime.mission.mathGrades ?? [5]; track grade) {
-              <option [value]="grade" [selected]="grade === runtime.grade()">Grade {{ grade }}</option>
-            }
-          </select>
-        </label>
-        <button (click)="paused.set(!paused())" [attr.aria-pressed]="paused()">
-          {{ paused() ? 'Resume machine' : 'Pause machine' }}
-        </button>
-        @if (timingScene()) { <button (click)="sceneTools.set(!sceneTools())" [attr.aria-expanded]="sceneTools()">Saved setups</button> }
-      </div>
-      <div class="setup-note">
-        <strong>{{ runtime.source() }}</strong> {{ sample() }} All workshops can be tested directly.
-      </div>
-      @if (extra()) {
-        <p class="extra-note">
-          Exploring {{ runtime.step().title }}. The planning panels still describe Week
-          {{ week().week }}.
-          <button (click)="choose(session().stepId)">Return to session workshop</button>
-        </p>
-      }
       @for (key of [mountKey()]; track key) {
         @if (runtime.step().puzzle; as puzzle) {
           @switch (puzzle.type) {
@@ -89,8 +47,70 @@
           }
         }
       }
-      <div class="secondary-tools" [class.tools-open]="sceneTools()" [hidden]="timingScene() && !sceneTools()" (keydown.escape)="sceneTools.set(false)">
-      @if (timingScene()) { <button class="close-tools" (click)="sceneTools.set(false)">Close saved setups</button> }
+      @if (runtime.warning()) {
+        <p class="warning" role="alert">
+          {{ runtime.warning() }} <button (click)="runtime.retrySave()">Retry save</button>
+        </p>
+      }
+    </section>
+    <aside class="planning" aria-label="Week planning">
+      <details class="products" open>
+        <summary>
+          Proposed weekly products <span>{{ week().title }}</span>
+        </summary>
+        <div class="panel-body">
+          @for (s of week().sessions; track s.stepId; let i = $index) {
+            <article>
+              <small>{{ i === 0 ? 'INDIVIDUAL SESSION' : 'GROUP ACTIVITY' }}</small>
+              <p>{{ s.product }}</p>
+            </article>
+          }
+          <p class="muted">
+            Potential deliverables for future tutor review. Group work is planned; shared editing is
+            not connected.
+          </p>
+        </div>
+      </details>
+      <details class="tutor" open>
+        <summary>AI Tutor <span>Disconnected</span></summary>
+        <div class="panel-body">
+          <p class="muted">
+            Builder planning only. No automatic questions, review, adaptation, or mastery decisions
+            run here.
+          </p>
+          <h2>{{ runtime.step().title }}</h2>
+          @for (clue of guidance(); track $index) { <p>{{ clue }}</p> }
+          <h2>Questions & concepts</h2>
+          <ul>
+            @for (question of week().questions; track question) {
+              <li>{{ question }}</li>
+            }
+          </ul>
+          <h2>Evidence to inspect</h2>
+          <ul>
+            @for (evidence of week().evidence; track evidence) {
+              <li>{{ evidence }}</li>
+            }
+          </ul>
+          <h2>Preview settings</h2>
+        <label
+          >Math pathway
+          <select [value]="runtime.grade()" (change)="runtime.setGrade(+$any($event.target).value)">
+            @for (grade of runtime.mission.mathGrades ?? [5]; track grade) {
+              <option [value]="grade" [selected]="grade === runtime.grade()">Grade {{ grade }}</option>
+            }
+          </select>
+        </label>
+      <div class="setup-note">
+        <strong>{{ runtime.source() }}</strong> {{ sample() }} All workshops can be tested directly.
+      </div>
+      @if (extra()) {
+        <p class="extra-note">
+          Exploring {{ runtime.step().title }}. The planning panels still describe Week
+          {{ week().week }}.
+          <button (click)="choose(session().stepId)">Return to session workshop</button>
+        </p>
+      }
       <div class="workspace-options">
         <button (click)="reset()">Reset workshop settings</button>
         <label
@@ -125,50 +145,8 @@
           <p>Engage the mechanism to capture your first trial.</p>
         }
       </details>
-      </div>
-      @if (runtime.warning()) {
-        <p class="warning" role="alert">
-          {{ runtime.warning() }} <button (click)="runtime.retrySave()">Retry save</button>
-        </p>
-      }
-    </section>
-    <aside class="planning" aria-label="Week planning">
-      <details class="products" open>
-        <summary>
-          Proposed weekly products <span>Week {{ week().week }}</span>
-        </summary>
-        <div class="panel-body">
-          @for (s of week().sessions; track s.stepId; let i = $index) {
-            <article>
-              <small>{{ i === 0 ? 'INDIVIDUAL SESSION' : 'GROUP ACTIVITY' }}</small>
-              <p>{{ s.product }}</p>
-            </article>
-          }
-          <p class="muted">
-            Potential deliverables for future tutor review. Group work is planned; shared editing is
-            not connected.
-          </p>
-        </div>
-      </details>
-      <details class="tutor" open>
-        <summary>AI Tutor <span>Disconnected</span></summary>
-        <div class="panel-body">
-          <p class="muted">
-            Builder planning only. No automatic questions, review, adaptation, or mastery decisions
-            run here.
-          </p>
-          <h2>Questions & concepts</h2>
-          <ul>
-            @for (question of week().questions; track question) {
-              <li>{{ question }}</li>
-            }
-          </ul>
-          <h2>Evidence to inspect</h2>
-          <ul>
-            @for (evidence of week().evidence; track evidence) {
-              <li>{{ evidence }}</li>
-            }
-          </ul>
+
+          @if (credits(); as url) { <a [href]="url" target="_blank" rel="noopener">Animal art & animation credits</a> }
           <h2>Future model controls</h2>
           <p class="muted">Planned full model control through supported settings:</p>
           <ul>

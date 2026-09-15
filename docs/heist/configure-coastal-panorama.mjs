@@ -56,7 +56,8 @@ scene.viewpoints[0].places = [
 scene.viewpoints[1].places = [{ targetId: 'village', label: 'Back to village', yaw: 5, pitch: -12 }];
 scene.viewpoints[1].inspection = {
   title: 'Canoe workshop', overviewLabel: 'Whole canoe',
-  asset: { version: 1, src: '/projects/shadow-gallery/coastal-3d-v1/workshop.glb', nodes: [{name:'INT_hull',kind:'target'},{name:'INT_rim',kind:'target'},{name:'INT_stone',kind:'target'},{name:'SOCKET_overview',kind:'socket'}], clips: [] },
+  asset: { version: 1, src: '/projects/shadow-gallery/coastal-3d-v1/workshop.glb', nodes: [{name:'INT_hull',kind:'target'},{name:'INT_rim',kind:'target'},{name:'INT_stone',kind:'target'},{name:'SOCKET_overview',kind:'socket'},{name:'ENV_ground',kind:'environment'}], clips: [] },
+  environment: {background:'/projects/shadow-gallery/coastal-3d-v1/workshop-background-v1.png',ground:'/projects/shadow-gallery/coastal-3d-v1/workshop-ground-v1.png',groundNode:'ENV_ground',tileSize:3},
   targets: [
     {name:'INT_hull',label:'Hollowed interior',focus:[0,.6,0],distance:2.9},
     {name:'INT_rim',label:'Wooden rim',focus:[.6,.9,0],distance:1.6},
@@ -66,7 +67,8 @@ scene.viewpoints[1].inspection = {
 scene.viewpoints[2].places = [{ targetId: 'village', label: 'Back to village', yaw: -38, pitch: -12 }];
 scene.viewpoints[2].inspection = {
   title: 'Cultivated field', overviewLabel: 'Whole field',
-  asset: {version:1,src:'/projects/shadow-gallery/coastal-3d-v1/field.glb',nodes:[{name:'INT_maize',kind:'target'},{name:'INT_vines',kind:'target'},{name:'INT_roots',kind:'target'},{name:'INT_ear',kind:'target'}],clips:[]},
+  asset: {version:1,src:'/projects/shadow-gallery/coastal-3d-v1/field.glb',nodes:[{name:'INT_maize',kind:'target'},{name:'INT_vines',kind:'target'},{name:'INT_roots',kind:'target'},{name:'INT_ear',kind:'target'},{name:'ENV_ground',kind:'environment'}],clips:[]},
+  environment: {background:'/projects/shadow-gallery/coastal-3d-v1/field-background-v1.png',ground:'/projects/shadow-gallery/coastal-3d-v1/field-soil-v1.png',groundNode:'ENV_ground',tileSize:3},
   targets:[
     {name:'INT_maize',label:'Maize plants',focus:[-1.35,1,-.5],distance:2.2},
     {name:'INT_vines',label:'Sweet potato vines',focus:[1.2,.25,-.4],distance:1.8},

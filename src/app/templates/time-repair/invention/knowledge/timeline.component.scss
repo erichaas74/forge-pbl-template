@@ -1,0 +1,32 @@
+.scene-kicker {
+  fill: #f1dfb6;
+  font: 24px Georgia, serif;
+  text-anchor: middle;
+}
+.scene-subtitle,
+.lane-label,
+.record-date,
+.record-label,
+.candidate-label,
+.candidate-hint,
+.view-label,
+.view-hint,
+.test-label,
+.test-hint {
+  text-anchor: middle;
+  user-select: none;
+}
+.scene-subtitle { fill: #b8c8a3; font: 15px Arial, sans-serif; }
+.lane-label { fill: #dec18b; font: 13px Arial, sans-serif; letter-spacing: 2px; }
+.record-card { fill: url(#timeline-paper); stroke: #b7915a; stroke-width: 3; }
+.record-date { fill: #3b5047; font: 14px Arial, sans-serif; }
+.record-label { fill: #30473f; font: 16px Georgia, serif; }
+.candidate-card { fill: #334f4d; stroke: #ae9364; stroke-width: 3; }
+.candidate-label { fill: #f0dfb5; font: 17px Georgia, serif; }
+.candidate-hint,.view-hint,.test-hint { fill: #b4c3a4; font: 12px Arial, sans-serif; }
+.view-button { fill: #203c3e; stroke: #b49563; stroke-width: 3; }
+.test-button { fill: #896346; stroke: #ebc988; stroke-width: 3; }
+.view-label,.test-label { fill: #f2dfb3; font: 14px Arial, sans-serif; letter-spacing: 1px; }
+[kb][aria-pressed='true'] .candidate-card,[kb][aria-pressed='true'] .view-button { stroke: #8cf1db; stroke-width: 5; }
+[kb]:hover .record-card,[kb]:hover .candidate-card,[kb]:hover .view-button,[kb]:hover .test-button { stroke: #f4d69b; }
+[kb]:focus-visible .record-card,[kb]:focus-visible .candidate-card,[kb]:focus-visible .view-button,[kb]:focus-visible .test-button { stroke: #8cf1db; stroke-width: 5; }

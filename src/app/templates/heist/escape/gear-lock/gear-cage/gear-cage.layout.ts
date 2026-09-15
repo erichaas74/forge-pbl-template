@@ -1,4 +1,4 @@
-import { fractionLabel, type GearLockDefinition } from '../gear-lock.domain';
+import { type GearLockDefinition } from '../gear-lock.domain';
 
 export function gearCageLayout(d: GearLockDefinition): string {
   const tray = d.gears
@@ -76,13 +76,18 @@ export function gearCageLayout(d: GearLockDefinition): string {
  [data-gear-cage] .gc-title span{font-size:10px;max-width:140px}
  [data-gear-cage].diorama-expanded{inset:5px}
 }
+
+[data-gear-cage] .gc-feedback{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+[data-gear-cage] [data-viewport]{bottom:212px}
+[data-gear-cage] .gc-bottom{height:212px;min-height:212px}
+[data-gear-cage] output{display:inline-block;min-width:28px;text-align:center;font-variant-numeric:tabular-nums}
+@media(max-width:680px){[data-gear-cage] [data-viewport]{bottom:252px}[data-gear-cage] .gc-bottom{height:252px;min-height:252px}}
 </style>
 <div data-viewport></div>
-<div class="gc-top"><p class="gc-title">CLOCKWORK FOX RESCUE<span>Fit the cogs. Turn the crank.</span></p><div><button type="button" data-action="expand" aria-label="Expand fox workshop">Expand</button> <button type="button" data-action="options" aria-expanded="false">Options</button></div></div>
-<div class="gc-focus" role="group" aria-label="Scene focus"><button type="button" data-focus="all" aria-pressed="true">Whole scene</button><button type="button" data-focus="drive" aria-pressed="false">Gears</button><button type="button" data-focus="relay" aria-pressed="false">Release</button><button type="button" data-focus="cage" aria-pressed="false">Foxes</button></div>
+<div class="gc-top"><p class="gc-title">CLOCKWORK FOX RESCUE</p><div><button type="button" data-action="expand" aria-label="Expand fox workshop">Expand</button> <button type="button" data-action="reset" aria-label="Reset mechanism">↺</button></div></div>
 <div class="gc-bottom"><div class="gc-tray" role="group" aria-label="Cog tray">${tray}</div>
-<div class="gc-clues"><button type="button" data-socket="0" aria-label="Place selected cog on axle A"><b>A · ${fractionLabel(d.firstMultiplier)} × ${d.driverTeeth}</b><span data-a>Choose a cog</span></button><button type="button" data-socket="1" aria-label="Place selected cog on axle B"><b>B · ${fractionLabel(d.secondMultiplier)} × ${d.pinionTeeth}</b><span data-b>Choose a cog</span></button><div class="gc-drum"><span>OUTPUT / TARGET ${fractionLabel(d.outputTurns)}</span><b data-output>0 turns</b></div></div>
+<div class="gc-clues"><button type="button" data-socket="0" aria-label="Place selected cog on axle A"><b>Axle A</b><span data-a>Choose a cog</span></button><button type="button" data-socket="1" aria-label="Place selected cog on axle B"><b>Axle B</b><span data-b>Choose a cog</span></button><div class="gc-drum"><span>OUTPUT</span><b data-output>0 turns</b></div></div>
 <div class="gc-actions"><label>Input turns <select data-turns aria-label="Input crank turns">${Array.from({ length: d.maxCrank }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('')}</select></label><button type="button" data-action="crank">Turn crank</button><button type="button" data-action="return">Return cog</button><button type="button" data-action="replay" hidden>Replay escape</button><button type="button" data-action="pause">Pause</button></div>
 <div class="gc-feedback" aria-live="polite">Choose a cog, then tap A or B.</div></div>
-<div data-options hidden><strong>Same axle. Same turns.</strong><p>The fixed drive turns A. A and its small pinion turn together. The pinion turns B and the output drum. Use the tooth-count clues, then watch the rotation markers.</p><button type="button" data-action="reset">Reset gear bench</button><label><input type="checkbox" data-motion>Reduce motion</label><label><input type="checkbox" data-sound checked>Mechanical sounds</label><a data-credits target="_blank" rel="noopener">Fox model & animation credits ↗</a></div>`;
+`;
 }

@@ -1,0 +1,14 @@
+Using Vitest configuration file: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\output\castle-week-vitest.config.mjs
+> Building...
+√ Building...
+Application bundle generation complete. [8.185 seconds] - 2026-09-15T21:03:57.032Z
+
+
+ RUN  v4.1.11 C:/Users/erich/Desktop/pbl-lms/forge-pbl-template
+
+
+ Test Files  3 passed (3)
+      Tests  37 passed (37)
+   Start at  15:03:57
+   Duration  10.40s (transform 4.36s, setup 450ms, import 5.24s, tests 3.37s, environment 1.05s)
+

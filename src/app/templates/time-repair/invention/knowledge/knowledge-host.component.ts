@@ -9,6 +9,9 @@ import { DistributionComponent } from './distribution.component';
 import { AccessComponent } from './access.component';
 import { ApprenticeComponent } from './apprentice.component';
 import { CirculationComponent } from './circulation.component';
+import { TimelineComponent } from './timeline.component';
+import { NewspaperComponent } from './newspaper.component';
+import { InterviewComponent } from './interview.component';
 
 export const KNOWLEDGE_RENDERERS: Readonly<Record<KnowledgeKind, Type<unknown>>> = {
   reconstruction: ReconstructionComponent,
@@ -18,6 +21,9 @@ export const KNOWLEDGE_RENDERERS: Readonly<Record<KnowledgeKind, Type<unknown>>>
   access: AccessComponent,
   apprentice: ApprenticeComponent,
   circulation: CirculationComponent,
+  timeline: TimelineComponent,
+  newspaper: NewspaperComponent,
+  interview: InterviewComponent,
 };
 @Component({
   selector: 'app-knowledge-host',

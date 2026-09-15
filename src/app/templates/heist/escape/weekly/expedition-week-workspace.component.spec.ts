@@ -95,7 +95,7 @@ describe('Expedition authoring weeks', () => {
       await f.whenStable();
       f.detectChanges();
       expect(f.componentInstance.runtime.selected()).toBe(locationIds[number - 1]);
-      expect(f.nativeElement.querySelector('select').value).toBe(locationIds[number - 1]);
+      expect(f.nativeElement.querySelector('.activity > .workshop-picker')).toBeNull();
       expect(plan.lessons[number - 1].focusTarget).toBe(locationIds[number - 1]);
       const text = f.nativeElement.textContent;
       const week = mission.previewWeeks![Math.floor((number - 1) / 2)];
@@ -105,7 +105,7 @@ describe('Expedition authoring weeks', () => {
       expect(text).toContain(week.questions[0]);
       expect(text).toContain('Disconnected');
       expect(f.nativeElement.querySelectorAll('form, textarea').length).toBe(0);
-      expect(f.nativeElement.querySelectorAll('.planning details')).toHaveLength(2);
+      expect(f.nativeElement.querySelectorAll('.planning > details')).toHaveLength(2);
     }
     expect(save).not.toHaveBeenCalled(); // Opening sessions never fabricates work or results.
   });
@@ -113,7 +113,7 @@ describe('Expedition authoring weeks', () => {
     it(`opens session ${number} directly with no prior work`, async () => {
       const f = await create(number);
       expect(f.componentInstance.runtime.selected()).toBe(locationIds[number - 1]);
-      expect(f.nativeElement.querySelector('select').value).toBe(locationIds[number - 1]);
+      expect(f.nativeElement.querySelector('.activity > .workshop-picker')).toBeNull();
       expect(f.componentInstance.runtime.draft().trials).toEqual([]);
       expect(f.nativeElement.textContent).toContain('Sample setup');
       expect(f.nativeElement.querySelector('app-machine-workshop')).not.toBeNull();

@@ -4,16 +4,7 @@
   background: #071c25;
   color: #f6eedb;
 }
-.timing-scene {
-  .week-heading, .setup-note, .extra-note { display: none; }
-  .activity { position: relative; }
-  .secondary-tools.tools-open {
-    position: absolute; top: 88px; right: 12px; left: 12px; max-height: 520px;
-    overflow: auto; background: #142f3b; border: 1px solid #81948b; border-radius: 10px;
-    z-index: 20; box-shadow: 0 14px 30px #0008; padding: 12px;
-  }
-  .close-tools { display: block; margin-left: auto; }
-}
+
 * {
   box-sizing: border-box;
 }
@@ -272,3 +263,7 @@ summary span {
     padding-top: 14px;
   }
 }
+
+.planning a { color: #edcf93; }
+.planning .workspace-options { padding-inline: 0; }
+.planning .trial-history article { flex-wrap: wrap; padding-inline: 0; }

@@ -1,0 +1,22 @@
+> Building...
+√ Building...
+Initial chunk files | Names              |  Raw size | Estimated transfer size
+main-CH3CSBBP.js    | main               | 545.92 kB |               122.97 kB
+styles-PWEBVAZL.css | styles             | 865 bytes |               865 bytes
+
+                    | Initial total      | 546.79 kB |               123.84 kB
+
+Lazy chunk files    | Names              |  Raw size | Estimated transfer size
+chunk-cVFx7qEy.js   | -                  |   1.44 MB |               309.07 kB
+chunk-DOiKXoaQ.js   | -                  | 605.29 kB |               128.48 kB
+chunk-kJOyZcR1.js   | machine-scene      | 124.06 kB |                36.42 kB
+chunk-Bz6E5c8Y.js   | gear-lock-scene    |  39.55 kB |                13.68 kB
+chunk-CaOe35Hv.js   | balance-lock-scene |  20.93 kB |                 7.27 kB
+
+Application bundle generation complete. [22.731 seconds] - 2026-09-15T21:02:40.291Z
+
+▲ [WARNING] bundle initial exceeded maximum budget. Budget 500.00 kB was not met by 46.79 kB with a total of 546.79 kB.
+
+
+Output location: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\output\castle-minimal-ui-code-build
+

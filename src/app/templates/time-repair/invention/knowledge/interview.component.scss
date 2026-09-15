@@ -1,0 +1,20 @@
+.scene-kicker { fill: #f1dfb6; font: 24px Georgia, serif; text-anchor: middle; }
+.scene-subtitle,.scene-note,.witness-name,.witness-role,.action-label,.heard-label,.view-label,.view-hint,.weigh-label,.weigh-hint { text-anchor: middle; user-select: none; }
+.scene-subtitle { fill: #b8c8a3; font: 15px Arial, sans-serif; }
+.scene-note { fill: #d7c08c; font: 13px Arial, sans-serif; }
+.witness-card { fill: #1c383c; stroke: #aa9367; stroke-width: 3; }
+.witness-name { fill: #f0dfb5; font: 18px Georgia, serif; }
+.witness-role { fill: #aebea7; font: 12px Arial, sans-serif; }
+.artifact-card { fill: url(#interview-paper); stroke: #b49564; stroke-width: 2; }
+.action-label { fill: #ddc28d; font: 11px Arial, sans-serif; letter-spacing: 1px; }
+.heard-label { fill: #8cf1db; font: 12px Arial, sans-serif; letter-spacing: 1px; }
+.view-button { fill: #203c3e; stroke: #b49563; stroke-width: 3; }
+.weigh-button { fill: #896346; stroke: #ebc988; stroke-width: 3; }
+.view-label,.weigh-label { fill: #f2dfb3; font: 14px Arial, sans-serif; letter-spacing: 1px; }
+.view-hint,.weigh-hint { fill: #b4c3a4; font: 12px Arial, sans-serif; }
+[kb][aria-pressed='true'] .witness-card,[kb][aria-pressed='true'] .artifact-card,[kb][aria-pressed='true'] .view-button { stroke: #8cf1db; stroke-width: 5; }
+[kb]:hover .witness-card,[kb]:hover .artifact-card,[kb]:hover .view-button,[kb]:hover .weigh-button { stroke: #f4d69b; }
+[kb]:focus-visible .witness-card,[kb]:focus-visible .artifact-card,[kb]:focus-visible .view-button,[kb]:focus-visible .weigh-button { stroke: #8cf1db; stroke-width: 5; }
+.speech-line { animation: speech 0.8s ease-out 2; }
+@keyframes speech { from { opacity: .15; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .speech-line { animation: none; } }

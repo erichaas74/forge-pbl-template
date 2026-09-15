@@ -1,0 +1,9 @@
+Using Vitest configuration file: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\output\castle-week-vitest.config.mjs
+> Building...
+√ Building...
+Application bundle generation complete. [17.243 seconds] - 2026-09-15T20:59:16.874Z
+
+failed to load config from C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\output\castle-week-vitest.config.mjs
+An exception occurred during test execution:
+Error: ENOSPC: no space left on device, write
+    at async write (node:internal/fs/promises:802:8)

@@ -1,0 +1,89 @@
+<svg
+  class="scene investigation-scene"
+  viewBox="0 0 1000 660"
+  role="group"
+  aria-label="Compare interviews and physical evidence from an alternate historical record"
+>
+  <defs>
+    <linearGradient id="interview-wall" x2="0" y2="1">
+      <stop stop-color="#263f43" />
+      <stop offset="1" stop-color="#112b32" />
+    </linearGradient>
+    <linearGradient id="interview-table" x2="0" y2="1">
+      <stop stop-color="#a4784c" />
+      <stop offset="1" stop-color="#4d382f" />
+    </linearGradient>
+    <linearGradient id="interview-paper" x2="1" y2="1">
+      <stop stop-color="#f2e0b9" />
+      <stop offset="1" stop-color="#c3a473" />
+    </linearGradient>
+    <radialGradient id="interview-lamp">
+      <stop stop-color="#f0d69a" stop-opacity=".22" />
+      <stop offset="1" stop-color="#f0d69a" stop-opacity="0" />
+    </radialGradient>
+    <pattern id="interview-grain" width="100" height="34" patternUnits="userSpaceOnUse">
+      <path d="M0 9Q45 0 100 11M0 28Q55 41 100 25" fill="none" stroke="#efdaa9" opacity=".08" />
+    </pattern>
+    <symbol id="interview-person" viewBox="0 0 100 120">
+      <ellipse cx="50" cy="112" rx="34" ry="5" fill="#10282d" opacity=".4" />
+      <path d="M18 108Q21 62 50 56Q79 62 82 108Z" fill="currentColor" stroke="#304844" stroke-width="3" />
+      <circle cx="50" cy="37" r="24" fill="#c99b73" />
+      <path d="M26 39Q23 7 54 10Q77 12 75 39L63 24 37 28Z" fill="#403a34" />
+    </symbol>
+  </defs>
+  <rect width="1000" height="660" fill="url(#interview-wall)" />
+  <rect x="8" y="8" width="984" height="644" fill="url(#interview-grain)" stroke="#74806d" stroke-width="3" />
+  <ellipse cx="480" cy="170" rx="570" ry="390" fill="url(#interview-lamp)" />
+  <path d="M0 468H1000V660H0Z" fill="url(#interview-table)" />
+  <path d="M0 468H1000M0 620H1000" stroke="#e0bb7e" stroke-width="7" opacity=".45" />
+  <text x="500" y="52" class="scene-kicker">{{ d().title }}</text>
+  <text x="500" y="76" class="scene-subtitle">{{ d().era }}</text>
+  <text x="500" y="108" class="scene-note">Hear each voice, inspect its object, then weigh the account.</text>
+  @for (witness of d().witnesses; track witness.id; let i = $index) {
+    <g [attr.transform]="'translate(' + (30 + i * 316) + ' 0)'">
+      <rect class="witness-card" x="0" y="126" width="292" height="310" rx="9" />
+      <text x="146" y="152" class="witness-name">{{ witness.name }}</text>
+      <text x="146" y="174" class="witness-role">{{ witness.role }} · {{ witness.date }}</text>
+      <g kb [label]="'Hear ' + witness.name + ' describe the record'" [pressed]="!!n('heard-' + witness.id)" (activate)="k.act({ type: 'hear', target: witness.id })">
+        <circle cx="72" cy="244" r="58" fill="#334e4b" stroke="#d4b47b" stroke-width="3" />
+        <use href="#interview-person" x="26" y="184" width="92" height="112" [attr.color]="i === 1 ? '#9c7350' : i === 2 ? '#6f8b78' : '#7d8b78'" />
+        <rect class="hit" x="11" y="181" width="124" height="128" rx="8" fill="transparent" />
+        <text x="72" y="326" class="action-label">HEAR ACCOUNT</text>
+      </g>
+      <g kb [label]="'Inspect the evidence object carried by ' + witness.name" [pressed]="!!n('artifact-' + witness.id)" (activate)="k.act({ type: 'inspect', target: witness.id })">
+        <rect class="artifact-card" x="152" y="206" width="115" height="102" rx="6" />
+        <path d="M169 227h81M169 245h72M169 263h58" stroke="#5a6a5a" stroke-width="3" />
+        <circle cx="235" cy="279" r="17" fill="#9b6549" />
+        @if (n('artifact-' + witness.id)) {
+          <path d="M226 279l6 6 12-14" fill="none" stroke="#f2d69c" stroke-width="3" />
+        }
+        <text x="210" y="330" class="action-label">INSPECT OBJECT</text>
+        <rect class="hit" x="146" y="196" width="128" height="145" rx="8" fill="transparent" />
+      </g>
+      @if (n('heard-' + witness.id)) {
+        <path class="speech-line" d="M31 366Q83 342 136 366" fill="none" stroke="#eed49c" stroke-width="3" />
+        <text x="146" y="389" class="heard-label">VOICE LOGGED</text>
+      }
+    </g>
+  }
+  <g transform="translate(45 523)">
+    <g kb label="Show the alternate witness record" [pressed]="view() === 0" (activate)="k.act({ type: 'compare', value: 0 })">
+      <rect class="view-button" x="0" y="0" width="250" height="62" rx="8" />
+      <text x="125" y="27" class="view-label">ALTERNATE VOICES</text>
+      <text x="125" y="47" class="view-hint">what people could see</text>
+      <rect class="hit" x="-5" y="-5" width="260" height="72" rx="10" fill="transparent" />
+    </g>
+    <g kb label="Compare the historical witness record" [pressed]="view() === 1" (activate)="k.act({ type: 'compare', value: 1 })" transform="translate(270 0)">
+      <rect class="view-button" x="0" y="0" width="250" height="62" rx="8" />
+      <text x="125" y="27" class="view-label">HISTORICAL VOICES</text>
+      <text x="125" y="47" class="view-hint">what the sources preserve</text>
+      <rect class="hit" x="-5" y="-5" width="260" height="72" rx="10" fill="transparent" />
+    </g>
+    <g kb label="Weigh the interview evidence" (activate)="k.act({ type: 'weigh' })" transform="translate(540 0)">
+      <rect class="weigh-button" x="0" y="0" width="370" height="62" rx="8" />
+      <text x="185" y="27" class="weigh-label">WEIGH THE TESTIMONY</text>
+      <text x="185" y="47" class="weigh-hint">voices plus objects</text>
+      <rect class="hit" x="-5" y="-5" width="380" height="72" rx="10" fill="transparent" />
+    </g>
+  </g>
+</svg>

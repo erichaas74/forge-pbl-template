@@ -11,7 +11,8 @@ export class SpatialInspectionComponent {
   private T?:typeof Three; private renderer?:Three.WebGLRenderer; private camera?:Three.PerspectiveCamera; private scene?:Three.Scene;
   private controls?:OrbitControls; private mounted?:MountedSpatialAsset; private observer?:ResizeObserver; private request=new AbortController();
   private pointer?:{x:number;y:number};
-  constructor(){afterNextRender(()=>void this.setup());inject(DestroyRef).onDestroy(()=>{this.request.abort();this.observer?.disconnect();this.controls?.dispose();this.mounted?.dispose();this.scene?.traverse(node=>{if(this.T&&node instanceof this.T.DirectionalLight)node.shadow.dispose();});this.renderer?.dispose();});}
+  private releaseEnvironment?:()=>void;
+  constructor(){afterNextRender(()=>void this.setup());inject(DestroyRef).onDestroy(()=>{this.request.abort();this.observer?.disconnect();this.controls?.dispose();this.releaseEnvironment?.();this.mounted?.dispose();this.scene?.traverse(node=>{if(this.T&&node instanceof this.T.DirectionalLight)node.shadow.dispose();});this.renderer?.dispose();});}
   private async setup():Promise<void>{
     try {
       const definition=requireSpatialInspection(this.definition());
@@ -23,6 +24,7 @@ export class SpatialInspectionComponent {
       const camera=this.camera=new T.PerspectiveCamera(48,1,.05,60);
       const controls=this.controls=new OrbitControls(camera,this.canvas()!.nativeElement);controls.enablePan=false;controls.enableDamping=false;controls.minPolarAngle=.18;controls.maxPolarAngle=1.3;controls.maxDistance=11;controls.addEventListener('change',()=>this.draw());
       this.mounted=await loadSpatialAsset(definition.asset,this.request.signal);this.mounted.pivot.traverse(node=>{if(node instanceof T.Mesh){node.castShadow=true;node.receiveShadow=true;}});scene.add(this.mounted.pivot);renderer.shadowMap.needsUpdate=true;
+      if(definition.environment){const {installSpatialEnvironment}=await import('./spatial-environment');if(this.request.signal.aborted)return;this.releaseEnvironment=await installSpatialEnvironment(scene,this.mounted,definition.environment,this.request.signal);}
       this.loading.set(false);this.overview();this.observer=new ResizeObserver(()=>this.resize());this.observer.observe(this.surface()!.nativeElement);this.resize();
     }catch(error){if(!this.request.signal.aborted){this.loading.set(false);this.error.set('The scene could not open. Return to the village and try again.');}}
   }

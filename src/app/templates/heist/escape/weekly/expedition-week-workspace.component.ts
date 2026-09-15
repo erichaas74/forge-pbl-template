@@ -12,8 +12,7 @@ import { BalanceLockComponent } from '../balance-lock/balance-lock.component';
 import { GearLockComponent } from '../gear-lock/gear-lock.component';
 import { MachineWorkshopComponent } from '../locks/machine-workshop.component';
 import { validMachineAnswer } from '../locks/machine.rules';
-import { isBridgeDiorama, isCageDiorama } from '../locks/machine-presentation';
-import { usesPiston } from '../balance-lock/balance-lock.domain';
+import { fractionLabel } from '../gear-lock/gear-lock.domain';
 import { ExpeditionPreviewRuntime } from './expedition-preview.runtime';
 
 @Component({
@@ -38,12 +37,22 @@ export class ExpeditionWeekWorkspaceComponent {
         ?.sample,
   );
   readonly paused = signal(false);
-  readonly sceneTools = signal(false);
-  readonly timingScene = computed(() => {
+  readonly guidance = computed(() => {
     const p = this.runtime.step().puzzle;
-    return (p.type === 'machine-lock' && (isBridgeDiorama(p.lock) || p.lock.stages.some(isCageDiorama))) ||
-      (p.type === 'gear-lock' && p.lock.presentation?.kind === 'gear-cage') ||
-      (p.type === 'balance-lock' && usesPiston(p.lock));
+    if (p.type === 'machine-lock') return p.lock.stages.flatMap(s => [s.instruction, s.hint]);
+    if (p.type === 'balance-lock') return p.lock.scales.map(s => s.instruction);
+    if (p.type === 'gear-lock') return [p.lock.instruction,
+      `Axle A: ${fractionLabel(p.lock.firstMultiplier)} × ${p.lock.driverTeeth} teeth. Axle B: ${fractionLabel(p.lock.secondMultiplier)} × ${p.lock.pinionTeeth} teeth. Output target: ${fractionLabel(p.lock.outputTurns)} turns.`];
+    return [];
+  });
+  readonly credits = computed(() => {
+    const p = this.runtime.step().puzzle;
+    if (p.type === 'gear-lock') return p.lock.presentation?.animal.credits;
+    if (p.type === 'machine-lock') {
+      const stage = p.lock.stages.find(s => s.kind === 'timing-wheels');
+      if (stage?.kind === 'timing-wheels') return stage.presentation?.animal.credits;
+    }
+    return undefined;
   });
   readonly reducedMotion = signal(
     globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false,
@@ -72,7 +81,6 @@ export class ExpeditionWeekWorkspaceComponent {
     this.choose(this.session().stepId);
   }
   choose(id: string): void {
-    this.sceneTools.set(false);
     this.paused.set(false);
     this.restoredStage.set(0);
     this.runtime.choose(id);

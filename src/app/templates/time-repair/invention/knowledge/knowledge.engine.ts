@@ -6,6 +6,9 @@ import {
 import { assemblyActivity, diagramActivity, reconstructionActivity } from './object.activities';
 import { accessActivity, apprenticeActivity, distributionActivity } from './people.activities';
 import { circulationActivity } from './circulation.activity';
+import { timelineActivity } from './timeline.activity';
+import { newspaperActivity } from './newspaper.activity';
+import { interviewActivity } from './interview.activity';
 import {
   KNOWLEDGE_KINDS,
   type KnowledgeAction,
@@ -23,6 +26,9 @@ export const knowledgeActivities: Readonly<Record<KnowledgeKind, KnowledgeActivi
   access: accessActivity,
   apprentice: apprenticeActivity,
   circulation: circulationActivity,
+  timeline: timelineActivity,
+  newspaper: newspaperActivity,
+  interview: interviewActivity,
 };
 export const knowledgeCapabilities = new CapabilityRegistry();
 export const knowledgeEvents = new EventRegistry();

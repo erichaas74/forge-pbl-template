@@ -55,10 +55,7 @@ export function mountOpticsCage(
   const stage = createOpticsDiorama(viewer.art, d);
   viewer.scene.add(stage.root);
   const sequence = new OpticsCageSequence(d, snapshot());
-  const control = q<HTMLSelectElement>('[data-angle-control]'),
-    reducedInput = q<HTMLInputElement>('[data-motion]');
-  reducedInput.checked = snapshot().reducedMotion;
-  q('[data-clue]').textContent = d.hint;
+  const control = q<HTMLOutputElement>('[data-angle-control]');
   const ray = new T.Raycaster(),
     plane = new T.Plane(new T.Vector3(0, 0, 1), -0.72);
   let selected = 0,
@@ -75,7 +72,7 @@ export function mountOpticsCage(
     suspended = false;
   const view = (): MachineView => ({
     ...snapshot(),
-    reducedMotion: reducedInput.checked || snapshot().reducedMotion,
+    reducedMotion: snapshot().reducedMotion,
   });
   const angles = () => {
     const a = snapshot().answer;
@@ -200,36 +197,20 @@ export function mountOpticsCage(
         if (operable()) {
           cancelPointer();
           cb.input({ type: 'reset' });
-          viewer.closeOptions();
           viewer.setFocus('drive');
-          action('options').focus();
         }
         break;
       case 'expand':
         cancelPointer();
         viewer.expand(!viewer.expanded);
         break;
-      case 'options': {
-        const panel = q('[data-options]');
-        panel.hidden = !panel.hidden;
-        button.setAttribute('aria-expanded', String(!panel.hidden));
-        break;
-      }
-    }
-  };
-  const change = (event: Event) => {
-    if (event.target === control) commit(Number(control.value));
-    if ((event.target as HTMLElement).matches('[data-sound]')) {
-      sound.enabled = (event.target as HTMLInputElement).checked;
-      if (sound.enabled) sound.unlock();
-      else sound.suspend();
+
     }
   };
   const key = (event: KeyboardEvent) => {
     if (event.key === 'Escape') cancelPointer();
   };
   root.addEventListener('click', click);
-  root.addEventListener('change', change);
   root.addEventListener('keydown', key);
   root.addEventListener('pointerdown', down);
   root.addEventListener('pointermove', move);
@@ -292,18 +273,7 @@ export function mountOpticsCage(
         button.setAttribute('aria-pressed', String(i === selected));
         q(`[data-angle="${i}"]`).textContent = `${shown[i]}°`;
       });
-      if (control.dataset['mirror'] !== String(selected)) {
-        control.dataset['mirror'] = String(selected);
-        control.replaceChildren();
-        for (let a = 0; a < 180; a += d.mirrors[selected].step) {
-          const option = document.createElement('option');
-          option.value = String(a);
-          option.textContent = `${a}°`;
-          control.append(option);
-        }
-      }
-      control.value = String(shown[selected]);
-      control.disabled = !can;
+      control.value = `${shown[selected]}°`;
       q('[data-selected]').textContent = `Mirror ${selected + 1}`;
       for (const name of ['left', 'right', 'reset']) action(name).disabled = !can;
       action('test').disabled = !can || reading.solved;
@@ -352,7 +322,6 @@ export function mountOpticsCage(
     cancelAnimationFrame(frame);
     cancelPointer();
     root.removeEventListener('click', click);
-    root.removeEventListener('change', change);
     root.removeEventListener('keydown', key);
     root.removeEventListener('pointerdown', down);
     root.removeEventListener('pointermove', move);

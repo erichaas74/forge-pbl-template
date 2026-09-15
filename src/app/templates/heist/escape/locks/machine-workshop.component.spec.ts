@@ -56,7 +56,11 @@ describe('Independent machine workshop controls', () => {
       const f = await create(index);
       f.componentInstance.controls.set(true);
       f.detectChanges();
-      expect(f.nativeElement.textContent).toContain(text);
+      if (index >= 6) {
+        const control = f.nativeElement.querySelector(`button[aria-label="${text}"]`);
+        expect(control).not.toBeNull();
+        expect(control.disabled).toBe(false);
+      } else expect(f.nativeElement.textContent).toContain(text);
       f.destroy();
       expect(destroy).toHaveBeenCalled();
     });

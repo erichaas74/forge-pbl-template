@@ -19,11 +19,11 @@ function ear(target,x,y,z,tilt=0){
   add(target,'stalk',new T.CylinderGeometry(.018,.045,.42,8),[x,y,z],[1,1,1],[0,0,tilt]);
   for(let row=0;row<9;row++)for(let col=0;col<8;col++){const a=col/8*Math.PI*2,r=.045*Math.sin((row+1)/11*Math.PI)+.014;add(target,'kernel',new T.SphereGeometry(1,6,4),[x+Math.cos(a)*r,y-.15+row*.037,z+Math.sin(a)*r],[.029,.024,.027]);}
 }
-add('ENV_ground','sand',new T.CylinderGeometry(12,12,.15,64),[0,-.09,0]);
+add('ENV_ground','sand',new T.CylinderGeometry(80,80,.15,64),[0,-.09,0]);
 // Two small planting areas separated by an inspectable path.
 for(let i=0;i<6;i++){
   const x=-1.7+(i%2)*.68,z=-1.6+Math.floor(i/2)*1.08,h=1.8+(i%3)*.15;
-  add('INT_maize','soil',new T.SphereGeometry(1,12,6),[x,-.01,z],[.52,.18,.5]);
+  add('ENV_ground','soil',new T.SphereGeometry(1,12,6),[x,-.01,z],[.52,.18,.5]);
   add('INT_maize','stalk',new T.CylinderGeometry(.016,.032,h,8),[x,h/2,z]);
   for(let k=0;k<7;k++)leaf('INT_maize',x,.3+k*.20,z,k*2.4+i,.65,.075);
   ear('INT_maize',x+.12,1.0,z);
@@ -32,7 +32,7 @@ for(let i=0;i<6;i++){
 // Sweet potato vines over soil mounds; roots are represented in the harvested sample.
 for(let i=0;i<5;i++){
   const x=.9+(i%2)*.75,z=-1.5+Math.floor(i/2)*1.05;
-  add('INT_vines','soil',new T.SphereGeometry(1,16,8),[x,.02,z],[.60,.27,.52]);
+  add('ENV_ground','soil',new T.SphereGeometry(1,16,8),[x,.02,z],[.60,.27,.52]);
   for(let k=0;k<9;k++){
     const a=k*2.4,r=.12+k*.044,px=x+Math.cos(a)*r,pz=z+Math.sin(a)*r;
     const path=new T.LineCurve3(new T.Vector3(x,.27,z),new T.Vector3(px,.18,pz));

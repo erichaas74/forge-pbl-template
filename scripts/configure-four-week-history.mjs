@@ -1,0 +1,305 @@
+import { readFile, writeFile, mkdir, copyFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+
+const root = resolve(import.meta.dirname, '..');
+const previous = resolve(root, 'public/projects/exploration-time-repair/versions/2.2.0');
+const directory = resolve(root, 'public/projects/exploration-time-repair/versions/2.3.0');
+const project = JSON.parse(await readFile(resolve(previous, 'project.json'), 'utf8'));
+const content = project.inventionRescue;
+const assembly = structuredClone(content.sessions[1].knowledge);
+project.projectVersion = '2.3.0';
+project.title = 'Time Repair: The Missing Reformation';
+project.subtitle = 'Find the gap · Trace the cause · Repair Gutenberg · See the record';
+content.fiction =
+  'Four-week alternate-history investigation: the time archive contains Luther’s 1517 Ninety-five Theses, but the printed debate that helped the controversy travel is missing. Students first infer what did not happen, then use alternate newspapers and interviews to trace the fictional cause to a failed European printing system. Week 3 moves back to Gutenberg’s Mainz workshop to repair and learn the press. Week 4 returns to documented 1517–1518 evidence. The broken timeline is a teaching counterfactual, not a claim that one machine alone caused the Protestant Reformation.';
+content.modelNote =
+  'Timeline cards, newspaper issues, and interviews are constructed classroom evidence, not recordings or newly discovered documents. The three press repairs are qualitative models, not measured historical speeds, routes, or recipes. Gutenberg’s mid-1450s workshop is an earlier prerequisite in this story; he did not print Luther’s theses or meet Luther. The real-history comparison separates documented editions from invented witnesses and keeps religious change, institutions, rulers, language, and people’s choices visible.';
+if (!content.sources.some((source) => source.id === 'luther-guide'))
+  content.sources.push({
+    id: 'luther-guide',
+    title: 'Martin Luther as Priest, Heretic and Outlaw',
+    detail:
+      'The Library of Congress guide places Luther’s 1517 debate in the context of the earlier movable-type press and explains how German presses helped his writing travel.',
+    url: 'https://guides.loc.gov/martin-luther-priest-heretic-outlaw',
+  });
+content.weeks = [
+  {
+    title: 'Find what did not happen',
+    goal: 'Infer the missing printed debate from a broken timeline and surviving clues before naming a cause.',
+    evidence: [
+      'Inspected timeline records with one unexplained gap',
+      'A selected candidate tested against every clue',
+      'A bounded distinction between the historical Theses and the fictional missing event',
+    ],
+  },
+  {
+    title: 'Find what caused the gap',
+    goal: 'Use alternate newspapers and interviews to isolate the failed printing process without treating one witness as the whole explanation.',
+    evidence: [
+      'Two columns inspected in every alternate issue',
+      'Witness accounts paired with physical objects',
+      'A press-trail explanation that separates evidence from inference',
+    ],
+  },
+  {
+    title: 'Repair and learn Gutenberg',
+    goal: 'Study how movable type, ink, pressure, and skilled crafts combine, then repair the failed press in controlled trials.',
+    evidence: [
+      'Material and pressure comparisons',
+      'An assembled and operated press system',
+      'A diagnosis that identifies the tested fault and its limits',
+    ],
+  },
+  {
+    title: 'See the history that happened',
+    goal: 'Compare the repaired timeline with surviving 1517–1518 print evidence and explain what printing changed alongside other causes.',
+    evidence: [
+      'Historical editions inspected as primary evidence',
+      'A documented sequence compared with the repaired model',
+      'A final explanation that avoids single-cause history',
+    ],
+  },
+];
+
+function session(index, patch) {
+  Object.assign(content.sessions[index], patch);
+  if (patch.knowledge === null) delete content.sessions[index].knowledge;
+}
+
+session(0, {
+  id: 'find-gap-1',
+  mode: 'knowledge',
+  title: 'Find the missing event',
+  location: 'Time archive · Wittenberg, 1517',
+  date: '1517 · broken timeline',
+  task: 'The archive jumps from Luther’s manuscript to a quiet winter. Inspect each record, place a candidate in the gap, and test it against the clues. You are not told what disappeared; the timeline has to convince you.',
+  goal: 'Infer that a printed debate is the missing event while separating the historical Ninety-five Theses from our fictional absence of circulation.',
+  product: 'A tested candidate for the missing event and a clue-by-clue timeline record.',
+  historicalNote: 'Martin Luther wrote the Ninety-five Theses in 1517 as propositions for debate about indulgences. The Library of Congress record identifies surviving 1517 printings and describes how printing helped the text spread. This first scene asks students to infer that missing spread from a fictional broken archive; it does not claim the posting story or later Reformation had one automatic cause.',
+  question: 'Which event best explains the hole? What evidence shows the idea existed, and what evidence shows its wider printed circulation is the part missing?',
+  sourceIds: ['theses', 'luther-guide', 'print-circulation'],
+  knowledge: {
+    version: '1.0',
+    kind: 'timeline',
+    timeline: {
+      title: 'The hole in the record',
+      era: 'Wittenberg · 1517–1518 · broken archive',
+      nodes: [
+        { id: 'luther-writes', label: 'Luther writes', date: '1517', lane: 'before', detail: 'A Latin set of propositions is prepared for an academic debate about indulgences.', signal: 'The idea exists before any press run.' },
+        { id: 'manuscript-travels', label: 'Manuscripts travel', date: 'autumn 1517', lane: 'before', detail: 'Handwritten pages can leave Wittenberg one at a time.', signal: 'Travel survives in the broken record.' },
+        { id: 'print-gap', label: 'The copy gap', date: 'late 1517', lane: 'gap', detail: 'The archive shows no usable printed editions reaching other workshops.', signal: 'This blank needs a candidate, not a guess from a title.' },
+        { id: 'debate-quiet', label: 'Debate stays local', date: '1518', lane: 'after', detail: 'Readers outside Wittenberg report no shared printed text to compare.', signal: 'A consequence should follow the missing link.' },
+      ],
+      candidates: [
+        { id: 'printed-theses', label: 'Printed Theses circulate', detail: 'Repeatable copies carry the debate beyond Wittenberg.' },
+        { id: 'royal-order', label: 'A royal order arrives', detail: 'A ruler announces a decision without a copied debate.' },
+        { id: 'new-route', label: 'A trade road opens', detail: 'Travel improves, but no new page is multiplied.' },
+      ],
+      answer: 'printed-theses',
+    },
+  },
+});
+session(1, {
+  id: 'voices-gap-2',
+  mode: 'knowledge',
+  title: 'Hear the quiet debate',
+  location: 'Time archive · alternate-world interview room',
+  date: '1518 · alternate record',
+  task: 'Interview a bookseller, a university student, and a church visitor from the alternate timeline. Hear each account, inspect the object they carried, and weigh what their three viewpoints can—and cannot—prove.',
+  goal: 'Use independent witnesses and physical evidence to confirm the missing circulation without turning a fictional interview into a primary source.',
+  product: 'A witness board linking three alternate accounts to the missing printed debate.',
+  historicalNote: 'These witnesses are fictional teaching voices. They represent different positions a student can compare: a seller sees supply, a student sees debate, and a church visitor sees local notice. The documented history is supplied separately through the source cards and the final-week comparison.',
+  question: 'What do all three voices share? Which detail is an observation, and which is your inference about why the debate did not spread?',
+  sourceIds: ['theses', 'luther-guide', 'print-circulation'],
+  knowledge: {
+    version: '1.0',
+    kind: 'interview',
+    interview: {
+      title: 'Voices from a quiet debate',
+      era: '1518 · alternate record · three viewpoints',
+      witnesses: [
+        { id: 'bookseller', name: 'Anna', role: 'bookseller', date: 'spring 1518', statement: 'I can carry a manuscript, but no shop sends me a stack of the same page. Customers ask for a copy I cannot show them.', artifact: 'Empty rack ticket', clue: 'Supply is thin even when a handwritten page can arrive.' },
+        { id: 'student', name: 'Matthias', role: 'university student', date: 'winter 1517', statement: 'We argue about the propositions from memory. No identical printed page reaches our table, so the wording keeps changing.', artifact: 'Annotated notebook', clue: 'Without repeatable copies, a public argument is hard to compare.' },
+        { id: 'visitor', name: 'Greta', role: 'church visitor', date: 'All Saints season', statement: 'I hear a local notice, then the trail goes quiet. A messenger can carry one page, but not a roomful of readers.', artifact: 'Church notice', clue: 'Local speech remains while the wider printed network is absent.' },
+      ],
+      answer: 'Independent voices point to a missing multiplication step: the manuscript exists, but a reliable press does not make enough matching copies.',
+    },
+  },
+});
+session(2, {
+  id: 'cause-paper-3',
+  mode: 'knowledge',
+  title: 'Read the alternate newspapers',
+  location: 'Time archive · alternate print room',
+  date: '1518 · alternative newspapers',
+  task: 'Open three newspaper issues from the world without a working press. Inspect two columns in every issue, compare the editions, and trace the physical failure they keep circling without naming.',
+  goal: 'Identify the failed multiplication process as the cause of the missing printed debate, while distinguishing a newspaper’s report from tested material evidence.',
+  product: 'A press-trail reading supported by inspected alternate newspaper columns.',
+  historicalNote: 'These issues are fictional composites. Newspapers did not exist in this exact form in Luther’s 1517 controversy; they are a visual investigation device that lets students compare supply, rumor, and material clues before repairing the press.',
+  question: 'Which repeated clue points to a process failure rather than a lack of interest? What still happens in this alternate world?',
+  sourceIds: ['theses', 'luther-guide', 'printing'],
+  knowledge: {
+    version: '1.0',
+    kind: 'newspaper',
+    newspaper: {
+      title: 'News from a world without copies',
+      era: '1518 · alternate newspaper desk',
+      editions: [
+        { id: 'market-sheet', masthead: 'The Market Sheet', date: 'Jan. 1518', headline: 'One manuscript, many requests', subhead: 'A bookseller waits for a repeatable page', columns: ['The original arrived by hand.', 'No identical stack follows it.', 'Readers trade summaries.', 'Metal type leaves a faint mark.'], signal: 'The issue reports demand but no reliable supply.', kind: 'alternate' },
+        { id: 'university-sheet', masthead: 'University Circular', date: 'Feb. 1518', headline: 'Debate changes with each copy', subhead: 'Students compare memories instead of pages', columns: ['The propositions are discussed.', 'Wording shifts in hand copies.', 'A press pull fails on metal.', 'The argument remains local.'], signal: 'The issue separates an idea from its reproducible form.', kind: 'alternate' },
+        { id: 'church-sheet', masthead: 'Town Notice', date: 'Mar. 1518', headline: 'News travels, then stops', subhead: 'A messenger reaches one room', columns: ['A notice is read aloud.', 'A second room hears a rumor.', 'The ink beads on type.', 'No run reaches the road.'], signal: 'The issue links the social symptom to a physical clue.', kind: 'alternate' },
+      ],
+      answer: 'The alternate reports converge on a broken multiplication step: handwriting and speech survive, but ink will not make reliable copies from metal type.',
+    },
+  },
+});
+session(3, {
+  id: 'cause-voices-4',
+  mode: 'knowledge',
+  title: 'Interview the failed workshop',
+  location: 'Time archive · Mainz, reconstructed workshop',
+  date: 'c. 1454 · fictional cause record',
+  task: 'Question three workshop voices about the old failure. Hear each account, inspect the object left on the bench, and weigh the evidence before deciding which physical cause is worth testing in Week 3.',
+  goal: 'Trace the alternate timeline’s cause to ink adhesion and linked press crafts, without treating fictional witnesses as proof of what Gutenberg’s exact workshop looked like.',
+  product: 'A cause diagnosis that names a testable fault and its limits.',
+  historicalNote: 'The date points to Gutenberg’s mid-fifteenth-century Mainz context. The people and objects in this interview are teaching reconstructions. The next week tests the material claim instead of accepting a witness’s story.',
+  question: 'Which physical clue can be tested? What would an interview alone fail to establish about Gutenberg’s real workshop?',
+  sourceIds: ['printing', 'bible', 'jikji', 'luther-guide'],
+  knowledge: {
+    version: '1.0',
+    kind: 'interview',
+    interview: {
+      title: 'Voices from the failed shop',
+      era: 'Mainz · c. 1454 · reconstructed interview',
+      witnesses: [
+        { id: 'ink-mixer', name: 'Marta', role: 'ink mixer', date: 'c. 1454', statement: 'The old ink looks dark on paper, but it beads on the metal letters. We kept changing the recipe without keeping a clean comparison.', artifact: 'Ink ball and metal type', clue: 'Adhesion to paper is not the same as adhesion to metal.' },
+        { id: 'type-setter', name: 'Peter', role: 'type setter', date: 'c. 1454', statement: 'The letters can be arranged, but loose pieces shift if the frame does not hold them together.', artifact: 'Loose type frame', clue: 'A repeatable page needs a frame as well as type.' },
+        { id: 'courier', name: 'Jonas', role: 'courier', date: 'c. 1454', statement: 'I can carry a page to another town. I cannot carry enough pages to make a public debate by hand.', artifact: 'Empty dispatch bag', clue: 'Travel is not the same as multiplication.' },
+      ],
+      answer: 'The testable cause is a linked material failure: ink beads on metal type, while a reliable frame and pressure are also needed for repeatable copies.',
+    },
+  },
+});
+session(4, {
+  id: 'repair-material-5',
+  mode: 'ink',
+  title: 'Test the failed press',
+  location: 'Mainz · Gutenberg workshop reconstruction',
+  date: 'c. 1454 · Week 3 repair',
+  task: 'The interviews named a material clue. Test the numbered inks on paper and metal, change pressure one variable at a time, and pull clean proofs. The press opens here because this is the repair week.',
+  goal: 'Diagnose the physical failure with controlled material and pressure comparisons.',
+  product: 'Paired material tests and proofs showing which repair conditions work.',
+  historicalNote: 'This is a qualitative reconstruction of a mid-fifteenth-century European press, not Gutenberg’s exact machine. The tested repair supplies a model for how later printers could multiply texts; it does not prove a single-cause explanation for the Reformation.',
+  question: 'Which change fixed the physical symptom? Which historical consequences remain an inference?',
+  sourceIds: ['printing', 'bible', 'luther-guide'],
+  knowledge: null,
+});
+session(5, {
+  id: 'repair-system-6',
+  mode: 'knowledge',
+  title: 'Build the Gutenberg system',
+  location: 'Mainz · Gutenberg workshop reconstruction',
+  date: 'c. 1454 · Week 3 repair',
+  task: 'Fit the frame, mold, ink ball, and screw into the press. Operate each craft contribution, compare a failed assembly with a clean one, and explain why the repair is a system rather than one magic part.',
+  goal: 'Learn how linked crafts make movable-type printing repeatable and repair the assembled system.',
+  product: 'An assembled press and trial evidence showing what each craft contributes.',
+  historicalNote: 'Gutenberg and collaborators produced a Bible in Mainz in the mid-1450s. The scene is a teaching reconstruction; the exact tools, counts, and sequence are simplified. Earlier printing traditions in East Asia remain part of the wider history.',
+  question: 'Which parts had to cooperate before a future printer could multiply Luther’s text? What does the model leave uncertain?',
+  sourceIds: ['printing', 'bible', 'jikji', 'luther-guide'],
+  knowledge: assembly,
+});
+session(6, {
+  id: 'real-record-7',
+  mode: 'knowledge',
+  title: 'Read the history that happened',
+  location: 'Archive room · surviving 1517 editions',
+  date: '1517–1518 · documented record',
+  task: 'Open the surviving-edition desk. Inspect two columns in each historical issue, compare Leipzig, Nuremberg, and Basel, and trace what the real printed record can show about the spread of Luther’s debate.',
+  goal: 'Use surviving print evidence to compare the repaired model with the documented circulation of the Ninety-five Theses.',
+  product: 'A source-grounded reading of what printing changed and what it could not decide alone.',
+  historicalNote: 'The Library of Congress record describes a Nuremberg printing of the Ninety-five Theses and notes editions in Leipzig, Nuremberg, and Basel by the end of 1517. These cards summarize source evidence; they are not newly discovered newspaper issues.',
+  question: 'What do the surviving editions establish? Which parts of the later Protestant Reformation still require people, institutions, conflict, and choice?',
+  sourceIds: ['theses', 'luther-guide', 'print-circulation'],
+  knowledge: {
+    version: '1.0',
+    kind: 'newspaper',
+    newspaper: {
+      title: 'The record in surviving editions',
+      era: '1517–1518 · historical evidence desk',
+      editions: [
+        { id: 'nuremberg-record', masthead: 'Nuremberg edition', date: '1517', headline: 'Ninety-five Theses printed', subhead: 'A surviving edition preserves the Latin propositions', columns: ['The text was prepared for debate.', 'A printer reproduced the propositions.', 'The page could travel beyond Wittenberg.', 'A printed copy is evidence, not conversion.'], signal: 'A surviving Nuremberg edition documents a real printed text.', kind: 'historical' },
+        { id: 'leipzig-record', masthead: 'Leipzig edition', date: 'late 1517', headline: 'The debate reaches another press', subhead: 'An unnamed printer joins the circulation', columns: ['A second workshop reproduces it.', 'Copies can be compared.', 'The controversy gains an audience.', 'Printing helps, but people interpret.'], signal: 'The record lists Leipzig among the early German printings.', kind: 'historical' },
+        { id: 'basel-record', masthead: 'Basel edition', date: 'late 1517', headline: 'A third workshop carries the text', subhead: 'The printed controversy crosses a region', columns: ['The same propositions travel.', 'Different readers meet the page.', 'Institutions respond to the dispute.', 'Later outcomes are not automatic.'], signal: 'Basel is another documented early printing center.', kind: 'historical' },
+      ],
+      answer: 'Surviving 1517 editions show that printing widened the debate; the Reformation’s later direction also depended on institutions, rulers, religious arguments, language, and people’s choices.',
+    },
+  },
+});
+session(7, {
+  id: 'real-timeline-8',
+  mode: 'knowledge',
+  title: 'Compare the repaired timeline',
+  location: 'Time archive · documented history comparison',
+  date: '1517–1518 · repaired versus real record',
+  task: 'Return to the timeline. Inspect the documented events, switch between the repaired model and the historical record, place the best explanation in the final gap, and test whether your story leaves room for other causes.',
+  goal: 'Explain the relationship between the repaired invention and the real historical spread of Luther’s Ninety-five Theses without making printing the only cause.',
+  product: 'A final timeline comparison distinguishing documented evidence, model results, and counterfactual inference.',
+  historicalNote: 'The historical record supports early print circulation of Luther’s propositions and the role of printing in the Reformation’s rapid spread. The repaired timeline is still a counterfactual model. It helps students reason about a condition of possibility; it cannot replay a world that never existed.',
+  question: 'Which parts of your repaired story are documented, which came from the model, and which remain a reasonable but unproven counterfactual?',
+  sourceIds: ['theses', 'luther-guide', 'print-circulation'],
+  knowledge: {
+    version: '1.0',
+    kind: 'timeline',
+    timeline: {
+      title: 'Two timelines, one question',
+      era: '1517–1518 · repaired model beside documented record',
+      nodes: [
+        { id: 'real-writing', label: 'Luther writes', date: '1517', lane: 'documented', detail: 'The Ninety-five Theses are prepared as propositions for debate about indulgences.', signal: 'The text begins as an argument, not a completed movement.' },
+        { id: 'real-editions', label: 'Editions appear', date: 'late 1517', lane: 'documented', detail: 'Surviving records identify early printings in Leipzig, Nuremberg, and Basel.', signal: 'The printed text reaches multiple workshops.' },
+        { id: 'real-debate', label: 'Controversy expands', date: '1517–1518', lane: 'documented', detail: 'Printing helps the debate widen while church, political, linguistic, and personal choices shape what follows.', signal: 'Several causes remain visible.' },
+        { id: 'model-gap', label: 'Model’s missing link', date: 'alternate branch', lane: 'gap', detail: 'Our broken timeline removes reliable multiplication and shows a quieter, more local debate.', signal: 'This is an inference experiment, not a historical document.' },
+      ],
+      candidates: [
+        { id: 'printed-editions', label: 'Multiple printed editions', detail: 'The documented record includes several early German printings.' },
+        { id: 'only-posting', label: 'Only a church-door posting', detail: 'A posting alone does not explain the surviving print record.' },
+        { id: 'single-cause', label: 'One machine caused everything', detail: 'This erases institutions, conflict, language, and human decisions.' },
+      ],
+      answer: 'printed-editions',
+    },
+  },
+});
+
+await mkdir(directory, { recursive: true });
+await writeFile(resolve(directory, 'project.json'), JSON.stringify(project, null, 2) + '\n');
+await copyFile(resolve(previous, 'press-cover.svg'), resolve(directory, 'press-cover.svg'));
+const planPath = resolve(root, 'src/app/projects/project-lesson-plans.json');
+const plans = JSON.parse(await readFile(planPath, 'utf8'));
+const index = plans.findIndex((p) => p.projectId === project.projectId);
+if (index < 0) throw new Error('Time Repair lesson plan is missing');
+if (plans[index].projectVersion === '2.2.0')
+  await writeFile(resolve(previous, 'lesson-plan.json'), JSON.stringify(plans[index], null, 2) + '\n');
+plans[index] = {
+  ...plans[index],
+  planVersion: '2.3.0',
+  projectVersion: '2.3.0',
+  finalProduct: 'A four-week historical investigation: a diagnosed missing event, a cause traced through alternate evidence, a repaired Gutenberg press, and a comparison with documented 1517–1518 history.',
+  evidenceCriteria: [
+    'Infer a missing event from multiple timeline and witness clues.',
+    'Use alternate newspapers and interviews to trace a testable cause.',
+    'Repair a qualitative printing model with controlled trials.',
+    'Distinguish documented evidence, model results, and counterfactual inference.',
+  ],
+  presentation: { ...plans[index].presentation, title: project.title },
+  lessons: content.sessions.map((s) => ({
+    number: s.number,
+    title: s.title,
+    output: s.product,
+    workspace: s.task,
+    checkpoint: s.question,
+    criteria: [s.goal],
+    focusTarget: 'invention-workspace',
+  })),
+};
+await writeFile(resolve(directory, 'lesson-plan.json'), JSON.stringify(plans[index], null, 2) + '\n');
+await writeFile(planPath, JSON.stringify(plans, null, 2) + '\n');
+console.log('Configured the four-week Time Repair history structure in 2.3.0.');

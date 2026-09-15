@@ -1,0 +1,92 @@
+<svg
+  class="scene investigation-scene"
+  viewBox="0 0 1000 660"
+  role="group"
+  aria-label="Investigate a broken historical timeline and test a missing event"
+>
+  <defs>
+    <linearGradient id="timeline-wall" x2="0" y2="1">
+      <stop stop-color="#203d43" />
+      <stop offset="1" stop-color="#102a31" />
+    </linearGradient>
+    <linearGradient id="timeline-wood" x2="0" y2="1">
+      <stop stop-color="#9a7048" />
+      <stop offset="1" stop-color="#533b31" />
+    </linearGradient>
+    <linearGradient id="timeline-paper" x2="1" y2="1">
+      <stop stop-color="#f4e5c3" />
+      <stop offset="1" stop-color="#cbae78" />
+    </linearGradient>
+    <radialGradient id="timeline-glow">
+      <stop stop-color="#efda9a" stop-opacity=".24" />
+      <stop offset="1" stop-color="#efda9a" stop-opacity="0" />
+    </radialGradient>
+    <pattern id="timeline-grain" width="120" height="40" patternUnits="userSpaceOnUse">
+      <path d="M0 12Q48 2 120 11M0 32Q56 44 120 30" fill="none" stroke="#e5cf9e" opacity=".08" />
+    </pattern>
+    <symbol id="timeline-seal" viewBox="0 0 80 80">
+      <circle cx="40" cy="40" r="28" fill="#9a6248" stroke="#e1bd7d" stroke-width="4" />
+      <path d="M22 43h36M28 34h24M31 51h18" stroke="#f2d8a2" stroke-width="4" />
+    </symbol>
+  </defs>
+  <rect width="1000" height="660" fill="url(#timeline-wall)" />
+  <rect x="9" y="9" width="982" height="642" fill="url(#timeline-grain)" stroke="#6e806d" stroke-width="3" />
+  <ellipse cx="440" cy="160" rx="600" ry="410" fill="url(#timeline-glow)" />
+  <path d="M32 94H968M32 430H968" stroke="#d3b87d" stroke-width="3" opacity=".55" />
+  <text x="500" y="54" class="scene-kicker">{{ d().title }}</text>
+  <text x="500" y="78" class="scene-subtitle">{{ d().era }}</text>
+  <text x="500" y="121" class="lane-label">ARCHIVE EVIDENCE</text>
+  <path d="M78 214H922" stroke="#d4bd86" stroke-width="8" stroke-linecap="round" />
+  <path d="M78 214H922" stroke="#344f4b" stroke-width="20" stroke-linecap="round" opacity=".55" />
+  @for (node of d().nodes; track node.id; let i = $index) {
+    <g [attr.transform]="'translate(' + (70 + i * 172) + ' 0)'">
+      <path d="M8 200V228" stroke="#e1c58b" stroke-width="4" />
+      <g kb [label]="'Inspect timeline record: ' + node.label + ', ' + node.date" (activate)="k.act({ type: 'inspect', target: node.id })">
+        <rect class="record-card" x="-26" y="132" width="146" height="150" rx="7" [attr.opacity]="n('inspected-' + node.id) ? 1 : .86" />
+        <circle cx="46" cy="208" r="32" fill="#314c48" stroke="#e1c58b" stroke-width="4" />
+        @if (node.lane === 'gap') {
+          <path d="M28 208h36M46 190v36" stroke="#df9b6d" stroke-width="5" />
+        } @else {
+          <use href="#timeline-seal" x="14" y="176" width="64" height="64" />
+        }
+        <text x="46" y="153" class="record-date">{{ node.date }}</text>
+        <text x="46" y="268" class="record-label">{{ node.label }}</text>
+        <rect class="hit" x="-32" y="126" width="158" height="164" rx="9" fill="transparent" />
+        @if (n('inspected-' + node.id)) {
+          <path d="M86 169l18 18M102 169l-18 18" stroke="#8cf1db" stroke-width="3" />
+        }
+      </g>
+    </g>
+  }
+  <g transform="translate(45 348)">
+    <text x="455" y="0" class="lane-label">WHAT COULD FILL THE GAP?</text>
+    @for (candidate of d().candidates; track candidate.id; let i = $index) {
+      <g kb [label]="'Place candidate in the gap: ' + candidate.label" [pressed]="k.state().selected === candidate.id" (activate)="k.act({ type: 'candidate', target: candidate.id })" [attr.transform]="'translate(' + (i * 220) + ' 28)'">
+        <rect class="candidate-card" x="0" y="0" width="194" height="78" rx="8" />
+        <text x="97" y="30" class="candidate-label">{{ candidate.label }}</text>
+        <text x="97" y="55" class="candidate-hint">place this possibility</text>
+        <rect class="hit" x="-6" y="-6" width="206" height="90" rx="10" fill="transparent" />
+      </g>
+    }
+  </g>
+  <g transform="translate(45 525)">
+    <g kb label="Show the broken timeline" [pressed]="view() === 0" (activate)="k.act({ type: 'view', value: 0 })">
+      <rect class="view-button" x="0" y="0" width="186" height="64" rx="7" />
+      <text x="93" y="27" class="view-label">BROKEN RECORD</text>
+      <text x="93" y="48" class="view-hint">local speech remains</text>
+      <rect class="hit" x="-5" y="-5" width="196" height="74" rx="9" fill="transparent" />
+    </g>
+    <g kb label="Show the repaired timeline" [pressed]="view() === 1" (activate)="k.act({ type: 'view', value: 1 })" transform="translate(202 0)">
+      <rect class="view-button" x="0" y="0" width="186" height="64" rx="7" />
+      <text x="93" y="27" class="view-label">REPAIRED RECORD</text>
+      <text x="93" y="48" class="view-hint">printed debate travels</text>
+      <rect class="hit" x="-5" y="-5" width="196" height="74" rx="9" fill="transparent" />
+    </g>
+    <g kb label="Test the selected timeline candidate" (activate)="k.act({ type: 'test' })" transform="translate(610 0)">
+      <rect class="test-button" x="0" y="0" width="300" height="64" rx="9" />
+      <text x="150" y="29" class="test-label">TEST THE GAP</text>
+      <text x="150" y="50" class="test-hint">compare every clue</text>
+      <rect class="hit" x="-6" y="-6" width="312" height="76" rx="10" fill="transparent" />
+    </g>
+  </g>
+</svg>

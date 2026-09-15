@@ -38,18 +38,23 @@ export const bridgeCageLayout = `<style>
  [data-bridge-cage] .bc-feedback{flex-basis:100%;font-size:11px;min-height:30px}
  [data-bridge-cage].diorama-expanded{inset:5px}
 }
+
+[data-bridge-cage] .bc-feedback{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+[data-bridge-cage] [data-viewport]{bottom:180px}
+[data-bridge-cage] .bc-bottom{height:180px;min-height:180px}
+[data-bridge-cage] output{display:inline-block;min-width:28px;text-align:center;font-variant-numeric:tabular-nums}
+@media(max-width:680px){[data-bridge-cage] [data-viewport]{bottom:184px}[data-bridge-cage] .bc-bottom{height:184px;min-height:184px}}
 </style>
 <div data-viewport></div>
-<div class="bc-top"><p class="bc-title">RIVER CROSSING<span>Dock the anchor. Rig the cable.</span></p><div><button type="button" data-action="expand" aria-label="Expand bridge workshop">Expand</button> <button type="button" data-action="options" aria-expanded="false">Options</button></div></div>
-<div class="bc-focus" role="group" aria-label="Scene focus"><button type="button" data-focus="all" aria-pressed="true">Whole scene</button><button type="button" data-focus="drive" aria-pressed="false">Mechanism</button><button type="button" data-focus="cage" aria-pressed="false">Crossing</button></div>
+<div class="bc-top"><p class="bc-title">RIVER CROSSING</p><div><button type="button" data-action="expand" aria-label="Expand bridge workshop">Expand</button> <button type="button" data-action="reset" aria-label="Reset mechanism">↺</button></div></div>
 <div class="bc-bottom">
- <div class="bc-stages" role="group" aria-label="Bridge mechanisms"><button type="button" data-stage="0" aria-pressed="true"><b>1</b><span>Anchor rails<small data-status="0">Position the carriage</small></span></button><button type="button" data-stage="1" aria-pressed="false"><b>2</b><span>Cable rig<small data-status="1">Fit a measured cable</small></span></button></div>
- <div class="bc-clue" data-clue></div>
+ <div class="bc-stages" role="group" aria-label="Bridge mechanisms"><button type="button" data-stage="0" aria-pressed="true"><b>1</b><span>Anchor rails<small data-status="0"></small></span></button><button type="button" data-stage="1" aria-pressed="false"><b>2</b><span>Cable rig<small data-status="1"></small></span></button></div>
+
  <div class="bc-rails" data-rails>
-  <div class="bc-axis"><button type="button" data-action="xminus" aria-label="Move anchor left">−</button><label>X <select data-axis="x" aria-label="Anchor X coordinate"></select></label><button type="button" data-action="xplus" aria-label="Move anchor right">+</button></div>
-  <div class="bc-axis"><button type="button" data-action="yminus" aria-label="Move anchor down">−</button><label>Y <select data-axis="y" aria-label="Anchor Y coordinate"></select></label><button type="button" data-action="yplus" aria-label="Move anchor up">+</button></div>
+  <div class="bc-axis"><button type="button" data-action="xminus" aria-label="Move anchor left">−</button><label>X <output data-axis="x" aria-label="Anchor X coordinate"></output></label><button type="button" data-action="xplus" aria-label="Move anchor right">+</button></div>
+  <div class="bc-axis"><button type="button" data-action="yminus" aria-label="Move anchor down">−</button><label>Y <output data-axis="y" aria-label="Anchor Y coordinate"></output></label><button type="button" data-action="yplus" aria-label="Move anchor up">+</button></div>
  </div>
  <div class="bc-cables" data-cables role="group" aria-label="Cable reels" hidden></div>
  <div class="bc-actions"><div class="bc-feedback" aria-live="polite"></div><button type="button" data-action="test">Test setup</button><button type="button" data-action="replay" hidden>Replay crossing</button><button type="button" data-action="pause" aria-pressed="false">Pause</button></div>
 </div>
-<div data-options hidden><strong>Bridge engineer's notes</strong><p data-hint></p><button type="button" data-action="reset">Reset this mechanism</button><label><input type="checkbox" data-motion>Reduce motion</label><label><input type="checkbox" data-sound checked>Mechanical sounds</label></div>`;
+`;

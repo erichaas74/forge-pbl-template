@@ -37925,7 +37925,13 @@ var LivingJourneyMapComponent = class _LivingJourneyMapComponent {
       return;
     const surface = event2.currentTarget;
     const box = surface.getBoundingClientRect(), view = this.viewBox().split(" ").map(Number);
-    this.dragOrigin = { x: event2.clientX, y: event2.clientY, panX: this.panX(), panY: this.panY(), scale: Math.min(box.width / view[2], box.height / view[3]) };
+    this.dragOrigin = {
+      x: event2.clientX,
+      y: event2.clientY,
+      panX: this.panX(),
+      panY: this.panY(),
+      scale: Math.min(box.width / view[2], box.height / view[3])
+    };
     surface.setPointerCapture(event2.pointerId);
   }
   dragPan(event2) {
@@ -41747,6 +41753,7 @@ function withHistoricalVoyage(base) {
 }
 
 // src/app/projects/age-of-exploration-journey/voyage-experience.ts
+var refreshedEvidence = ["evidence-portolan", "evidence-wind-chart", "evidence-storm-log"];
 var option = (id, label, summary, consequence, nextTask, learning, resourceChanges, grants, effect2) => ({
   id,
   label,
@@ -41764,7 +41771,7 @@ var event = (id, label, observation, question, icon, x, y, evidenceIds, choices2
   observation,
   question,
   object: { icon, x, y },
-  evidenceIds,
+  evidenceIds: evidenceIds.map((id2) => refreshedEvidence.includes(id2) ? `${id2}-path` : id2),
   choices: choices2
 });
 function cargo(prefix) {
@@ -42377,6 +42384,35 @@ function withVoyageExperience(base) {
   return __spreadProps(__spreadValues({}, base), {
     projectVersion: "1.4.0",
     subtitle: "A branching Atlantic investigation",
+    evidence: [
+      ...base.evidence,
+      ...base.evidence.filter((source) => refreshedEvidence.includes(source.id)).map((source) => {
+        const notes = {
+          "evidence-portolan": [
+            "Lisbon is north of Cape Verde; the Azores lie west of Portugal. Trace the highlighted passage from your current position to its destination, including its waypoints.",
+            "A headland bearing gives a direction from the ship toward a visible landmark. Compare two bearings with the chart before treating a position as checked. In this model, observations can reveal an additional survey passage.",
+            "A chart records its makers\u2019 observations and omissions. A blank area on a European chart does not mean no one lives there or knows its geography."
+          ],
+          "evidence-wind-chart": [
+            "Read the current passage options for their model duration and supply cost. Different departure points reveal different passages; a destination does not have one fixed travel time.",
+            "Each model week of passage consumes four supply points. Location decisions can also add time or change stores. Compare the displayed consequences with your current reserve before choosing.",
+            "Water occupies the berth that could hold instruments or repair timber. A shelter choice can reveal a return route; observations can reveal a survey route. These are classroom rules, not historical sailing schedules or a weather forecast."
+          ],
+          "evidence-storm-log": [
+            "The mainsail is torn. Inspect the missing canvas and the sound mast before choosing a response. A patch addresses the tear; shortened canvas reduces exposure without making the same repair.",
+            "In this model, patching takes one week and eight supply points. Repair timber packed at the first landing saves four of those supply points. Inspect the displayed cost to see whether your earlier preparation applies.",
+            "Reefing takes one model week and improves crew health. It reveals a sheltered passage on a later chart. Compare the newly available route with the longer crossings; a shelter decision does not complete the next voyage for you."
+          ]
+        };
+        return notes[source.id] ? __spreadProps(__spreadValues({}, source), {
+          id: `${source.id}-path`,
+          paragraphs: notes[source.id].map((text, index) => ({
+            id: `${source.id}-path-${index + 1}`,
+            text
+          }))
+        }) : source;
+      })
+    ],
     map: map2,
     experience
   });
@@ -44774,20 +44810,21 @@ var project_lesson_plans_default = [
   },
   {
     schemaVersion: "1.0",
-    planVersion: "2.1.0",
+    planVersion: "2.2.0",
     projectId: "exploration-time-repair",
-    projectVersion: "2.1.0",
-    finalProduct: "A recovered page, an operated printing system, tested information, teachable repairs, and a visible account of circulation and access.",
+    projectVersion: "2.2.0",
+    finalProduct: "A diagnosed break in print circulation, a repaired invention, and a historical explanation connecting Luther\u2019s 95 Theses with the Protestant Reformation.",
     grouping: "Individual investigation followed by a group repair each week. Group work runs on one device; shared editing is not connected.",
     availability: "Eight directly accessible investigations. Mechanical progress saves on this device. AI tutoring, assessment, and shared sessions are not connected.",
     evidenceCriteria: [
-      "Use physical and historical evidence to explain an invention.",
-      "Trace causes and consequences while distinguishing history from authored fiction."
+      "Explain Luther\u2019s dispute over indulgences and the role of print circulation.",
+      "Use controlled comparisons to diagnose an invention.",
+      "Distinguish historical evidence, a simplified model, and a fictional counterfactual."
     ],
     workspaceView: "experience",
     presentation: {
       layout: "activity-first",
-      title: "Time Repair: The Press That Never Printed",
+      title: "Time Repair: The Missing Reformation",
       identifier: "TR \xB7 03",
       grade: "Grade 7",
       alignmentStatus: "pending",
@@ -44796,23 +44833,23 @@ var project_lesson_plans_default = [
     lessons: [
       {
         number: 1,
-        title: "Reconstruct the lost book",
-        output: "A reconstructed geometric drawing with the source and orientation of each surviving fragment.",
-        workspace: "Lift surviving fragments from both damaged copies. Turn them and fit them into the missing page. Follow the drawing across its joins, then examine the whole reconstruction.",
-        checkpoint: "Which part could not be recovered from the first copy? How did the second change what could survive?",
+        title: "The debate that disappeared",
+        output: "A tested account of what still works, what fails, and how print multiplication changes the reach of Luther\u2019s ideas.",
+        workspace: "The Protestant Reformation is missing from the time archive. Luther\u2019s 95 Theses still exist, but the wider printed debate has disappeared. Send manuscripts to the three workshops, operate their presses, and share available copies with discussion tables. Use the quill when the dispatch tray is empty. Compare the same actions in the working archive. Inspect the ink to trace the failure back to Mainz, around 1454.",
+        checkpoint: "Luther has written the theses and manuscripts can travel. What is actually missing? Use your trials to explain how printing could widen a dispute about indulgences. Why is our missing Reformation a fictional possibility rather than a proven prediction?",
         criteria: [
-          "Explain how separate copies preserve information that a single damaged source can lose."
+          "Distinguish an idea being written from its circulation and public influence; use observed copying failures to identify the fictional historical break."
         ],
         focusTarget: "invention-workspace"
       },
       {
         number: 2,
-        title: "Build from other people\u2019s knowledge",
+        title: "Before Luther: rebuild the invention",
         output: "An assembled and operated printing system, with trial evidence showing what each part contributes.",
-        workspace: "Fit the frame, mold, ink ball, and screw into the press system. Operate each fitted mechanism. Cast four pieces, hold them steady, coat them, and bring the platen into contact. Compare failed and successful impressions.",
-        checkpoint: "Which contribution could the other parts not replace? What did your failed impressions reveal?",
+        workspace: "Follow the ink clue back about sixty years to Gutenberg\u2019s team in Mainz. Fit the frame, mold, ink ball, and screw into their press system. Cast four pieces, hold them steady, coat them, and bring the platen into contact. Compare failed and successful impressions. Discover which contributions the future printers of Luther\u2019s theses will need.",
+        checkpoint: "Why did the investigation take us back before Luther was born? Which parts turn a handwritten idea into repeatable copies, and why can no single part do the whole job?",
         criteria: [
-          "Connect specialized crafts and mechanical functions within an invention."
+          "Explain how several crafts work together in movable-type printing and place Gutenberg\u2019s workshop before Luther\u2019s 1517 controversy."
         ],
         focusTarget: "invention-workspace"
       },
@@ -44820,8 +44857,8 @@ var project_lesson_plans_default = [
         number: 3,
         title: "Rescue the failed demonstration",
         output: "Paired material tests and proofs showing why the first attempted fix failed.",
-        workspace: "The team suspects low pressure. Pull a proof, try another pressure setting, then test the numbered inks on paper and metal. Compare one change at a time and restore two clean impressions.",
-        checkpoint: "What observation rules out pressure as the only cause? Which paper-and-metal comparison supports your repair?",
+        workspace: "Rescue the earlier workshop that future printers depend on. The team suspects low pressure. Pull a proof, try another pressure setting, then test the numbered inks on paper and metal. Compare one change at a time and restore two clean impressions.",
+        checkpoint: "Which paper-and-metal comparison explains the failure you saw in 1517? Separate the physical fault you tested from the invented claim that it prevents the Reformation.",
         criteria: [
           "Diagnose a material failure using controlled comparisons."
         ],
@@ -44873,10 +44910,10 @@ var project_lesson_plans_default = [
       },
       {
         number: 8,
-        title: "Return to the repaired future",
-        output: "A rescued workshop, delivered printed samples, and a comparison with the first courtyard.",
-        workspace: "Repair a fresh ink setup and make three usable impressions. Visit the courtyard at any time during testing. Compare its supply before and after repair, then finish and deliver the printed samples.",
-        checkpoint: "What changed for the binder and messenger? What did your repair leave unresolved? Use a real source to distinguish the invention\u2019s history from our scenario.",
+        title: "Verify that the repair lasts",
+        output: "A repaired printing process, delivered samples, and an evidence-based explanation connecting print circulation with the missing Reformation.",
+        workspace: "Repair a fresh ink setup and make three usable impressions. Visit the 1460 courtyard at any time during testing, then finish and deliver the samples. This checks the earlier printing system. Revisit session 1 through the week navigation to compare its relevance to Luther\u2019s later printed debate.",
+        checkpoint: "How could the repair support the later spread of Luther\u2019s theses? Use a historical source and your observations. Which links are documented, and which belong to our invented timeline?",
         criteria: [
           "Connect a repair to a bounded historical consequence and recognize limits."
         ],
@@ -45997,5 +46034,5 @@ var AuditRoot = class _AuditRoot {
   (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(AuditRoot, { className: "AuditRoot", filePath: "output/voyage-activity-audit/main.ts", lineNumber: 38 });
 })();
 bootstrapApplication(AuditRoot, { providers: [provideRouter([{ path: "**", component: AuditPage }])] }).catch(console.error);
-//# debugId=6ea4a441-90ab-5f0a-8120-daef724b1ce4
+//# debugId=79b04eda-7119-5e02-adce-01924feea36e
 //# sourceMappingURL=main.js.map

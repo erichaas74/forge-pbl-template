@@ -53,14 +53,19 @@ export function opticsCageLayout(d: Reflection): string {
  [data-optics-cage] .oc-feedback{font-size:11px}
  [data-optics-cage].diorama-expanded{inset:5px}
 }
+
+[data-optics-cage] .oc-feedback{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+[data-optics-cage] [data-viewport]{bottom:132px}
+[data-optics-cage] .oc-bottom{height:132px;min-height:132px}
+[data-optics-cage] output{display:inline-block;min-width:28px;text-align:center;font-variant-numeric:tabular-nums}
+@media(max-width:680px){[data-optics-cage] [data-viewport]{bottom:180px}[data-optics-cage] .oc-bottom{height:180px;min-height:180px}}
 </style>
 <div data-viewport></div>
-<div class="oc-top"><p class="oc-title">MOON-TOWER OWL RESCUE<span>Turn the mirrors. Follow the light.</span></p><div><button type="button" data-action="expand" aria-label="Expand owl workshop">Expand</button> <button type="button" data-action="options" aria-expanded="false">Options</button></div></div>
-<div class="oc-focus" role="group" aria-label="Scene focus"><button type="button" data-focus="all" aria-pressed="true">Whole scene</button><button type="button" data-focus="drive" aria-pressed="false">Mirrors</button><button type="button" data-focus="cage" aria-pressed="false">Owls</button></div>
+<div class="oc-top"><p class="oc-title">MOON-TOWER OWL RESCUE</p><div><button type="button" data-action="expand" aria-label="Expand owl workshop">Expand</button> <button type="button" data-action="reset" aria-label="Reset mechanism">↺</button></div></div>
 <div class="oc-bottom">
  <div class="oc-mirrors" role="group" aria-label="Select a mirror">${d.mirrors.map((_, i) => `<button type="button" data-mirror="${i}" aria-label="Select mirror ${i + 1}" aria-pressed="${i === 0}"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="#152c42" stroke="#d5b87e"/><path d="M8 32L32 8" stroke="#c1eff8" stroke-width="4"/><circle cx="20" cy="20" r="3" fill="#e0c38b"/></svg><b>${i + 1}</b><span>MIRROR<strong data-angle="${i}">${d.mirrors[i].start}°</strong></span></button>`).join('')}</div>
- <div class="oc-controls"><div class="oc-turn"><button type="button" data-action="left" aria-label="Rotate selected mirror counterclockwise">↶</button><label><span data-selected>Mirror 1</span><select data-angle-control aria-label="Selected mirror angle"></select></label><button type="button" data-action="right" aria-label="Rotate selected mirror clockwise">↷</button></div><button type="button" data-action="test">Test beam</button><button type="button" data-action="replay" hidden>Replay flight</button><button type="button" data-action="pause" aria-pressed="false">Pause</button></div>
+ <div class="oc-controls"><div class="oc-turn"><button type="button" data-action="left" aria-label="Rotate selected mirror counterclockwise">↶</button><label><span data-selected>Mirror 1</span><output data-angle-control aria-label="Selected mirror angle"></output></label><button type="button" data-action="right" aria-label="Rotate selected mirror clockwise">↷</button></div><button type="button" data-action="test">Test beam</button><button type="button" data-action="replay" hidden>Replay flight</button><button type="button" data-action="pause" aria-pressed="false">Pause</button></div>
  <div class="oc-feedback" aria-live="polite">Drag a brass mirror handle, or select a mirror and turn it below.</div>
 </div>
-<div data-options hidden><strong>Every reflection follows the same rule.</strong><p>Measure from the line perpendicular to the mirror: the incoming and outgoing angles are equal. Dial angles here turn clockwise from horizontal.</p><p data-clue></p><button type="button" data-action="reset">Reset mirrors</button><label><input type="checkbox" data-motion>Reduce motion</label><label><input type="checkbox" data-sound checked>Mechanical sounds</label></div>`;
+`;
 }

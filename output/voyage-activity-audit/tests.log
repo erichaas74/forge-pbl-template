@@ -1,7 +1,7 @@
 Using Vitest configuration file: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\output\voyage-activity-audit\vitest.config.ts
 > Building...
 √ Building...
-Application bundle generation complete. [13.845 seconds] - 2026-09-15T19:39:01.701Z
+Application bundle generation complete. [8.746 seconds] - 2026-09-15T19:58:52.660Z
 
 
  RUN  v4.1.11 C:/Users/erich/Desktop/pbl-lms/forge-pbl-template
@@ -9,6 +9,6 @@ Application bundle generation complete. [13.845 seconds] - 2026-09-15T19:39:01.7
 
  Test Files  14 passed (14)
       Tests  54 passed (54)
-   Start at  13:39:03
-   Duration  20.39s (transform 6.00s, setup 1.28s, import 6.62s, tests 8.28s, environment 2.60s)
+   Start at  13:58:53
+   Duration  7.16s (transform 1.77s, setup 592ms, import 2.11s, tests 2.22s, environment 1.84s)
 

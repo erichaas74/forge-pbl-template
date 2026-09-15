@@ -9,7 +9,7 @@
     </div>
     @if (!authoringPreview()) { <button (click)="pauseRequested.emit()">Pause</button> }
   </header>
-  <nav aria-label="Workshop stages">
+  <nav aria-label="Workshop stages" [hidden]="definition().stages.length === 1 || (diorama() && !error())">
     @for (s of definition().stages; track s.id; let i = $index) {
       @if (authoringPreview()) {
         <button (click)="selectStage(i)" [disabled]="testing() || paused()" [attr.aria-pressed]="i === active()">{{ i + 1 }} · {{ s.title }}</button>
@@ -20,13 +20,7 @@
       }
     }
   </nav>
-  <p class="mission">{{ stage().instruction }}</p>
-  @if (authoringPreview()) {
-    <div class="preview-action">
-      <button class="primary" (click)="test()" [disabled]="locked() || !settled()">Test mechanism</button>
-      <div><strong>{{ reading().equation }}</strong><p aria-live="polite">{{ testing() ? 'Testing the mechanism…' : notice() }}</p></div>
-    </div>
-  }
+  @if (!authoringPreview()) { <p class="mission">{{ stage().instruction }}</p> }
   <div class="stage-shell">
     <div #stageHost class="stage"></div>
     @if (!ready() && !error()) {
@@ -38,7 +32,7 @@
         below.
       </p>
     }
-    @if (testing()) {
+    @if (testing() && !authoringPreview()) {
       <div class="run-caption" role="status">
         <b>{{ passed() ? 'MECHANISM ENGAGED' : 'TESTING THE MECHANISM' }}</b>
         <p>{{ passed() ? stage().success : reading().feedback }}</p>
@@ -49,6 +43,14 @@
     }
   </div>
   <footer>
+    @if (authoringPreview()) {
+      <div class="preview-operation">
+        <button (click)="test()" [disabled]="locked() || !settled()">Test</button>
+        <button (click)="reset()" [disabled]="locked()" aria-label="Reset mechanism">↺</button>
+        <button (click)="pauseRequested.emit()" [attr.aria-pressed]="paused()">{{ paused() ? 'Resume' : 'Pause' }}</button>
+      </div>
+    }
+    @if (!authoringPreview()) {
     <div class="operation">
       <div>
         <small>{{ sealed() ? 'MECHANISM RELEASED' : 'LIVE MEASUREMENTS' }}</small>
@@ -84,7 +86,8 @@
     @if (help()) {
       <aside>{{ stage().hint }}</aside>
     }
-    @if (controls()) {
+    }
+    @if (controls() || (authoringPreview() && (!diorama() || error()))) {
       <div class="controls" aria-label="Accessible machine controls">
         @if (stage(); as d) {
           @if (stageAnswer(); as a) {
@@ -118,17 +121,19 @@
                 @for (v of d.vessels; track v.id; let i = $index) {
                   <div class="control-card">
                     <strong>{{ v.label }}</strong
-                    ><small>{{ v.uses - a.pours[i] }} pours left</small
+                    ><small>{{ v.uses - a.pours[i] }} left</small
                     ><button
                       (click)="operate({ type: 'pour', index: i, delta: 1 })"
                       [disabled]="locked() || a.pours[i] >= v.uses"
+                      [attr.aria-label]="'Pour ' + v.label"
                     >
-                      Pour {{ v.label }}</button
+                      +</button
                     ><button
                       (click)="operate({ type: 'pour', index: i, delta: -1 })"
                       [disabled]="locked() || a.pours[i] === 0"
+                      [attr.aria-label]="'Remove one ' + v.label + ' pour'"
                     >
-                      Remove one {{ v.label }} pour
+                      −
                     </button>
                   </div>
                 }
@@ -201,13 +206,15 @@
                     ><button
                       (click)="operate({ type: 'measure', index: i, delta: 1 })"
                       [disabled]="locked() || (a.measures[i] + 1) * v.measure > v.supply"
+                      [attr.aria-label]="'Pump ' + v.label"
                     >
-                      Pump {{ v.label }}</button
+                      +</button
                     ><button
                       (click)="operate({ type: 'measure', index: i, delta: -1 })"
                       [disabled]="locked() || a.measures[i] === 0"
+                      [attr.aria-label]="'Remove ' + v.label + ' measure'"
                     >
-                      Remove {{ v.label }} measure
+                      −
                     </button>
                   </div>
                 }

@@ -30,7 +30,7 @@ const hull=new T.Mesh(geometry,wood); hull.name='INT_hull'; scene.add(hull);
 const rim=new T.Group();rim.name='INT_rim';scene.add(rim);
 const rimMat=new T.MeshStandardMaterial({color:0x96704a,roughness:.93});
 for(const sign of [-1,1]) {const pts=[];for(let i=0;i<=80;i++){const t=i/80*2-1;pts.push(new T.Vector3(sign*.62*Math.sqrt(Math.max(.014,1-t**4)),.915+.1*t*t,t*2.94));}rim.add(new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(pts),100,.045,6,false),rimMat));}
-const sand=new T.Mesh(new T.CylinderGeometry(12,12,.14,96),new T.MeshStandardMaterial({color:0xc3b18b,roughness:1}));sand.position.y=-.08;sand.name='ENV_ground';scene.add(sand);
+const sand=new T.Mesh(new T.CylinderGeometry(80,80,.14,96),new T.MeshStandardMaterial({color:0xc3b18b,roughness:1}));sand.position.y=-.08;sand.name='ENV_ground';scene.add(sand);
 const logMat=new T.MeshStandardMaterial({color:0x584534,roughness:1});
 for(const z of [-1.8,1.8]){const m=new T.Mesh(new T.CylinderGeometry(.15,.18,2,12),logMat);m.rotation.z=Math.PI/2;m.position.set(0,.14,z);m.name='ENV_support_'+(z<0?'a':'b');scene.add(m);}
 const tool=new T.Group();tool.name='INT_stone';tool.position.set(1.8,.42,.4);scene.add(tool);

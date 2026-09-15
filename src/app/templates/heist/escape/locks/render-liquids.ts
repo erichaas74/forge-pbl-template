@@ -148,8 +148,8 @@ export function volumeRenderer(s: MachineSurface, d: Volume): MachineRenderer {
       });
       if (Math.abs(shown - target) > 0.001) {
         g.lineStyle(6, 0x8be5dd, 0.75).lineBetween(583, 136, 583, 495 - Math.min(shown, 1) * 320);
-        s.text('pouring', 827, 318, 'MEASURED TRANSFER\nLet the float settle.', 17);
-      } else s.text('pouring', 827, 318, 'Drag a vessel to the inlet\nor tap it to pour.', 17);
+        s.text('pouring', 827, 318, 'TRANSFERRING', 17);
+      } else s.text('pouring', 827, 318, '', 17);
     },
   };
 }
@@ -225,13 +225,13 @@ export function mixingRenderer(s: MachineSurface, d: Mixing): MachineRenderer {
         'mix-help',
         935,
         491,
-        'Colored amounts are measured.\nMatching color alone is not enough.',
+        '',
         16,
       );
       const angle = v.reducedMotion ? 0 : time * 1.5;
       s.bar(622, 147, 622, 390, 7, 0x9ba69a);
       s.bar(622 - Math.cos(angle) * 75, 405, 622 + Math.cos(angle) * 75, 405, 8, 0xe4c080);
-      s.plate('pump-label', 615, 603, 'TURN A VALVE TO DISPENSE ONE MEASURE', 530);
+
     },
   };
 }

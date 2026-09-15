@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "1.0",
+  "planVersion": "2.3.0",
+  "projectId": "exploration-time-repair",
+  "projectVersion": "2.3.0",
+  "finalProduct": "A four-week historical investigation: a diagnosed missing event, a cause traced through alternate evidence, a repaired Gutenberg press, and a comparison with documented 1517–1518 history.",
+  "grouping": "Individual investigation followed by a group repair each week. Group work runs on one device; shared editing is not connected.",
+  "availability": "Eight directly accessible investigations. Mechanical progress saves on this device. AI tutoring, assessment, and shared sessions are not connected.",
+  "evidenceCriteria": [
+    "Infer a missing event from multiple timeline and witness clues.",
+    "Use alternate newspapers and interviews to trace a testable cause.",
+    "Repair a qualitative printing model with controlled trials.",
+    "Distinguish documented evidence, model results, and counterfactual inference."
+  ],
+  "workspaceView": "experience",
+  "presentation": {
+    "layout": "activity-first",
+    "title": "Time Repair: The Missing Reformation",
+    "identifier": "TR · 03",
+    "grade": "Grade 7",
+    "alignmentStatus": "pending",
+    "alignmentNote": "Ideas That Changed the World is the selected Grade 7 curriculum direction. The supplied standards framework covers Grades 4–6; a Grade 7 crosswalk has not been supplied. The learning goals below are project goals, not verified standards."
+  },
+  "lessons": [
+    {
+      "number": 1,
+      "title": "Find the missing event",
+      "output": "A tested candidate for the missing event and a clue-by-clue timeline record.",
+      "workspace": "The archive jumps from Luther’s manuscript to a quiet winter. Inspect each record, place a candidate in the gap, and test it against the clues. You are not told what disappeared; the timeline has to convince you.",
+      "checkpoint": "Which event best explains the hole? What evidence shows the idea existed, and what evidence shows its wider printed circulation is the part missing?",
+      "criteria": [
+        "Infer that a printed debate is the missing event while separating the historical Ninety-five Theses from our fictional absence of circulation."
+      ],
+      "focusTarget": "invention-workspace"
+    },
+    {
+      "number": 2,
+      "title": "Hear the quiet debate",
+      "output": "A witness board linking three alternate accounts to the missing printed debate.",
+      "workspace": "Interview a bookseller, a university student, and a church visitor from the alternate timeline. Hear each account, inspect the object they carried, and weigh what their three viewpoints can—and cannot—prove.",
+      "checkpoint": "What do all three voices share? Which detail is an observation, and which is your inference about why the debate did not spread?",
+      "criteria": [
+        "Use independent witnesses and physical evidence to confirm the missing circulation without turning a fictional interview into a primary source."
+      ],
+      "focusTarget": "invention-workspace"
+    },
+    {
+      "number": 3,
+      "title": "Read the alternate newspapers",
+      "output": "A press-trail reading supported by inspected alternate newspaper columns.",
+      "workspace": "Open three newspaper issues from the world without a working press. Inspect two columns in every issue, compare the editions, and trace the physical failure they keep circling without naming.",
+      "checkpoint": "Which repeated clue points to a process failure rather than a lack of interest? What still happens in this alternate world?",
+      "criteria": [
+        "Identify the failed multiplication process as the cause of the missing printed debate, while distinguishing a newspaper’s report from tested material evidence."
+      ],
+      "focusTarget": "invention-workspace"
+    },
+    {
+      "number": 4,
+      "title": "Interview the failed workshop",
+      "output": "A cause diagnosis that names a testable fault and its limits.",
+      "workspace": "Question three workshop voices about the old failure. Hear each account, inspect the object left on the bench, and weigh the evidence before deciding which physical cause is worth testing in Week 3.",
+      "checkpoint": "Which physical clue can be tested? What would an interview alone fail to establish about Gutenberg’s real workshop?",
+      "criteria": [
+        "Trace the alternate timeline’s cause to ink adhesion and linked press crafts, without treating fictional witnesses as proof of what Gutenberg’s exact workshop looked like."
+      ],
+      "focusTarget": "invention-workspace"
+    },
+    {
+      "number": 5,
+      "title": "Test the failed press",
+      "output": "Paired material tests and proofs showing which repair conditions work.",
+      "workspace": "The interviews named a material clue. Test the numbered inks on paper and metal, change pressure one variable at a time, and pull clean proofs. The press opens here because this is the repair week.",
+      "checkpoint": "Which change fixed the physical symptom? Which historical consequences remain an inference?",
+      "criteria": [
+        "Diagnose the physical failure with controlled material and pressure comparisons."
+      ],
+      "focusTarget": "invention-workspace"
+    },
+    {
+      "number": 6,
+      "title": "Build the Gutenberg system",
+      "output": "An assembled press and trial evidence showing what each craft contributes.",
+      "workspace": "Fit the frame, mold, ink ball, and screw into the press. Operate each craft contribution, compare a failed assembly with a clean one, and explain why the repair is a system rather than one magic part.",
+      "checkpoint": "Which parts had to cooperate before a future printer could multiply Luther’s text? What does the model leave uncertain?",
+      "criteria": [
+        "Learn how linked crafts make movable-type printing repeatable and repair the assembled system."
+      ],
+      "focusTarget": "invention-workspace"
+    },
+    {
+      "number": 7,
+      "title": "Read the history that happened",
+      "output": "A source-grounded reading of what printing changed and what it could not decide alone.",
+      "workspace": "Open the surviving-edition desk. Inspect two columns in each historical issue, compare Leipzig, Nuremberg, and Basel, and trace what the real printed record can show about the spread of Luther’s debate.",
+      "checkpoint": "What do the surviving editions establish? Which parts of the later Protestant Reformation still require people, institutions, conflict, and choice?",
+      "criteria": [
+        "Use surviving print evidence to compare the repaired model with the documented circulation of the Ninety-five Theses."
+      ],
+      "focusTarget": "invention-workspace"
+    },
+    {
+      "number": 8,
+      "title": "Compare the repaired timeline",
+      "output": "A final timeline comparison distinguishing documented evidence, model results, and counterfactual inference.",
+      "workspace": "Return to the timeline. Inspect the documented events, switch between the repaired model and the historical record, place the best explanation in the final gap, and test whether your story leaves room for other causes.",
+      "checkpoint": "Which parts of your repaired story are documented, which came from the model, and which remain a reasonable but unproven counterfactual?",
+      "criteria": [
+        "Explain the relationship between the repaired invention and the real historical spread of Luther’s Ninety-five Theses without making printing the only cause."
+      ],
+      "focusTarget": "invention-workspace"
+    }
+  ]
+}

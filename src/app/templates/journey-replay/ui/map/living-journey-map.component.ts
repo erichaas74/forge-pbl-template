@@ -42,17 +42,31 @@ export class LivingJourneyMapComponent {
   readonly showRouteLabels = input(true);
   readonly expeditionStyle = input(false);
   readonly vesselArt = input<string>();
-  private dragOrigin?: {x:number;y:number;panX:number;panY:number;scale:number};
+  private dragOrigin?: { x: number; y: number; panX: number; panY: number; scale: number };
 
-  startPan(event:PointerEvent):void {
-    if(!this.expeditionStyle() || (event.target as Element).closest('[role="button"]'))return;
-    const surface=event.currentTarget as SVGSVGElement;
-    const box=surface.getBoundingClientRect(), view=this.viewBox().split(' ').map(Number);
-    this.dragOrigin={x:event.clientX,y:event.clientY,panX:this.panX(),panY:this.panY(),scale:Math.min(box.width/view[2],box.height/view[3])};
+  startPan(event: PointerEvent): void {
+    if (!this.expeditionStyle() || (event.target as Element).closest('[role="button"]')) return;
+    const surface = event.currentTarget as SVGSVGElement;
+    const box = surface.getBoundingClientRect(),
+      view = this.viewBox().split(' ').map(Number);
+    this.dragOrigin = {
+      x: event.clientX,
+      y: event.clientY,
+      panX: this.panX(),
+      panY: this.panY(),
+      scale: Math.min(box.width / view[2], box.height / view[3]),
+    };
     surface.setPointerCapture(event.pointerId);
   }
-  dragPan(event:PointerEvent):void { const start=this.dragOrigin;if(!start)return;this.panX.set(start.panX-(event.clientX-start.x)/start.scale);this.panY.set(start.panY-(event.clientY-start.y)/start.scale); }
-  endPan():void {this.dragOrigin=undefined;}
+  dragPan(event: PointerEvent): void {
+    const start = this.dragOrigin;
+    if (!start) return;
+    this.panX.set(start.panX - (event.clientX - start.x) / start.scale);
+    this.panY.set(start.panY - (event.clientY - start.y) / start.scale);
+  }
+  endPan(): void {
+    this.dragOrigin = undefined;
+  }
   readonly classVoyages = input<readonly ClassVoyageRecord[]>([]);
   readonly featuredVoyageId = input<string | undefined>(undefined);
   readonly intersections = input<readonly VoyageIntersection[]>([]);

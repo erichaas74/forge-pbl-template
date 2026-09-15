@@ -1,0 +1,19 @@
+.scene-kicker { fill: #f1dfb6; font: 24px Georgia, serif; text-anchor: middle; }
+.scene-subtitle,.scene-note,.masthead,.edition-date,.headline,.subhead,.issue-tag,.view-label,.view-hint,.trace-label,.trace-hint { text-anchor: middle; user-select: none; }
+.scene-subtitle { fill: #b8c8a3; font: 15px Arial, sans-serif; }
+.scene-note { fill: #d7c08c; font: 13px Arial, sans-serif; }
+.paper-shadow { fill: #0b2025; opacity: .55; }
+.sheet { fill: url(#broadsheet); stroke: #b5905b; stroke-width: 3; }
+.masthead { fill: #2e483e; font: 22px Georgia, serif; }
+.edition-date { fill: #526257; font: 12px Arial, sans-serif; }
+.headline { fill: #354b42; font: 16px Georgia, serif; }
+.subhead { fill: #5c6d5d; font: 11px Arial, sans-serif; }
+.column-panel { fill: #e7d5a9; stroke: #b39566; stroke-width: 2; }
+.issue-tag { fill: #5b6b5d; font: 11px Arial, sans-serif; letter-spacing: 1px; }
+.view-button { fill: #203c3e; stroke: #b49563; stroke-width: 3; }
+.trace-button { fill: #896346; stroke: #ebc988; stroke-width: 3; }
+.view-label,.trace-label { fill: #f2dfb3; font: 14px Arial, sans-serif; letter-spacing: 1px; }
+.view-hint,.trace-hint { fill: #b4c3a4; font: 12px Arial, sans-serif; }
+[kb][aria-pressed='true'] .sheet,[kb][aria-pressed='true'] .view-button { stroke: #8cf1db; stroke-width: 5; }
+[kb]:hover .sheet,[kb]:hover .view-button,[kb]:hover .trace-button { stroke: #f4d69b; }
+[kb]:focus-visible .sheet,[kb]:focus-visible .view-button,[kb]:focus-visible .trace-button { stroke: #8cf1db; stroke-width: 5; }

@@ -1,0 +1,86 @@
+<svg
+  class="scene investigation-scene"
+  viewBox="0 0 1000 660"
+  role="group"
+  aria-label="Investigate alternate and historical newspapers for evidence about the printing press"
+>
+  <defs>
+    <linearGradient id="paperroom-wall" x2="0" y2="1">
+      <stop stop-color="#283f43" />
+      <stop offset="1" stop-color="#142c32" />
+    </linearGradient>
+    <linearGradient id="paperroom-table" x2="0" y2="1">
+      <stop stop-color="#a7794d" />
+      <stop offset="1" stop-color="#523a31" />
+    </linearGradient>
+    <linearGradient id="broadsheet" x2="1" y2="1">
+      <stop stop-color="#f4e4bd" />
+      <stop offset="1" stop-color="#c4a472" />
+    </linearGradient>
+    <radialGradient id="paperroom-lamp">
+      <stop stop-color="#f4dda2" stop-opacity=".23" />
+      <stop offset="1" stop-color="#f4dda2" stop-opacity="0" />
+    </radialGradient>
+    <pattern id="paperroom-grain" width="110" height="36" patternUnits="userSpaceOnUse">
+      <path d="M0 8Q47 1 110 10M0 28Q55 41 110 25" fill="none" stroke="#f1d8a7" opacity=".08" />
+    </pattern>
+  </defs>
+  <rect width="1000" height="660" fill="url(#paperroom-wall)" />
+  <rect x="8" y="8" width="984" height="644" fill="url(#paperroom-grain)" stroke="#74806d" stroke-width="3" />
+  <ellipse cx="530" cy="170" rx="570" ry="410" fill="url(#paperroom-lamp)" />
+  <path d="M0 482H1000V660H0Z" fill="url(#paperroom-table)" />
+  <path d="M0 482H1000M0 620H1000" stroke="#e0bb7e" stroke-width="7" opacity=".45" />
+  <text x="500" y="52" class="scene-kicker">{{ d().title }}</text>
+  <text x="500" y="76" class="scene-subtitle">{{ d().era }}</text>
+  <text x="500" y="112" class="scene-note">Open an issue, inspect two columns, then compare the record.</text>
+  @for (edition of d().editions; track edition.id; let i = $index) {
+    <g [attr.transform]="'translate(' + (36 + i * 312) + ' 0)'">
+      <g>
+        <path class="paper-shadow" d="M16 156L286 144 296 456 8 466Z" />
+        <path class="sheet" d="M7 144L278 132 288 444 0 456Z" />
+        <text x="143" y="168" class="masthead">{{ edition.masthead }}</text>
+        <text x="143" y="188" class="edition-date">{{ edition.date }}</text>
+        <path d="M22 204H266" stroke="#526257" stroke-width="2" />
+        <text x="143" y="231" class="headline">{{ edition.headline }}</text>
+        <text x="143" y="254" class="subhead">{{ edition.subhead }}</text>
+        <g kb [label]="'Open newspaper: ' + edition.masthead + ', ' + edition.date" [pressed]="k.state().selected === edition.id" (activate)="k.act({ type: 'open', target: edition.id })">
+          <rect class="hit" x="-9" y="124" width="306" height="140" rx="9" fill="transparent" />
+        </g>
+        @for (column of edition.columns; track $index) {
+          <g kb [label]="'Inspect column ' + ($index + 1) + ' in ' + edition.masthead" (activate)="k.act({ type: 'inspect', target: edition.id + ':' + $index })">
+            <rect class="column-panel" [attr.x]="columnX($index)" [attr.y]="columnY($index)" width="110" height="46" rx="3" />
+            @if (n('clue-' + edition.id + '-' + $index)) {
+              <circle [attr.cx]="columnX($index) + 90" [attr.cy]="columnY($index) + 23" r="15" fill="#9b6549" />
+              <path [attr.d]="'M' + (columnX($index) + 82) + ' ' + (columnY($index) + 23) + 'l6 6 12-14'" fill="none" stroke="#f3db9f" stroke-width="3" />
+            } @else {
+              <path [attr.d]="'M' + (columnX($index) + 9) + ' ' + (columnY($index) + 14) + 'h90M' + (columnX($index) + 9) + ' ' + (columnY($index) + 26) + 'h78M' + (columnX($index) + 9) + ' ' + (columnY($index) + 38) + 'h64'" stroke="#526257" stroke-width="3" />
+            }
+            <rect class="hit" [attr.x]="columnX($index) - 6" [attr.y]="columnY($index) - 6" width="122" height="58" rx="4" fill="transparent" />
+          </g>
+        }
+        <path d="M25 414H263" stroke="#526257" stroke-width="2" />
+        <text x="143" y="433" class="issue-tag">{{ edition.kind === 'historical' ? 'SURVIVING RECORD' : 'ALTERNATE EDITION' }}</text>
+      </g>
+    </g>
+  }
+  <g transform="translate(44 523)">
+    <g kb label="Read the alternate newspaper record" [pressed]="view() === 0" (activate)="k.act({ type: 'compare', value: 0 })">
+      <rect class="view-button" x="0" y="0" width="250" height="62" rx="8" />
+      <text x="125" y="27" class="view-label">ALTERNATE RECORD</text>
+      <text x="125" y="47" class="view-hint">what the missing press leaves behind</text>
+      <rect class="hit" x="-5" y="-5" width="260" height="72" rx="10" fill="transparent" />
+    </g>
+    <g kb label="Compare the historical newspaper record" [pressed]="view() === 1" (activate)="k.act({ type: 'compare', value: 1 })" transform="translate(270 0)">
+      <rect class="view-button" x="0" y="0" width="250" height="62" rx="8" />
+      <text x="125" y="27" class="view-label">HISTORICAL RECORD</text>
+      <text x="125" y="47" class="view-hint">what surviving issues show</text>
+      <rect class="hit" x="-5" y="-5" width="260" height="72" rx="10" fill="transparent" />
+    </g>
+    <g kb label="Trace the newspaper evidence" (activate)="k.act({ type: 'trace' })" transform="translate(540 0)">
+      <rect class="trace-button" x="0" y="0" width="370" height="62" rx="8" />
+      <text x="185" y="27" class="trace-label">TRACE THE PRESS TRAIL</text>
+      <text x="185" y="47" class="trace-hint">two columns per issue</text>
+      <rect class="hit" x="-5" y="-5" width="380" height="72" rx="10" fill="transparent" />
+    </g>
+  </g>
+</svg>

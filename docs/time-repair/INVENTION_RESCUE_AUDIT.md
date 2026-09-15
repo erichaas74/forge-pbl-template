@@ -1,12 +1,14 @@
 # Time Repair — invention-rescue audit
 
-**Current follow-up:** the catalog now uses version 2.1.0. See
-[the six-experience build and review](KNOWLEDGE_BUILD.md) for its changed lessons,
+**Current follow-up:** the catalog now uses version 2.3.0. See
+[the four-week history restructure](FOUR_WEEK_HISTORY_RESTRUCTURE.md) and
+[the Reformation opening and knowledge-experience build](KNOWLEDGE_BUILD.md) for the changed lessons,
 visual development, interaction checks, and remaining limits. The audit below
 records the earlier 2.0 build.
 
 Date: 2026-09-15. Scope: Time Repair only, all four weeks/eight sessions and its
-final example. Current package: `exploration-time-repair@2.0.0`, template
+final example. The earlier package below is historical audit context; the current
+package is `exploration-time-repair@2.3.0`, template
 `time-repair@1.1`. This includes the authorized rebuild and fixes found while
 auditing it against [the standing activity rules](../PROJECT_ACTIVITY_RULES.md).
 

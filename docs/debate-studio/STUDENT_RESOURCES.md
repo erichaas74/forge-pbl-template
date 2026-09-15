@@ -1,8 +1,40 @@
-# Student resource ideas for both debates
+# Primary documents for both debates
 
 Shortlist checked 2026-09-15. These are proposed resources and teaching uses, not newly embedded media. Use short selected passages for Grade 6; full scholarly translations are reference material. Keep the main viewport on the debate and open resources on demand.
 
-## Best starter set
+## Priority: people speaking from the period
+
+The user's clarification is to prioritize first-person historical documents from which students can gather evidence. The core shelf should therefore lead with letters, speeches, royal inscriptions and laws. Modern explanations and speech coaching below are supplementary.
+
+### The Fate of the Republic
+
+| Document and passage | Evidence students can investigate | Source caution |
+| --- | --- | --- |
+| [Caesar to Oppius and Cornelius, preserved in Cicero, *Letters to Atticus* 9.7c](https://www.attalus.org/cicero/atticus9.html), March 49 BCE; read the short letter | Caesar explains moderation, reconciliation and releasing captured opponents. Does mercy protect Rome, help him win power, or both? | Caesar is explaining his own policy to allies. His stated intentions are evidence of his position, not independent proof of every outcome. Translation: E. O. Winstedt, 1921. |
+| [Cicero, *Pro Marcello*](https://www.attalus.org/cicero/marcellus.html), 46 BCE; sections 1–3 and 26–27 | A senator praises Caesar's clemency but asks him to restore the constitution. Students can use different passages to develop or challenge either side. | A public speech addressed to Caesar and the Senate has a persuasive purpose. Preserve both praise and the request. Translation: N. H. Watts, 1931. |
+| [Cicero to Atticus, 14.4 and 14.9.2](https://www.attalus.org/cicero/atticus14.html), 10 and 17 April 44 BCE | Cicero worries that Caesar's death has not restored constitutional government. What does this suggest about power and institutions? | A participant's private political judgments, including secondhand reports. These letters follow the assassination; label that timing rather than putting them into a pre-assassination scene. Translation: E. O. Winstedt, 1918. |
+
+Start with Caesar's letter and Cicero's public speech. Introduce the April letters as a clearly dated aftermath comparison. Later authors such as Plutarch, Appian and Suetonius can supplement the record, but must be identified as later accounts. Shakespeare's speeches are literature, not surviving ancient testimony.
+
+### Hammurabi on Trial
+
+| Document and passage | Evidence students can investigate | Source caution |
+| --- | --- | --- |
+| [Hammurabi's inscription: prologue and epilogue](https://avalon.law.yale.edu/ancient/hamcode.asp), eighteenth century BCE; select the justice/protection claims | Compare the ruler's self-description with whom a particular rule protects. Does the rule support the promise? | A royal statement in Hammurabi's voice, produced through royal scribal practice. A claim about justice does not show how every case was decided. Avalon reproduces an older L. W. King translation. |
+| [Hammurabi's laws](https://avalon.law.yale.edu/ancient/hamcode.asp): 48, 53–55, 196–201 and 215–217 | Compare disaster relief, responsibility for water damage, unequal injury penalties and medical fees. These supply evidence for both order and unequal treatment. | Contemporary legal provisions, not first-person testimony from affected people or records proving universal enforcement. Preserve status distinctions; do not collapse different legal categories into “everyone.” |
+| [Hammurabi's letters to Sin-idinnam](https://www.wisdomlib.org/mesopotamian/book/the-civilization-of-babylonia-and-assyria/d/doc3986.html), selections I–III: canal work, a bribery investigation and seized grain | The king gives practical orders and relays a complainant's account. Compare instructions with the inscription's promises; identify what remains unknown about the result. | The linked page reproduces Morris Jastrow's 1915 translations alongside his commentary. Read the translated letters as the documents, and label the surrounding commentary separately. The grain complaint is preserved through the king's letter, not an independent surviving letter from the complainant. |
+
+Optional everyday voice: [Nanni's complaint to Ea-nasir, British Museum tablet record](https://www.britishmuseum.org/collection/object/W_1953-0411-71). A customer complains about copper and delivery. It can introduce commerce, expectations and a complainant's perspective; it does not establish that Hammurabi adjudicated this dispute. The museum record identifies and pictures the tablet; select a credited full translation before making it an in-app reading.
+
+### Suggested document format
+
+Offer 80–150-word selections where practical, an exact letter/section/law reference, author or issuing authority, date, audience, translator and a link to the full translation. Provide a clearly labeled reading-level paraphrase beside the translated passage, never in quotation marks as if original wording. Preserve uncertainty and unfamiliar social categories with a short glossary.
+
+Use one concrete action: **select a passage → attach it to a claim → explain what it supports → identify its limit**. Let both sides inspect every document. Do not pre-label a whole source as belonging to the winning side. The ongoing debate remains the main viewport, with document reading on demand.
+
+These are selected source recommendations and build parameters; this document does not claim the new passages have already been embedded in the evidence shelf.
+
+## Supplementary argument and media resources
 
 | Resource | Best use | Student action |
 | --- | --- | --- |

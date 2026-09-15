@@ -1,1 +1,0 @@
-import"./chunk-C0iDotwW.js";import{t as P}from"./chunk-xnwBZK5M.js";export{P as studentMuseumConfig};

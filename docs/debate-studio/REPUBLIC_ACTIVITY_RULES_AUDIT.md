@@ -1,5 +1,7 @@
 # The Fate of the Republic — activity rules audit
 
+**Historical audit:** the findings below describe the previous 2.0.0 experience. The user subsequently authorized the exchange redesign in both projects. Current implementation parameters are in the [Debate Studio build guide](../build/16_DEBATE_STUDIO_TEMPLATE.md); see [exchange verification](EXCHANGE_VERIFICATION.md) for the checks and remaining classroom connection limits. The original findings are retained as the before-change record.
+
 Date: 2026-09-15. Project `the-fate-of-the-republic@2.0.0`; lesson plan `1.0.0`; Debate Studio `2.0`.
 
 **Result: does not meet the project activity rules.** All eight session entries were inspected. The current page is principally an opinion prompt, transcript archive, and response editor. Selecting a session changes the navigation and standards, but does not supply that session's learning activity.

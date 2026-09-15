@@ -4840,9 +4840,19 @@
                   {
                     "name": "SOCKET_overview",
                     "kind": "socket"
+                  },
+                  {
+                    "name": "ENV_ground",
+                    "kind": "environment"
                   }
                 ],
                 "clips": []
+              },
+              "environment": {
+                "background": "/projects/shadow-gallery/coastal-3d-v1/workshop-background-v1.png",
+                "ground": "/projects/shadow-gallery/coastal-3d-v1/workshop-ground-v1.png",
+                "groundNode": "ENV_ground",
+                "tileSize": 3
               },
               "targets": [
                 {
@@ -4925,9 +4935,19 @@
                   {
                     "name": "INT_ear",
                     "kind": "target"
+                  },
+                  {
+                    "name": "ENV_ground",
+                    "kind": "environment"
                   }
                 ],
                 "clips": []
+              },
+              "environment": {
+                "background": "/projects/shadow-gallery/coastal-3d-v1/field-background-v1.png",
+                "ground": "/projects/shadow-gallery/coastal-3d-v1/field-soil-v1.png",
+                "groundNode": "ENV_ground",
+                "tileSize": 3
               },
               "targets": [
                 {

@@ -56,20 +56,11 @@ export function mountBridgeCage(
   viewer.canvas.tabIndex = 0;
   const model = createBridgeDiorama(viewer.art, d);
   viewer.scene.add(model.root);
-  const sequence = new BridgeSequence(d, snapshot()),
-    reduced = q<HTMLInputElement>('[data-motion]');
-  reduced.checked = snapshot().reducedMotion;
+  const sequence = new BridgeSequence(d, snapshot());
   const axes = {
-    x: q<HTMLSelectElement>('[data-axis=x]'),
-    y: q<HTMLSelectElement>('[data-axis=y]'),
+    x: q<HTMLOutputElement>('[data-axis=x]'),
+    y: q<HTMLOutputElement>('[data-axis=y]'),
   };
-  for (const axis of Object.values(axes))
-    for (let n = coordinate.min; n <= coordinate.max; n++) {
-      const option = document.createElement('option');
-      option.value = String(n);
-      option.textContent = String(n);
-      axis.append(option);
-    }
   cable.cables.forEach((item, i) => {
     const button = document.createElement('button');
     button.type = 'button';
@@ -95,7 +86,7 @@ export function mountBridgeCage(
   let drag: { id: number; point: Point; moved: boolean; x: number; y: number } | undefined;
   const view = (): MachineView => ({
     ...snapshot(),
-    reducedMotion: reduced.checked || snapshot().reducedMotion,
+    reducedMotion: snapshot().reducedMotion,
   });
   const operable = () =>
     !gone && !snapshot().paused && !snapshot().testing && !snapshot().completed;
@@ -231,26 +222,10 @@ export function mountBridgeCage(
         if (operable()) {
           cancel();
           cb.input({ type: 'reset' });
-          viewer.closeOptions();
           viewer.setFocus('drive');
-          action('options').focus();
         }
         break;
-      case 'options': {
-        const panel = q('[data-options]');
-        panel.hidden = !panel.hidden;
-        button.setAttribute('aria-expanded', String(!panel.hidden));
-        break;
-      }
-    }
-  };
-  const change = (event: Event) => {
-    if (event.target === axes.x || event.target === axes.y)
-      commit({ x: Number(axes.x.value), y: Number(axes.y.value) });
-    if ((event.target as HTMLElement).matches('[data-sound]')) {
-      sound.enabled = (event.target as HTMLInputElement).checked;
-      if (sound.enabled) sound.unlock();
-      else sound.suspend();
+
     }
   };
   const key = (event: KeyboardEvent) => {
@@ -268,7 +243,6 @@ export function mountBridgeCage(
     }
   };
   root.addEventListener('click', click);
-  root.addEventListener('change', change);
   root.addEventListener('keydown', key);
   root.addEventListener('pointerdown', down);
   root.addEventListener('pointermove', move);
@@ -352,18 +326,12 @@ export function mountBridgeCage(
           v.paused ||
           (!v.freelySelectStages && i !== v.active && !(i === v.active + 1 && v.completed));
         q(`[data-status="${i}"]`).textContent = machineReading(d.stages[i], answers[i]).solved
-          ? 'Aligned'
-          : i === 0
-            ? 'Position the carriage'
-            : 'Fit a measured cable';
+          ? '✓' : '';
       });
-      q('[data-clue]').textContent = d.stages[v.active].instruction;
-      q('[data-hint]').textContent = d.stages[v.active].hint;
       q('[data-rails]').hidden = v.active !== 0;
       q('[data-cables]').hidden = v.active !== 1;
       for (const axis of ['x', 'y'] as const) {
         axes[axis].value = String(shown[axis]);
-        axes[axis].disabled = !can;
       }
       for (const name of ['xminus', 'xplus', 'yminus', 'yplus', 'reset'])
         action(name).disabled = !can;
@@ -434,7 +402,6 @@ export function mountBridgeCage(
     cancelAnimationFrame(frame);
     cancel();
     root.removeEventListener('click', click);
-    root.removeEventListener('change', change);
     root.removeEventListener('keydown', key);
     root.removeEventListener('pointerdown', down);
     root.removeEventListener('pointermove', move);

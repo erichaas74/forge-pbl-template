@@ -97,7 +97,7 @@ The independent context defense lives in the tutor side area. Include a hypothet
 
 ## 8. Resources and media
 
-Use a small, task-related resource shelf: historical evidence, argument technique, selected speech models and peer-review exemplars. Candidate sources and concrete student actions are in [Student resource ideas](../debate-studio/STUDENT_RESOURCES.md).
+Lead the resource shelf with **first-person and contemporary historical documents**: letters, speeches, royal inscriptions and laws. Students need passages they can cite, compare and challenge. Use exact section/law references, author or issuing authority, date, audience and translator; distinguish original translated wording from a labeled student paraphrase. A participant's claim is not proof of its truth, and a legal rule is not proof of enforcement. Label later accounts and modern explanations explicitly. Keep argument coaching, speech models and peer-review exemplars supplementary. The prioritized document shortlist and student actions are in [Primary documents for both debates](../debate-studio/STUDENT_RESOURCES.md).
 
 An example should teach an observable move: find a claim, select evidence, identify a missing link, compare two rebuttals, or justify a judgment. Keep examples separate from actual classmates' work.
 

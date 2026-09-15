@@ -11,6 +11,7 @@ import type {
 } from '../../templates/journey-replay/domain/journey-replay.models';
 
 type Option = Omit<JourneyPathChoice, 'id'> & { readonly id: string };
+const refreshedEvidence = ['evidence-portolan', 'evidence-wind-chart', 'evidence-storm-log'];
 const option = (
   id: string,
   label: string,
@@ -48,7 +49,7 @@ const event = (
   observation,
   question,
   object: { icon, x, y },
-  evidenceIds,
+  evidenceIds: evidenceIds.map((id) => (refreshedEvidence.includes(id) ? `${id}-path` : id)),
   choices,
 });
 
@@ -730,6 +731,40 @@ export function withVoyageExperience(base: JourneyProjectConfig): JourneyProject
     ...base,
     projectVersion: '1.4.0',
     subtitle: 'A branching Atlantic investigation',
+    evidence: [
+      ...base.evidence,
+      ...base.evidence
+        .filter((source) => refreshedEvidence.includes(source.id))
+        .map((source) => {
+          const notes: Record<string, readonly string[]> = {
+            'evidence-portolan': [
+              'Lisbon is north of Cape Verde; the Azores lie west of Portugal. Trace the highlighted passage from your current position to its destination, including its waypoints.',
+              'A headland bearing gives a direction from the ship toward a visible landmark. Compare two bearings with the chart before treating a position as checked. In this model, observations can reveal an additional survey passage.',
+              'A chart records its makers’ observations and omissions. A blank area on a European chart does not mean no one lives there or knows its geography.',
+            ],
+            'evidence-wind-chart': [
+              'Read the current passage options for their model duration and supply cost. Different departure points reveal different passages; a destination does not have one fixed travel time.',
+              'Each model week of passage consumes four supply points. Location decisions can also add time or change stores. Compare the displayed consequences with your current reserve before choosing.',
+              'Water occupies the berth that could hold instruments or repair timber. A shelter choice can reveal a return route; observations can reveal a survey route. These are classroom rules, not historical sailing schedules or a weather forecast.',
+            ],
+            'evidence-storm-log': [
+              'The mainsail is torn. Inspect the missing canvas and the sound mast before choosing a response. A patch addresses the tear; shortened canvas reduces exposure without making the same repair.',
+              'In this model, patching takes one week and eight supply points. Repair timber packed at the first landing saves four of those supply points. Inspect the displayed cost to see whether your earlier preparation applies.',
+              'Reefing takes one model week and improves crew health. It reveals a sheltered passage on a later chart. Compare the newly available route with the longer crossings; a shelter decision does not complete the next voyage for you.',
+            ],
+          };
+          return notes[source.id]
+            ? {
+                ...source,
+                id: `${source.id}-path`,
+                paragraphs: notes[source.id].map((text, index) => ({
+                  id: `${source.id}-path-${index + 1}`,
+                  text,
+                })),
+              }
+            : source;
+        }),
+    ],
     map,
     experience,
   };

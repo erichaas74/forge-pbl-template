@@ -114,18 +114,10 @@ export class DioramaViewer {
     if (value) button.focus();
     else this.oldFocus?.focus({ preventScroll: true });
   }
-  closeOptions(): void {
-    const options = this.root.querySelector<HTMLElement>('[data-options]')!;
-    options.hidden = true;
-    this.root.querySelector('[data-action=options]')!.setAttribute('aria-expanded', 'false');
-  }
   private key = (event: KeyboardEvent) => {
     if (!this.expanded && !this.root.contains(document.activeElement)) return;
     if (event.key === 'Escape') {
-      if (!this.root.querySelector<HTMLElement>('[data-options]')!.hidden) {
-        this.closeOptions();
-        this.root.querySelector<HTMLButtonElement>('[data-action=options]')!.focus();
-      } else if (this.expanded) this.expand(false);
+      if (this.expanded) this.expand(false);
     }
     if (this.expanded && event.key === 'Tab') {
       const list = Array.from(

@@ -25,10 +25,7 @@ export function mountTimingCage(
   root.innerHTML = timingCageLayout;
   parent.append(root);
   const q = <E extends HTMLElement>(selector: string) => root.querySelector<E>(selector)!;
-  const viewport = q<HTMLDivElement>('.tc-viewport'),
-    settings = q<HTMLDivElement>('.tc-settings');
-  q('[data-clue]').textContent = d.hint;
-  q<HTMLAnchorElement>('[data-credits]').href = presentation.animal.credits;
+  const viewport = q<HTMLDivElement>('.tc-viewport');
   const sound = new TimingCageSound();
   let renderer: T.WebGLRenderer;
   try {
@@ -97,8 +94,7 @@ export function mountTimingCage(
     previousRelease = 0;
   let currentTick =
     snapshot().answer.kind === 'timing-wheels' ? (snapshot().answer as { steps: number }).steps : 0;
-  let motion = snapshot().reducedMotion,
-    mute = false,
+  let
     expanded = false,
     previousOverflow = '',
     previousFocus: HTMLElement | null = null;
@@ -134,7 +130,6 @@ export function mountTimingCage(
   pinLabel.className = 'tc-label';
   pinLabel.textContent = 'SHARED RELEASE PIN';
   viewport.append(pinLabel);
-  q<HTMLInputElement>('[data-setting=motion]').checked = motion;
   const action = (name: string) => q<HTMLButtonElement>(`[data-action=${name}]`);
   const raycaster = new T.Raycaster();
   const point = new T.Vector2();
@@ -143,7 +138,7 @@ export function mountTimingCage(
     | undefined;
   const view = (): MachineView => ({
     ...snapshot(),
-    reducedMotion: motion || snapshot().reducedMotion,
+    reducedMotion: snapshot().reducedMotion,
   });
   function canOperate(): boolean {
     const v = view();
@@ -230,36 +225,17 @@ export function mountTimingCage(
     if (name === 'rewind') operate(-1);
     if (name === 'reset' && canOperate()) {
       cb.input({ type: 'reset' });
-      settings.hidden = true;
-      action('settings').setAttribute('aria-expanded', 'false');
     }
     if (name === 'replay' && !view().paused && !view().testing) cb.replay?.();
     if (name === 'pause') cb.pause?.();
     if (name === 'expand') setExpanded(!expanded);
-    if (name === 'settings') {
-      settings.hidden = !settings.hidden;
-      target.setAttribute('aria-expanded', String(!settings.hidden));
-    }
+
     const next = target.dataset['focus'];
     if (next === 'all' || next === 'lock' || next === 'cage') setFocus(next);
   }
-  function onChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.dataset['setting'] === 'motion') motion = input.checked;
-    if (input.dataset['setting'] === 'sound') {
-      mute = !input.checked;
-      sound.enabled = !mute;
-      if (mute) sound.suspend();
-      else sound.unlock();
-    }
-  }
   function onKey(event: KeyboardEvent): void {
     if (event.key === 'Escape') {
-      if (!settings.hidden) {
-        settings.hidden = true;
-        action('settings').setAttribute('aria-expanded', 'false');
-        action('settings').focus();
-      } else if (expanded) setExpanded(false);
+      if (expanded) setExpanded(false);
       return;
     }
     if (expanded && event.key === 'Tab') {
@@ -353,7 +329,7 @@ export function mountTimingCage(
     const v = view(),
       dt = v.paused || document.hidden ? 0 : Math.min(0.25, (now - last) / 1000);
     last = now;
-    if (v.paused || document.hidden || mute) sound.suspend();
+    if (v.paused || document.hidden) sound.suspend();
     else sound.resume();
     if (document.hidden) return;
     age += dt;
@@ -479,7 +455,6 @@ export function mountTimingCage(
     cb.failed();
   }
   root.addEventListener('click', onClick);
-  root.addEventListener('change', onChange);
   root.addEventListener('keydown', onKey);
   canvas.addEventListener('pointerdown', pointerDown);
   canvas.addEventListener('pointermove', pointerMove);
@@ -512,8 +487,7 @@ export function mountTimingCage(
       sound.destroy();
       animal?.destroy();
       root.removeEventListener('click', onClick);
-      root.removeEventListener('change', onChange);
-      root.removeEventListener('keydown', onKey);
+        root.removeEventListener('keydown', onKey);
       canvas.removeEventListener('pointerdown', pointerDown);
       canvas.removeEventListener('pointermove', pointerMove);
       canvas.removeEventListener('pointerup', pointerUp);

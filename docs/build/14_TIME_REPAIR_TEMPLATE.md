@@ -7,19 +7,23 @@ presentation and authoring sections do not override the standing
 
 ## Invention-rescue capability — 1.1, 2026-09-15
 
-The current project, **Time Repair: The Press That Never Printed**, is project
-version `2.1.0`. Its package is
-`public/projects/exploration-time-repair/versions/2.1.0/project.json`.
+The current project, **Time Repair: The Missing Reformation**, is project
+version `2.3.0`. Its package is
+`public/projects/exploration-time-repair/versions/2.3.0/project.json`.
 The original `project.json` and an archived 1.0 lesson plan remain available;
 previous assessed and preview records are not migrated into invention practice.
 
-Version 2.1 adds six registered `invention-knowledge.*` capabilities through
+Version 2.3 adds the four-week Reformation investigation and ten registered
+`invention-knowledge.*` capabilities through
 validated `mode: knowledge` session configurations (extension version `1.0`).
-They model reconstruction, assembly, diagram testing, apprentice demonstrations,
-distribution, and access. Their event replay, scoped persistence, renderer registry,
+They model timeline inference, newspaper reading, interviews, print circulation,
+reconstruction, assembly, diagram testing, apprentice demonstrations, distribution,
+and access. The current four-week package uses timeline, newspaper, interview, and
+assembly scenes, with the remaining capabilities reusable for future content.
+Their event replay, scoped persistence, renderer registry,
 Phaser/SVG responsibilities, and verification are described in
 [the knowledge build contract](../time-repair/KNOWLEDGE_BUILD.md).
-The 2.0 package and archived lesson plan remain available. All testing navigation
+The 2.0, 2.1, and 2.2 packages and archived lesson plans remain available. All testing navigation
 stays open, including travel to the final courtyard before repair.
 
 `requireTimeRepairPackage` dispatches between validated package variants.

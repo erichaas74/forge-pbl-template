@@ -26,17 +26,10 @@
       >
         {{ expanded() ? 'Close' : 'Expand' }}
       </button>
-      @if (!authoringPreview() || expanded()) {
         <button class="help" (click)="pauseRequested.emit()" [attr.aria-label]="paused() ? 'Resume machine' : 'Pause machine'">
           {{ paused() ? 'Resume' : 'Pause' }}
         </button>
-      }
-      <button class="help" (click)="help.set(!help())" [attr.aria-expanded]="help()">
-        How it works
-      </button>
-      @if (authoringPreview()) {
-        <button class="help" (click)="engage()" [disabled]="paused()" aria-label="Record this setup">Save trial</button>
-      }
+        <button class="help" (click)="resetScale()" [disabled]="paused() || locked()" aria-label="Reset this scale">↺</button>
     </div>
   </header>
   <nav class="seals" aria-label="Connected balance seals">
@@ -62,7 +55,7 @@
       </button>
     }
   </nav>
-  @if (help()) {
+  @if (help() && !authoringPreview()) {
     <aside class="instructions">
       @if (piston()) {
         <strong>The piston is the counterweight.</strong> Add weights to the left pan to match the
@@ -81,7 +74,7 @@
       }
     </aside>
   }
-  <div class="mechanism-brief">
+  <div class="mechanism-brief" [hidden]="authoringPreview()">
     <p>{{ scale().instruction }}</p>
     <span role="status" [class.aligned]="allBalanced()">{{
       allBalanced()

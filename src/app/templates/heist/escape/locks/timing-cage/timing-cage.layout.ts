@@ -56,15 +56,20 @@ export const timingCageLayout = `
  [data-timing-cage] .tc-subtitle{font-size:11px;max-width:145px}
  [data-timing-cage].tc-expanded{inset:5px}
 }
+
+[data-timing-cage] .tc-caption,[data-timing-cage] .tc-feedback{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+[data-timing-cage] .tc-viewport{bottom:86px}
+[data-timing-cage] .tc-controls{height:86px;min-height:86px}
+[data-timing-cage] output{display:inline-block;min-width:28px;text-align:center;font-variant-numeric:tabular-nums}
+@media(max-width:680px){[data-timing-cage] .tc-viewport{bottom:135px}[data-timing-cage] .tc-controls{height:135px;min-height:135px}}
 </style>
 <div class="tc-viewport"></div>
-<div class="tc-corners"><p class="tc-title">PATROL SYNCHRONIZER<span class="tc-subtitle">Turn the crank. Watch the holes.</span></p><div class="tc-view-buttons"><button type="button" data-action="expand" aria-label="Expand patrol workshop">Expand</button><button type="button" data-action="settings" aria-expanded="false">Options</button></div></div>
-<div class="tc-focus" role="group" aria-label="Scene focus"><button type="button" data-focus="all" aria-pressed="true">Whole scene</button><button type="button" data-focus="lock" aria-pressed="false">Lock</button><button type="button" data-focus="cage" aria-pressed="false">Cage</button></div>
+<div class="tc-corners"><p class="tc-title">PATROL SYNCHRONIZER</p><div class="tc-view-buttons"><button type="button" data-action="expand" aria-label="Expand patrol workshop">Expand</button> <button type="button" data-action="reset" aria-label="Reset mechanism">↺</button></div></div>
 <div class="tc-caption" role="status" hidden></div>
 <div class="tc-controls">
  <div class="tc-ticks"><div class="tc-count"><span data-count>0</span><small>TICKS</small></div><div class="tc-readings" aria-label="Wheel timing"></div></div>
  <div class="tc-actions"><button type="button" data-action="rewind" aria-label="Rewind one tick">↶ 1</button><button type="button" data-action="advance">Crank +1</button><button type="button" data-action="replay" hidden>Replay escape</button><button type="button" data-action="pause">Pause</button></div>
  <div class="tc-feedback" aria-live="polite">The first turn arms the latch.</div>
 </div>
-<div class="tc-settings" hidden><strong>Workshop options</strong><p data-clue></p><button type="button" data-action="reset">Rewind to the start</button><label><input type="checkbox" data-setting="motion">Reduce motion</label><label><input type="checkbox" data-setting="sound" checked>Mechanical sounds</label><a data-credits target="_blank" rel="noopener">Animal art & animation credits ↗</a></div>
+
 `;

@@ -1,5 +1,7 @@
 # Voyage — project activity rules audit
 
+> **Implementation update, 2026-09-15:** This is the baseline audit of version 1.3.0. The user subsequently directed an options-based map → location → map experience. Version 1.4.0 implements that framework, its branching learning paths and finished scene graphics. See [implementation and validation](BRANCHING_EXPERIENCE.md). Grade 7 standards alignment remains explicitly pending; local practice and disconnected AI are labeled. The original findings below describe the audited baseline, not the current rendering.
+
 Date: 2026-09-15. Project: **Race Around the World** (`race-around-the-world@1.3.0`), lesson plan `1.0.0`, Journey Replay template `1.0`.
 
 **Result: does not meet the project activity rules.** All eight session entries were checked at desktop and phone widths. All five underlying chapters and the completed replay were also inspected using explicitly synthetic prior-decision fixtures.

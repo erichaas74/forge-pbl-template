@@ -1920,6 +1920,7 @@
         "skill": "Coordinates, transformations and length",
         "lock": {
           "title": "Bridge engineering workshop",
+          "presentation": { "kind": "bridge-cage", "rabbits": 6 },
           "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
           "stages": [
             {
@@ -2008,6 +2009,7 @@
           "skill": "Coordinates, transformations and length",
           "lock": {
             "title": "Bridge engineering workshop",
+            "presentation": { "kind": "bridge-cage", "rabbits": 6 },
             "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
             "stages": [
               {
@@ -2090,6 +2092,7 @@
           "skill": "Coordinates, transformations and length",
           "lock": {
             "title": "Bridge engineering workshop",
+            "presentation": { "kind": "bridge-cage", "rabbits": 6 },
             "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
             "stages": [
               {
@@ -2176,6 +2179,7 @@
           "skill": "Coordinates, transformations and length",
           "lock": {
             "title": "Bridge engineering workshop",
+            "presentation": { "kind": "bridge-cage", "rabbits": 6 },
             "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
             "stages": [
               {

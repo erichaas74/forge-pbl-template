@@ -41,6 +41,10 @@ Assets are under `public/journey-replay/voyage-v2/`; see [asset briefs and prove
 
 The Voyage regression suite passes **54 tests across 14 files**, including all eight session entries, alternate previews, route-to-location-to-map transitions, consequence carryover, discovery rules, revision history, malformed persistence, save recovery and legacy journey behavior. The renderer is substituted in DOM unit tests; actual art and effects are reviewed in the browser.
 
+The focused development build and full Angular template/type compilation (`ngc --noEmit`) pass. All 20 scenes were exercised at 1366 × 768 and 390 × 844: no horizontal overflow or scene errors, one canvas per location and none on maps. Torn, patched and reefed sails were inspected visually; source-dialog Escape and focus restoration were checked. The source check passes 42 standards and 123 lesson evidence checks. Two existing repository architecture violations remain outside Voyage (`core/index.ts` and the mystery-substance render-quality service). A full bundled application build ended without completion; only the focused bundle and full compiler checks are claimed here.
+
+The new version replaces outdated route-duration and storm notes with evidence for its current rules. The historical 1.3.0 evidence stays unchanged.
+
 This remains **local practice**, with no classroom submission or grade. AI is explicitly disconnected. Grade 7 standards alignment is pending an authoritative mapping; the compact standards row states that limitation. Illustrations are fictional scene reconstructions, not historical source evidence; source evidence remains separately inspectable.
 
 Future work: direct manipulation of cargo and navigation instruments can extend the current options-based event interface. That extension must retain the same decision contracts and resource rules.

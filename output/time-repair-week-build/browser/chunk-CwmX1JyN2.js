@@ -1,0 +1,1 @@
+import{t as w}from"./chunk-BMLiau6H2.js";export{w as robotDeliveryConfig};
