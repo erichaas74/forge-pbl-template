@@ -42,6 +42,7 @@ export class SphericalViewComponent {
   }
   private async load(view: PanoramaViewpoint): Promise<void> {
     const generation = ++this.generation; this.loading.set(true); this.error.set('');
+    if (view.inspection) { this.loading.set(false); return; }
     try {
       const texture = await new this.api!.TextureLoader().loadAsync(view.image);
       if (this.destroyed || generation !== this.generation) { texture.dispose(); return; }
@@ -53,11 +54,11 @@ export class SphericalViewComponent {
   }
   retry(): void { if (this.renderer) void this.load(this.active()); }
   private resize(): void {
-    const element = this.surface()?.nativeElement; if (!element || !this.renderer || !this.camera) return;
+    const element = this.surface()?.nativeElement; if (!element || !element.clientWidth || !element.clientHeight || !this.renderer || !this.camera) return;
     this.renderer.setSize(element.clientWidth, element.clientHeight, false); this.camera.aspect = element.clientWidth / Math.max(1, element.clientHeight); this.draw();
   }
   private draw(): void {
-    if (!this.renderer || !this.world || !this.camera || !this.api) return;
+    if (!this.renderer || !this.world || !this.camera || !this.api || this.active().inspection) return;
     this.camera.fov = this.fov(); this.camera.updateProjectionMatrix(); this.camera.lookAt(...viewDirection(this.yaw(), this.pitch())); this.camera.updateMatrixWorld(); this.renderer.render(this.world, this.camera);
     const forward = this.camera.getWorldDirection(new this.api.Vector3());
     this.placeMarkers.set((this.active().places ?? []).flatMap(place => {

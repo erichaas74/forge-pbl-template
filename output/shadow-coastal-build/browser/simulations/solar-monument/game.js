@@ -807,6 +807,7 @@
       },
       observe: (localDate, rule) => questObserve(localDate, rule),
       freeze: on => { freezeCamera = on === true; if (!on) frameKey = ''; },
+      surface: options => solarOptics.material(options),
       day: () => { const d = currentDay(); return { start: d.start, end: d.end, kind: d.kind }; },
       observeClock: minutes => {
         if (document.body.classList.contains('presenting')) return;

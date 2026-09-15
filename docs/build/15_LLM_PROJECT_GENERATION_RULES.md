@@ -1,5 +1,9 @@
 # LLM Investigation Project Generation Rules
 
+## When generating a debate project
+
+Use the [Debate Studio build guide](16_DEBATE_STUDIO_TEMPLATE.md) and its optional `debate.exchange-cycle` contract. Supply project-specific sources and skill examples for the eight-session opening → exchange → critique/revision cycle. Include same-side peer critique and final individual performer rankings. Keep writing in the tutor-owned side area and leave every session/example accessible during testing. Do not generate a new Angular page per debate topic or claim that local file exchange, AI tutoring or mastery is an authenticated live service.
+
 ## Purpose
 
 Define how a curriculum-generation LLM converts a completed `DESIGNER_PROJECT_BRIEF.md` into a valid Investigation project package.

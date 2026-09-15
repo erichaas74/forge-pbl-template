@@ -18,12 +18,12 @@ export class SpatialInspectionComponent {
       const definition=requireSpatialInspection(this.definition());
       const [T,{OrbitControls}]=await Promise.all([import('three'),import('three/addons/controls/OrbitControls.js')]);
       if(this.request.signal.aborted)return;this.T=T;
-      const renderer=this.renderer=new T.WebGLRenderer({canvas:this.canvas()!.nativeElement,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setClearColor(0xc8d6d5);renderer.outputColorSpace=T.SRGBColorSpace;
+      const renderer=this.renderer=new T.WebGLRenderer({canvas:this.canvas()!.nativeElement,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setClearColor(0xc8d6d5);renderer.outputColorSpace=T.SRGBColorSpace;renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.shadowMap.autoUpdate=false;
       const scene=this.scene=new T.Scene();scene.fog=new T.Fog(0xc8d6d5,15,30);
-      scene.add(new T.HemisphereLight(0xe8f7ff,0x716044,2.4));const sun=new T.DirectionalLight(0xffe5bc,3);sun.position.set(-3,8,5);scene.add(sun);
+      scene.add(new T.HemisphereLight(0xe8f7ff,0x716044,2.4));const sun=new T.DirectionalLight(0xffe5bc,3);sun.position.set(-3,8,5);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);Object.assign(sun.shadow.camera,{left:-8,right:8,top:8,bottom:-8,near:.5,far:30});sun.shadow.normalBias=.03;scene.add(sun);
       const camera=this.camera=new T.PerspectiveCamera(48,1,.05,60);
       const controls=this.controls=new OrbitControls(camera,this.canvas()!.nativeElement);controls.enablePan=false;controls.enableDamping=false;controls.minPolarAngle=.18;controls.maxPolarAngle=1.3;controls.maxDistance=11;controls.addEventListener('change',()=>this.draw());
-      this.mounted=await loadSpatialAsset(definition.asset,this.request.signal);scene.add(this.mounted.pivot);
+      this.mounted=await loadSpatialAsset(definition.asset,this.request.signal);this.mounted.pivot.traverse(node=>{if(node instanceof T.Mesh){node.castShadow=true;node.receiveShadow=true;}});scene.add(this.mounted.pivot);renderer.shadowMap.needsUpdate=true;
       this.loading.set(false);this.overview();this.observer=new ResizeObserver(()=>this.resize());this.observer.observe(this.surface()!.nativeElement);this.resize();
     }catch(error){if(!this.request.signal.aborted){this.loading.set(false);this.error.set('The workshop could not open. Return to the village and try again.');}}
   }

@@ -55,15 +55,16 @@
         },
         {
           "label": "The balance rule",
-          "value": "Both pans must have exactly the same mass."
+          "value": "The weight pan must match the mass printed on its piston."
         }
       ],
       "puzzle": {
         "type": "balance-lock",
         "prompt": "Balance all three seals to open the outer gate.",
-        "hint": "The lower pan is heavier. Combine blocks on the lighter side. Compare fractions with a common denominator.",
+        "hint": "Add weights to lift the piston; remove weights to lower it. Match its printed mass to align the cutout.",
         "skill": "Equivalent fractions, decimals & mixed numbers",
         "lock": {
+          "mechanism": "piston-counterweight",
           "backdrop": "/projects/castle-archive-rescue/art/v3/balance-chamber.png",
           "skin": "brass",
           "tolerance": {
@@ -257,9 +258,10 @@
         "6": {
           "type": "balance-lock",
           "prompt": "Balance all three seals to open the outer gate.",
-          "hint": "The lower pan is heavier. Combine blocks on the lighter side. Compare fractions with a common denominator.",
+          "hint": "Add weights to lift the piston; remove weights to lower it. Match its printed mass to align the cutout.",
           "skill": "Rational-number operations and equivalent quantities",
           "lock": {
+            "mechanism": "piston-counterweight",
             "backdrop": "/projects/castle-archive-rescue/art/v3/balance-chamber.png",
             "skin": "brass",
             "tolerance": {
@@ -451,9 +453,10 @@
         "7": {
           "type": "balance-lock",
           "prompt": "Balance all three seals to open the outer gate.",
-          "hint": "The lower pan is heavier. Combine blocks on the lighter side. Compare fractions with a common denominator.",
+          "hint": "Add weights to lift the piston; remove weights to lower it. Match its printed mass to align the cutout.",
           "skill": "Rational-number operations and equivalent quantities",
           "lock": {
+            "mechanism": "piston-counterweight",
             "backdrop": "/projects/castle-archive-rescue/art/v3/balance-chamber.png",
             "skin": "brass",
             "tolerance": {
@@ -645,9 +648,10 @@
         "8": {
           "type": "balance-lock",
           "prompt": "Balance all three seals to open the outer gate.",
-          "hint": "The lower pan is heavier. Combine blocks on the lighter side. Compare fractions with a common denominator.",
+          "hint": "Add weights to lift the piston; remove weights to lower it. Match its printed mass to align the cutout.",
           "skill": "Rational-number operations and equivalent quantities",
           "lock": {
+            "mechanism": "piston-counterweight",
             "backdrop": "/projects/castle-archive-rescue/art/v3/balance-chamber.png",
             "skin": "brass",
             "tolerance": {
@@ -844,7 +848,7 @@
       "place": "Watchtower passage",
       "story": "Find the FIRST positive tick when every wheel hole returns to its release line. The wheels turn once every 4, 6 ticks. Zero does not count.",
       "action": "Solve lock",
-      "success": "All the holes align at the first possible moment. The lookout shutter closes!",
+      "success": "The shared pin slides home. The lookout shutter closes and the holding cage opens.",
       "explanation": "Your measured settings made the real mechanism line up: common multiples and wheel phases.",
       "x": 23.4375,
       "y": 44.921875,
@@ -874,7 +878,7 @@
               "title": "The patrol synchronizer",
               "instruction": "Find the FIRST positive tick when every wheel hole returns to its release line. The wheels turn once every 4, 6 ticks. Zero does not count.",
               "hint": "List common arrival times. A wheel with an offset aligns when (time + offset) is a multiple of its period.",
-              "success": "All the holes align at the first possible moment. The lookout shutter closes!",
+              "success": "The shared pin slides home. The lookout shutter closes and the holding cage opens.",
               "periods": [
                 4,
                 6
@@ -884,7 +888,18 @@
                 0
               ],
               "maxSteps": 72,
-              "firstAlignment": true
+              "firstAlignment": true,
+              "presentation": {
+                "kind": "timing-cage",
+                "animal": {
+                  "label": "Fox",
+                  "model": "/projects/castle-archive-rescue/art/patrol/fox.glb",
+                  "idle": "Survey",
+                  "walk": "Walk",
+                  "run": "Run",
+                  "credits": "/projects/castle-archive-rescue/art/patrol/credits.html"
+                }
+              }
             }
           ]
         }
@@ -906,7 +921,7 @@
                 "title": "The patrol synchronizer",
                 "instruction": "Find the FIRST positive tick when every wheel hole returns to its release line. The wheels turn once every 6, 8 ticks. Zero does not count.",
                 "hint": "List common arrival times. A wheel with an offset aligns when (time + offset) is a multiple of its period.",
-                "success": "All the holes align at the first possible moment. The lookout shutter closes!",
+                "success": "The shared pin slides home. The lookout shutter closes and the holding cage opens.",
                 "periods": [
                   6,
                   8
@@ -916,7 +931,18 @@
                   0
                 ],
                 "maxSteps": 72,
-                "firstAlignment": true
+                "firstAlignment": true,
+                "presentation": {
+                  "kind": "timing-cage",
+                  "animal": {
+                    "label": "Fox",
+                    "model": "/projects/castle-archive-rescue/art/patrol/fox.glb",
+                    "idle": "Survey",
+                    "walk": "Walk",
+                    "run": "Run",
+                    "credits": "/projects/castle-archive-rescue/art/patrol/credits.html"
+                  }
+                }
               }
             ]
           }
@@ -936,7 +962,7 @@
                 "title": "The patrol synchronizer",
                 "instruction": "Find the FIRST positive tick when every wheel hole returns to its release line. The wheels turn once every 4, 6, 9 ticks. Zero does not count.",
                 "hint": "List common arrival times. A wheel with an offset aligns when (time + offset) is a multiple of its period.",
-                "success": "All the holes align at the first possible moment. The lookout shutter closes!",
+                "success": "The shared pin slides home. The lookout shutter closes and the holding cage opens.",
                 "periods": [
                   4,
                   6,
@@ -948,7 +974,18 @@
                   0
                 ],
                 "maxSteps": 120,
-                "firstAlignment": true
+                "firstAlignment": true,
+                "presentation": {
+                  "kind": "timing-cage",
+                  "animal": {
+                    "label": "Fox",
+                    "model": "/projects/castle-archive-rescue/art/patrol/fox.glb",
+                    "idle": "Survey",
+                    "walk": "Walk",
+                    "run": "Run",
+                    "credits": "/projects/castle-archive-rescue/art/patrol/credits.html"
+                  }
+                }
               }
             ]
           }
@@ -968,7 +1005,7 @@
                 "title": "The patrol synchronizer",
                 "instruction": "Find the FIRST positive tick when every wheel hole returns to its release line. Both wheels begin one tick past zero. Account for that offset.",
                 "hint": "List common arrival times. A wheel with an offset aligns when (time + offset) is a multiple of its period.",
-                "success": "All the holes align at the first possible moment. The lookout shutter closes!",
+                "success": "The shared pin slides home. The lookout shutter closes and the holding cage opens.",
                 "periods": [
                   6,
                   8
@@ -978,7 +1015,18 @@
                   1
                 ],
                 "maxSteps": 72,
-                "firstAlignment": true
+                "firstAlignment": true,
+                "presentation": {
+                  "kind": "timing-cage",
+                  "animal": {
+                    "label": "Fox",
+                    "model": "/projects/castle-archive-rescue/art/patrol/fox.glb",
+                    "idle": "Survey",
+                    "walk": "Walk",
+                    "run": "Run",
+                    "credits": "/projects/castle-archive-rescue/art/patrol/credits.html"
+                  }
+                }
               }
             ]
           }
@@ -1018,6 +1066,8 @@
             {
               "id": "fraction-gear",
               "kind": "fraction-gear",
+
+              "presentation": { "kind": "fraction-cage", "rabbits": 6 },
               "title": "The broken moon cog",
               "instruction": "Drag a selection of brass sectors onto the axle. Build exactly ONE full circle with no gaps or overlaps. Click a piece to select it; use the controls to rotate by one notch.",
               "hint": "Each notch is 1/24 of a turn. Convert the fractions to twenty-fourths, then arrange your chosen sectors edge to edge.",
@@ -1076,6 +1126,8 @@
               {
                 "id": "fraction-gear",
                 "kind": "fraction-gear",
+
+                "presentation": { "kind": "fraction-cage", "rabbits": 6 },
                 "title": "The broken moon cog",
                 "instruction": "Drag a selection of brass sectors onto the axle. Build exactly ONE full circle with no gaps or overlaps. Click a piece to select it; use the controls to rotate by one notch.",
                 "hint": "Each notch is 1/24 of a turn. Convert the fractions to twenty-fourths, then arrange your chosen sectors edge to edge.",
@@ -1130,6 +1182,8 @@
               {
                 "id": "fraction-gear",
                 "kind": "fraction-gear",
+
+                "presentation": { "kind": "fraction-cage", "rabbits": 6 },
                 "title": "The broken moon cog",
                 "instruction": "Drag a selection of brass sectors onto the axle. Build exactly ONE full circle with no gaps or overlaps. Click a piece to select it; use the controls to rotate by one notch.",
                 "hint": "Each notch is 1/24 of a turn. Convert the fractions to twenty-fourths, then arrange your chosen sectors edge to edge.",
@@ -1184,6 +1238,8 @@
               {
                 "id": "fraction-gear",
                 "kind": "fraction-gear",
+
+                "presentation": { "kind": "fraction-cage", "rabbits": 6 },
                 "title": "The broken moon cog",
                 "instruction": "Drag a selection of brass sectors onto the axle. Build exactly ONE full circle with no gaps or overlaps. Click a piece to select it; use the controls to rotate by one notch.",
                 "hint": "Each notch is 1/24 of a turn. Convert the fractions to twenty-fourths, then arrange your chosen sectors edge to edge.",
@@ -1260,6 +1316,17 @@
         "skill": "Fraction multiplication & proportional reasoning",
         "lock": {
           "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+          "presentation": {
+            "kind": "gear-cage",
+            "foxes": 4,
+            "animal": {
+              "model": "/projects/castle-archive-rescue/art/patrol/fox.glb",
+              "credits": "/projects/castle-archive-rescue/art/patrol/credits.html",
+              "idle": "Survey",
+              "walk": "Walk",
+              "run": "Run"
+            }
+          },
           "title": "The clockwork fox rescue",
           "instruction": "Use both tooth-count clues. Wind the crank to give the release drum exactly one full turn.",
           "success": "The gate is open. Four foxes can finally escape!",
@@ -1325,6 +1392,17 @@
           "skill": "Fraction multiplication & proportional reasoning",
           "lock": {
             "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+            "presentation": {
+              "kind": "gear-cage",
+              "foxes": 4,
+              "animal": {
+                "model": "/projects/castle-archive-rescue/art/patrol/fox.glb",
+                "credits": "/projects/castle-archive-rescue/art/patrol/credits.html",
+                "idle": "Survey",
+                "walk": "Walk",
+                "run": "Run"
+              }
+            },
             "title": "The clockwork fox rescue",
             "instruction": "Use the two tooth-count multipliers, then calculate the crank turns needed for exactly TWO output revolutions.",
             "success": "The gate is open. Four foxes can finally escape!",
@@ -1386,6 +1464,17 @@
           "skill": "Fraction multiplication & proportional reasoning",
           "lock": {
             "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+            "presentation": {
+              "kind": "gear-cage",
+              "foxes": 4,
+              "animal": {
+                "model": "/projects/castle-archive-rescue/art/patrol/fox.glb",
+                "credits": "/projects/castle-archive-rescue/art/patrol/credits.html",
+                "idle": "Survey",
+                "walk": "Walk",
+                "run": "Run"
+              }
+            },
             "title": "The clockwork fox rescue",
             "instruction": "Use the two tooth-count multipliers, then calculate the crank turns needed for exactly TWO output revolutions.",
             "success": "The gate is open. Four foxes can finally escape!",
@@ -1447,6 +1536,17 @@
           "skill": "Fraction multiplication & proportional reasoning",
           "lock": {
             "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
+            "presentation": {
+              "kind": "gear-cage",
+              "foxes": 4,
+              "animal": {
+                "model": "/projects/castle-archive-rescue/art/patrol/fox.glb",
+                "credits": "/projects/castle-archive-rescue/art/patrol/credits.html",
+                "idle": "Survey",
+                "walk": "Walk",
+                "run": "Run"
+              }
+            },
             "title": "The clockwork fox rescue",
             "instruction": "Use the two tooth-count multipliers, then calculate the crank turns needed for exactly TWO output revolutions.",
             "success": "The gate is open. Four foxes can finally escape!",
@@ -1536,6 +1636,7 @@
             {
               "id": "reflection",
               "kind": "reflection",
+              "presentation": { "kind": "optics-cage", "owls": 2 },
               "title": "The moonbeam relay",
               "instruction": "Turn the mirrors to guide the moonbeam into the green receiver. Use two reflections to turn the beam around the corner. Mirror angles are measured clockwise from horizontal; the angle of incidence equals the angle of reflection.",
               "hint": "A 45-degree mirror turns a horizontal ray vertically. Trace each bounce before turning the next mirror.",
@@ -1594,6 +1695,7 @@
               {
                 "id": "reflection",
                 "kind": "reflection",
+                "presentation": { "kind": "optics-cage", "owls": 2 },
                 "title": "The moonbeam relay",
                 "instruction": "Turn the mirrors to guide the moonbeam into the green receiver. Use two reflections to turn the beam around the corner. Mirror angles are measured clockwise from horizontal; the angle of incidence equals the angle of reflection.",
                 "hint": "A 45-degree mirror turns a horizontal ray vertically. Trace each bounce before turning the next mirror.",
@@ -1648,6 +1750,7 @@
               {
                 "id": "reflection",
                 "kind": "reflection",
+                "presentation": { "kind": "optics-cage", "owls": 2 },
                 "title": "The moonbeam relay",
                 "instruction": "Turn the mirrors to guide the moonbeam into the green receiver. Use a three-reflection path around the stone baffle. Mirror angles are measured clockwise from horizontal; the angle of incidence equals the angle of reflection.",
                 "hint": "A 45-degree mirror turns a horizontal ray vertically. Trace each bounce before turning the next mirror.",
@@ -1723,6 +1826,7 @@
               {
                 "id": "reflection",
                 "kind": "reflection",
+                "presentation": { "kind": "optics-cage", "owls": 2 },
                 "title": "The moonbeam relay",
                 "instruction": "Turn the mirrors to guide the moonbeam into the green receiver. Use a three-reflection path around the stone baffle. Mirror angles are measured clockwise from horizontal; the angle of incidence equals the angle of reflection.",
                 "hint": "A 45-degree mirror turns a horizontal ray vertically. Trace each bounce before turning the next mirror.",
@@ -1816,6 +1920,7 @@
         "skill": "Coordinates, transformations and length",
         "lock": {
           "title": "Bridge engineering workshop",
+          "presentation": { "kind": "bridge-cage", "rabbits": 6 },
           "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
           "stages": [
             {
@@ -1904,6 +2009,7 @@
           "skill": "Coordinates, transformations and length",
           "lock": {
             "title": "Bridge engineering workshop",
+            "presentation": { "kind": "bridge-cage", "rabbits": 6 },
             "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
             "stages": [
               {
@@ -1986,6 +2092,7 @@
           "skill": "Coordinates, transformations and length",
           "lock": {
             "title": "Bridge engineering workshop",
+            "presentation": { "kind": "bridge-cage", "rabbits": 6 },
             "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
             "stages": [
               {
@@ -2072,6 +2179,7 @@
           "skill": "Coordinates, transformations and length",
           "lock": {
             "title": "Bridge engineering workshop",
+            "presentation": { "kind": "bridge-cage", "rabbits": 6 },
             "backdrop": "/projects/castle-archive-rescue/art/v3/gear-workshop.png",
             "stages": [
               {

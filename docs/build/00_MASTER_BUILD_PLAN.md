@@ -1,5 +1,9 @@
 # Investigation Template Master Build Plan
 
+## Debate project design requirements
+
+The Fate of the Republic and Hammurabi on Trial follow the [Debate Studio build guide](16_DEBATE_STUDIO_TEMPLATE.md): one ongoing debate, a first-session opening, group-day exchanges, individual critique/revision lessons, same-side peer review and final individual performer rankings. Keep writing in the tutor side area, standards compact and all testing sessions freely accessible. These requirements also apply to future debate builds.
+
 ## Purpose
 
 Build the reusable runtime foundation for a Project-Based Learning LMS and the first configurable **Investigation Template** in Angular 22.

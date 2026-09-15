@@ -1,0 +1,65 @@
+Using Vitest configuration file: C:\Users\erich\Desktop\pbl-lms\forge-pbl-template\output\castle-week-vitest.config.mjs
+> Building...
+√ Building...
+Application bundle generation complete. [29.917 seconds] - 2026-09-15T19:18:52.877Z
+
+
+ RUN  v4.1.11 C:/Users/erich/Desktop/pbl-lms/forge-pbl-template
+
+ ❯ |forge-pbl-template| src/app/templates/heist/escape/locks/bridge-cage/bridge-cage.spec.ts (8 tests | 2 failed) 551ms
+     × preserves all four grade goals, exact cable lengths, and bounded rail geometry 26ms
+     × shows a proportional shortfall, a slack curve, and the exact routed or diagonal span 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |forge-pbl-template| src/app/templates/heist/escape/locks/bridge-cage/bridge-cage.spec.ts > Bridge holding-enclosure workshop > preserves all four grade goals, exact cable lengths, and bounded rail geometry
+AssertionError: expected { x: +0, y: -0 } to deeply equal { x: +0, y: +0 }
+
+- Expected
++ Received
+
+  {
+    "x": 0,
+-   "y": 0,
++   "y": -0,
+  }
+
+ ❯ src/app/templates/heist/escape/locks/bridge-cage/bridge-cage.spec.ts:37:63
+     35|       for (const point of [{x:coordinate.min,y:coordinate.max},targets…
+     36|         const world = carriagePoint(coordinate, point);
+     37|         expect(carriageInput(coordinate, world[0], world[1])).toEqual(…
+       |                                                               ^
+     38|       }
+     39|       expect(carriageInput(coordinate, -100, 100)).toEqual({x:coordina…
+ ❯ src/app/templates/heist/escape/locks/bridge-cage/bridge-cage.spec.ts:28:62
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  |forge-pbl-template| src/app/templates/heist/escape/locks/bridge-cage/bridge-cage.spec.ts > Bridge holding-enclosure workshop > shows a proportional shortfall, a slack curve, and the exact routed or diagonal span
+AssertionError: expected [ -3.900000000000001, 6.7 ] to deeply equal [ -3.9, 6.7 ]
+
+- Expected
++ Received
+
+  [
+-   -3.9,
++   -3.900000000000001,
+    6.7,
+  ]
+
+ ❯ src/app/templates/heist/escape/locks/bridge-cage/bridge-cage.spec.ts:50:46
+     48|       expect(short.state).toBe('short'); expect(taut.state).toBe('taut…
+     49|       expect(short.points.at(-1)?.slice(0,2)).not.toEqual(anchors.at(-…
+     50|       expect(taut.points.at(-1)?.slice(0,2)).toEqual(anchors.at(-1)?.s…
+       |                                              ^
+     51|       expect(slack.points.at(-1)?.[1]).toBeCloseTo(anchors.at(-1)![1]);
+     52|       expect(slack.points[10][1]).toBeLessThan(taut.points[10][1]);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  2 failed | 17 passed (19)
+   Start at  13:18:53
+   Duration  4.97s (transform 925ms, setup 604ms, import 1.27s, tests 1.11s, environment 1.61s)
+
