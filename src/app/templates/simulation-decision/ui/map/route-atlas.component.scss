@@ -2,6 +2,14 @@
 :host {
   display: block;
 }
+// The reusable expedition workspace owns controls and the height of its map viewport.
+.atlas.embedded-atlas { height:100%;min-height:0; }
+.atlas.embedded-atlas .map-window { height:100%;min-height:0; }
+.atlas.embedded-atlas .route-map { height:100%;min-height:0; }
+.atlas.embedded-atlas .map-caption,.atlas.embedded-atlas .trail-signal { display:none; }
+@media (min-width: 601px) {
+  .atlas.embedded-atlas .pan-controls { bottom: 185px; }
+}
 :host:has(.workspace-atlas) {
   height: 100%;
 }

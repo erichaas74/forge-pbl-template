@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/templates/debate-studio/runtime/debate-studio.tokens.ts"
+  ],
+  "sourcesContent": [
+    "import { InjectionToken } from '@angular/core';\n\nimport type { DebateStudioProjectConfig } from '../domain/debate-studio.models';\n\nexport const DEBATE_STUDIO_CONFIG = new InjectionToken<DebateStudioProjectConfig>(\n  'DEBATE_STUDIO_CONFIG',\n);\n\nexport const DEBATE_STUDIO_TENANT_ID = new InjectionToken<string>('DEBATE_STUDIO_TENANT_ID');\n"
+  ],
+  "mappings": ";;;;;AAIO,IAAM,uBAAuB,IAAI;AAAA,EACtC;AACF;AAEO,IAAM,0BAA0B,IAAI,eAAuB,yBAAyB;",
+  "names": [],
+  "debugId": "234f367e-2b3e-571a-b6d5-19ad185b860f"
+}

@@ -5,6 +5,7 @@
       <p class="invitation">{{ scene().invitation }}</p>
       <div class="framed-picture">
         <app-panorama-painting [scene]="scene()" [state]="state()" [original]="original()" />
+        @if (!repairMode()) { <app-interview-screens [interviews]="scene().interviews ?? []" /> }
         @if (!repairMode()) { <button class="enter-surface" aria-label="Enter the painting" (click)="enter()"><span>Enter the painting <b>↗</b></span></button> }
         @else { @for (r of scene().repairs; track r.id) { <button class="picture-region" [style.left.%]="r.rect.x" [style.top.%]="r.rect.y" [style.width.%]="r.rect.width" [style.height.%]="r.rect.height" [attr.aria-label]="'Inspect ' + r.title" (click)="repairId.set(r.id)"></button> } }
       </div>
@@ -22,7 +23,7 @@
       <div class="studio-controls"><button [disabled]="!state().undo.length" (click)="action.emit({ type: 'undo' }); original.set(false)">Undo last change</button><button (click)="download()">Download restored picture</button></div>
     } @else if (mode() === 'panorama') {
       @if (scene().viewpoints; as viewpoints) {
-        <app-spherical-view [viewpoints]="viewpoints" [saved]="state().sphericalView" (position)="action.emit({ type: 'spherical-view', view: $event })" (person)="selectSphericalPerson($event)" />
+        <div style="position:relative;--interview-bottom:105px"><app-spherical-view [viewpoints]="viewpoints" [saved]="state().sphericalView" (position)="action.emit({ type: 'spherical-view', view: $event })" (person)="selectSphericalPerson($event)" /><app-interview-screens [interviews]="scene().interviews ?? []" /></div>
         <div class="studio-controls"><button (click)="leave()">Return to painting</button><button (click)="tutorRequested.emit()">Open AI box</button></div>
         <details class="people-list"><summary>People in this scene · keyboard navigation</summary>@for (p of scene().people; track p.id) { <button (click)="selectSphericalPerson(p.id)">{{ p.name }} · {{ p.activity }}</button> }</details>
       } @else {

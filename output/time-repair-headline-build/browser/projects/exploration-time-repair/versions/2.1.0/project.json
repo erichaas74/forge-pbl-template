@@ -1,0 +1,553 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "exploration-time-repair",
+  "projectVersion": "2.1.0",
+  "template": {
+    "id": "time-repair",
+    "version": "1.1"
+  },
+  "title": "Time Repair: The Press That Never Printed",
+  "subtitle": "Ideas That Changed the World · Mainz, c. 1454–1460",
+  "inventionRescue": {
+    "version": "1.0",
+    "capability": "invention-repair.printing-press",
+    "fiction": "Alternate-history mission: a spoiled ink batch leads to failed demonstrations and a closed workshop. Students help Gutenberg’s team repair it. The accident and the later courtyard are invented; the historical sources are identified separately.",
+    "modelNote": "This is a qualitative reconstruction. Five-letter specimens, three packing regions, numbered ink samples, and sample-copy tokens make the mechanism observable. A token represents a sample commission, not a full Bible. Copying turns are not historical timings. No model result is a historical forecast. The restored geometric page, gear diagrams, readers, delivery routes, and apprentice cases are fictional teaching props, not documented Gutenberg publications or measured historical outcomes.",
+    "inks": [
+      {
+        "id": "manuscript",
+        "mark": "I",
+        "name": "Manuscript ink",
+        "color": "#312d31",
+        "adhesion": 0.28,
+        "spread": 0.03,
+        "paperAdhesion": 0.96
+      },
+      {
+        "id": "loose",
+        "mark": "II",
+        "name": "Loose trial mixture",
+        "color": "#403b34",
+        "adhesion": 0.9,
+        "spread": 0.48,
+        "paperAdhesion": 0.85
+      },
+      {
+        "id": "press",
+        "mark": "III",
+        "name": "Tacky trial mixture",
+        "color": "#211f24",
+        "adhesion": 0.98,
+        "spread": 0.04,
+        "paperAdhesion": 0.98
+      }
+    ],
+    "sources": [
+      {
+        "id": "printing",
+        "title": "The problem of printing",
+        "detail": "Manuscript ink did not adhere adequately to metal type. Printing required suitable ink and consistent pressure. Gutenberg’s precise equipment is not completely known.",
+        "url": "https://www.themorgan.org/collections/works/gutenberg/invention-of-printing"
+      },
+      {
+        "id": "bible",
+        "title": "A book made by many hands",
+        "detail": "Gutenberg and collaborators produced their Bible in Mainz in the mid-1450s. Printed copies still involved hand finishing. A working press depended on skilled people, supplies, and financial support.",
+        "url": "https://guides.loc.gov/gutenberg"
+      },
+      {
+        "id": "jikji",
+        "title": "Printing before Gutenberg",
+        "detail": "Jikji was printed with movable metal type in Korea in 1377. This mission concerns a European workshop, not the first printing anywhere in the world.",
+        "url": "https://www.unesco.org/en/memory-world/baegun-hwasang-chorok-buljo-jikji-simche-yojeol-volii-second-volume-anthology-great-buddhist-priests?hub=915"
+      }
+    ],
+    "weeks": [
+      {
+        "title": "Recover knowledge. Discover the invention.",
+        "goal": "Connect the survival of information with the crafts that make copies possible.",
+        "evidence": [
+          "Fragments recovered from different copies",
+          "Operated mechanisms and their contributions",
+          "Failed and successful system trials"
+        ]
+      },
+      {
+        "title": "Repair the press. Test the knowledge.",
+        "goal": "Use evidence to diagnose a failed process and challenge a printed claim.",
+        "evidence": [
+          "Paired ink tests and repaired impressions",
+          "Tests of both printed diagrams",
+          "A tested and revised construction drawing"
+        ]
+      },
+      {
+        "title": "Pass the knowledge on.",
+        "goal": "Make craft knowledge teachable and trace the delivery of printed information.",
+        "evidence": [
+          "Physical apprentice demonstrations",
+          "Independent repair trials",
+          "Copies conserved through a working delivery route"
+        ]
+      },
+      {
+        "title": "Who can use the changed world?",
+        "goal": "Connect the repaired invention to access, participation, and remaining barriers.",
+        "evidence": [
+          "Different effects of copies and assistance",
+          "Visible changes in participation",
+          "Before-and-after courtyard supply"
+        ]
+      }
+    ],
+    "sessions": [
+      {
+        "id": "knowledge-1",
+        "number": 1,
+        "mode": "knowledge",
+        "title": "Reconstruct the lost book",
+        "task": "Lift surviving fragments from both damaged copies. Turn them and fit them into the missing page. Follow the drawing across its joins, then examine the whole reconstruction.",
+        "goal": "Explain how separate copies preserve information that a single damaged source can lose.",
+        "product": "A reconstructed geometric drawing with the source and orientation of each surviving fragment.",
+        "historicalNote": "In our fictional failed future, two damaged copies preserve different portions of a geometric page. The drawing is a teaching prop. Manuscript copying and other printing traditions still exist.",
+        "question": "Which part could not be recovered from the first copy? How did the second change what could survive?",
+        "initial": {
+          "type": [
+            "R",
+            "E",
+            "B",
+            "I",
+            "L"
+          ],
+          "ink": "press",
+          "pressure": 1,
+          "packing": [
+            1,
+            1,
+            1
+          ]
+        },
+        "target": "LIBER",
+        "batchSize": 3,
+        "location": "Mainz · imagined town after the failure",
+        "date": "c. 1460",
+        "sourceIds": [
+          "printing",
+          "bible",
+          "jikji"
+        ],
+        "knowledge": {
+          "version": "1.0",
+          "kind": "reconstruction",
+          "fragments": [
+            {
+              "id": "fragment-0",
+              "cell": 0,
+              "turn": 1,
+              "copy": 0
+            },
+            {
+              "id": "fragment-4",
+              "cell": 4,
+              "turn": 3,
+              "copy": 0
+            },
+            {
+              "id": "fragment-1",
+              "cell": 1,
+              "turn": 2,
+              "copy": 0
+            },
+            {
+              "id": "fragment-5",
+              "cell": 5,
+              "turn": 1,
+              "copy": 1
+            },
+            {
+              "id": "fragment-2",
+              "cell": 2,
+              "turn": 2,
+              "copy": 1
+            },
+            {
+              "id": "fragment-3",
+              "cell": 3,
+              "turn": 3,
+              "copy": 1
+            }
+          ]
+        }
+      },
+      {
+        "id": "knowledge-2",
+        "number": 2,
+        "mode": "knowledge",
+        "title": "Build from other people’s knowledge",
+        "task": "Fit the frame, mold, ink ball, and screw into the press system. Operate each fitted mechanism. Cast four pieces, hold them steady, coat them, and bring the platen into contact. Compare failed and successful impressions.",
+        "goal": "Connect specialized crafts and mechanical functions within an invention.",
+        "product": "An assembled and operated printing system, with trial evidence showing what each part contributes.",
+        "historicalNote": "This cutaway combines casting, holding, coating, and pressure as a teaching reconstruction. It does not claim to reproduce Gutenberg’s exact equipment. The historical invention depended on skilled collaborators and suitable materials.",
+        "question": "Which contribution could the other parts not replace? What did your failed impressions reveal?",
+        "initial": {
+          "type": [
+            "R",
+            "E",
+            "B",
+            "I",
+            "L"
+          ],
+          "ink": "press",
+          "pressure": 1,
+          "packing": [
+            1,
+            1,
+            1
+          ]
+        },
+        "target": "LIBER",
+        "batchSize": 3,
+        "location": "Mainz · reconstructed workshop",
+        "date": "c. 1454",
+        "sourceIds": [
+          "printing",
+          "bible",
+          "jikji"
+        ],
+        "knowledge": {
+          "version": "1.0",
+          "kind": "assembly",
+          "parts": [
+            "screw",
+            "ink",
+            "frame",
+            "mold"
+          ]
+        }
+      },
+      {
+        "id": "repair-3",
+        "number": 3,
+        "mode": "ink",
+        "title": "Rescue the failed demonstration",
+        "task": "The team suspects low pressure. Pull a proof, try another pressure setting, then test the numbered inks on paper and metal. Compare one change at a time and restore two clean impressions.",
+        "goal": "Diagnose a material failure using controlled comparisons.",
+        "product": "Paired material tests and proofs showing why the first attempted fix failed.",
+        "historicalNote": "Our fictional spoiled batch was replaced with manuscript ink. The real historical challenge is that such ink did not adhere properly to metal type. These virtual samples represent behaviors, not historical recipes.",
+        "question": "What observation rules out pressure as the only cause? Which paper-and-metal comparison supports your repair?",
+        "initial": {
+          "type": [
+            "R",
+            "E",
+            "B",
+            "I",
+            "L"
+          ],
+          "ink": "manuscript",
+          "pressure": 1,
+          "packing": [
+            1,
+            1,
+            1
+          ]
+        },
+        "target": "LIBER",
+        "batchSize": 2,
+        "location": "Mainz · printing workshop",
+        "date": "c. 1454",
+        "sourceIds": [
+          "printing",
+          "bible"
+        ]
+      },
+      {
+        "id": "knowledge-4",
+        "number": 4,
+        "mode": "knowledge",
+        "title": "Which diagram can you trust?",
+        "task": "Place a printed diagram on the bench. Lift the wheels onto their matching axles and turn the crank. Compare both diagrams. Move the middle axle to repair the faulty arrangement, test the output, and stamp a revised page.",
+        "goal": "Distinguish the reproducibility of a printed claim from evidence that it is correct.",
+        "product": "Two tested diagrams, a working gear train, and a corrected printed drawing.",
+        "historicalNote": "The gear diagrams are fictional teaching props, not Gutenberg publications. They make a general problem visible: a printing process can reproduce an incorrect arrangement as consistently as a correct one.",
+        "question": "What observation challenged the printed diagram? What evidence supports the revision you printed?",
+        "initial": {
+          "type": [
+            "R",
+            "E",
+            "B",
+            "I",
+            "L"
+          ],
+          "ink": "press",
+          "pressure": 1,
+          "packing": [
+            1,
+            1,
+            1
+          ]
+        },
+        "target": "LIBER",
+        "batchSize": 3,
+        "location": "Mainz · reconstructed workshop",
+        "date": "c. 1454",
+        "sourceIds": [
+          "printing",
+          "bible",
+          "jikji"
+        ],
+        "knowledge": {
+          "version": "1.0",
+          "kind": "diagram",
+          "axles": [
+            360,
+            472,
+            584
+          ],
+          "gearRadii": [
+            64,
+            48,
+            64
+          ]
+        }
+      },
+      {
+        "id": "knowledge-5",
+        "number": 5,
+        "mode": "knowledge",
+        "title": "Keep the workshop running",
+        "task": "Inspect the failed sheet. Arrange a physical teaching example: failed impression, faulty part, replacement, and clean result. Demonstrate it, send the expert away, and let the apprentice try. Test ink, packing, and type failures separately.",
+        "goal": "Make a repair process explicit enough for another worker to use it.",
+        "product": "Three physical demonstrations and independent apprentice repair trials.",
+        "historicalNote": "The apprentice and demonstration sequences are authored fiction. They model the need to communicate craft knowledge; a clean printed product alone does not explain its production.",
+        "question": "What did the apprentice need beyond a finished page? Where did an example fail to explain the cause?",
+        "initial": {
+          "type": [
+            "R",
+            "E",
+            "B",
+            "I",
+            "L"
+          ],
+          "ink": "press",
+          "pressure": 1,
+          "packing": [
+            1,
+            1,
+            1
+          ]
+        },
+        "target": "LIBER",
+        "batchSize": 3,
+        "location": "Mainz · reconstructed workshop",
+        "date": "c. 1454",
+        "sourceIds": [
+          "printing",
+          "bible",
+          "jikji"
+        ],
+        "knowledge": {
+          "version": "1.0",
+          "kind": "apprentice",
+          "cases": [
+            "ink",
+            "packing",
+            "type"
+          ]
+        }
+      },
+      {
+        "id": "knowledge-6",
+        "number": 6,
+        "mode": "knowledge",
+        "title": "Follow a page through the town",
+        "task": "Pack up to two copies at the workshop. Follow the streets and bridge to the bookseller, learning room, and collection. Deliver the copies and look inside each destination. Return for the remaining copies when the bag is empty.",
+        "goal": "Trace how production, transport, and destinations affect access to information.",
+        "product": "A delivery route and three rooms changed by the arrival of usable copies.",
+        "historicalNote": "This small town and its readers are fictional. Distances, bag capacity, and book demand are model choices. The scene represents local circulation, not a forecast of European literacy or book ownership.",
+        "question": "Where did a page start being used? What work had to happen after it left the printing press?",
+        "initial": {
+          "type": [
+            "R",
+            "E",
+            "B",
+            "I",
+            "L"
+          ],
+          "ink": "press",
+          "pressure": 1,
+          "packing": [
+            1,
+            1,
+            1
+          ]
+        },
+        "target": "LIBER",
+        "batchSize": 3,
+        "location": "Mainz · imagined town after the failure",
+        "date": "c. 1460",
+        "sourceIds": [
+          "printing",
+          "bible",
+          "jikji"
+        ],
+        "knowledge": {
+          "version": "1.0",
+          "kind": "distribution",
+          "stock": 4,
+          "places": [
+            {
+              "id": "workshop",
+              "name": "Printing workshop",
+              "x": 180,
+              "y": 210,
+              "need": 0,
+              "links": [
+                "bookseller",
+                "bridge"
+              ]
+            },
+            {
+              "id": "bookseller",
+              "name": "Bookseller",
+              "x": 400,
+              "y": 160,
+              "need": 1,
+              "links": [
+                "workshop",
+                "bridge"
+              ]
+            },
+            {
+              "id": "bridge",
+              "name": "River bridge",
+              "x": 500,
+              "y": 400,
+              "need": 0,
+              "links": [
+                "workshop",
+                "bookseller",
+                "school",
+                "collection"
+              ]
+            },
+            {
+              "id": "school",
+              "name": "Learning room",
+              "x": 720,
+              "y": 150,
+              "need": 1,
+              "links": [
+                "bridge",
+                "collection"
+              ]
+            },
+            {
+              "id": "collection",
+              "name": "Private collection",
+              "x": 840,
+              "y": 390,
+              "need": 1,
+              "links": [
+                "school",
+                "bridge"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "knowledge-7",
+        "number": 7,
+        "mode": "knowledge",
+        "title": "More books, different barriers",
+        "task": "Offer a copy to each reader and observe what still prevents its use. Try a loan, a translation, or a shared reading. A helper needs the information too. Watch each person’s construction when the support fits the problem.",
+        "goal": "Distinguish physical availability from affordable and understandable access.",
+        "product": "Comparisons of book delivery and three forms of support, with visible participation changes.",
+        "historicalNote": "These readers and constructions are fictional learning props. Their different obstacles prevent the scene from treating more printed copies as instant universal access.",
+        "question": "Why did the same offer have different effects? Which combination made the information usable for each person?",
+        "initial": {
+          "type": [
+            "R",
+            "E",
+            "B",
+            "I",
+            "L"
+          ],
+          "ink": "press",
+          "pressure": 1,
+          "packing": [
+            1,
+            1,
+            1
+          ]
+        },
+        "target": "LIBER",
+        "batchSize": 3,
+        "location": "Mainz · imagined town after the failure",
+        "date": "c. 1460",
+        "sourceIds": [
+          "printing",
+          "bible",
+          "jikji"
+        ],
+        "knowledge": {
+          "version": "1.0",
+          "kind": "access",
+          "readers": [
+            {
+              "id": "learner",
+              "name": "Learner with no purchase money",
+              "barrier": "cost"
+            },
+            {
+              "id": "traveler",
+              "name": "Reader unfamiliar with this language",
+              "barrier": "language"
+            },
+            {
+              "id": "listener",
+              "name": "Listener who needs a spoken explanation",
+              "barrier": "reading"
+            }
+          ]
+        }
+      },
+      {
+        "id": "return-8",
+        "number": 8,
+        "mode": "return",
+        "title": "Return to the repaired future",
+        "task": "Repair a fresh ink setup and make three usable impressions. Visit the courtyard at any time during testing. Compare its supply before and after repair, then finish and deliver the printed samples.",
+        "goal": "Connect a repair to a bounded historical consequence and recognize limits.",
+        "product": "A rescued workshop, delivered printed samples, and a comparison with the first courtyard.",
+        "historicalNote": "The accident, closure, and alternative future are authored fiction. This scene models possible local effects over a few years. It does not predict the loss of all books or instant universal literacy.",
+        "question": "What changed for the binder and messenger? What did your repair leave unresolved? Use a real source to distinguish the invention’s history from our scenario.",
+        "initial": {
+          "type": [
+            "R",
+            "E",
+            "B",
+            "I",
+            "L"
+          ],
+          "ink": "manuscript",
+          "pressure": 1,
+          "packing": [
+            1,
+            1,
+            1
+          ]
+        },
+        "target": "LIBER",
+        "batchSize": 3,
+        "location": "Mainz · printing workshop",
+        "date": "c. 1454",
+        "sourceIds": [
+          "printing",
+          "bible",
+          "jikji"
+        ]
+      }
+    ]
+  }
+}

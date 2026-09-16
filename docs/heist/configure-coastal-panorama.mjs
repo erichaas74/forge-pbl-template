@@ -43,6 +43,11 @@ const scene = {
   ],
 };
 scene.questionOwner = 'tutor';
+scene.interviews = [
+  {id:'crop-farmer',title:'Crop Farmer',poster:'/projects/shadow-gallery/coastal-360-v1/harvest.png'},
+  {id:'fisherman',title:'Fisherman',poster:'/projects/shadow-gallery/coastal-360-v1/village.png'},
+  {id:'canoe-builder',title:'Canoe Builder',poster:'/projects/shadow-gallery/coastal-360-v1/canoe.png'},
+];
 scene.viewpoints = [
   { id: 'village', title: 'Village clearing', image: '/projects/shadow-gallery/coastal-360-v1/village.png', yaw: 0, pitch: -8, people: [{personId:'canoe-maker',rect:rect(18,44,3,10)},{personId:'food-grower',rect:rect(79,44,4,11)}] },
   { id: 'canoe', title: 'Canoe workshop', image: '/projects/shadow-gallery/coastal-360-v1/canoe.png', yaw: -43, pitch: -8, people: [{personId:'canoe-maker',rect:rect(32,38,10,33)}] },
@@ -67,19 +72,36 @@ scene.viewpoints[1].inspection = {
 scene.viewpoints[2].places = [{ targetId: 'village', label: 'Back to village', yaw: -38, pitch: -12 }];
 scene.viewpoints[2].inspection = {
   title: 'Cultivated field', overviewLabel: 'Whole field',
-  asset: {version:1,src:'/projects/shadow-gallery/coastal-3d-v1/field.glb',nodes:[{name:'INT_maize',kind:'target'},{name:'INT_vines',kind:'target'},{name:'INT_roots',kind:'target'},{name:'INT_ear',kind:'target'},{name:'ENV_ground',kind:'environment'}],clips:[]},
+  asset: {version:1,src:'/projects/shadow-gallery/coastal-3d-v1/field.glb',nodes:[{name:'INT_cassava',kind:'target'},{name:'INT_maize',kind:'target'},{name:'INT_vines',kind:'target'},{name:'INT_beans',kind:'target'},{name:'INT_chili',kind:'target'},{name:'INT_squash',kind:'target'},{name:'INT_roots',kind:'target'},{name:'INT_ear',kind:'target'},{name:'ENV_ground',kind:'environment'}],clips:[]},
   environment: {background:'/projects/shadow-gallery/coastal-3d-v1/field-background-v1.png',ground:'/projects/shadow-gallery/coastal-3d-v1/field-soil-v1.png',groundNode:'ENV_ground',tileSize:3},
   targets:[
-    {name:'INT_maize',label:'Maize plants',focus:[-1.35,1,-.5],distance:2.2},
-    {name:'INT_vines',label:'Sweet potato vines',focus:[1.2,.25,-.4],distance:1.8},
+    {name:'INT_cassava',label:'Cassava',focus:[-1.3,.9,-.05],distance:2},
+    {name:'INT_maize',label:'Corn',focus:[-1.1,1,-3.5],distance:2.2},
+    {name:'INT_vines',label:'Sweet Potato',focus:[1.1,.25,-3.5],distance:1.8},
+    {name:'INT_beans',label:'Beans',focus:[-1.3,.4,3.6],distance:1.4},
+    {name:'INT_chili',label:'Chili Peppers',focus:[1.3,.55,-.05],distance:1.4},
+    {name:'INT_squash',label:'Squash',focus:[1.3,.25,3.6],distance:1.5},
     {name:'INT_roots',label:'Harvested roots',focus:[.05,.22,2.2],distance:1},
     {name:'INT_ear',label:'Ear of maize',focus:[.78,.27,2.25],distance:1},
   ],
 };
 scene.sources.push({id:'sweet-potato-crop',title:'Taíno garden crops',text:'Maize and sweet potatoes were cultivated by Taíno communities. Sweet potatoes are a different crop from ordinary potatoes. The field model illustrates these crops; its layout and plant varieties are not archaeological measurements.',provenance:'National Park Service, Taíno Settlement at Salt River Bay, St. Croix. Regional comparative evidence, not an excavation record for this fictional Hispaniola field.',url:'https://www.nps.gov/places/taino-settlement.htm'});
-project.previewWeeks.scenes = [scene];
+scene.sources.push({id:'garden-diversity',title:'Six garden crops',text:'Cassava is also called manioc; corn is also called maize. The garden illustrates cassava, corn, sweet potato, beans, chili peppers and squash. Archaeological evidence from En Bas Saline supports manioc, maize, peppers and beans. Regional historical summaries also describe sweet potatoes and squash. The six separate beds, plant varieties and simultaneous harvest are illustrative choices.',provenance:'USDA Forest Service synthesis of Taíno cultivation, cross-checked with Florida Museum En Bas Saline material remains and the National Park Service Taíno Settlement guide. Regional synthesis does not establish all six crops at this fictional plot.',url:'https://www.govinfo.gov/content/pkg/GOVPUB-A13-PURL-gpo42485/pdf/GOVPUB-A13-PURL-gpo42485.pdf'});
+const restorationScene = {
+  ...scene, id: 'coastal-restoration', workId: 'shore-painting-2-restoration',
+  title: 'Restore the shore painting',
+  invitation: 'Compare this painting with your observations and sources. Decide which three details to change.',
+  repairs: scene.repairs.map(repair => ({...repair, action: 'Try a reconstruction'})),
+};
+project.previewWeeks.scenes = [scene, restorationScene];
 const session = project.previewWeeks.weeks[0].sessions[0];
 session.title = 'Enter the painting: a morning on the shore';
 session.steps = ['Look at the painting, then enter its historical world.', 'Look around for place markers. Visit the canoe workshop and harvest garden, explore each close-up panorama, and inspect sources.', 'Return to the painting. Investigate and repair three inconsistent details.'];
 session.product = 'A restored coastal picture with three independent repairs and sources gathered while exploring the 360° world.';
+const restorationSession = project.previewWeeks.weeks[0].sessions[1];
+restorationSession.title = 'Restore the shore painting';
+restorationSession.activity = 'restore';
+restorationSession.steps = ['Inspect the original painting together.', 'Revisit the historical world and compare sources for each suspected detail.', 'Try your repairs, compare with the original, and revise your reconstruction.'];
+restorationSession.product = 'A coastal reconstruction with three student-selected repairs and supporting sources.';
+project.previewWeeks.weeks[0].evidence = ['Details observed in the field and canoe workshop, and sources saved to the notebook.', 'Student-selected repairs, retained details, and comparisons with the original painting.'];
 fs.writeFileSync(file, JSON.stringify(project, null, 2) + '\n');

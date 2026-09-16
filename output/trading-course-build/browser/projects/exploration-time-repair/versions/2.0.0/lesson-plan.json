@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "1.0",
+  "planVersion": "2.0.0",
+  "projectId": "exploration-time-repair",
+  "projectVersion": "2.0.0",
+  "finalProduct": "A working printing press, a proof notebook, and a restored local production chain.",
+  "grouping": "Individual investigation followed by a group repair each week. Group work runs on one device; shared editing is not connected.",
+  "availability": "Eight directly accessible investigations. Mechanical progress saves on this device. AI tutoring, assessment, and shared sessions are not connected.",
+  "evidenceCriteria": [
+    "Use physical and historical evidence to explain an invention.",
+    "Trace causes and consequences while distinguishing history from authored fiction."
+  ],
+  "workspaceView": "experience",
+  "presentation": {
+    "layout": "activity-first",
+    "title": "Time Repair: The Press That Never Printed",
+    "identifier": "TR · 02",
+    "grade": "Grade 7",
+    "alignmentStatus": "pending",
+    "alignmentNote": "Ideas That Changed the World is the selected Grade 7 curriculum direction. The supplied standards framework covers Grades 4–6; a Grade 7 crosswalk has not been supplied. The learning goals below are project goals, not verified standards."
+  },
+  "lessons": [
+    {
+      "number": 1,
+      "title": "The book that never arrived",
+      "output": "One delivered manuscript sample and a visible chain of waiting work.",
+      "workspace": "Follow a commission from the scribe to the binder and messenger. Operate the workstations. Find the missing supply that keeps two workers waiting.",
+      "checkpoint": "What caused the delay? Which parts of this courtyard are imagined, and which historical processes support the story?",
+      "criteria": [
+        "Trace a production bottleneck through people and materials."
+      ],
+      "focusTarget": "invention-workspace"
+    },
+    {
+      "number": 2,
+      "title": "Discover the machine",
+      "output": "Three impressions made without rebuilding the type.",
+      "workspace": "Ink the raised metal type, place a sheet over it, and pull the press. Prepare each new impression and produce three clean copies from the same reusable forme.",
+      "checkpoint": "What stays in the press, and what leaves it? Why would that distinction matter to the waiting workers?",
+      "criteria": [
+        "Explain how reusable type makes repeated impressions possible."
+      ],
+      "focusTarget": "invention-workspace"
+    },
+    {
+      "number": 3,
+      "title": "A page written backward",
+      "output": "An ordered forme and the failed proofs that led to it.",
+      "workspace": "Pull a proof of the jumbled type. Lift two blocks to exchange them. Keep comparing your printed proof with the specimen until the word matches.",
+      "checkpoint": "Why must the arrangement on the forme differ from the order on the page? What does the proof reveal that the metal does not?",
+      "criteria": [
+        "Use an impression to reason about the relationship between type and printed page."
+      ],
+      "focusTarget": "invention-workspace"
+    },
+    {
+      "number": 4,
+      "title": "A second page, the same tools",
+      "output": "A second correctly composed specimen and two matching impressions.",
+      "workspace": "Recompose the specimen LUMEN. Swap the loose metal blocks, pull a proof, and make two matching impressions. The blocks can be reused after printing.",
+      "checkpoint": "Which work can be reused? Which work must happen again when the text changes?",
+      "criteria": [
+        "Explain recomposition and the labor that remains in repeat production."
+      ],
+      "focusTarget": "invention-workspace"
+    },
+    {
+      "number": 5,
+      "title": "The ink that would not hold",
+      "output": "Paired material tests and proofs showing why the first attempted fix failed.",
+      "workspace": "The team suspects low pressure. Pull a proof, try another pressure setting, then test the numbered inks on paper and metal. Compare one change at a time and restore two clean impressions.",
+      "checkpoint": "What observation rules out pressure as the only cause? Which paper-and-metal comparison supports your repair?",
+      "criteria": [
+        "Diagnose a material failure using controlled comparisons."
+      ],
+      "focusTarget": "invention-workspace"
+    },
+    {
+      "number": 6,
+      "title": "A different kind of failure",
+      "output": "Regional proof comparisons and two evenly printed sheets.",
+      "workspace": "The ink now works, but one part of every sheet is faint. Compare the proof’s left, middle, and right regions. Adjust the packing beneath the forme and test two clean impressions.",
+      "checkpoint": "Why would repeating the ink repair fail here? What changed when you adjusted support beneath the faint region?",
+      "criteria": [
+        "Distinguish a local contact problem from an ink problem."
+      ],
+      "focusTarget": "invention-workspace"
+    },
+    {
+      "number": 7,
+      "title": "Make it work every time",
+      "output": "A reliable batch and a trial notebook showing the route to it.",
+      "workspace": "Inspect a fresh setup with more than one fault. Reorder type, test ink, adjust pressure and packing as needed. Produce three clean impressions in a row.",
+      "checkpoint": "Which symptom led you to each change? Why does a sequence of clean sheets support a stronger claim than one lucky proof?",
+      "criteria": [
+        "Apply the diagnostic method to a new combination of failures."
+      ],
+      "focusTarget": "invention-workspace"
+    },
+    {
+      "number": 8,
+      "title": "The messenger returns",
+      "output": "A rescued workshop, delivered printed samples, and a comparison with the first courtyard.",
+      "workspace": "Help the team recover a fresh failed ink setup and make three clean impressions. Return to 1460 from this task box, finish and deliver the printed copies, and inspect who still cannot obtain one.",
+      "checkpoint": "What changed for the binder and messenger? What did your repair leave unresolved? Use a real source to distinguish the invention’s history from our scenario.",
+      "criteria": [
+        "Connect a repair to a bounded historical consequence and recognize limits."
+      ],
+      "focusTarget": "invention-workspace"
+    }
+  ]
+}

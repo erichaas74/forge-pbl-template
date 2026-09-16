@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/templates/investigation/runtime/investigation-runtime.tokens.ts"
+  ],
+  "sourcesContent": [
+    "import { InjectionToken, type Signal } from '@angular/core';\n\nimport type { RuntimeEvent } from '../../../core/events/runtime-event';\nimport type { ValidationIssue } from '../../../core/validation/validation-contracts';\nimport type { RuntimeStateSnapshot } from '../domain/runtime-state';\nimport type { ProjectDefinitionGraph } from '../package/project-definition-graph';\n\nexport interface InvestigationRuntimeFacade {\n  readonly loading: Signal<boolean>;\n  readonly graph: Signal<ProjectDefinitionGraph | undefined>;\n  readonly snapshot: Signal<RuntimeStateSnapshot | undefined>;\n  readonly issues: Signal<readonly ValidationIssue[]>;\n  initialize(): Promise<void>;\n  dispatch(\n    eventType: RuntimeEvent['eventType'],\n    sourceId?: string,\n    payload?: Record<string, unknown>,\n  ): Promise<void>;\n}\n\nexport const INVESTIGATION_RUNTIME_FACADE = new InjectionToken<InvestigationRuntimeFacade>(\n  'INVESTIGATION_RUNTIME_FACADE',\n);\n"
+  ],
+  "mappings": ";;;;;AAoBO,IAAM,+BAA+B,IAAI;AAAA,EAC9C;AACF;",
+  "names": [],
+  "debugId": "cb684ca4-2c12-5419-b02c-ad6fe6bdae89"
+}

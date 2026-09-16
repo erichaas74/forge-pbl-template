@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/templates/time-repair/invention/knowledge/knowledge-host.component.ts"],
+  "sourcesContent": [":host{display:block;height:100%;min-width:0;}"],
+  "mappings": ";AAAA;AAAM,WAAA;AAAc,UAAA;AAAY,aAAA;;",
+  "names": []
+}

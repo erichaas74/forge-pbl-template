@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/templates/engineering-design/ui/design-thumbnail.component.ts"],
+  "sourcesContent": ["\n      :host {\n        display: block;\n        height: 94px;\n      }\n      svg {\n        display: block;\n        width: 100%;\n        height: 100%;\n        overflow: visible;\n      }\n    "],
+  "mappings": ";AACM;AACE,WAAA;AACA,UAAA;;AAEF;AACE,WAAA;AACA,SAAA;AACA,UAAA;AACA,YAAA;;",
+  "names": []
+}

@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/templates/programming-automation/core/robot-replay.ts"
+  ],
+  "sourcesContent": [
+    "import type { ReplaySample } from '../domain/automation.models';\r\n\r\n/** Interpolate presentation between recorded poses. Discrete cargo changes occur at their timestamp. */\r\nexport function sampleRobotReplay(samples: readonly ReplaySample[], timeMs: number): ReplaySample | undefined {\r\n  if (!samples.length) return undefined;\r\n  let low = 0;\r\n  let high = samples.length - 1;\r\n  while (low < high) {\r\n    const middle = Math.ceil((low + high) / 2);\r\n    if (samples[middle].timeMs <= timeMs) low = middle;\r\n    else high = middle - 1;\r\n  }\r\n  const before = samples[low];\r\n  const after = samples[low + 1];\r\n  if (!after || timeMs <= before.timeMs) return before;\r\n  const fraction = (timeMs - before.timeMs) / (after.timeMs - before.timeMs);\r\n  const turn = ((after.headingDeg - before.headingDeg + 540) % 360) - 180;\r\n  return {\r\n    ...before,\r\n    timeMs,\r\n    xCm: before.xCm + (after.xCm - before.xCm) * fraction,\r\n    yCm: before.yCm + (after.yCm - before.yCm) * fraction,\r\n    headingDeg: (before.headingDeg + turn * fraction + 360) % 360,\r\n    batteryUsed: before.batteryUsed + (after.batteryUsed - before.batteryUsed) * fraction,\r\n  };\r\n}\r\n"
+  ],
+  "mappings": ";;;;;;AAGO,SAAS,kBAAkB,SAAkC,QAA0C;AAC5G,MAAI,CAAC,QAAQ,OAAQ,QAAO;AAC5B,MAAI,MAAM;AACV,MAAI,OAAO,QAAQ,SAAS;AAC5B,SAAO,MAAM,MAAM;AACjB,UAAM,SAAS,KAAK,MAAM,MAAM,QAAQ,CAAC;AACzC,QAAI,QAAQ,MAAM,EAAE,UAAU,OAAQ,OAAM;AAAA,QACvC,QAAO,SAAS;AAAA,EACvB;AACA,QAAM,SAAS,QAAQ,GAAG;AAC1B,QAAM,QAAQ,QAAQ,MAAM,CAAC;AAC7B,MAAI,CAAC,SAAS,UAAU,OAAO,OAAQ,QAAO;AAC9C,QAAM,YAAY,SAAS,OAAO,WAAW,MAAM,SAAS,OAAO;AACnE,QAAM,QAAS,MAAM,aAAa,OAAO,aAAa,OAAO,MAAO;AACpE,SAAO,iCACF,SADE;AAAA,IAEL;AAAA,IACA,KAAK,OAAO,OAAO,MAAM,MAAM,OAAO,OAAO;AAAA,IAC7C,KAAK,OAAO,OAAO,MAAM,MAAM,OAAO,OAAO;AAAA,IAC7C,aAAa,OAAO,aAAa,OAAO,WAAW,OAAO;AAAA,IAC1D,aAAa,OAAO,eAAe,MAAM,cAAc,OAAO,eAAe;AAAA,EAC/E;AACF;",
+  "names": [],
+  "debugId": "8d8f6e4e-d33d-58d4-9c13-536f0370a89e"
+}

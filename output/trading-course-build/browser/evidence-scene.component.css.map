@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/templates/history-live/ui/evidence-scene.component.ts"],
+  "sourcesContent": ["\n    :host {\n      display: block;\n      color: #eef2ef;\n    }\n    article {\n      padding: 1rem;\n      background: #10232de8;\n      max-width: 100%;\n      overflow-wrap: anywhere;\n    }\n    h2 {\n      font:\n        600 1.2rem Georgia,\n        serif;\n      margin: 0.4rem 0;\n    }\n    p,\n    small,\n    a {\n      font-size: 0.9rem;\n      line-height: 1.5;\n    }\n    img {\n      max-width: 100%;\n      max-height: 18rem;\n      object-fit: contain;\n    }\n    .date {\n      font-size: 1.5rem;\n    }\n    a {\n      color: #f3d591;\n    }\n    .reporter {\n      border-left: 5px solid #d4b477;\n    }\n    .studio-wide {\n      text-align: center;\n    }\n  "],
+  "mappings": ";AACI;AACE,WAAA;AACA,SAAA;;AAEF;AACE,WAAA;AACA,cAAA,KAAA,EAAA,EAAA,EAAA,EAAA,EAAA,EAAA;AACA,aAAA;AACA,iBAAA;;AAEF;AACE,QACE,IAAA,OAAA,OAAA,EAAA;AAEF,UAAA,OAAA;;AAEF;AAAA;AAAA;AAGE,aAAA;AACA,eAAA;;AAEF;AACE,aAAA;AACA,cAAA;AACA,cAAA;;AAEF,CAAA;AACE,aAAA;;AAEF;AACE,SAAA;;AAEF,CAAA;AACE,eAAA,IAAA,MAAA;;AAEF,CAAA;AACE,cAAA;;",
+  "names": []
+}

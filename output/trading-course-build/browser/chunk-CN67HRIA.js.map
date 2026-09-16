@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/runtime/project-launch/project-launch.tokens.ts"
+  ],
+  "sourcesContent": [
+    "import { InjectionToken } from '@angular/core';\n\nimport type { ProjectSessionContext } from '../../core/context/project-session-context';\nimport type { ProjectCatalogEntry } from '../../projects/project-catalog';\n\nexport const PROJECT_CATALOG_ENTRY = new InjectionToken<ProjectCatalogEntry>(\n  'PROJECT_CATALOG_ENTRY',\n);\nexport const PROJECT_SESSION_CONTEXT = new InjectionToken<ProjectSessionContext>(\n  'PROJECT_SESSION_CONTEXT',\n);\nexport const PROJECT_DEFINITION = new InjectionToken<unknown>('PROJECT_DEFINITION');\n\nexport interface ProjectSessionResolver {\n  resolve(project: ProjectCatalogEntry): ProjectSessionContext | Promise<ProjectSessionContext>;\n}\n\nexport const PROJECT_SESSION_RESOLVER = new InjectionToken<ProjectSessionResolver>(\n  'PROJECT_SESSION_RESOLVER',\n);\n"
+  ],
+  "mappings": ";;;;;AAKO,IAAM,wBAAwB,IAAI;AAAA,EACvC;AACF;AACO,IAAM,0BAA0B,IAAI;AAAA,EACzC;AACF;AACO,IAAM,qBAAqB,IAAI,eAAwB,oBAAoB;AAM3E,IAAM,2BAA2B,IAAI;AAAA,EAC1C;AACF;",
+  "names": [],
+  "debugId": "83fbcbe3-6d1a-55b3-ac64-5ce5494c5f26"
+}

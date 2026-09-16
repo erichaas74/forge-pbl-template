@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/templates/time-repair/invention/knowledge/circulation.component.scss"],
+  "sourcesContent": [".ink-label {\n  font:\n    18px Georgia,\n    serif;\n  fill: #34463d;\n  text-anchor: middle;\n}\n.caption {\n  font:\n    14px Arial,\n    sans-serif;\n  fill: #f0dfb8;\n  text-anchor: middle;\n}\n.ink-text {\n  fill: #34463d;\n}\n.pull-mark {\n  animation: pull 0.5s ease-in-out 2;\n  transform-origin: 186px 76px;\n}\n.discussion {\n  animation: speak 0.6s ease-out 2;\n}\n@keyframes pull {\n  50% {\n    transform: rotate(32deg);\n  }\n}\n@keyframes speak {\n  from {\n    opacity: 0.15;\n  }\n  to {\n    opacity: 1;\n  }\n}\n@media (prefers-reduced-motion: reduce) {\n  .pull-mark,\n  .discussion {\n    animation: none;\n  }\n}\n"],
+  "mappings": ";AAAA,CAAA;AACE,QACE,KAAA,OAAA,EAAA;AAEF,QAAA;AACA,eAAA;;AAEF,CAAA;AACE,QACE,KAAA,KAAA,EAAA;AAEF,QAAA;AACA,eAAA;;AAEF,CAAA;AACE,QAAA;;AAEF,CAAA;AACE,aAAA,KAAA,KAAA,YAAA;AACA,oBAAA,MAAA;;AAEF,CAAA;AACE,aAAA,MAAA,KAAA,SAAA;;AAEF,WANE;AAOA;AACE,eAAA,OAAA;;;AAGJ,WAPE;AAQA;AACE,aAAA;;AAEF;AACE,aAAA;;;AAGJ,QAAA,wBAAA;AACE,GArBF;EAqBE,CAjBF;AAmBI,eAAA;;;",
+  "names": []
+}

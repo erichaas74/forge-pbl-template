@@ -80,6 +80,8 @@ export interface KnowledgeDefinition {
   readonly timeline?: {
     readonly title: string;
     readonly era: string;
+    /** Optional alternate-history newspaper art for the opening investigation. */
+    readonly headlines?: readonly string[];
     readonly nodes: readonly TimelineNode[];
     readonly candidates: readonly { readonly id: string; readonly label: string; readonly detail: string }[];
     readonly answer: string;

@@ -1,0 +1,124 @@
+<section class="ledger-desk" aria-label="Journey budget and ledger">
+  <div class="ledger-title" tabindex="-1">
+    <span>{{ practice() ? 'PRACTICE JOURNEY' : 'COMPANY ACCOUNTS' }}</span>
+    <h2>{{ cycle().title }}</h2>
+    <small
+      >{{ state().returned ? 'Returned home' : 'Journey in progress' }} · Day
+      {{ state().day }}</small
+    >
+  </div>
+  <div class="cash-equation" aria-label="Actual journey cash balance">
+    <div>
+      <small>Opening cash</small><b>{{ money(cycle().budgetCents) }}</b>
+    </div>
+    <span>+</span>
+    <div>
+      <small>Sales</small><b>{{ money(totals().income) }}</b>
+    </div>
+    <span>−</span>
+    <div>
+      <small>All spending</small><b>{{ money(totals().expenses) }}</b>
+    </div>
+    <span>=</span>
+    <div class="closing">
+      <small>Cash box</small><b>{{ money(state().cashCents) }}</b>
+    </div>
+  </div>
+  <div class="book">
+    <div class="receipt-tray">
+      <h3>
+        Receipts <small>{{ unfiled().length }} to file</small>
+      </h3>
+      <p>Choose a receipt, then its column.</p>
+      @for (r of unfiled(); track r.id) {
+        <button
+          class="receipt"
+          [class.selected]="selected() === r.id"
+          [attr.aria-pressed]="selected() === r.id"
+          (click)="selected.set(r.id)"
+        >
+          <small>DAY {{ r.day }}</small
+          ><span>{{ r.label }}</span
+          ><b>{{ money(r.amountCents) }}</b>
+        </button>
+      } @empty {
+        <div class="empty-tray">
+          {{
+            state().receipts.length
+              ? 'All receipts filed'
+              : 'Your receipts appear here after a trade or travel day.'
+          }}
+        </div>
+      }
+    </div>
+    <div class="ledger-pages">
+      <div class="filing-cue" aria-live="polite">
+        {{
+          activeReceipt()
+            ? 'File: ' + activeReceipt()!.label
+            : 'Select any receipt to place or move it.'
+        }}
+      </div>
+      <div class="columns">
+        @for (col of columns; track col.id) {
+          <section class="column" [attr.aria-label]="col.label">
+            <button
+              class="column-heading"
+              [disabled]="!activeReceipt()"
+              (click)="file(col.id)"
+              [attr.aria-label]="'File receipt under ' + col.label"
+            >
+              {{ col.label }} <span>↓</span>
+            </button>
+            @for (r of state().receipts; track r.id) {
+              @if (state().bins[r.id] === col.id) {
+                <button
+                  class="entry"
+                  [class.selected]="selected() === r.id"
+                  [attr.aria-pressed]="selected() === r.id"
+                  (click)="selected.set(r.id)"
+                >
+                  <span>{{ r.label }}</span
+                  ><b>{{ money(r.amountCents) }}</b>
+                </button>
+              }
+            }
+          </section>
+        }
+      </div>
+      <div class="reconciliation" [class.balanced]="state().balanced">
+        <div>
+          <small>Your ledger closes at</small><strong>{{ money(totals().filedCash) }}</strong>
+        </div>
+        <div>
+          <small>Difference from cash box</small><strong>{{ money(totals().difference) }}</strong>
+        </div>
+        <button (click)="action.emit({ type: 'balance' })">
+          {{ state().balanced ? '✓ Books balanced' : 'Check ledger' }}
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="profit-note">
+    <span
+      >Unsold cargo at cost <b>{{ money(totals().stock) }}</b></span
+    ><span
+      >Journey profit / loss <b>{{ money(totals().profit) }}</b></span
+    ><small
+      >Closing cash + remaining cargo at cost − opening cash. Damage reduces cargo value; it is not
+      another cash payment.</small
+    >
+  </div>
+  @if (state().decisions?.length) {
+    <details class="decision-record">
+      <summary>Trail decisions</summary>
+      @for (d of state().decisions; track $index) {
+        <p>
+          Day {{ d.day }} · {{ d.label }}<br />{{ money(d.costCents) }} paid ·
+          {{ d.delayDays }} extra {{ d.delayDays === 1 ? 'day' : 'days' }} · {{ d.lostUnits }} goods
+          lost
+        </p>
+      }
+    </details>
+  }
+</section>

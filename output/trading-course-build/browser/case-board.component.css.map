@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/templates/investigation/ui/case-board.component.scss"],
+  "sourcesContent": [".case-board {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));\n  gap: 1rem;\n}\n\n.board-section {\n  min-height: 12rem;\n  padding: 1rem;\n  border: 1px solid #c8c0b1;\n  border-radius: 0.75rem;\n  background: #f8f5ee;\n}\n\n.board-section > header,\n.move-control {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  gap: 0.75rem;\n}\n\n.board-section h3 { margin: 0; }\n.board-items { display: grid; gap: 0.65rem; margin-top: 0.85rem; }\n.board-card {\n  display: grid;\n  gap: 0.3rem;\n  width: 100%;\n  padding: 0.75rem;\n  text-align: left;\n  border: 1px solid #d8cdbd;\n  border-radius: 0.55rem;\n  background: white;\n}\n"],
+  "mappings": ";AAAA,CAAA;AACE,WAAA;AACA,yBAAA,OAAA,QAAA,EAAA,OAAA,KAAA,EAAA;AACA,OAAA;;AAGF,CAAA;AACE,cAAA;AACA,WAAA;AACA,UAAA,IAAA,MAAA;AACA,iBAAA;AACA,cAAA;;AAGF,CARA,cAQA,EAAA;AAAA,CAAA;AAEE,WAAA;AACA,eAAA;AACA,mBAAA;AACA,OAAA;;AAGF,CAhBA,cAgBA;AAAoB,UAAA;;AACpB,CAAA;AAAe,WAAA;AAAe,OAAA;AAAc,cAAA;;AAC5C,CAAA;AACE,WAAA;AACA,OAAA;AACA,SAAA;AACA,WAAA;AACA,cAAA;AACA,UAAA,IAAA,MAAA;AACA,iBAAA;AACA,cAAA;;",
+  "names": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/templates/time-repair/invention/knowledge/distribution.component.ts"],
+  "sourcesContent": ["\n    :host,\n    .town {\n      display: block;\n      height: 100%;\n      position: relative;\n      background: #27483f;\n    }\n    .canvas {\n      position: absolute;\n      inset: 0;\n    }\n    .keyboard-objects {\n      position: absolute;\n      bottom: 12px;\n      left: 12px;\n      right: 12px;\n      pointer-events: none;\n    }\n    button {\n      position: absolute;\n      width: 1px;\n      height: 1px;\n      overflow: hidden;\n      clip-path: inset(50%);\n      white-space: nowrap;\n    }\n    button:focus-visible {\n      position: relative;\n      width: auto;\n      height: auto;\n      clip-path: none;\n      padding: 12px;\n      background: #f2ddad;\n      color: #183c35;\n      border: 3px solid #8de7c6;\n      border-radius: 5px;\n      pointer-events: auto;\n    }\n  "],
+  "mappings": ";AACI;AAAA,CAAA;AAEE,WAAA;AACA,UAAA;AACA,YAAA;AACA,cAAA;;AAEF,CAAA;AACE,YAAA;AACA,SAAA;;AAEF,CAAA;AACE,YAAA;AACA,UAAA;AACA,QAAA;AACA,SAAA;AACA,kBAAA;;AAEF;AACE,YAAA;AACA,SAAA;AACA,UAAA;AACA,YAAA;AACA,aAAA,MAAA;AACA,eAAA;;AAEF,MAAA;AACE,YAAA;AACA,SAAA;AACA,UAAA;AACA,aAAA;AACA,WAAA;AACA,cAAA;AACA,SAAA;AACA,UAAA,IAAA,MAAA;AACA,iBAAA;AACA,kBAAA;;",
+  "names": []
+}

@@ -1,0 +1,367 @@
+<div class="expedition-layout">
+  <main class="activity" aria-label="Interactive trading activity">
+    <nav class="surface-tools" aria-label="Trading activity views">
+      <button [attr.aria-pressed]="surface() === 'map'" (click)="open('map')">Map</button>
+      <button [attr.aria-pressed]="surface() === 'shop'" (click)="open('shop')">Shops</button>
+      <button [attr.aria-pressed]="surface() === 'ledger'" (click)="open('ledger')">Ledger</button>
+    </nav>
+    @if (surface() === 'map') {
+      <div class="map-stage">
+        <app-route-atlas
+          [locations]="locations()"
+          [trails]="trails()"
+          [backgroundAsset]="runtime.config.world.mapSceneAsset"
+          [currentLocationId]="state().locationId"
+          [selectedRouteId]="selectedRoute()"
+          [travel]="travel()"
+          [world]="world()"
+          [visitedIds]="state().visited"
+          [workspace]="true"
+          [embedded]="true"
+          [externalControls]="true"
+          (routeSelected)="selectRoute($event)"
+          (routeHighlighted)="selectRoute($event)"
+        />
+        <div class="cash-hud">
+          <small>Cash box</small><b>{{ money(state().cashCents) }}</b
+          ><span>{{ cargo() }} / {{ cycle().capacity }} cargo</span>
+        </div>
+        <div class="map-operate">
+          <button (click)="atlas()?.fitAll()" aria-label="Fit all routes">Fit map</button
+          ><button (click)="atlas()?.centerOnCompany()" aria-label="Find my wagon">
+            Find wagon
+          </button>
+        </div>
+        <div class="journey-goal">
+          <span>OUT &amp; BACK · {{ cycle().title }}</span>
+          <div>
+            Independence
+            @for (target of visitedGoal(); track target.name) {
+              <span>→ {{ target.visited ? '✓ ' : '' }}{{ target.name }}</span>
+            }
+            → Home
+          </div>
+        </div>
+        <section
+          class="route-action"
+          id="expedition-route-action"
+          tabindex="-1"
+          [class.hazard]="!!hazard()"
+          aria-label="Journey controls"
+        >
+          @if (hazard(); as danger) {
+            <div class="hazard-heading">
+              <span class="hazard-mark">!</span>
+              <div>
+                <small>DAY {{ state().day }} · TRAIL EVENT</small>
+                <h2>{{ danger.title }}</h2>
+              </div>
+            </div>
+            <p>{{ danger.description }}</p>
+            <div class="hazard-choices">
+              @for (choice of danger.choices; track choice.id) {
+                <button
+                  (click)="act({ type: 'resolve', choiceId: choice.id })"
+                  [disabled]="choice.costCents > state().cashCents"
+                >
+                  <b>{{ choice.label }}</b
+                  ><span
+                    >{{ money(choice.costCents) }} · +{{ choice.delayDays }} days · up to
+                    {{ choice.lossUnits }} goods lost</span
+                  >
+                </button>
+              }
+            </div>
+          } @else if (state().travel; as travel) {
+            <div>
+              <small>ON THE ROAD · DAY {{ state().day }}</small>
+              <h2>{{ route()?.name }}</h2>
+              <p>{{ travel.elapsed }} of {{ travel.days }} travel days</p>
+            </div>
+            <progress
+              [value]="travel.elapsed"
+              [max]="travel.days"
+              aria-label="Journey leg progress"
+            ></progress>
+            <button class="primary" (click)="act({ type: 'advance' })">Travel next day →</button>
+          } @else if (state().returned) {
+            <div>
+              <small>ROUND TRIP COMPLETE</small>
+              <h2>Home with {{ money(state().cashCents) }}</h2>
+              <p>
+                Cash change {{ money(state().cashCents - cycle().budgetCents) }} ·
+                {{ money(totals().stock) }} in unsold cargo
+              </p>
+            </div>
+            <button class="primary" (click)="open('ledger')">Open journey ledger →</button>
+          } @else if (route(); as road) {
+            <div>
+              <small>SELECTED ROAD</small>
+              <h2>{{ road.name }}</h2>
+              <p>
+                {{ road.estimatedDays }} days · {{ road.distanceMiles }} miles ·
+                {{ money(road.supplyCostCents) }} supplies
+              </p>
+            </div>
+            <details>
+              <summary>Compare destination selling prices</summary>
+              <div class="price-list">
+                @for (price of destinationPrices(); track price.name) {
+                  <span
+                    >{{ price.name }} <b>{{ money(price.price) }}</b></span
+                  >
+                }
+              </div>
+            </details>
+            <button class="primary" (click)="act({ type: 'depart', routeId: road.id })">
+              Depart · {{ money(road.supplyCostCents) }} →
+            </button>
+          } @else {
+            <div>
+              <small>{{ location().shortName.toUpperCase() }} · DAY {{ state().day }}</small>
+              <h2>{{ cargo() ? 'Choose your next road' : 'Load up for the journey' }}</h2>
+              <p>
+                {{
+                  cargo()
+                    ? 'Select a town or travel-price sign on the map.'
+                    : 'Keep enough cash for the road there and back.'
+                }}
+              </p>
+            </div>
+            <button class="primary" (click)="open('shop')">Visit the shops →</button>
+          }
+        </section>
+      </div>
+    } @else if (surface() === 'shop') {
+      <section
+        class="shop-stage"
+        [style.background-image]="'url(' + runtime.config.world.locations[0].streetSceneAsset + ')'"
+        aria-label="Town shops"
+      >
+        <div class="shop-sign" tabindex="-1">
+          <small>THE TRADING POST</small>
+          <h2>{{ location().shortName }} shops</h2>
+          <span>{{
+            state().travel
+              ? 'Trading resumes when the wagon arrives.'
+              : 'Choose goods from the shelf.'
+          }}</span>
+        </div>
+        <div class="shop-counter">
+          <div class="goods-shelf">
+            @for (g of goods(); track g.id) {
+              <button
+                [attr.aria-pressed]="good().id === g.id"
+                (click)="selectedGood.set(g.id); quantity.set(1)"
+                [attr.aria-label]="'Select ' + g.name"
+              >
+                <img
+                  [src]="
+                    runtime.config.visualTheme?.cargoPackageAssets?.[g.cargoPackage ?? 'crate']
+                  "
+                  alt=""
+                /><b>{{ g.name }}</b
+                ><small>{{ money(price(g.id)) }} each</small>
+              </button>
+            }
+          </div>
+          <div class="trade-counter">
+            <div class="goods-display">
+              <img [src]="packageAsset()" [alt]="good().name" /><span
+                >{{ good().unitCargo }} cargo spaces each</span
+              >
+            </div>
+            <div class="trade-controls">
+              <h2>{{ good().name }}</h2>
+              <div class="price-pair">
+                <span
+                  >Buy <b>{{ money(buyPrice()) }}</b></span
+                ><span
+                  >Sell <b>{{ money(sellPrice()) }}</b></span
+                >
+              </div>
+              <div class="quantity">
+                <button
+                  aria-label="Decrease quantity"
+                  [disabled]="quantity() === 1"
+                  (click)="quantity.set(quantity() - 1)"
+                >
+                  −</button
+                ><output aria-label="Trade quantity">{{ quantity() }}</output
+                ><button
+                  aria-label="Increase quantity"
+                  [disabled]="quantity() === 99"
+                  (click)="quantity.set(quantity() + 1)"
+                >
+                  +
+                </button>
+              </div>
+              <div class="trade-buttons">
+                <button
+                  class="primary"
+                  [disabled]="
+                    !!state().travel ||
+                    state().returned ||
+                    quantity() * buyPrice() > state().cashCents ||
+                    cargo() + quantity() * good().unitCargo > cycle().capacity
+                  "
+                  (click)="
+                    act({
+                      type: 'trade',
+                      goodId: good().id,
+                      direction: 'buy',
+                      quantity: quantity(),
+                    })
+                  "
+                >
+                  Buy · {{ money(quantity() * buyPrice()) }}
+                </button>
+                <button
+                  [disabled]="!!state().travel || quantity() > held()"
+                  (click)="
+                    act({
+                      type: 'trade',
+                      goodId: good().id,
+                      direction: 'sell',
+                      quantity: quantity(),
+                    })
+                  "
+                >
+                  Sell · {{ money(quantity() * sellPrice()) }}
+                </button>
+              </div>
+              <p>{{ held() }} in your wagon · {{ money(state().cashCents) }} available</p>
+            </div>
+          </div>
+          <div class="wagon-load">
+            <img [src]="runtime.config.visualTheme?.vehicleImageUrl" alt="Your trading wagon" />
+            <div>
+              <b>Wagon load · {{ cargo() }} / {{ cycle().capacity }}</b
+              ><progress
+                [value]="cargo()"
+                [max]="cycle().capacity"
+                aria-label="Wagon cargo capacity"
+              ></progress>
+              <div class="cargo-labels">
+                @for (g of goods(); track g.id) {
+                  @if (state().inventory[g.id]?.quantity) {
+                    <span>{{ state().inventory[g.id].quantity }} {{ g.name }}</span>
+                  }
+                }
+              </div>
+            </div>
+            <button (click)="open('map')">Return to map →</button>
+          </div>
+        </div>
+      </section>
+    } @else {
+      <div class="ledger-stage">
+        <div class="ledger-switch">
+          <button [attr.aria-pressed]="!practice()" (click)="practice.set(false)">My journey</button
+          ><button [attr.aria-pressed]="practice()" (click)="loadPractice()">
+            Practice ledger
+          </button>
+        </div>
+        <app-expedition-ledger
+          [cycle]="cycle()"
+          [state]="state()"
+          [practice]="practice()"
+          (action)="act($event)"
+        />
+      </div>
+    }
+    <div class="action-feedback" [class.error]="!!localError()" role="status" aria-live="polite">
+      {{ localError() || state().feedback }}
+    </div>
+  </main>
+  <aside class="lesson-side" aria-label="Weekly tasks and AI Tutor">
+    <details class="tasks" open>
+      <summary>Week {{ week() }} · {{ week() % 2 ? 'Journey' : 'Balance & improve' }}</summary>
+      <div>
+        <h2>{{ lesson()?.title ?? 'Your first round trip' }}</h2>
+        @if (exampleMode()) {
+          <p>
+            <b>Fictional worked example.</b> Explore the completed budget or try sorting a practice
+            copy.
+          </p>
+          <button (click)="hostGuide()?.()">Example teaching guide</button>
+        }
+        @if (week() % 2) {
+          <ol>
+            <li>Compare shop prices and load the wagon.</li>
+            <li>
+              Visit
+              @for (target of visitedGoal(); track target.name; let last = $last) {
+                {{ target.name }}{{ last ? '' : ' and ' }}
+              }
+              .
+            </li>
+            <li>Sell goods and return to Independence.</li>
+            <li>Inspect the journey’s cash and receipts.</li>
+          </ol>
+        } @else {
+          <ol>
+            <li>Open the previous journey’s receipts.</li>
+            <li>Sort money in, money out, and stock losses.</li>
+            <li>Reconcile the ledger with the cash box.</li>
+            <li>Write what would make your next journey more successful.</li>
+          </ol>
+        }
+        <p class="product"><b>Keep:</b> {{ lesson()?.output }}</p>
+        <small
+          >Each journey has its own starting budget and saved ledger. All weeks are open for
+          testing.</small
+        >
+        @if (week() % 2 === 0 && !ownState().returned) {
+          <button (click)="loadPractice(); surface.set('ledger')">Try a practice ledger</button>
+        }
+        @if (!exampleMode()) {
+          <details class="local-tools">
+            <summary>Local teacher controls</summary>
+            <p>Pause or resume this device’s journeys.</p>
+            <button (click)="runtime.teacherPauseToggle()">
+              {{
+                runtime.state().status === 'paused_by_teacher'
+                  ? 'Resume journeys'
+                  : 'Pause journeys'
+              }}
+            </button>
+          </details>
+        }
+      </div>
+    </details>
+    <details class="tutor" open>
+      <summary>AI Tutor <span>Not connected</span></summary>
+      <div>
+        <h3>Discussion plan</h3>
+        <p>
+          {{ lesson()?.checkpoint ?? 'Which cargo could earn enough to cover the return journey?' }}
+        </p>
+        <ul>
+          <li>Evidence: route, receipts, closing cash, and cargo losses.</li>
+          <li>Future controls: ask a hint, compare strategies, review calculations.</li>
+        </ul>
+        <label for="journey-reflection">My improvement reflection</label>
+        <textarea
+          id="journey-reflection"
+          rows="5"
+          [readOnly]="exampleMode()"
+          [ngModel]="reflectionDraft()"
+          (ngModelChange)="reflectionDraft.set($event)"
+          (blur)="saveReflection()"
+          placeholder="Next journey I would… My ledger shows…"
+        ></textarea>
+        @if (!exampleMode()) {
+          <button (click)="saveReflection()">Save reflection</button>
+        }
+        <small>{{
+          exampleMode()
+            ? 'Fictional example; no student data is saved.'
+            : runtime.saveState() === 'save_failed'
+              ? 'Save failed. Your draft is still here.'
+              : 'Saved on this device; no AI feedback or assessment.'
+        }}</small>
+      </div>
+    </details>
+  </aside>
+</div>

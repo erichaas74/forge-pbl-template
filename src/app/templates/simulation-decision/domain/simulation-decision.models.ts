@@ -206,6 +206,7 @@ export interface TransactionMathDefinition {
 }
 
 export interface SimulationDecisionConfig {
+  readonly expeditionCourse?: import('./expedition-course.models').ExpeditionCourse;
   readonly tradeWorld?: import('./trade-world.models').TradeWorldDefinition;
   schemaVersion: string;
   template: { id: 'simulation-decision'; version: string };
@@ -360,6 +361,7 @@ export interface FinalStrategyReportState {
 }
 
 export interface SimulationDecisionState {
+  readonly expeditions?: Readonly<Record<string, import('./expedition-course.models').ExpeditionState>>;
   readonly tradeWorld?: import('./trade-world.models').TradeWorldState;
   simulationId: string;
   projectId: string;
@@ -431,6 +433,7 @@ export interface TradingSeasonResults {
 }
 
 export type SimulationDecisionAction =
+  | { type: 'expedition.action'; cycleId: string; expectedRevision: number; action: import('./expedition-course.models').ExpeditionAction }
   | { type: 'world.pulsed'; expectedTick: number }
   | { type: 'world.pauseToggled' }
   | { type: 'view.changed'; view: SimulationView }

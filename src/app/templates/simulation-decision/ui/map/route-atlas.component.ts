@@ -62,6 +62,7 @@ export class RouteAtlasComponent {
   readonly selectedRouteId = input('');
   readonly predictionRouteId = input('');
   readonly workspace = input(false);
+  readonly embedded = input(false);
   readonly externalControls = input(false);
   readonly controls = viewChild<TemplateRef<unknown>>('mapControls');
   readonly destinationPriceLabels = input<Readonly<Record<string, string>>>({});
@@ -322,6 +323,13 @@ export class RouteAtlasComponent {
     );
   }
   fitAll(): void {
+    if (this.embedded() && this.locations().length) {
+      const xs = this.locations().map(l => l.mapX);
+      const ys = this.locations().map(l => l.mapY);
+      this.view.set(fitMapBounds({ x: Math.min(...xs) - 7, y: Math.min(...ys) - 10,
+        width: Math.max(...xs) - Math.min(...xs) + 14, height: Math.max(...ys) - Math.min(...ys) + 20 }));
+      return;
+    }
     this.view.set({ ...FULL_MAP });
   }
   centerOnCompany(): void {
@@ -398,7 +406,7 @@ export class RouteAtlasComponent {
     if (trail?.state === 'completed') return 'Visited';
     if (trail?.state === 'locked') return 'Locked · finish the next mission';
     if (trail?.state === 'unavailable') return 'Unavailable';
-    if (trail) return `${trail.route.estimatedDays} days · ${trail.route.risk} risk`;
+    if (trail) return `${trail.route.estimatedDays} ${trail.route.estimatedDays === 1 ? 'day' : 'days'} · ${trail.route.risk} risk`;
     return this.visitedIds().includes(location.id) ? 'Visited' : '';
   }
   priceLabel(locationId: string): string {

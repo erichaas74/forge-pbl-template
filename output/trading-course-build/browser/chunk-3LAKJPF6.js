@@ -1,0 +1,376 @@
+import {
+  samplePersistence
+} from "./chunk-HUXR7BE6.js";
+import {
+  AutomationLabComponent
+} from "./chunk-Q2AA6IYB.js";
+import {
+  AUTOMATION_CONFIG,
+  AUTOMATION_PERSISTENCE,
+  AUTOMATION_SAMPLE,
+  AUTOMATION_SESSION,
+  AutomationRuntimeService,
+  compileProgram,
+  executeRobot,
+  expectedMath,
+  initialAutomationState,
+  mathTools,
+  prepareMoveMathCommands
+} from "./chunk-IORUS3HC.js";
+import {
+  createLocalPreviewSession
+} from "./chunk-G626JLCU.js";
+import "./chunk-4K7YHKFF.js";
+import "./chunk-3ZI5RM4E.js";
+import "./chunk-NDJR5R7S.js";
+import "./chunk-3C62DQOL.js";
+import "./chunk-RTVK2FN5.js";
+import "./chunk-OXVZ3VYX.js";
+import "./chunk-FBZ4EUOY.js";
+import "./chunk-ENCFJY7U.js";
+import "./chunk-E2VJWGUE.js";
+import {
+  robotDeliveryConfig
+} from "./chunk-HDUYTC5O.js";
+import {
+  __spreadProps,
+  __spreadValues
+} from "./chunk-GOMI4DH3.js";
+
+// src/app/projects/robot-delivery/robot-delivery.sample.ts
+var robotSampleStudent = { id: "robot-example-engineer", name: "Alex \xB7 example engineer" };
+function createRobotSampleState() {
+  let serial = 0;
+  const id = () => `robot-sample-${++serial}`;
+  const time = "2026-09-01T10:00:00.000Z";
+  const math = [];
+  const evidence = (tool, inputs, explanation) => {
+    const existing = math.find(
+      (e) => e.tool === tool && JSON.stringify(e.inputs) === JSON.stringify(inputs)
+    );
+    if (existing) return existing.id;
+    const answer = expectedMath(tool, inputs);
+    const item = {
+      id: id(),
+      studentId: robotSampleStudent.id,
+      tool,
+      inputs,
+      answer,
+      expected: answer,
+      unit: mathTools.find((t) => t.id === tool).unit,
+      explanation,
+      status: "correct",
+      timestamp: time
+    };
+    math.push(item);
+    return item.id;
+  };
+  evidence(
+    "circumference",
+    [8],
+    "I used diameter \xD7 3.14. The geometric circumference is 25.12 cm; a trial measures 24 cm of travel."
+  );
+  evidence(
+    "rotation-distance",
+    [1, 24],
+    "One measured rotation carries the robot 24 cm, so half a rotation should carry it 12 cm."
+  );
+  evidence(
+    "movement-time",
+    [100, 20],
+    "An empty robot covers 100 cm at 20 cm per second in 5 seconds. Loaded segments take longer."
+  );
+  evidence(
+    "turn-time",
+    [90, 45],
+    "A right-angle turn is 90 degrees. At 45 degrees each second, it takes 2 seconds."
+  );
+  evidence("degrees-fraction", [90], "90 divided by 360 is one quarter of a full turn.");
+  const move = (value, variable, grid = 25) => ({
+    id: id(),
+    type: "move-distance",
+    value: variable ?? String(value),
+    mathEvidenceId: evidence(
+      "grid-distance",
+      [0, 0, 0, value / grid, grid],
+      `I counted ${value / grid} grid squares and multiplied by ${grid} cm per square to get ${value} cm.`
+    )
+  });
+  const wait = (seconds) => ({
+    id: id(),
+    type: "wait",
+    value: String(seconds),
+    mathEvidenceId: evidence(
+      "movement-time",
+      [seconds * 20, 20],
+      `An object moving at 20 cm/s travels ${seconds * 20} cm in ${seconds} seconds. I use that delay to time the crossing.`
+    )
+  });
+  const turn = () => ({
+    id: id(),
+    type: "turn-degrees",
+    value: "90",
+    direction: "right",
+    mathEvidenceId: evidence(
+      "fraction-turn",
+      [0.25],
+      "A quarter of 360 degrees is 90 degrees. Four right-angle turns make a complete turn."
+    )
+  });
+  const rotate = (rotations) => ({
+    id: id(),
+    type: "move-rotations",
+    value: String(rotations),
+    mathEvidenceId: evidence(
+      "distance-rotations",
+      [rotations * 24, 24],
+      `I divided ${rotations * 24} cm by the measured 24 cm per rotation to get ${rotations} rotations.`
+    )
+  });
+  const cargo = (type, pkg = "parcel-a") => ({
+    id: id(),
+    type,
+    value: "",
+    packageId: pkg
+  });
+  const repeat = (count, commands) => ({
+    id: id(),
+    type: "repeat",
+    value: String(count),
+    commands
+  });
+  const programs = {};
+  const program = (key, commands, variables = []) => {
+    programs[key] = { id: `sample-${key}`, version: 2, commands, variables };
+  };
+  program("calibration-garage", [rotate(1)]);
+  program("precision-parking", [rotate(5)]);
+  program("turn-training", [move(100), turn(), move(100)]);
+  program("coordinate-courier", [
+    move(75),
+    cargo("pick-up"),
+    turn(),
+    move(100),
+    cargo("drop-off"),
+    turn(),
+    move(75)
+  ]);
+  program(
+    "variable-upgrade",
+    [move(100, "SIDE"), turn(), move(100, "SIDE")],
+    [{ id: id(), name: "SIDE", value: "100", unit: "cm" }]
+  );
+  program("warehouse-pattern", [repeat(4, [move(100), turn()])]);
+  program("battery-emergency", [move(150), turn(), move(200)]);
+  program("patrol-crossing", [wait(4), move(280, void 0, 40)]);
+  program("moving-gates", [wait(4), move(280, void 0, 40), turn(), wait(4), move(240, void 0, 40)]);
+  program("cargo-delivery", [
+    move(100),
+    cargo("pick-up"),
+    move(50),
+    turn(),
+    move(200),
+    cargo("drop-off")
+  ]);
+  program(
+    "championship",
+    [
+      repeat(2, [move(50, "STEP")]),
+      cargo("pick-up"),
+      repeat(2, [move(50, "STEP")]),
+      turn(),
+      move(100, "LONG"),
+      cargo("drop-off"),
+      move(100, "LONG"),
+      cargo("pick-up", "parcel-b"),
+      turn(),
+      repeat(2, [move(100, "LONG")]),
+      cargo("drop-off", "parcel-b"),
+      turn(),
+      repeat(2, [move(100, "RETURN")])
+    ],
+    [
+      { id: id(), name: "STEP", value: "50", unit: "cm" },
+      { id: id(), name: "LONG", value: "100", unit: "cm" },
+      { id: id(), name: "RETURN", value: "100", unit: "cm" }
+    ]
+  );
+  const base = initialAutomationState(robotDeliveryConfig);
+  const trials = [];
+  const versions = [];
+  const drafts = __spreadValues({}, base.drafts);
+  for (const challenge of robotDeliveryConfig.challenges) {
+    const sourceProgram = programs[challenge.id];
+    const currentProgram = __spreadProps(__spreadValues({}, sourceProgram), {
+      commands: prepareMoveMathCommands(sourceProgram.commands, challenge.moveMath)
+    });
+    const course = robotDeliveryConfig.courses.find((c) => c.id === challenge.courseId);
+    const patrolPrediction = challenge.id === "patrol-crossing" ? { route: "Wait 4 seconds, then travel 280 cm north across the patrol lane to the goal.", distance: "280", turns: "0", seconds: "18", battery: "14.08" } : challenge.id === "moving-gates" ? { route: "Wait 4 seconds, travel 280 cm north, turn right, wait another 4 seconds, then travel 240 cm east beyond the sliding gate.", distance: "520", turns: "90", seconds: "36", battery: "27.06" } : void 0;
+    const prediction = patrolPrediction ?? {
+      route: "Travel north on the west aisle, deliver A across the top, collect B, travel south on the east aisle, then return west to the starting dock.",
+      distance: challenge.id === "championship" ? "800" : "",
+      turns: challenge.id === "championship" ? "270" : "",
+      seconds: challenge.id === "championship" ? "54" : "",
+      battery: challenge.id === "championship" ? "49" : ""
+    };
+    const version = {
+      id: id(),
+      ownerId: robotSampleStudent.id,
+      ownerName: robotSampleStudent.name,
+      challengeId: challenge.id,
+      targetIndex: 0,
+      createdAt: time,
+      program: currentProgram,
+      math: structuredClone(math),
+      prediction,
+      robot: robotDeliveryConfig.robot,
+      course
+    };
+    const run = (v, mode) => {
+      const compiled = compileProgram(
+        v.program,
+        v.robot,
+        challenge,
+        v.math,
+        mode === "championship"
+      );
+      if (compiled.issues.some((i) => i.severity === "error"))
+        throw new Error(compiled.issues.map((i) => i.message).join("\n"));
+      return __spreadProps(__spreadValues({}, executeRobot(
+        compiled.commands,
+        v.course,
+        v.robot,
+        challenge,
+        0,
+        v.prediction,
+        robotDeliveryConfig.scoring
+      )), {
+        id: id(),
+        challengeId: challenge.id,
+        version: structuredClone(v),
+        createdAt: time,
+        mode
+      });
+    };
+    if (challenge.id === "championship") {
+      const early = structuredClone(version);
+      early.id = id();
+      early.program = __spreadProps(__spreadValues({}, early.program), {
+        version: 1,
+        variables: early.program.variables.map(
+          (v) => v.name === "RETURN" ? __spreadProps(__spreadValues({}, v), { value: "90" }) : v
+        )
+      });
+      trials.push(run(early, "practice"));
+    }
+    const trial = run(version, "practice");
+    if (!trial.completedMission)
+      throw new Error(`${challenge.title} example failed: ${trial.stoppedReason}`);
+    trials.push(trial);
+    const reflection = challenge.id === "championship" ? "Trial 1 delivered both packages but stopped 20 cm east of the dock. RETURN was 90, repeated twice. Changing RETURN to 100 added 20 cm without changing the successful delivery route. The next trial reached the dock with no collisions." : course.actors?.length ? "I used the patrol speeds and the robot\u2019s travel time to choose a crossing time. WAIT changes when the robot enters a moving obstacle\u2019s route. The saved replay reaches the goal with no collisions; its timeline lets me check where each moving object was during the crossing." : "I compared the measured endpoint with the target and used the grid and calculations to check my command values. The completed trial supports this route.";
+    drafts[challenge.id] = __spreadValues(__spreadProps(__spreadValues({}, drafts[challenge.id]), {
+      program: currentProgram,
+      prediction,
+      diagnosis: challenge.id === "championship" ? "The final loop repeated a return distance that was 10 cm too short. Two repeats made a 20 cm error." : course.actors?.length ? "Check both position and time at each patrol crossing. Revise WAIT duration or the route if a moving object reaches the same place." : "Use the trial to check the target, heading, and distance.",
+      reflection,
+      completedAt: time
+    }), challenge.id === "championship" ? { lockedVersionId: version.id } : {});
+    if (challenge.id === "championship") {
+      versions.push(version);
+      trials.push(run(version, "championship"));
+    }
+  }
+  return __spreadProps(__spreadValues({}, base), {
+    revision: 30,
+    selectedChallengeId: "championship",
+    drafts,
+    math,
+    trials,
+    versions,
+    measuredDistancePerRotation: "24",
+    measuredTurnRate: "45",
+    measurementExplanation: "The wheel circumference is 8 \xD7 3.14 = 25.12 cm. My one-rotation trial moved 24 cm, so I used measured travel for parking. A quarter turn took 2 seconds, giving 90 \xF7 2 = 45 degrees per second.",
+    defense: "My route keeps the robot outside the storage rack and carries only one package at a time. Variables make each measured distance visible, and repeats express equal route segments. My 54-second prediction includes slower loaded travel and four cargo actions. The saved failed trial identifies the return variable as the cause of the stopping error; revising that variable produces the final successful route.",
+    championship: {
+      revealed: true,
+      practiceOpen: false,
+      practiceLimit: 3,
+      paused: true,
+      showStandings: true,
+      finalized: true,
+      queue: versions.map((v) => v.id)
+    },
+    audit: [
+      {
+        id: id(),
+        action: "program.locked",
+        reason: "The example engineer confirmed the tested second version.",
+        timestamp: time
+      },
+      {
+        id: id(),
+        action: "championship.finalized",
+        reason: "The example rehearsal result was reviewed and finalized.",
+        timestamp: time
+      }
+    ]
+  });
+}
+var robotSampleGuide = {
+  title: "Two packages. One tested program.",
+  subtitle: "Robot Delivery Code Lab \xB7 completed engineering portfolio",
+  audience: "Classroom engineering review",
+  duration: "3\u20135 minute walkthrough",
+  trail: [
+    {
+      label: "CALIBRATE",
+      title: "Use measured travel",
+      text: "Alex calculated a 25.12 cm circumference and measured 24 cm per rotation. The measured value made the parking code accurate.",
+      evidence: "A 120 cm target requires 5 measured rotations."
+    },
+    {
+      label: "DEBUG",
+      title: "Compare the original and revised routes",
+      text: "The first championship trial stopped 20 cm short on the return. Changing RETURN from 90 to 100 fixed both repeated segments.",
+      evidence: "Open Trials & portfolio to replay and compare the saved versions."
+    },
+    {
+      label: "DEFEND",
+      title: "Connect the program to the evidence",
+      text: "The final replay delivers A and B, avoids the rack, and returns to the dock. The locked code and calculations remain available for review.",
+      evidence: "Performance points and individual math evidence are shown separately."
+    }
+  ],
+  review: {
+    strength: "One variable change explains the improvement between preserved trials.",
+    question: "How would the predicted time change if the robot carried a heavier package?",
+    revision: "Test a different loaded speed and compare the prediction with a new measurement.",
+    assessment: "Use the calculation explanations, debugging comparison, and engineering defense to assess learning separately from the performance score."
+  }
+};
+
+// src/app/runtime/project-showcase/automation.sample.ts
+function loadSample() {
+  return __spreadProps(__spreadValues({}, robotSampleGuide), {
+    component: AutomationLabComponent,
+    providers: [
+      { provide: AUTOMATION_CONFIG, useValue: robotDeliveryConfig },
+      { provide: AUTOMATION_SAMPLE, useValue: true },
+      {
+        provide: AUTOMATION_SESSION,
+        useValue: createLocalPreviewSession(
+          robotDeliveryConfig.projectId,
+          robotDeliveryConfig.projectVersion,
+          { actorId: robotSampleStudent.id, actorDisplayName: robotSampleStudent.name }
+        )
+      },
+      { provide: AUTOMATION_PERSISTENCE, useValue: samplePersistence(createRobotSampleState()) },
+      AutomationRuntimeService
+    ]
+  });
+}
+export {
+  loadSample
+};
+//# debugId=dd1c4bb0-65ea-54fd-9045-569073bd2074
+//# sourceMappingURL=chunk-3LAKJPF6.js.map

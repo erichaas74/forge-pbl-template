@@ -1,0 +1,1 @@
+import{t as L}from"./chunk-DWWWYzjd.js";export{L as frontierTradingConfig};

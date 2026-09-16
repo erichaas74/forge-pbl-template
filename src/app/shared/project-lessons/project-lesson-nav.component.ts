@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { lessonStages, type ProjectLessonPlan } from './project-lesson.models';
+import { lessonStages, lessonWeek, type ProjectLessonPlan } from './project-lesson.models';
 
 @Component({
   selector: 'app-project-lesson-nav',
@@ -16,13 +16,13 @@ export class ProjectLessonNavComponent {
   readonly selected = input.required<number>();
   readonly finalExampleRoute = input<readonly string[] | null>(null);
   readonly finalExampleActive = input(false);
-  readonly weeks = [1, 2, 3, 4];
-  readonly selectedWeek = computed(() => Math.ceil(this.selected() / 2));
-  readonly weekGroups = computed(() => this.weeks.map(week => ({
+  readonly selectedWeek = computed(() => lessonWeek(this.plan(), this.selected()));
+  readonly weeks = computed(() => [...new Set(lessonStages.map((_, index) => lessonWeek(this.plan(), index + 1)))]);
+  readonly weekGroups = computed(() => this.weeks().map(week => ({
     week,
-    lessons: lessonStages.flatMap((stage, index) => stage.week === week ? [{
+    lessons: lessonStages.flatMap((stage, index) => lessonWeek(this.plan(), index + 1) === week ? [{
       number: index + 1,
-      kind: index % 2 === 0 ? 'Individual' : 'Group',
+      kind: this.plan()?.lessons[index]?.week ? 'Weekly session' : index % 2 === 0 ? 'Individual' : 'Group',
       title: this.plan()?.lessons[index]?.title ?? stage.label,
     }] : []),
   })));

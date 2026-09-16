@@ -1,5 +1,7 @@
 /** A versioned teaching sequence, separate from activity state and assessed mastery. */
 export interface ProjectLesson {
+  /** Optional explicit week; absent keeps the standard two sessions per week. */
+  readonly week?: number;
   readonly number: number;
   readonly title: string;
   readonly output: string;
@@ -118,6 +120,10 @@ export function lessonNumber(value: string | null): number {
   return value !== null && /^[1-8]$/.test(value) ? Number(value) : 1;
 }
 
+export function lessonWeek(plan: ProjectLessonPlan | undefined, number: number): number {
+  return plan?.lessons[number - 1]?.week ?? Math.ceil(number / 2);
+}
+
 export function validateLessonPlan(value: unknown): ProjectLessonPlan {
   const fail = (): never => {
     throw new Error('LESSON_PLAN_INVALID: Expected a versioned plan with eight ordered lessons.');
@@ -160,6 +166,7 @@ export function validateLessonPlan(value: unknown): ProjectLessonPlan {
   if (!Array.isArray(value['lessons']) || value['lessons'].length !== 8) return fail();
   for (const [index, item] of value['lessons'].entries()) {
     if (!record(item) || item['number'] !== index + 1) return fail();
+    if (item['week'] !== undefined && (!Number.isInteger(item['week']) || Number(item['week']) < 1 || Number(item['week']) > 8)) return fail();
     if (!['title', 'output', 'workspace', 'checkpoint'].every((field) => text(item[field])))
       return fail();
     if (

@@ -1,0 +1,22 @@
+@if (interviews().length) {
+  <nav class="screens" aria-label="Video interviews">
+    @for (interview of interviews(); track interview.id) {
+      <button class="screen" [disabled]="!interview.video" [attr.aria-label]="interview.title + (interview.video ? ' — play interview' : ' — video pending')" (click)="open(interview, $event)">
+        <img [src]="interview.poster" alt="">
+        <span class="play" aria-hidden="true">▷</span>
+        <span class="label">{{ interview.title }}<small>{{ interview.video ? 'Play interview' : 'Video pending' }}</small></span>
+      </button>
+    }
+  </nav>
+}
+<dialog #dialog aria-label="Interview video" (cancel)="$event.preventDefault(); close()">
+  @if (active(); as interview) {
+    <header><strong>{{ interview.title }}</strong><button (click)="close()" autofocus>← Return to scene</button></header>
+    @if (interview.video; as video) {
+      <video #player controls autoplay playsinline [poster]="interview.poster" [src]="video.src" [attr.aria-label]="interview.title + ' interview'" (error)="failed.set(true)">
+        <track kind="captions" srclang="en" label="English" [src]="video.captions" default>
+      </video>
+    }
+    @if (failed()) { <p role="alert">This interview could not load. Return to the scene and try again.</p> }
+  }
+</dialog>

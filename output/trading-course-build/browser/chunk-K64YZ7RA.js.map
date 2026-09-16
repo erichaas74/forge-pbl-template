@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/shared/drafts/workspace-drafts.ts"
+  ],
+  "sourcesContent": [
+    "import { InjectionToken } from '@angular/core';\n\n/** Presentation drafts only. Completed work still goes through runtime events. */\nexport interface WorkspaceDraftStore {\n  read<T>(key: string): T | undefined;\n  write<T>(key: string, value: T): void;\n}\n\nexport const WORKSPACE_DRAFTS = new InjectionToken<WorkspaceDraftStore>('WORKSPACE_DRAFTS');\n"
+  ],
+  "mappings": ";;;;;AAQO,IAAM,mBAAmB,IAAI,eAAoC,kBAAkB;",
+  "names": [],
+  "debugId": "3083ec58-f70d-55cc-ab2b-a147c2934156"
+}

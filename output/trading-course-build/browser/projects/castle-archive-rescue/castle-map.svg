@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="680" viewBox="0 0 1000 680">
+<defs>
+ <radialGradient id="land"><stop stop-color="#69765b"/><stop offset="1" stop-color="#263f3c"/></radialGradient>
+ <linearGradient id="roof" x2="0.6" y2="1"><stop stop-color="#ac7052"/><stop offset="1" stop-color="#583f36"/></linearGradient>
+ <pattern id="stone" width="36" height="24" patternUnits="userSpaceOnUse"><rect width="36" height="24" fill="#85897b"/><path d="M0 0H36M0 12H36M18 0V12M0 12V24M36 12V24" stroke="#566158" stroke-width="1"/></pattern>
+ <pattern id="court" width="24" height="24" patternUnits="userSpaceOnUse"><rect width="24" height="24" fill="#9d9d81"/><path d="M0 0H24V24" fill="none" stroke="#858b74" stroke-width="1"/></pattern>
+ <filter id="shadow"><feDropShadow dx="7" dy="12" stdDeviation="5" flood-opacity=".35"/></filter>
+ <g id="tree"><ellipse cy="12" rx="17" ry="10" fill="#20382f" opacity=".4"/><path d="M0 -28L-19 10H19Z" fill="#345441"/><path d="M0 -34L-14 -5H14Z" fill="#45674b"/></g>
+ <g id="tower"><circle r="42" fill="#4d5a55"/><circle cy="-6" r="39" fill="url(#stone)"/><circle cy="-6" r="25" fill="#454f47"/><path d="M-38 -18V-35H-22V-45H-6V-35H10V-45H26V-30H39V-13H27V4H39V20H23V32H7V20H-9V32H-25V16H-39V0H-27V-18Z" fill="#a2a48e"/><circle cy="-6" r="16" fill="#596456"/></g>
+</defs>
+<rect width="1000" height="680" fill="url(#land)"/>
+<path d="M822 -40Q747 100 834 225T842 425T825 730H1090V-40Z" fill="#315b60"/><path d="M854 -30Q787 140 872 285T863 710" fill="none" stroke="#78a6a0" stroke-opacity=".3" stroke-width="3"/>
+<path d="M0 518H294M710 520H1000" stroke="#b0a17c" stroke-width="48"/>
+<rect x="235" y="110" width="548" height="488" rx="35" fill="#273c35" opacity=".45"/>
+<rect x="246" y="105" width="530" height="470" rx="14" fill="url(#court)"/>
+<g filter="url(#shadow)" fill="url(#stone)" stroke="#44574e" stroke-width="3">
+ <path d="M240 100H780V126H266V480H240ZM240 560H780V588H240ZM756 100H784V480H756Z"/>
+ <rect x="345" y="390" width="270" height="175"/><rect x="570" y="170" width="200" height="105"/>
+ <rect x="120" y="225" width="105" height="170"/>
+</g>
+<g fill="url(#roof)" stroke="#503c31" stroke-width="3" filter="url(#shadow)">
+ <path d="M333 413L479 360L629 413L610 552H350Z"/><path d="M555 190L669 139L783 190L765 261H574Z"/>
+ <path d="M108 239L173 208L238 239L222 387H121Z"/>
+</g>
+<g stroke="#c59d74" opacity=".5"><path d="M479 364V550M669 144V260M173 213V385"/><path d="M346 439H615M347 470H614M348 502H612M574 216H768M120 280H228M122 324H225"/></g>
+<g filter="url(#shadow)"><use href="#tower" x="247" y="112"/><use href="#tower" x="780" y="110"/><use href="#tower" x="780" y="585"/><use href="#tower" x="245" y="585"/></g>
+<path d="M272 137V535M272 340H728M700 300V530" fill="none" stroke="#c4ba96" stroke-width="28" opacity=".75"/>
+<g fill="#9c7951" stroke="#493f30" stroke-width="3"><rect x="787" y="493" width="135" height="53"/><path d="M797 493V546M811 493V546M825 493V546M839 493V546M853 493V546M867 493V546M881 493V546M895 493V546M909 493V546"/></g>
+<g fill="#b8a385" stroke="#6c6957" stroke-width="2"><rect x="295" y="453" width="35" height="40"/><rect x="290" y="542" width="42" height="26"/></g>
+<path d="M292 453H335L328 439H298Z" fill="#9a5749"/><path d="M287 542H335L326 530H298Z" fill="#d2bc81"/>
+<g fill="#647665"><circle cx="460" cy="195" r="45"/><circle cx="453" cy="190" r="32" fill="#828e70"/><circle cx="450" cy="185" r="16" fill="#4f7472"/></g>
+<g><use href="#tree" x="68" y="105"/><use href="#tree" x="112" y="142"/><use href="#tree" x="56" y="205"/><use href="#tree" x="147" y="68"/><use href="#tree" x="50" y="385"/><use href="#tree" x="110" y="435"/><use href="#tree" x="80" y="618"/><use href="#tree" x="160" y="628"/><use href="#tree" x="372" y="628"/><use href="#tree" x="490" y="632"/><use href="#tree" x="609" y="617"/><use href="#tree" x="922" y="98"/><use href="#tree" x="950" y="176"/><use href="#tree" x="943" y="345"/><use href="#tree" x="941" y="623"/></g>
+<g fill="#e4d7ac" font-family="Georgia,serif" letter-spacing="4"><text x="40" y="46" font-size="17">CASTLE ARCHIVE</text><text x="42" y="69" font-size="10" letter-spacing="2">RECOVERY OPERATION · TACTICAL MAP</text><text x="452" y="480" font-size="12" text-anchor="middle" transform="rotate(-8 452 480)">GREAT HALL</text></g>
+<g transform="translate(925 58)" stroke="#e2d4aa" fill="none"><path d="M0 10V65M-18 40H18M0 13L-6 29H6Z"/><text x="0" y="0" fill="#e2d4aa" stroke="none" text-anchor="middle" font-family="serif">N</text></g>
+<rect x="18" y="18" width="964" height="644" rx="4" fill="none" stroke="#ccb88c" stroke-opacity=".32"/>
+</svg>

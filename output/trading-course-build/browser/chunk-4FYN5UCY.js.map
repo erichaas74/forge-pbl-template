@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/templates/heist/restoration/weekly/restoration-preview.persistence.ts"
+  ],
+  "sourcesContent": [
+    "import { InjectionToken } from '@angular/core';\nimport type { ProjectSessionContext } from '../../../../core/context/project-session-context';\nimport type { RestorationMission } from '../restoration-collection.models';\nimport type { RestorationPreviewState } from './restoration-preview.models';\nimport { requirePreviewState } from './restoration-preview.validation';\n\nexport const RESTORATION_PREVIEW_SESSION = new InjectionToken<ProjectSessionContext>('RESTORATION_PREVIEW_SESSION');\nexport interface RestorationPreviewPersistence { load(): RestorationPreviewState | undefined; save(state: RestorationPreviewState): void }\nexport const RESTORATION_PREVIEW_PERSISTENCE = new InjectionToken<RestorationPreviewPersistence>('RESTORATION_PREVIEW_PERSISTENCE');\nexport class LocalRestorationPreviewAdapter implements RestorationPreviewPersistence {\n  readonly key: string;\n  constructor(session: ProjectSessionContext, private readonly mission: RestorationMission) {\n    this.key = 'forge:restoration:weekly:1:' + JSON.stringify([session.tenantId, session.classId, session.projectId, session.projectVersion, session.actorId, session.teamId, session.attemptId]);\n  }\n  load(): RestorationPreviewState | undefined {\n    const raw = localStorage.getItem(this.key);\n    return raw === null ? undefined : requirePreviewState(JSON.parse(raw), this.mission);\n  }\n  save(state: RestorationPreviewState): void { localStorage.setItem(this.key, JSON.stringify(state)); }\n}\n"
+  ],
+  "mappings": ";;;;;;;;AAMO,IAAM,8BAA8B,IAAI,eAAsC,6BAA6B;AAE3G,IAAM,kCAAkC,IAAI,eAA8C,iCAAiC;AAC3H,IAAM,iCAAN,MAA8E;AAAA,EAEnF,YAAY,SAAiD,SAA6B;AAA7B;AAC3D,SAAK,MAAM,gCAAgC,KAAK,UAAU,CAAC,QAAQ,UAAU,QAAQ,SAAS,QAAQ,WAAW,QAAQ,gBAAgB,QAAQ,SAAS,QAAQ,QAAQ,QAAQ,SAAS,CAAC;AAAA,EAC9L;AAAA,EAF6D;AAAA,EADpD;AAAA,EAIT,OAA4C;AAC1C,UAAM,MAAM,aAAa,QAAQ,KAAK,GAAG;AACzC,WAAO,QAAQ,OAAO,SAAY,oBAAoB,KAAK,MAAM,GAAG,GAAG,KAAK,OAAO;AAAA,EACrF;AAAA,EACA,KAAK,OAAsC;AAAE,iBAAa,QAAQ,KAAK,KAAK,KAAK,UAAU,KAAK,CAAC;AAAA,EAAG;AACtG;",
+  "names": [],
+  "debugId": "dbcd1504-42c0-58ce-9a2a-547dbf2ea3f9"
+}

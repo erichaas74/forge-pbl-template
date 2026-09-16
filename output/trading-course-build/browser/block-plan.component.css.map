@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/templates/engineering-design/ui/block-plan.component.ts"],
+  "sourcesContent": ["\n      figure {\n        margin: 18px 0;\n        padding: 18px;\n        background: #eaf0df;\n        border: 1px solid #ccd7c1;\n        border-radius: 12px;\n      }\n      svg {\n        display: block;\n        width: 100%;\n        height: 300px;\n        touch-action: none;\n      }\n      [role='button'] {\n        cursor: grab;\n      }\n      [role='button']:focus {\n        outline: none;\n        stroke: #c17c14;\n        stroke-width: 3;\n      }\n      figcaption {\n        font: 12px system-ui;\n        color: #405d50;\n        margin-top: 10px;\n      }\n    "],
+  "mappings": ";AACM;AACE,UAAA,KAAA;AACA,WAAA;AACA,cAAA;AACA,UAAA,IAAA,MAAA;AACA,iBAAA;;AAEF;AACE,WAAA;AACA,SAAA;AACA,UAAA;AACA,gBAAA;;AAEF,CAAA;AACE,UAAA;;AAEF,CAAA,YAAA;AACE,WAAA;AACA,UAAA;AACA,gBAAA;;AAEF;AACE,QAAA,KAAA;AACA,SAAA;AACA,cAAA;;",
+  "names": []
+}

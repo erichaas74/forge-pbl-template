@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/runtime/project-showcase/completed-sample.ts"
+  ],
+  "sourcesContent": [
+    "import type { Provider, Type } from '@angular/core';\nimport type { SampleGuide } from '../../shared/project-intro/completed-sample-guide';\n\n/** Every provider belongs to one disposable, fictional curriculum preview. */\nexport interface CompletedSample extends SampleGuide {\n  /** Renderer supplies its own compact navigation and exposes the hostGuide callback. */\n  integratedHeader?: boolean;\n  component: Type<unknown>;\n  providers: Provider[];\n  inputs?: Record<string, unknown>;\n}\n\n/** Fresh clones isolate playback. Completed samples never read or write student storage. */\nexport function samplePersistence<T>(record: T) {\n  return { load: () => structuredClone(record), save: () => {}, clear: () => {} };\n}\n"
+  ],
+  "mappings": ";AAaO,SAAS,kBAAqB,QAAW;AAC9C,SAAO,EAAE,MAAM,MAAM,gBAAgB,MAAM,GAAG,MAAM,MAAM;AAAA,EAAC,GAAG,OAAO,MAAM;AAAA,EAAC,EAAE;AAChF;",
+  "names": [],
+  "debugId": "099ce1c5-d14a-5236-b4e2-203509884fc4"
+}

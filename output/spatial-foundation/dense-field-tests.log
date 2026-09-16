@@ -1,0 +1,13 @@
+> Building...
+√ Building...
+Application bundle generation complete. [10.364 seconds] - 2026-09-15T22:34:49.128Z
+
+
+ RUN  v4.1.11 C:/Users/erich/Desktop/pbl-lms/forge-pbl-template
+
+
+ Test Files  7 passed (7)
+      Tests  30 passed (30)
+   Start at  16:34:49
+   Duration  8.76s (transform 1.63s, setup 5.01s, import 2.02s, tests 724ms, environment 43.21s)
+

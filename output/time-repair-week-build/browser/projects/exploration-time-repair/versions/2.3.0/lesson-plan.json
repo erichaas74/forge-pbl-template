@@ -26,7 +26,7 @@
       "number": 1,
       "title": "Find the missing event",
       "output": "A tested candidate for the missing event and a clue-by-clue timeline record.",
-      "workspace": "The archive jumps from Luther’s manuscript to a quiet winter. Inspect each record, place a candidate in the gap, and test it against the clues. You are not told what disappeared; the timeline has to convince you.",
+      "workspace": "The archive opens on a wall of fictional newspaper headlines about Luther’s complaints. Inspect each clipping, place a candidate in the missing gap, and test it against the clues. You are not told what disappeared; the headlines and timeline evidence have to convince you.",
       "checkpoint": "Which event best explains the hole? What evidence shows the idea existed, and what evidence shows its wider printed circulation is the part missing?",
       "criteria": [
         "Infer that a printed debate is the missing event while separating the historical Ninety-five Theses from our fictional absence of circulation."

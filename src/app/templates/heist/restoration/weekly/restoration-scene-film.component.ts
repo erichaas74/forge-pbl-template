@@ -6,7 +6,7 @@ import type { RestorationPreviewSession } from './restoration-preview.models';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="film">
-      <video #player controls playsinline preload="metadata" [src]="film().src" aria-label="Animated scene inspection film"
+      <video #player controls playsinline preload="metadata" [src]="film().src" aria-label="Still-image study with camera movement only"
         (loadedmetadata)="restore()" (timeupdate)="time.set(player.currentTime)" (pause)="position.emit(player.currentTime)" (error)="failed.set(true)">
         <track kind="captions" [src]="film().captions" srclang="en" label="Scene description" default>
       </video>
@@ -19,7 +19,7 @@ import type { RestorationPreviewSession } from './restoration-preview.models';
       }
     </div>
     <p class="caption" aria-live="polite">{{ cue().transcript }}</p>
-    <details><summary>Film transcript & media note</summary><p>Animated classroom reconstruction, with silent camera movement and descriptive captions. This is an illustration to investigate, not historical footage or independent evidence.</p>
+    <details><summary>Image-study transcript & media note</summary><p>A still illustration with camera movement and captions. People and objects do not move; this contains no character performance or interview. The illustration is not independent historical evidence.</p>
       @for (item of film().cues; track item.at) { <p>{{ item.at }}s — {{ item.transcript }}</p> }
     </details>
   `,

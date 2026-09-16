@@ -14,7 +14,7 @@ documented in [the four-week restructure](FOUR_WEEK_HISTORY_RESTRUCTURE.md).
 
 | Lesson | Main-panel interaction | Visible consequence / learning evidence |
 | --- | --- | --- |
-| 1. Find the missing event | Inspect a broken timeline, place a candidate event in the gap, and test it against every record. | The student infers that the manuscript exists while reliable printed circulation is missing. |
+| 1. Find the missing event | Inspect a wall of five fictional newspaper headlines, place a candidate event in the gap, and test it against every record. | The student infers that the manuscript exists while reliable printed circulation is missing. |
 | 2. Hear the quiet debate | Hear a bookseller, student, and church visitor from the alternate timeline; inspect each object and weigh the three accounts. | Independent viewpoints confirm the social symptom without becoming fake primary sources. |
 | 3. Read the alternate newspapers | Open three fictional issues and inspect two columns in each before tracing the press trail. | Repeated reports connect local debate and thin supply to a physical printing failure. |
 | 4. Interview the failed workshop | Hear an ink mixer, type setter, and courier; inspect their physical clues and weigh a testable cause. | Ink adhesion, a holding frame, and travel emerge as linked conditions to test. |

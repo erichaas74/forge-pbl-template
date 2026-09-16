@@ -1,5 +1,6 @@
 import { bindLessonFocus } from '../../../shared/project-lessons/project-lesson-focus';
 import { WorkspaceToolsComponent } from '../../../shared/project-lessons/workspace-tools.component';
+import { ExpeditionWorkspaceComponent } from './expedition/expedition-workspace.component';
 import { NgTemplateOutlet } from '@angular/common';
 import {
   SIMULATION_DECISION_PROJECT_ROUTE,
@@ -72,7 +73,7 @@ interface ResourceFeedback {
 
 @Component({
   selector: 'app-simulation-decision-shell',
-  imports: [WorkspaceToolsComponent,
+  imports: [WorkspaceToolsComponent, ExpeditionWorkspaceComponent,
     NgTemplateOutlet,
     ReviewDialogDirective,
     TradeWorldPanelComponent,
@@ -103,6 +104,7 @@ export class SimulationDecisionShellComponent implements OnDestroy {
   private missionFocusTimer?: ReturnType<typeof setTimeout>;
   constructor() {
     bindLessonFocus((lesson) => {
+      if (this.runtime.config.expeditionCourse) return;
       const target = lesson.focusTarget;
       if (target === 'market' || target === 'route' || target === 'events' || target === 'ledger' || target === 'report' || target === 'showcase') this.navigate(target);
     });

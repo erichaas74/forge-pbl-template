@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "1.0",
+  "planVersion": "2.2.0",
+  "projectId": "exploration-time-repair",
+  "projectVersion": "2.2.0",
+  "finalProduct": "A diagnosed break in print circulation, a repaired invention, and a historical explanation connecting Luther’s 95 Theses with the Protestant Reformation.",
+  "grouping": "Individual investigation followed by a group repair each week. Group work runs on one device; shared editing is not connected.",
+  "availability": "Eight directly accessible investigations. Mechanical progress saves on this device. AI tutoring, assessment, and shared sessions are not connected.",
+  "evidenceCriteria": [
+    "Explain Luther’s dispute over indulgences and the role of print circulation.",
+    "Use controlled comparisons to diagnose an invention.",
+    "Distinguish historical evidence, a simplified model, and a fictional counterfactual."
+  ],
+  "workspaceView": "experience",
+  "presentation": {
+    "layout": "activity-first",
+    "title": "Time Repair: The Missing Reformation",
+    "identifier": "TR · 03",
+    "grade": "Grade 7",
+    "alignmentStatus": "pending",
+    "alignmentNote": "Ideas That Changed the World is the selected Grade 7 curriculum direction. The supplied standards framework covers Grades 4–6; a Grade 7 crosswalk has not been supplied. The learning goals below are project goals, not verified standards."
+  },
+  "lessons": [
+    {
+      "number": 1,
+      "title": "The debate that disappeared",
+      "output": "A tested account of what still works, what fails, and how print multiplication changes the reach of Luther’s ideas.",
+      "workspace": "The Protestant Reformation is missing from the time archive. Luther’s 95 Theses still exist, but the wider printed debate has disappeared. Send manuscripts to the three workshops, operate their presses, and share available copies with discussion tables. Use the quill when the dispatch tray is empty. Compare the same actions in the working archive. Inspect the ink to trace the failure back to Mainz, around 1454.",
+      "checkpoint": "Luther has written the theses and manuscripts can travel. What is actually missing? Use your trials to explain how printing could widen a dispute about indulgences. Why is our missing Reformation a fictional possibility rather than a proven prediction?",
+      "criteria": [
+        "Distinguish an idea being written from its circulation and public influence; use observed copying failures to identify the fictional historical break."
+      ],
+      "focusTarget": "invention-workspace"
+    },
+    {
+      "number": 2,
+      "title": "Before Luther: rebuild the invention",
+      "output": "An assembled and operated printing system, with trial evidence showing what each part contributes.",
+      "workspace": "Follow the ink clue back about sixty years to Gutenberg’s team in Mainz. Fit the frame, mold, ink ball, and screw into their press system. Cast four pieces, hold them steady, coat them, and bring the platen into contact. Compare failed and successful impressions. Discover which contributions the future printers of Luther’s theses will need.",
+      "checkpoint": "Why did the investigation take us back before Luther was born? Which parts turn a handwritten idea into repeatable copies, and why can no single part do the whole job?",
+      "criteria": [
+        "Explain how several crafts work together in movable-type printing and place Gutenberg’s workshop before Luther’s 1517 controversy."
+      ],
+      "focusTarget": "invention-workspace"
+    },
+    {
+      "number": 3,
+      "title": "Rescue the failed demonstration",
+      "output": "Paired material tests and proofs showing why the first attempted fix failed.",
+      "workspace": "Rescue the earlier workshop that future printers depend on. The team suspects low pressure. Pull a proof, try another pressure setting, then test the numbered inks on paper and metal. Compare one change at a time and restore two clean impressions.",
+      "checkpoint": "Which paper-and-metal comparison explains the failure you saw in 1517? Separate the physical fault you tested from the invented claim that it prevents the Reformation.",
+      "criteria": [
+        "Diagnose a material failure using controlled comparisons."
+      ],
+      "focusTarget": "invention-workspace"
+    },
+    {
+      "number": 4,
+      "title": "Which diagram can you trust?",
+      "output": "Two tested diagrams, a working gear train, and a corrected printed drawing.",
+      "workspace": "Place a printed diagram on the bench. Lift the wheels onto their matching axles and turn the crank. Compare both diagrams. Move the middle axle to repair the faulty arrangement, test the output, and stamp a revised page.",
+      "checkpoint": "What observation challenged the printed diagram? What evidence supports the revision you printed?",
+      "criteria": [
+        "Distinguish the reproducibility of a printed claim from evidence that it is correct."
+      ],
+      "focusTarget": "invention-workspace"
+    },
+    {
+      "number": 5,
+      "title": "Keep the workshop running",
+      "output": "Three physical demonstrations and independent apprentice repair trials.",
+      "workspace": "Inspect the failed sheet. Arrange a physical teaching example: failed impression, faulty part, replacement, and clean result. Demonstrate it, send the expert away, and let the apprentice try. Test ink, packing, and type failures separately.",
+      "checkpoint": "What did the apprentice need beyond a finished page? Where did an example fail to explain the cause?",
+      "criteria": [
+        "Make a repair process explicit enough for another worker to use it."
+      ],
+      "focusTarget": "invention-workspace"
+    },
+    {
+      "number": 6,
+      "title": "Follow a page through the town",
+      "output": "A delivery route and three rooms changed by the arrival of usable copies.",
+      "workspace": "Pack up to two copies at the workshop. Follow the streets and bridge to the bookseller, learning room, and collection. Deliver the copies and look inside each destination. Return for the remaining copies when the bag is empty.",
+      "checkpoint": "Where did a page start being used? What work had to happen after it left the printing press?",
+      "criteria": [
+        "Trace how production, transport, and destinations affect access to information."
+      ],
+      "focusTarget": "invention-workspace"
+    },
+    {
+      "number": 7,
+      "title": "More books, different barriers",
+      "output": "Comparisons of book delivery and three forms of support, with visible participation changes.",
+      "workspace": "Offer a copy to each reader and observe what still prevents its use. Try a loan, a translation, or a shared reading. A helper needs the information too. Watch each person’s construction when the support fits the problem.",
+      "checkpoint": "Why did the same offer have different effects? Which combination made the information usable for each person?",
+      "criteria": [
+        "Distinguish physical availability from affordable and understandable access."
+      ],
+      "focusTarget": "invention-workspace"
+    },
+    {
+      "number": 8,
+      "title": "Verify that the repair lasts",
+      "output": "A repaired printing process, delivered samples, and an evidence-based explanation connecting print circulation with the missing Reformation.",
+      "workspace": "Repair a fresh ink setup and make three usable impressions. Visit the 1460 courtyard at any time during testing, then finish and deliver the samples. This checks the earlier printing system. Revisit session 1 through the week navigation to compare its relevance to Luther’s later printed debate.",
+      "checkpoint": "How could the repair support the later spread of Luther’s theses? Use a historical source and your observations. Which links are documented, and which belong to our invented timeline?",
+      "criteria": [
+        "Connect a repair to a bounded historical consequence and recognize limits."
+      ],
+      "focusTarget": "invention-workspace"
+    }
+  ]
+}

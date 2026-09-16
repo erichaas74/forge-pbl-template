@@ -34,6 +34,13 @@ describe('Time Repair four-week history restructure', () => {
 
   it('validates and solves the timeline inference without text entry', () => {
     const config = sessions[0].knowledge!;
+    expect(config.timeline?.headlines).toEqual([
+      'Local Monk Reportedly Writes Dozens of Complaints About the Church — Exact Number Unclear',
+      'Martin Luther Releases Mysterious List of Church Complaints; Few Have Actually Seen It',
+      'Wittenberg Professor Claims to Have Written “Nearly 100” Arguments Against Indulgences',
+      'New Religious Debate Brewing? Luther’s Long List of Complaints Remains Mostly Unread',
+      'Monk Challenges Church With 90-Something Theses — Copies Extremely Hard to Find',
+    ]);
     expect(validKnowledgeDefinition(config)).toBe(true);
     let state = knowledgeActivities.timeline.initial(config);
     for (const node of config.timeline!.nodes) {

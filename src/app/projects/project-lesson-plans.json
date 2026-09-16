@@ -106,12 +106,12 @@
   },
   {
     "schemaVersion": "1.0",
-    "planVersion": "1.0.0",
+    "planVersion": "2.0.0",
     "projectId": "frontier-trading-company",
-    "projectVersion": "1.15.0",
-    "finalProduct": "trading record and strategy showcase.",
-    "grouping": "Teams build a shared product; each student explains and defends their own contribution.",
-    "availability": "Continue the same saved trading season across lessons. Shopping, travel, and showcase readiness keep their existing rules; lesson selection does not execute a trade or advance a day.",
+    "projectVersion": "1.16.0",
+    "finalProduct": "Four round-trip trading records, balanced budgets, and evidence-based improvement reflections.",
+    "grouping": "One weekly session: make journey decisions individually or with a company team; each learner writes their own reflection.",
+    "availability": "All eight weeks are freely accessible. Paired journey and ledger weeks share one saved expedition. Practice ledgers are separately labelled and never replace student journeys.",
     "evidenceCriteria": [
       "Show correct units, unit price, quantity, total cost, and profit reasoning.",
       "Use ledger evidence and cash, capacity, or travel constraints to justify a strategy."
@@ -119,95 +119,118 @@
     "lessons": [
       {
         "number": 1,
-        "title": "Forecast a trade",
-        "output": "A unit-price or profit calculation and starting strategy.",
-        "workspace": "Opening practice and market prices",
-        "checkpoint": "How did you calculate profit per unit? Recalculate it when the purchase price increases.",
+        "week": 1,
+        "title": "One trip out and back",
+        "output": "A completed first round trip with purchases, sales, and return-travel receipts.",
+        "workspace": "Interactive route map and town shops",
+        "checkpoint": "What did the trip earn after both travel costs? Which good made the best use of your cash and cargo space?",
         "criteria": [
-          "Show correct units, unit price, quantity, total cost, and profit reasoning."
-        ],
-        "focusTarget": "market"
-      },
-      {
-        "number": 2,
-        "title": "Plan the company",
-        "output": "Company plan, initial cargo choices, and route forecast.",
-        "workspace": "Company setup, cargo, and route map",
-        "checkpoint": "Explain your cargo contribution. What must change if its capacity requirement doubles?",
-        "criteria": [
-          "Show correct units, unit price, quantity, total cost, and profit reasoning."
+          "Show correct units, unit price, quantity, total cost, and profit reasoning.",
+          "Use ledger evidence and cash, capacity, or travel constraints to justify a strategy."
         ],
         "focusTarget": "route"
       },
       {
-        "number": 3,
-        "title": "Compare the options",
-        "output": "Cost, capacity, or distance comparison with reasoning.",
-        "workspace": "Market, cargo, and route calculations",
-        "checkpoint": "Compare two purchases at fresh prices. Show total cost and whether each fits the available capacity.",
+        "number": 2,
+        "week": 2,
+        "title": "Balance the first ledger",
+        "output": "A reconciled first-trip budget and a written improvement plan.",
+        "workspace": "Journey ledger and improvement reflection",
+        "checkpoint": "What would make you more successful next time? Use two receipts, both travel costs, and your actual profit or loss.",
         "criteria": [
-          "Show correct units, unit price, quantity, total cost, and profit reasoning."
-        ],
-        "focusTarget": "market"
-      },
-      {
-        "number": 4,
-        "title": "Test the trading plan",
-        "output": "Trading results, ledger evidence, and an event-response decision.",
-        "workspace": "Trading post, travel events, and ledger",
-        "checkpoint": "Compare a forecast with a completed trade. Would the decision still work with a higher travel cost?",
-        "criteria": [
-          "Show correct units, unit price, quantity, total cost, and profit reasoning."
-        ],
-        "focusTarget": "events"
-      },
-      {
-        "number": 5,
-        "title": "Correct the forecast",
-        "output": "Forecast-versus-result explanation and corrected math.",
-        "workspace": "Ledger and strategy report",
-        "checkpoint": "Identify one forecast error, correct the calculation, and apply the corrected method to a new quantity.",
-        "criteria": [
+          "Show correct units, unit price, quantity, total cost, and profit reasoning.",
           "Use ledger evidence and cash, capacity, or travel constraints to justify a strategy."
         ],
         "focusTarget": "ledger"
       },
       {
-        "number": 6,
-        "title": "Rehearse the pitch",
-        "output": "Revised strategy, selected trade evidence, and a practice pitch.",
-        "workspace": "Company Strategy Showcase draft",
-        "checkpoint": "Defend a strategy revision with ledger evidence. Under what market condition would it fail?",
-        "criteria": [
-          "Use ledger evidence and cash, capacity, or travel constraints to justify a strategy."
-        ],
-        "focusTarget": "report"
-      },
-      {
-        "number": 7,
-        "title": "Defend a new trade",
-        "output": "Individual calculation and defense of a strategic choice.",
-        "workspace": "Trade calculations and selected ledger proof",
-        "checkpoint": "Evaluate a new price or cargo limit independently and defend the resulting recommendation.",
-        "criteria": [
-          "Show correct units, unit price, quantity, total cost, and profit reasoning."
-        ],
-        "focusTarget": "report"
-      },
-      {
-        "number": 8,
-        "title": "Show the strategy",
-        "output": "Final strategy showcase, trading evidence, and reflection.",
-        "workspace": "Company Strategy Showcase",
-        "checkpoint": "Explain your best-supported decision, show its math, and reflect on what your contribution changed.",
+        "number": 3,
+        "week": 3,
+        "title": "A longer journey in bad weather",
+        "output": "A round trip to Fort Laramie with a weather response and a cash reserve.",
+        "workspace": "Interactive route map and town shops",
+        "checkpoint": "How much cash must you keep for the return trip? Compare paying for covers with the cost of a delay or damaged cargo.",
         "criteria": [
           "Show correct units, unit price, quantity, total cost, and profit reasoning.",
           "Use ledger evidence and cash, capacity, or travel constraints to justify a strategy."
         ],
-        "focusTarget": "showcase"
+        "focusTarget": "route"
+      },
+      {
+        "number": 4,
+        "week": 4,
+        "title": "Account for the weather",
+        "output": "A balanced weather-trip ledger and a revised buying and reserve strategy.",
+        "workspace": "Journey ledger and improvement reflection",
+        "checkpoint": "How did weather change the budget? Use the ledger to compare protection, delay, and cargo-loss costs.",
+        "criteria": [
+          "Show correct units, unit price, quantity, total cost, and profit reasoning.",
+          "Use ledger evidence and cash, capacity, or travel constraints to justify a strategy."
+        ],
+        "focusTarget": "ledger"
+      },
+      {
+        "number": 5,
+        "week": 5,
+        "title": "Trade beyond the mountain pass",
+        "output": "A longer trip to the mining camp with weather and raider decisions.",
+        "workspace": "Interactive route map and town shops",
+        "checkpoint": "Which route and cargo could cover the longer journey? Explain the cost of an escort compared with a detour or surrendered goods.",
+        "criteria": [
+          "Show correct units, unit price, quantity, total cost, and profit reasoning.",
+          "Use ledger evidence and cash, capacity, or travel constraints to justify a strategy."
+        ],
+        "focusTarget": "route"
+      },
+      {
+        "number": 6,
+        "week": 6,
+        "title": "Reconcile risk and profit",
+        "output": "A balanced high-country ledger separating cash expenses from inventory losses.",
+        "workspace": "Journey ledger and improvement reflection",
+        "checkpoint": "Did higher selling prices cover travel and attack losses? Explain one change using unit profit and the journey receipts.",
+        "criteria": [
+          "Show correct units, unit price, quantity, total cost, and profit reasoning.",
+          "Use ledger evidence and cash, capacity, or travel constraints to justify a strategy."
+        ],
+        "focusTarget": "ledger"
+      },
+      {
+        "number": 7,
+        "week": 7,
+        "title": "Weather, raiders, and floods",
+        "output": "A multi-stop round trip visiting Fort Laramie and the mining camp, with a flood contingency.",
+        "workspace": "Interactive route map and town shops",
+        "checkpoint": "What reserve will survive several disruptions? Compare longer routes, protection costs, and remaining cargo value.",
+        "criteria": [
+          "Show correct units, unit price, quantity, total cost, and profit reasoning.",
+          "Use ledger evidence and cash, capacity, or travel constraints to justify a strategy."
+        ],
+        "focusTarget": "route"
+      },
+      {
+        "number": 8,
+        "week": 8,
+        "title": "Balance and improve the company",
+        "output": "The final reconciled budget and a reflection comparing strategies across journeys.",
+        "workspace": "Journey ledger and improvement reflection",
+        "checkpoint": "Which change made your company more successful? Compare journey results, separate extra starting capital from profit, and support your next plan with receipts.",
+        "criteria": [
+          "Show correct units, unit price, quantity, total cost, and profit reasoning.",
+          "Use ledger evidence and cash, capacity, or travel constraints to justify a strategy."
+        ],
+        "focusTarget": "ledger"
       }
     ],
-    "workspaceView": "experience"
+    "workspaceView": "experience",
+    "presentation": {
+      "layout": "activity-first",
+      "title": "Frontier Trading Company",
+      "identifier": "FTC · TRADING & BUDGETS",
+      "grade": "GRADE 6",
+      "alignmentStatus": "pending",
+      "alignmentNote": "Unit-rate, decimal arithmetic, and proportional reasoning targets are mapped to the revised eight-week sequence. Teacher evidence review is still required."
+    }
   },
   {
     "schemaVersion": "1.0",
@@ -1503,7 +1526,7 @@
         "number": 1,
         "title": "Find the missing event",
         "output": "A tested candidate for the missing event and a clue-by-clue timeline record.",
-        "workspace": "The archive jumps from Luther’s manuscript to a quiet winter. Inspect each record, place a candidate in the gap, and test it against the clues. You are not told what disappeared; the timeline has to convince you.",
+        "workspace": "The archive opens on a wall of fictional newspaper headlines about Luther’s complaints. Inspect each clipping, place a candidate in the missing gap, and test it against the clues. You are not told what disappeared; the headlines and timeline evidence have to convince you.",
         "checkpoint": "Which event best explains the hole? What evidence shows the idea existed, and what evidence shows its wider printed circulation is the part missing?",
         "criteria": [
           "Infer that a printed debate is the missing event while separating the historical Ninety-five Theses from our fictional absence of circulation."

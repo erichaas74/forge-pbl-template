@@ -1,0 +1,5000 @@
+{
+  "schemaVersion": "1.0",
+  "experience": "restoration",
+  "projectId": "shadow-gallery",
+  "projectVersion": "2.0.0",
+  "template": {
+    "id": "heist",
+    "version": "1.0"
+  },
+  "title": "The Cartographer’s Vault",
+  "subtitle": "Restore the paintings. Recover their stories.",
+  "briefing": "Someone has rewritten this collection’s history. Become a student conservator: investigate each forgery, enter a story where a portal is available, and rebuild the image using evidence. Your original, repairs, sources, and reasoning become a living restoration ledger.",
+  "heistBriefing": "Your restoration work has prepared you for the final recovery. Use the ledger and reference desk to operate five mechanisms, then bring the collection into the exhibition. There is no countdown: this is a challenge of evidence and careful decisions.",
+  "sourceGallery": {
+    "schemaVersion": "1.2",
+    "experience": "gallery",
+    "projectId": "shadow-gallery",
+    "projectVersion": "1.1.0",
+    "template": {
+      "id": "heist",
+      "version": "1.0"
+    },
+    "title": "The Cartographer’s Vault",
+    "subtitle": "An Age of Exploration art heist",
+    "subject": "hybrid",
+    "briefing": "A collection of historical scenes has been mixed with convincing frauds. Recover the authentic records. Follow the evidence through eight galleries, operate the mechanisms, and bring the collection safely home.",
+    "environment": "/projects/shadow-gallery/gallery-v1.webp",
+    "entry": "shore",
+    "chambers": [
+      {
+        "id": "shore",
+        "title": "The first encounter",
+        "date": "1492",
+        "location": "Hispaniola · Caribbean",
+        "briefing": "Three reconstructions tell a different story of the same shore. Find the scene whose details fit the place and time.",
+        "layout": "gallery",
+        "paintings": [
+          {
+            "id": "shore-painting-0",
+            "title": "The morning study",
+            "image": "/projects/shadow-gallery/frauds-v1.webp",
+            "artFrame": 0,
+            "caption": "Hispaniola · Caribbean · 1492. A settlement and its livestock.",
+            "authentic": false,
+            "hotspots": [
+              {
+                "id": "shore-detail-0",
+                "label": "Established horse herds",
+                "detail": "The scene detail shows horse herds already kept by the island community before European arrival.",
+                "symbol": "♞",
+                "x": 65,
+                "y": 62
+              },
+              {
+                "id": "shore-context-0",
+                "label": "Setting inscription",
+                "detail": "This reconstruction claims to depict Hispaniola · Caribbean in 1492. Inspect the scene details against the field notes.",
+                "symbol": "⌖",
+                "x": 24,
+                "y": 25
+              }
+            ],
+            "fraud": {
+              "category": "animal-plant",
+              "hotspotId": "shore-detail-0",
+              "recoveryLockId": "shore-recovery-0",
+              "explanation": "Horses were introduced from the Old World after contact. Established pre-contact European horse herds cannot belong in this scene."
+            }
+          },
+          {
+            "id": "shore-painting-1",
+            "title": "The collector’s scene",
+            "image": "/projects/shadow-gallery/paintings-v1.webp",
+            "artFrame": 0,
+            "caption": "Hispaniola · Caribbean · 1492. A canoe beside local gardens.",
+            "authentic": true,
+            "hotspots": [
+              {
+                "id": "shore-detail-1",
+                "label": "Maize and a dugout canoe",
+                "detail": "The scene detail shows maize from the Americas and a dugout canoe used by an island community.",
+                "symbol": "✦",
+                "x": 65,
+                "y": 62
+              },
+              {
+                "id": "shore-context-1",
+                "label": "Setting inscription",
+                "detail": "This reconstruction claims to depict Hispaniola · Caribbean in 1492. Inspect the scene details against the field notes.",
+                "symbol": "⌖",
+                "x": 24,
+                "y": 25
+              }
+            ]
+          },
+          {
+            "id": "shore-painting-2",
+            "title": "The light beyond",
+            "image": "/projects/shadow-gallery/paintings-v1.webp",
+            "artFrame": 5,
+            "caption": "Hispaniola · Caribbean · 1492. A community named on the frame.",
+            "authentic": false,
+            "hotspots": [
+              {
+                "id": "shore-detail-2",
+                "label": "Inca island settlement",
+                "detail": "The inscription identifies this Hispaniola community as the Inca of the Andes.",
+                "symbol": "⌂",
+                "x": 65,
+                "y": 62
+              },
+              {
+                "id": "shore-context-2",
+                "label": "Setting inscription",
+                "detail": "This reconstruction claims to depict Hispaniola · Caribbean in 1492. Inspect the scene details against the field notes.",
+                "symbol": "⌖",
+                "x": 24,
+                "y": 25
+              }
+            ],
+            "fraud": {
+              "category": "people",
+              "hotspotId": "shore-detail-2",
+              "recoveryLockId": "shore-recovery-2",
+              "explanation": "The Inca belonged to the Andes; a label identifying Hispaniola’s community as an Inca settlement misplaces the group."
+            }
+          }
+        ],
+        "lockIds": [
+          "shore-crates",
+          "shore-angle"
+        ],
+        "factIds": [
+          "first-contact",
+          "island-people",
+          "exchange-origins"
+        ],
+        "next": "workshop"
+      },
+      {
+        "id": "workshop",
+        "title": "The navigator’s workshop",
+        "date": "1500",
+        "location": "Portugal",
+        "briefing": "A convincing instrument can still be centuries too early. Inspect the instrument study attached to each painting.",
+        "layout": "workshop",
+        "paintings": [
+          {
+            "id": "workshop-painting-0",
+            "title": "The morning study",
+            "image": "/projects/shadow-gallery/frauds-v1.webp",
+            "artFrame": 1,
+            "caption": "Portugal · 1500. A navigator checks an instrument.",
+            "authentic": false,
+            "hotspots": [
+              {
+                "id": "workshop-detail-0",
+                "label": "Reflecting sextant",
+                "detail": "The instrument study labels the navigator’s device as a reflecting sextant.",
+                "symbol": "◔",
+                "x": 65,
+                "y": 62
+              },
+              {
+                "id": "workshop-context-0",
+                "label": "Setting inscription",
+                "detail": "This reconstruction claims to depict Portugal in 1500. Inspect the scene details against the field notes.",
+                "symbol": "⌖",
+                "x": 24,
+                "y": 25
+              }
+            ],
+            "fraud": {
+              "category": "technology",
+              "hotspotId": "workshop-detail-0",
+              "recoveryLockId": "workshop-recovery-0",
+              "explanation": "The reflecting sextant belongs to the eighteenth century, not a workshop in 1500."
+            }
+          },
+          {
+            "id": "workshop-painting-1",
+            "title": "The collector’s scene",
+            "image": "/projects/shadow-gallery/frauds-v1.webp",
+            "artFrame": 2,
+            "caption": "Portugal · 1500. A device keeps time at sea.",
+            "authentic": false,
+            "hotspots": [
+              {
+                "id": "workshop-detail-1",
+                "label": "Harrison marine timekeeper",
+                "detail": "A Harrison-style marine timekeeper is catalogued on the desk.",
+                "symbol": "◷",
+                "x": 65,
+                "y": 62
+              },
+              {
+                "id": "workshop-context-1",
+                "label": "Setting inscription",
+                "detail": "This reconstruction claims to depict Portugal in 1500. Inspect the scene details against the field notes.",
+                "symbol": "⌖",
+                "x": 24,
+                "y": 25
+              }
+            ],
+            "fraud": {
+              "category": "technology",
+              "hotspotId": "workshop-detail-1",
+              "recoveryLockId": "workshop-recovery-1",
+              "explanation": "Harrison’s marine timekeepers were eighteenth-century developments and cannot belong on this desk in 1500."
+            }
+          },
+          {
+            "id": "workshop-painting-2",
+            "title": "The light beyond",
+            "image": "/projects/shadow-gallery/paintings-v1.webp",
+            "artFrame": 1,
+            "caption": "Portugal · 1500. The tools of an ocean voyage.",
+            "authentic": true,
+            "hotspots": [
+              {
+                "id": "workshop-detail-2",
+                "label": "Compass and astrolabe",
+                "detail": "The instrument study identifies a magnetic compass and a mariner’s astrolabe.",
+                "symbol": "⊕",
+                "x": 65,
+                "y": 62
+              },
+              {
+                "id": "workshop-context-2",
+                "label": "Setting inscription",
+                "detail": "This reconstruction claims to depict Portugal in 1500. Inspect the scene details against the field notes.",
+                "symbol": "⌖",
+                "x": 24,
+                "y": 25
+              }
+            ]
+          }
+        ],
+        "lockIds": [
+          "workshop-tools",
+          "workshop-bearing"
+        ],
+        "factIds": [
+          "navigation-tools",
+          "marine-clock"
+        ],
+        "next": "port"
+      },
+      {
+        "id": "port",
+        "title": "Departure from the port",
+        "date": "1497",
+        "location": "Lisbon",
+        "briefing": "The port register identifies da Gama’s departure. Compare the labels with the expedition record.",
+        "layout": "port",
+        "paintings": [
+          {
+            "id": "port-painting-0",
+            "title": "The morning study",
+            "image": "/projects/shadow-gallery/paintings-v1.webp",
+            "artFrame": 2,
+            "caption": "Lisbon · 1497. An outward-bound expedition.",
+            "authentic": true,
+            "hotspots": [
+              {
+                "id": "port-detail-0",
+                "label": "Portuguese expedition · 1497",
+                "detail": "The register identifies da Gama’s Portuguese expedition departing Lisbon in 1497.",
+                "symbol": "⚑",
+                "x": 65,
+                "y": 62
+              },
+              {
+                "id": "port-context-0",
+                "label": "Setting inscription",
+                "detail": "This reconstruction claims to depict Lisbon in 1497. Inspect the scene details against the field notes.",
+                "symbol": "⌖",
+                "x": 24,
+                "y": 25
+              }
+            ]
+          },
+          {
+            "id": "port-painting-1",
+            "title": "The collector’s scene",
+            "image": "/projects/shadow-gallery/paintings-v1.webp",
+            "artFrame": 2,
+            "caption": "Lisbon · 1497. A date in the departure register.",
+            "authentic": false,
+            "hotspots": [
+              {
+                "id": "port-detail-1",
+                "label": "Departure dated 1607",
+                "detail": "The attached register says this is da Gama’s first departure for India in 1607.",
+                "symbol": "◷",
+                "x": 65,
+                "y": 62
+              },
+              {
+                "id": "port-context-1",
+                "label": "Setting inscription",
+                "detail": "This reconstruction claims to depict Lisbon in 1497. Inspect the scene details against the field notes.",
+                "symbol": "⌖",
+                "x": 24,
+                "y": 25
+              }
+            ],
+            "fraud": {
+              "category": "timeline",
+              "hotspotId": "port-detail-1",
+              "recoveryLockId": "port-recovery-1",
+              "explanation": "Da Gama departed for his first voyage to India in 1497. A register dating that same departure to 1607 is false."
+            }
+          },
+          {
+            "id": "port-painting-2",
+            "title": "The light beyond",
+            "image": "/projects/shadow-gallery/paintings-v1.webp",
+            "artFrame": 2,
+            "caption": "Lisbon · 1497. A sponsor named on the manifest.",
+            "authentic": false,
+            "hotspots": [
+              {
+                "id": "port-detail-2",
+                "label": "French-sponsored fleet",
+                "detail": "The manifest calls da Gama’s first India expedition a French-sponsored fleet.",
+                "symbol": "⚑",
+                "x": 65,
+                "y": 62
+              },
+              {
+                "id": "port-context-2",
+                "label": "Setting inscription",
+                "detail": "This reconstruction claims to depict Lisbon in 1497. Inspect the scene details against the field notes.",
+                "symbol": "⌖",
+                "x": 24,
+                "y": 25
+              }
+            ],
+            "fraud": {
+              "category": "people",
+              "hotspotId": "port-detail-2",
+              "recoveryLockId": "port-recovery-2",
+              "explanation": "Da Gama’s expedition was sponsored by Portugal, not France; the manifest identifies the wrong national group."
+            }
+          }
+        ],
+        "lockIds": [
+          "port-timeline"
+        ],
+        "factIds": [
+          "port-voyage",
+          "first-contact",
+          "treaty-date"
+        ],
+        "next": "market"
+      },
+      {
+        "id": "market",
+        "title": "Cargo across the Atlantic",
+        "date": "After 1492",
+        "location": "Atlantic exchange market",
+        "briefing": "The crates carry origin labels. Separate where goods began from where they later travelled. Then respond to a damaged recovery cart.",
+        "layout": "cargo",
+        "paintings": [
+          {
+            "id": "market-painting-0",
+            "title": "The morning study",
+            "image": "/projects/shadow-gallery/paintings-v1.webp",
+            "artFrame": 3,
+            "caption": "Atlantic exchange market · After 1492. An origin tag on a crate.",
+            "authentic": false,
+            "hotspots": [
+              {
+                "id": "market-detail-0",
+                "label": "Potatoes · European origin",
+                "detail": "The potato crate is labelled as a European-origin crop introduced to the Americas.",
+                "symbol": "✦",
+                "x": 65,
+                "y": 62
+              },
+              {
+                "id": "market-context-0",
+                "label": "Setting inscription",
+                "detail": "This reconstruction claims to depict Atlantic exchange market in After 1492. Inspect the scene details against the field notes.",
+                "symbol": "⌖",
+                "x": 24,
+                "y": 25
+              }
+            ],
+            "fraud": {
+              "category": "animal-plant",
+              "hotspotId": "market-detail-0",
+              "recoveryLockId": "market-recovery-0",
+              "explanation": "Potatoes originated in the Americas. This crate reverses their origin and exchange direction."
+            }
+          },
+          {
+            "id": "market-painting-1",
+            "title": "The collector’s scene",
+            "image": "/projects/shadow-gallery/paintings-v1.webp",
+            "artFrame": 3,
+            "caption": "Atlantic exchange market · After 1492. Two carefully labelled shipments.",
+            "authentic": true,
+            "hotspots": [
+              {
+                "id": "market-detail-1",
+                "label": "Maize from Americas · wheat from Old World",
+                "detail": "The cargo labels place maize in the Americas and wheat in the Old World before exchange.",
+                "symbol": "✦",
+                "x": 65,
+                "y": 62
+              },
+              {
+                "id": "market-context-1",
+                "label": "Setting inscription",
+                "detail": "This reconstruction claims to depict Atlantic exchange market in After 1492. Inspect the scene details against the field notes.",
+                "symbol": "⌖",
+                "x": 24,
+                "y": 25
+              }
+            ]
+          },
+          {
+            "id": "market-painting-2",
+            "title": "The light beyond",
+            "image": "/projects/shadow-gallery/paintings-v1.webp",
+            "artFrame": 3,
+            "caption": "Atlantic exchange market · After 1492. A livestock origin record.",
+            "authentic": false,
+            "hotspots": [
+              {
+                "id": "market-detail-2",
+                "label": "Horses · pre-contact Caribbean origin",
+                "detail": "The shipment label identifies European horses as native to pre-contact Caribbean communities.",
+                "symbol": "♞",
+                "x": 65,
+                "y": 62
+              },
+              {
+                "id": "market-context-2",
+                "label": "Setting inscription",
+                "detail": "This reconstruction claims to depict Atlantic exchange market in After 1492. Inspect the scene details against the field notes.",
+                "symbol": "⌖",
+                "x": 24,
+                "y": 25
+              }
+            ],
+            "fraud": {
+              "category": "animal-plant",
+              "hotspotId": "market-detail-2",
+              "recoveryLockId": "market-recovery-2",
+              "explanation": "The horse record is false: European horses reached the Americas from the Old World after contact."
+            }
+          }
+        ],
+        "lockIds": [
+          "market-origins",
+          "market-capacity"
+        ],
+        "factIds": [
+          "exchange-origins"
+        ],
+        "next": "voyage"
+      },
+      {
+        "id": "voyage",
+        "title": "The explorer’s route hall",
+        "date": "1497–1498",
+        "location": "Lisbon to India",
+        "briefing": "The route is part of the evidence. Inspect the voyage annotation before committing to a sea lane.",
+        "layout": "map",
+        "paintings": [
+          {
+            "id": "voyage-painting-0",
+            "title": "The morning study",
+            "image": "/projects/shadow-gallery/paintings-v1.webp",
+            "artFrame": 4,
+            "caption": "Lisbon to India · 1497–1498. A date annotation on the map.",
+            "authentic": false,
+            "hotspots": [
+              {
+                "id": "voyage-detail-0",
+                "label": "India arrival · 1492",
+                "detail": "The map dates da Gama’s first arrival in India to 1492.",
+                "symbol": "◷",
+                "x": 65,
+                "y": 62
+              },
+              {
+                "id": "voyage-context-0",
+                "label": "Setting inscription",
+                "detail": "This reconstruction claims to depict Lisbon to India in 1497–1498. Inspect the scene details against the field notes.",
+                "symbol": "⌖",
+                "x": 24,
+                "y": 25
+              }
+            ],
+            "fraud": {
+              "category": "timeline",
+              "hotspotId": "voyage-detail-0",
+              "recoveryLockId": "voyage-recovery-0",
+              "explanation": "Da Gama’s first arrival in India was in 1498, so the 1492 annotation does not fit this voyage."
+            }
+          },
+          {
+            "id": "voyage-painting-1",
+            "title": "The collector’s scene",
+            "image": "/projects/shadow-gallery/paintings-v1.webp",
+            "artFrame": 4,
+            "caption": "Lisbon to India · 1497–1498. A national seal on the route.",
+            "authentic": false,
+            "hotspots": [
+              {
+                "id": "voyage-detail-1",
+                "label": "English expedition",
+                "detail": "The map attributes da Gama’s expedition to an English-sponsored crew.",
+                "symbol": "⚑",
+                "x": 65,
+                "y": 62
+              },
+              {
+                "id": "voyage-context-1",
+                "label": "Setting inscription",
+                "detail": "This reconstruction claims to depict Lisbon to India in 1497–1498. Inspect the scene details against the field notes.",
+                "symbol": "⌖",
+                "x": 24,
+                "y": 25
+              }
+            ],
+            "fraud": {
+              "category": "people",
+              "hotspotId": "voyage-detail-1",
+              "recoveryLockId": "voyage-recovery-1",
+              "explanation": "This was a Portuguese expedition; the national attribution is incorrect."
+            }
+          },
+          {
+            "id": "voyage-painting-2",
+            "title": "The light beyond",
+            "image": "/projects/shadow-gallery/paintings-v1.webp",
+            "artFrame": 4,
+            "caption": "Lisbon to India · 1497–1498. The expedition’s route annotation.",
+            "authentic": true,
+            "hotspots": [
+              {
+                "id": "voyage-detail-2",
+                "label": "Portugal · around Africa · India 1498",
+                "detail": "The map identifies the Portuguese voyage from Lisbon around southern Africa to India in 1498.",
+                "symbol": "⌖",
+                "x": 65,
+                "y": 62
+              },
+              {
+                "id": "voyage-context-2",
+                "label": "Setting inscription",
+                "detail": "This reconstruction claims to depict Lisbon to India in 1497–1498. Inspect the scene details against the field notes.",
+                "symbol": "⌖",
+                "x": 24,
+                "y": 25
+              }
+            ]
+          }
+        ],
+        "lockIds": [
+          "voyage-route",
+          "voyage-sponsor",
+          "voyage-scale"
+        ],
+        "factIds": [
+          "port-voyage"
+        ],
+        "next": "archive"
+      },
+      {
+        "id": "archive",
+        "title": "The Indigenous encounter archive",
+        "date": "Before European contact",
+        "location": "Andes · South America",
+        "briefing": "Read the place and community labels carefully. Historical identity comes from evidence, not a guess about how people look.",
+        "layout": "archive",
+        "paintings": [
+          {
+            "id": "archive-painting-0",
+            "title": "The morning study",
+            "image": "/projects/shadow-gallery/paintings-v1.webp",
+            "artFrame": 5,
+            "caption": "Andes · South America · Before European contact. An Andean community and its animals.",
+            "authentic": true,
+            "hotspots": [
+              {
+                "id": "archive-detail-0",
+                "label": "Inca terraces and llamas",
+                "detail": "The catalogue identifies Inca stone terraces and Andean llamas.",
+                "symbol": "⌂",
+                "x": 65,
+                "y": 62
+              },
+              {
+                "id": "archive-context-0",
+                "label": "Setting inscription",
+                "detail": "This reconstruction claims to depict Andes · South America in Before European contact. Inspect the scene details against the field notes.",
+                "symbol": "⌖",
+                "x": 24,
+                "y": 25
+              }
+            ]
+          },
+          {
+            "id": "archive-painting-1",
+            "title": "The collector’s scene",
+            "image": "/projects/shadow-gallery/paintings-v1.webp",
+            "artFrame": 0,
+            "caption": "Andes · South America · Before European contact. A community named in the catalogue.",
+            "authentic": false,
+            "hotspots": [
+              {
+                "id": "archive-detail-1",
+                "label": "Taíno Caribbean settlement",
+                "detail": "The catalogue identifies the Andean mountain settlement as a Taíno Caribbean island community.",
+                "symbol": "⌂",
+                "x": 65,
+                "y": 62
+              },
+              {
+                "id": "archive-context-1",
+                "label": "Setting inscription",
+                "detail": "This reconstruction claims to depict Andes · South America in Before European contact. Inspect the scene details against the field notes.",
+                "symbol": "⌖",
+                "x": 24,
+                "y": 25
+              }
+            ],
+            "fraud": {
+              "category": "people",
+              "hotspotId": "archive-detail-1",
+              "recoveryLockId": "archive-recovery-1",
+              "explanation": "The catalogue confuses an Andean Inca setting with a Caribbean Taíno community."
+            }
+          },
+          {
+            "id": "archive-painting-2",
+            "title": "The light beyond",
+            "image": "/projects/shadow-gallery/frauds-v1.webp",
+            "artFrame": 3,
+            "caption": "Andes · South America · Before European contact. A livestock detail in the record.",
+            "authentic": false,
+            "hotspots": [
+              {
+                "id": "archive-detail-2",
+                "label": "European horses before contact",
+                "detail": "The detail study lists established European horse herds in this pre-contact Andean settlement.",
+                "symbol": "♞",
+                "x": 65,
+                "y": 62
+              },
+              {
+                "id": "archive-context-2",
+                "label": "Setting inscription",
+                "detail": "This reconstruction claims to depict Andes · South America in Before European contact. Inspect the scene details against the field notes.",
+                "symbol": "⌖",
+                "x": 24,
+                "y": 25
+              }
+            ],
+            "fraud": {
+              "category": "animal-plant",
+              "hotspotId": "archive-detail-2",
+              "recoveryLockId": "archive-recovery-2",
+              "explanation": "European horses were introduced after contact; they cannot already be established in this pre-contact setting."
+            }
+          }
+        ],
+        "lockIds": [
+          "archive-people"
+        ],
+        "factIds": [
+          "andean-people",
+          "island-people"
+        ],
+        "next": "treaty"
+      },
+      {
+        "id": "treaty",
+        "title": "The treaty and empire room",
+        "date": "1494",
+        "location": "Tordesillas",
+        "briefing": "Test the treaty date and the parties named on its seals. A European claim was not consent from the people who already lived in the claimed lands.",
+        "layout": "treaty",
+        "paintings": [
+          {
+            "id": "treaty-painting-0",
+            "title": "The morning study",
+            "image": "/projects/shadow-gallery/paintings-v1.webp",
+            "artFrame": 6,
+            "caption": "Tordesillas · 1494. A date below the signatures.",
+            "authentic": false,
+            "hotspots": [
+              {
+                "id": "treaty-detail-0",
+                "label": "Treaty signed · 1607",
+                "detail": "The date plaque identifies the Treaty of Tordesillas as signed in 1607.",
+                "symbol": "◷",
+                "x": 65,
+                "y": 62
+              },
+              {
+                "id": "treaty-context-0",
+                "label": "Setting inscription",
+                "detail": "This reconstruction claims to depict Tordesillas in 1494. Inspect the scene details against the field notes.",
+                "symbol": "⌖",
+                "x": 24,
+                "y": 25
+              }
+            ],
+            "fraud": {
+              "category": "timeline",
+              "hotspotId": "treaty-detail-0",
+              "recoveryLockId": "treaty-recovery-0",
+              "explanation": "The Treaty of Tordesillas was signed in 1494, not 1607."
+            }
+          },
+          {
+            "id": "treaty-painting-1",
+            "title": "The collector’s scene",
+            "image": "/projects/shadow-gallery/paintings-v1.webp",
+            "artFrame": 6,
+            "caption": "Tordesillas · 1494. Two crowns on the document.",
+            "authentic": true,
+            "hotspots": [
+              {
+                "id": "treaty-detail-1",
+                "label": "Spain and Portugal · 1494",
+                "detail": "The document identifies the agreement between Spain and Portugal in 1494.",
+                "symbol": "⚑",
+                "x": 65,
+                "y": 62
+              },
+              {
+                "id": "treaty-context-1",
+                "label": "Setting inscription",
+                "detail": "This reconstruction claims to depict Tordesillas in 1494. Inspect the scene details against the field notes.",
+                "symbol": "⌖",
+                "x": 24,
+                "y": 25
+              }
+            ]
+          },
+          {
+            "id": "treaty-painting-2",
+            "title": "The light beyond",
+            "image": "/projects/shadow-gallery/paintings-v1.webp",
+            "artFrame": 6,
+            "caption": "Tordesillas · 1494. The other signatory’s seal.",
+            "authentic": false,
+            "hotspots": [
+              {
+                "id": "treaty-detail-2",
+                "label": "Spain and France",
+                "detail": "The signatory label names Spain and France as the parties to this treaty.",
+                "symbol": "⚑",
+                "x": 65,
+                "y": 62
+              },
+              {
+                "id": "treaty-context-2",
+                "label": "Setting inscription",
+                "detail": "This reconstruction claims to depict Tordesillas in 1494. Inspect the scene details against the field notes.",
+                "symbol": "⌖",
+                "x": 24,
+                "y": 25
+              }
+            ],
+            "fraud": {
+              "category": "people",
+              "hotspotId": "treaty-detail-2",
+              "recoveryLockId": "treaty-recovery-2",
+              "explanation": "Portugal, not France, was the other party alongside Spain in the Treaty of Tordesillas."
+            }
+          }
+        ],
+        "lockIds": [
+          "treaty-cylinders",
+          "treaty-evidence"
+        ],
+        "factIds": [
+          "treaty-date"
+        ],
+        "next": "vault"
+      },
+      {
+        "id": "vault",
+        "title": "The cartographer’s vault",
+        "date": "1492",
+        "location": "Caribbean collection",
+        "briefing": "One last composite scene. Authenticate it, then combine the date, compass, cargo and treaty evidence to release the collection.",
+        "layout": "vault",
+        "paintings": [
+          {
+            "id": "vault-painting-0",
+            "title": "The morning study",
+            "image": "/projects/shadow-gallery/frauds-v1.webp",
+            "artFrame": 8,
+            "caption": "Caribbean collection · 1492. An instrument catalogued beside the coast.",
+            "authentic": false,
+            "hotspots": [
+              {
+                "id": "vault-detail-0",
+                "label": "Marine timekeeper in 1492",
+                "detail": "The composite catalogue includes a Harrison-style marine timekeeper in the 1492 scene.",
+                "symbol": "◷",
+                "x": 65,
+                "y": 62
+              },
+              {
+                "id": "vault-context-0",
+                "label": "Setting inscription",
+                "detail": "This reconstruction claims to depict Caribbean collection in 1492. Inspect the scene details against the field notes.",
+                "symbol": "⌖",
+                "x": 24,
+                "y": 25
+              }
+            ],
+            "fraud": {
+              "category": "technology",
+              "hotspotId": "vault-detail-0",
+              "recoveryLockId": "vault-recovery-0",
+              "explanation": "A Harrison-style marine timekeeper is centuries too late for the scene’s 1492 date."
+            }
+          },
+          {
+            "id": "vault-painting-1",
+            "title": "The collector’s scene",
+            "image": "/projects/shadow-gallery/paintings-v1.webp",
+            "artFrame": 5,
+            "caption": "Caribbean collection · 1492. A community named on the coastal record.",
+            "authentic": false,
+            "hotspots": [
+              {
+                "id": "vault-detail-1",
+                "label": "Inca Caribbean village",
+                "detail": "The coastal community in the Caribbean is identified as an Inca settlement.",
+                "symbol": "⌂",
+                "x": 65,
+                "y": 62
+              },
+              {
+                "id": "vault-context-1",
+                "label": "Setting inscription",
+                "detail": "This reconstruction claims to depict Caribbean collection in 1492. Inspect the scene details against the field notes.",
+                "symbol": "⌖",
+                "x": 24,
+                "y": 25
+              }
+            ],
+            "fraud": {
+              "category": "people",
+              "hotspotId": "vault-detail-1",
+              "recoveryLockId": "vault-recovery-1",
+              "explanation": "This attribution moves the Inca from the Andes into a Caribbean island community."
+            }
+          },
+          {
+            "id": "vault-painting-2",
+            "title": "The light beyond",
+            "image": "/projects/shadow-gallery/paintings-v1.webp",
+            "artFrame": 7,
+            "caption": "Caribbean collection · 1492. A scene with compatible details.",
+            "authentic": true,
+            "hotspots": [
+              {
+                "id": "vault-detail-2",
+                "label": "Caribbean canoe · maize · 1492",
+                "detail": "A Caribbean canoe, maize from the Americas and the arrival date 1492 fit together without the other records’ anachronisms.",
+                "symbol": "✦",
+                "x": 65,
+                "y": 62
+              },
+              {
+                "id": "vault-context-2",
+                "label": "Setting inscription",
+                "detail": "This reconstruction claims to depict Caribbean collection in 1492. Inspect the scene details against the field notes.",
+                "symbol": "⌖",
+                "x": 24,
+                "y": 25
+              }
+            ]
+          }
+        ],
+        "lockIds": [
+          "vault-date",
+          "vault-compass",
+          "vault-exchange",
+          "vault-nation"
+        ],
+        "factIds": [
+          "first-contact",
+          "exchange-origins",
+          "island-people"
+        ]
+      }
+    ],
+    "locks": [
+      {
+        "id": "shore-crates",
+        "type": "sorting",
+        "title": "The exchange crates",
+        "prompt": "Sort these goods by their origin before the Columbian Exchange.",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "exchange-origins"
+        ],
+        "hint": "An item’s origin is different from where it is grown today. Read “Where the cargo began.”",
+        "consequence": "The correctly sorted crates roll onto the trade platform.",
+        "items": [
+          {
+            "id": "horse",
+            "label": "Horse"
+          },
+          {
+            "id": "maize",
+            "label": "Maize"
+          },
+          {
+            "id": "wheat",
+            "label": "Wheat"
+          },
+          {
+            "id": "potato",
+            "label": "Potato"
+          }
+        ],
+        "zones": [
+          {
+            "id": "old",
+            "label": "Old World · Africa, Asia, Europe"
+          },
+          {
+            "id": "new",
+            "label": "Americas"
+          }
+        ],
+        "matches": {
+          "horse": "old",
+          "maize": "new",
+          "wheat": "old",
+          "potato": "new"
+        }
+      },
+      {
+        "id": "shore-angle",
+        "type": "rotation",
+        "title": "The compass mechanism",
+        "prompt": "The gate drive requires 3/8 of one clockwise turn from north. Calculate the angle, then rotate the arm to that angle.",
+        "domain": "math",
+        "standard": "Grades 4–8 · Applied mathematics",
+        "evidenceIds": [
+          "rotation-rule"
+        ],
+        "hint": "One full turn is 360°. North is 0° and the bearing increases clockwise.",
+        "consequence": "The compass arm rotates to your bearing and drives the passage gear.",
+        "target": 135,
+        "min": 0,
+        "max": 360,
+        "step": 1,
+        "tolerance": 2,
+        "wrap": true,
+        "unit": "degrees"
+      },
+      {
+        "id": "workshop-tools",
+        "type": "technology-sort",
+        "title": "The navigator’s cabinet",
+        "prompt": "Put every instrument in the correct drawer for a workshop in 1500.",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "navigation-tools",
+          "marine-clock"
+        ],
+        "hint": "Both the reflecting sextant and Harrison’s timekeepers were developed after 1500.",
+        "consequence": "The instrument drawers slide into place and release the brass latch.",
+        "items": [
+          {
+            "id": "clock",
+            "label": "Harrison marine timekeeper"
+          },
+          {
+            "id": "compass",
+            "label": "Magnetic compass"
+          },
+          {
+            "id": "sextant",
+            "label": "Reflecting sextant"
+          },
+          {
+            "id": "astrolabe",
+            "label": "Mariner’s astrolabe"
+          }
+        ],
+        "zones": [
+          {
+            "id": "available",
+            "label": "Belongs around 1500"
+          },
+          {
+            "id": "later",
+            "label": "Invented later"
+          }
+        ],
+        "matches": {
+          "clock": "later",
+          "compass": "available",
+          "sextant": "later",
+          "astrolabe": "available"
+        }
+      },
+      {
+        "id": "workshop-bearing",
+        "type": "rotation",
+        "title": "The compass mechanism",
+        "prompt": "The passage faces west. Determine its clockwise bearing from north, then align the compass arm.",
+        "domain": "math",
+        "standard": "Grades 4–8 · Applied mathematics",
+        "evidenceIds": [
+          "rotation-rule"
+        ],
+        "hint": "One full turn is 360°. North is 0° and the bearing increases clockwise.",
+        "consequence": "The compass arm rotates to your bearing and drives the passage gear.",
+        "target": 270,
+        "min": 0,
+        "max": 360,
+        "step": 1,
+        "tolerance": 2,
+        "wrap": true,
+        "unit": "degrees"
+      },
+      {
+        "id": "port-timeline",
+        "type": "timeline",
+        "title": "The chronological rail",
+        "prompt": "Arrange the events from earliest to latest to engage the archive gears.",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "first-contact",
+          "treaty-date",
+          "port-voyage"
+        ],
+        "hint": "Compare the four years. Move the earliest event to the first position.",
+        "consequence": "The timeline plaques align and the rail slides open.",
+        "items": [
+          {
+            "id": "arrival-india",
+            "label": "Da Gama reaches India · 1498"
+          },
+          {
+            "id": "caribbean",
+            "label": "Columbus reaches the Caribbean · 1492"
+          },
+          {
+            "id": "depart",
+            "label": "Da Gama leaves Lisbon · 1497"
+          },
+          {
+            "id": "treaty",
+            "label": "Treaty of Tordesillas · 1494"
+          }
+        ],
+        "solution": [
+          "caribbean",
+          "treaty",
+          "depart",
+          "arrival-india"
+        ]
+      },
+      {
+        "id": "market-origins",
+        "type": "sorting",
+        "title": "The exchange crates",
+        "prompt": "Sort these goods by their origin before the Columbian Exchange.",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "exchange-origins"
+        ],
+        "hint": "An item’s origin is different from where it is grown today. Read “Where the cargo began.”",
+        "consequence": "The correctly sorted crates roll onto the trade platform.",
+        "items": [
+          {
+            "id": "horse",
+            "label": "Horse"
+          },
+          {
+            "id": "maize",
+            "label": "Maize"
+          },
+          {
+            "id": "wheat",
+            "label": "Wheat"
+          },
+          {
+            "id": "potato",
+            "label": "Potato"
+          }
+        ],
+        "zones": [
+          {
+            "id": "old",
+            "label": "Old World · Africa, Asia, Europe"
+          },
+          {
+            "id": "new",
+            "label": "Americas"
+          }
+        ],
+        "matches": {
+          "horse": "old",
+          "maize": "new",
+          "wheat": "old",
+          "potato": "new"
+        }
+      },
+      {
+        "id": "market-capacity",
+        "type": "cargo",
+        "title": "Crisis · a damaged recovery cart",
+        "prompt": "The cart held 240 kg. Damage reduces capacity by 25%. Calculate its new limit, then load the 62 kg operative and the 78 kg archive case. Choose which optional supplies can come along.",
+        "domain": "math",
+        "standard": "Grades 4–8 · Applied mathematics",
+        "evidenceIds": [
+          "capacity-rule"
+        ],
+        "hint": "First find 75% of 240. Both the operative and archive case must cross; supplies are optional.",
+        "consequence": "The balanced recovery cart rolls onto the bridge with your chosen load.",
+        "capacity": 180,
+        "unit": "kg",
+        "items": [
+          {
+            "id": "operative",
+            "label": "Operative",
+            "mass": 62
+          },
+          {
+            "id": "archive",
+            "label": "Archive case",
+            "mass": 78
+          },
+          {
+            "id": "tools",
+            "label": "Repair tools",
+            "mass": 25
+          },
+          {
+            "id": "spare",
+            "label": "Spare equipment",
+            "mass": 40
+          }
+        ],
+        "requiredItems": [
+          "operative",
+          "archive"
+        ]
+      },
+      {
+        "id": "voyage-route",
+        "type": "map-route",
+        "title": "Trace the expedition",
+        "prompt": "Place the main waypoints of da Gama’s outward voyage in order: start in Lisbon, round southern Africa, and finish in India.",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "port-voyage"
+        ],
+        "hint": "This is a schematic route map. The expedition rounded Africa on its way to India.",
+        "consequence": "Your plotted route lights the sea lane and pulls the map-room gate open.",
+        "items": [
+          {
+            "id": "lisbon",
+            "label": "Lisbon",
+            "x": 51,
+            "y": 18
+          },
+          {
+            "id": "caribbean",
+            "label": "Caribbean",
+            "x": 19,
+            "y": 45
+          },
+          {
+            "id": "cape",
+            "label": "Southern Africa",
+            "x": 62,
+            "y": 80
+          },
+          {
+            "id": "india",
+            "label": "India",
+            "x": 88,
+            "y": 43
+          }
+        ],
+        "solution": [
+          "lisbon",
+          "cape",
+          "india"
+        ]
+      },
+      {
+        "id": "voyage-sponsor",
+        "type": "lever",
+        "title": "The sponsor lever",
+        "prompt": "Which nation sponsored Vasco da Gama’s 1497–1498 voyage?",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "port-voyage"
+        ],
+        "hint": "Consult the matching treaty or voyage field note.",
+        "consequence": "The selected nation’s lever lowers and engages the route gear.",
+        "items": [
+          {
+            "id": "spain",
+            "label": "Spain"
+          },
+          {
+            "id": "france",
+            "label": "France"
+          },
+          {
+            "id": "portugal",
+            "label": "Portugal"
+          }
+        ],
+        "solution": [
+          "portugal"
+        ]
+      },
+      {
+        "id": "voyage-scale",
+        "type": "measurement",
+        "title": "Measure the hidden passage",
+        "prompt": "The recovery blueprint measures 7.5 cm. Its scale is 1 cm : 4 m. Calculate the real distance, then extend the route to that length.",
+        "domain": "math",
+        "standard": "Grades 4–8 · Applied mathematics",
+        "evidenceIds": [
+          "scale-rule"
+        ],
+        "hint": "Multiply blueprint centimetres by metres per centimetre.",
+        "consequence": "The route extends to your measured distance and the team crosses the passage.",
+        "target": 30,
+        "min": 0,
+        "max": 60,
+        "step": 1,
+        "tolerance": 0,
+        "unit": "m"
+      },
+      {
+        "id": "archive-people",
+        "type": "people-placement",
+        "title": "Place the communities",
+        "prompt": "Place each community in its historical region. Use location evidence, not clothing or appearance.",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "island-people",
+          "andean-people"
+        ],
+        "hint": "Consult “People of the Caribbean” and “An Andean archive.”",
+        "consequence": "The region pedestals settle into their map sockets.",
+        "items": [
+          {
+            "id": "inca",
+            "label": "Inca"
+          },
+          {
+            "id": "taino",
+            "label": "Taíno"
+          }
+        ],
+        "zones": [
+          {
+            "id": "caribbean",
+            "label": "Caribbean islands"
+          },
+          {
+            "id": "andes",
+            "label": "Andes · South America"
+          }
+        ],
+        "matches": {
+          "inca": "andes",
+          "taino": "caribbean"
+        }
+      },
+      {
+        "id": "treaty-cylinders",
+        "type": "combo",
+        "title": "The date cylinders",
+        "prompt": "Determine the year the Treaty of Tordesillas was signed. Then set all four cylinders.",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "treaty-date"
+        ],
+        "hint": "Use the notebook’s timeline evidence. The calculation field and the cylinders must agree.",
+        "consequence": "The date cylinders align and the archive bolt retracts.",
+        "target": 1494,
+        "min": 0,
+        "max": 9999,
+        "step": 1,
+        "tolerance": 0,
+        "digits": 4,
+        "unit": "year"
+      },
+      {
+        "id": "treaty-evidence",
+        "type": "evidence-board",
+        "title": "Build the evidence board",
+        "prompt": "Connect each confirmed detail to the kind of historical claim it can test.",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "treaty-date",
+          "marine-clock",
+          "exchange-origins",
+          "andean-people"
+        ],
+        "hint": "Decide what each concrete detail tells you: when, what tool, where a crop began, or who lived in a region.",
+        "consequence": "The evidence links pull four seals into alignment.",
+        "items": [
+          {
+            "id": "date",
+            "label": "Signed in 1494"
+          },
+          {
+            "id": "instrument",
+            "label": "Harrison marine timekeeper"
+          },
+          {
+            "id": "crop",
+            "label": "Maize origin"
+          },
+          {
+            "id": "group",
+            "label": "Inca in the Andes"
+          }
+        ],
+        "zones": [
+          {
+            "id": "timeline",
+            "label": "Timeline"
+          },
+          {
+            "id": "technology",
+            "label": "Technology"
+          },
+          {
+            "id": "exchange",
+            "label": "Animals / plants"
+          },
+          {
+            "id": "people",
+            "label": "People / place"
+          }
+        ],
+        "matches": {
+          "date": "timeline",
+          "instrument": "technology",
+          "crop": "exchange",
+          "group": "people"
+        }
+      },
+      {
+        "id": "vault-date",
+        "type": "combo",
+        "title": "The date cylinders",
+        "prompt": "Determine the year of Columbus’s first Caribbean arrival. Then set all four cylinders.",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "first-contact"
+        ],
+        "hint": "Use the notebook’s timeline evidence. The calculation field and the cylinders must agree.",
+        "consequence": "The date cylinders align and the archive bolt retracts.",
+        "target": 1492,
+        "min": 0,
+        "max": 9999,
+        "step": 1,
+        "tolerance": 0,
+        "digits": 4,
+        "unit": "year"
+      },
+      {
+        "id": "vault-compass",
+        "type": "rotation",
+        "title": "The compass mechanism",
+        "prompt": "The passage faces west. Determine its clockwise bearing from north, then align the compass arm.",
+        "domain": "math",
+        "standard": "Grades 4–8 · Applied mathematics",
+        "evidenceIds": [
+          "rotation-rule"
+        ],
+        "hint": "One full turn is 360°. North is 0° and the bearing increases clockwise.",
+        "consequence": "The compass arm rotates to your bearing and drives the passage gear.",
+        "target": 270,
+        "min": 0,
+        "max": 360,
+        "step": 1,
+        "tolerance": 2,
+        "wrap": true,
+        "unit": "degrees"
+      },
+      {
+        "id": "vault-exchange",
+        "type": "sorting",
+        "title": "The exchange crates",
+        "prompt": "Sort these goods by their origin before the Columbian Exchange.",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "exchange-origins"
+        ],
+        "hint": "An item’s origin is different from where it is grown today. Read “Where the cargo began.”",
+        "consequence": "The correctly sorted crates roll onto the trade platform.",
+        "items": [
+          {
+            "id": "horse",
+            "label": "Horse"
+          },
+          {
+            "id": "maize",
+            "label": "Maize"
+          },
+          {
+            "id": "wheat",
+            "label": "Wheat"
+          },
+          {
+            "id": "potato",
+            "label": "Potato"
+          }
+        ],
+        "zones": [
+          {
+            "id": "old",
+            "label": "Old World · Africa, Asia, Europe"
+          },
+          {
+            "id": "new",
+            "label": "Americas"
+          }
+        ],
+        "matches": {
+          "horse": "old",
+          "maize": "new",
+          "wheat": "old",
+          "potato": "new"
+        }
+      },
+      {
+        "id": "vault-nation",
+        "type": "lever",
+        "title": "The final treaty lever",
+        "prompt": "Select the crown that signed the Treaty of Tordesillas alongside Portugal.",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "treaty-date"
+        ],
+        "hint": "Use the treaty evidence you confirmed in the previous room.",
+        "consequence": "The final lever lowers. Concentric rings align and the recovery vault opens.",
+        "items": [
+          {
+            "id": "england",
+            "label": "England"
+          },
+          {
+            "id": "spain",
+            "label": "Spain"
+          },
+          {
+            "id": "france",
+            "label": "France"
+          }
+        ],
+        "solution": [
+          "spain"
+        ]
+      },
+      {
+        "id": "shore-recovery-0",
+        "type": "sorting",
+        "title": "The exchange crates",
+        "prompt": "Sort these goods by their origin before the Columbian Exchange.",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "exchange-origins"
+        ],
+        "hint": "An item’s origin is different from where it is grown today. Read “Where the cargo began.”",
+        "consequence": "The correctly sorted crates roll onto the trade platform.",
+        "items": [
+          {
+            "id": "horse",
+            "label": "Horse"
+          },
+          {
+            "id": "maize",
+            "label": "Maize"
+          },
+          {
+            "id": "wheat",
+            "label": "Wheat"
+          },
+          {
+            "id": "potato",
+            "label": "Potato"
+          }
+        ],
+        "zones": [
+          {
+            "id": "old",
+            "label": "Old World · Africa, Asia, Europe"
+          },
+          {
+            "id": "new",
+            "label": "Americas"
+          }
+        ],
+        "matches": {
+          "horse": "old",
+          "maize": "new",
+          "wheat": "old",
+          "potato": "new"
+        }
+      },
+      {
+        "id": "shore-recovery-2",
+        "type": "people-placement",
+        "title": "Place the communities",
+        "prompt": "Place each community in its historical region. Use location evidence, not clothing or appearance.",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "island-people",
+          "andean-people"
+        ],
+        "hint": "Consult “People of the Caribbean” and “An Andean archive.”",
+        "consequence": "The region pedestals settle into their map sockets.",
+        "items": [
+          {
+            "id": "inca",
+            "label": "Inca"
+          },
+          {
+            "id": "taino",
+            "label": "Taíno"
+          }
+        ],
+        "zones": [
+          {
+            "id": "caribbean",
+            "label": "Caribbean islands"
+          },
+          {
+            "id": "andes",
+            "label": "Andes · South America"
+          }
+        ],
+        "matches": {
+          "inca": "andes",
+          "taino": "caribbean"
+        }
+      },
+      {
+        "id": "workshop-recovery-0",
+        "type": "technology-sort",
+        "title": "The navigator’s cabinet",
+        "prompt": "Put every instrument in the correct drawer for a workshop in 1500.",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "navigation-tools",
+          "marine-clock"
+        ],
+        "hint": "Both the reflecting sextant and Harrison’s timekeepers were developed after 1500.",
+        "consequence": "The instrument drawers slide into place and release the brass latch.",
+        "items": [
+          {
+            "id": "clock",
+            "label": "Harrison marine timekeeper"
+          },
+          {
+            "id": "compass",
+            "label": "Magnetic compass"
+          },
+          {
+            "id": "sextant",
+            "label": "Reflecting sextant"
+          },
+          {
+            "id": "astrolabe",
+            "label": "Mariner’s astrolabe"
+          }
+        ],
+        "zones": [
+          {
+            "id": "available",
+            "label": "Belongs around 1500"
+          },
+          {
+            "id": "later",
+            "label": "Invented later"
+          }
+        ],
+        "matches": {
+          "clock": "later",
+          "compass": "available",
+          "sextant": "later",
+          "astrolabe": "available"
+        }
+      },
+      {
+        "id": "workshop-recovery-1",
+        "type": "technology-sort",
+        "title": "The navigator’s cabinet",
+        "prompt": "Put every instrument in the correct drawer for a workshop in 1500.",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "navigation-tools",
+          "marine-clock"
+        ],
+        "hint": "Both the reflecting sextant and Harrison’s timekeepers were developed after 1500.",
+        "consequence": "The instrument drawers slide into place and release the brass latch.",
+        "items": [
+          {
+            "id": "clock",
+            "label": "Harrison marine timekeeper"
+          },
+          {
+            "id": "compass",
+            "label": "Magnetic compass"
+          },
+          {
+            "id": "sextant",
+            "label": "Reflecting sextant"
+          },
+          {
+            "id": "astrolabe",
+            "label": "Mariner’s astrolabe"
+          }
+        ],
+        "zones": [
+          {
+            "id": "available",
+            "label": "Belongs around 1500"
+          },
+          {
+            "id": "later",
+            "label": "Invented later"
+          }
+        ],
+        "matches": {
+          "clock": "later",
+          "compass": "available",
+          "sextant": "later",
+          "astrolabe": "available"
+        }
+      },
+      {
+        "id": "port-recovery-1",
+        "type": "timeline",
+        "title": "The chronological rail",
+        "prompt": "Arrange the events from earliest to latest to engage the archive gears.",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "first-contact",
+          "treaty-date",
+          "port-voyage"
+        ],
+        "hint": "Compare the four years. Move the earliest event to the first position.",
+        "consequence": "The timeline plaques align and the rail slides open.",
+        "items": [
+          {
+            "id": "arrival-india",
+            "label": "Da Gama reaches India · 1498"
+          },
+          {
+            "id": "caribbean",
+            "label": "Columbus reaches the Caribbean · 1492"
+          },
+          {
+            "id": "depart",
+            "label": "Da Gama leaves Lisbon · 1497"
+          },
+          {
+            "id": "treaty",
+            "label": "Treaty of Tordesillas · 1494"
+          }
+        ],
+        "solution": [
+          "caribbean",
+          "treaty",
+          "depart",
+          "arrival-india"
+        ]
+      },
+      {
+        "id": "port-recovery-2",
+        "type": "lever",
+        "title": "The sponsor lever",
+        "prompt": "Which nation sponsored Vasco da Gama’s 1497–1498 voyage?",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "port-voyage"
+        ],
+        "hint": "Consult the matching treaty or voyage field note.",
+        "consequence": "The selected nation’s lever lowers and engages the route gear.",
+        "items": [
+          {
+            "id": "spain",
+            "label": "Spain"
+          },
+          {
+            "id": "france",
+            "label": "France"
+          },
+          {
+            "id": "portugal",
+            "label": "Portugal"
+          }
+        ],
+        "solution": [
+          "portugal"
+        ]
+      },
+      {
+        "id": "market-recovery-0",
+        "type": "sorting",
+        "title": "The exchange crates",
+        "prompt": "Sort these goods by their origin before the Columbian Exchange.",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "exchange-origins"
+        ],
+        "hint": "An item’s origin is different from where it is grown today. Read “Where the cargo began.”",
+        "consequence": "The correctly sorted crates roll onto the trade platform.",
+        "items": [
+          {
+            "id": "horse",
+            "label": "Horse"
+          },
+          {
+            "id": "maize",
+            "label": "Maize"
+          },
+          {
+            "id": "wheat",
+            "label": "Wheat"
+          },
+          {
+            "id": "potato",
+            "label": "Potato"
+          }
+        ],
+        "zones": [
+          {
+            "id": "old",
+            "label": "Old World · Africa, Asia, Europe"
+          },
+          {
+            "id": "new",
+            "label": "Americas"
+          }
+        ],
+        "matches": {
+          "horse": "old",
+          "maize": "new",
+          "wheat": "old",
+          "potato": "new"
+        }
+      },
+      {
+        "id": "market-recovery-2",
+        "type": "sorting",
+        "title": "The exchange crates",
+        "prompt": "Sort these goods by their origin before the Columbian Exchange.",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "exchange-origins"
+        ],
+        "hint": "An item’s origin is different from where it is grown today. Read “Where the cargo began.”",
+        "consequence": "The correctly sorted crates roll onto the trade platform.",
+        "items": [
+          {
+            "id": "horse",
+            "label": "Horse"
+          },
+          {
+            "id": "maize",
+            "label": "Maize"
+          },
+          {
+            "id": "wheat",
+            "label": "Wheat"
+          },
+          {
+            "id": "potato",
+            "label": "Potato"
+          }
+        ],
+        "zones": [
+          {
+            "id": "old",
+            "label": "Old World · Africa, Asia, Europe"
+          },
+          {
+            "id": "new",
+            "label": "Americas"
+          }
+        ],
+        "matches": {
+          "horse": "old",
+          "maize": "new",
+          "wheat": "old",
+          "potato": "new"
+        }
+      },
+      {
+        "id": "voyage-recovery-0",
+        "type": "timeline",
+        "title": "The chronological rail",
+        "prompt": "Arrange the events from earliest to latest to engage the archive gears.",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "first-contact",
+          "treaty-date",
+          "port-voyage"
+        ],
+        "hint": "Compare the four years. Move the earliest event to the first position.",
+        "consequence": "The timeline plaques align and the rail slides open.",
+        "items": [
+          {
+            "id": "arrival-india",
+            "label": "Da Gama reaches India · 1498"
+          },
+          {
+            "id": "caribbean",
+            "label": "Columbus reaches the Caribbean · 1492"
+          },
+          {
+            "id": "depart",
+            "label": "Da Gama leaves Lisbon · 1497"
+          },
+          {
+            "id": "treaty",
+            "label": "Treaty of Tordesillas · 1494"
+          }
+        ],
+        "solution": [
+          "caribbean",
+          "treaty",
+          "depart",
+          "arrival-india"
+        ]
+      },
+      {
+        "id": "voyage-recovery-1",
+        "type": "lever",
+        "title": "The sponsor lever",
+        "prompt": "Which nation sponsored Vasco da Gama’s 1497–1498 voyage?",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "port-voyage"
+        ],
+        "hint": "Consult the matching treaty or voyage field note.",
+        "consequence": "The selected nation’s lever lowers and engages the route gear.",
+        "items": [
+          {
+            "id": "spain",
+            "label": "Spain"
+          },
+          {
+            "id": "france",
+            "label": "France"
+          },
+          {
+            "id": "portugal",
+            "label": "Portugal"
+          }
+        ],
+        "solution": [
+          "portugal"
+        ]
+      },
+      {
+        "id": "archive-recovery-1",
+        "type": "people-placement",
+        "title": "Place the communities",
+        "prompt": "Place each community in its historical region. Use location evidence, not clothing or appearance.",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "island-people",
+          "andean-people"
+        ],
+        "hint": "Consult “People of the Caribbean” and “An Andean archive.”",
+        "consequence": "The region pedestals settle into their map sockets.",
+        "items": [
+          {
+            "id": "inca",
+            "label": "Inca"
+          },
+          {
+            "id": "taino",
+            "label": "Taíno"
+          }
+        ],
+        "zones": [
+          {
+            "id": "caribbean",
+            "label": "Caribbean islands"
+          },
+          {
+            "id": "andes",
+            "label": "Andes · South America"
+          }
+        ],
+        "matches": {
+          "inca": "andes",
+          "taino": "caribbean"
+        }
+      },
+      {
+        "id": "archive-recovery-2",
+        "type": "sorting",
+        "title": "The exchange crates",
+        "prompt": "Sort these goods by their origin before the Columbian Exchange.",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "exchange-origins"
+        ],
+        "hint": "An item’s origin is different from where it is grown today. Read “Where the cargo began.”",
+        "consequence": "The correctly sorted crates roll onto the trade platform.",
+        "items": [
+          {
+            "id": "horse",
+            "label": "Horse"
+          },
+          {
+            "id": "maize",
+            "label": "Maize"
+          },
+          {
+            "id": "wheat",
+            "label": "Wheat"
+          },
+          {
+            "id": "potato",
+            "label": "Potato"
+          }
+        ],
+        "zones": [
+          {
+            "id": "old",
+            "label": "Old World · Africa, Asia, Europe"
+          },
+          {
+            "id": "new",
+            "label": "Americas"
+          }
+        ],
+        "matches": {
+          "horse": "old",
+          "maize": "new",
+          "wheat": "old",
+          "potato": "new"
+        }
+      },
+      {
+        "id": "treaty-recovery-0",
+        "type": "combo",
+        "title": "The date cylinders",
+        "prompt": "Determine the year the Treaty of Tordesillas was signed. Then set all four cylinders.",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "treaty-date"
+        ],
+        "hint": "Use the notebook’s timeline evidence. The calculation field and the cylinders must agree.",
+        "consequence": "The date cylinders align and the archive bolt retracts.",
+        "target": 1494,
+        "min": 0,
+        "max": 9999,
+        "step": 1,
+        "tolerance": 0,
+        "digits": 4,
+        "unit": "year"
+      },
+      {
+        "id": "treaty-recovery-2",
+        "type": "lever",
+        "title": "The sponsor lever",
+        "prompt": "Which crown joined Spain in signing the Treaty of Tordesillas?",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "treaty-date"
+        ],
+        "hint": "Consult the matching treaty or voyage field note.",
+        "consequence": "The selected nation’s lever lowers and engages the route gear.",
+        "items": [
+          {
+            "id": "spain",
+            "label": "Spain"
+          },
+          {
+            "id": "france",
+            "label": "France"
+          },
+          {
+            "id": "portugal",
+            "label": "Portugal"
+          }
+        ],
+        "solution": [
+          "portugal"
+        ]
+      },
+      {
+        "id": "vault-recovery-0",
+        "type": "technology-sort",
+        "title": "The navigator’s cabinet",
+        "prompt": "Put every instrument in the correct drawer for a workshop in 1500.",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "navigation-tools",
+          "marine-clock"
+        ],
+        "hint": "Both the reflecting sextant and Harrison’s timekeepers were developed after 1500.",
+        "consequence": "The instrument drawers slide into place and release the brass latch.",
+        "items": [
+          {
+            "id": "clock",
+            "label": "Harrison marine timekeeper"
+          },
+          {
+            "id": "compass",
+            "label": "Magnetic compass"
+          },
+          {
+            "id": "sextant",
+            "label": "Reflecting sextant"
+          },
+          {
+            "id": "astrolabe",
+            "label": "Mariner’s astrolabe"
+          }
+        ],
+        "zones": [
+          {
+            "id": "available",
+            "label": "Belongs around 1500"
+          },
+          {
+            "id": "later",
+            "label": "Invented later"
+          }
+        ],
+        "matches": {
+          "clock": "later",
+          "compass": "available",
+          "sextant": "later",
+          "astrolabe": "available"
+        }
+      },
+      {
+        "id": "vault-recovery-1",
+        "type": "people-placement",
+        "title": "Place the communities",
+        "prompt": "Place each community in its historical region. Use location evidence, not clothing or appearance.",
+        "domain": "history",
+        "standard": "Historical evidence",
+        "evidenceIds": [
+          "island-people",
+          "andean-people"
+        ],
+        "hint": "Consult “People of the Caribbean” and “An Andean archive.”",
+        "consequence": "The region pedestals settle into their map sockets.",
+        "items": [
+          {
+            "id": "inca",
+            "label": "Inca"
+          },
+          {
+            "id": "taino",
+            "label": "Taíno"
+          }
+        ],
+        "zones": [
+          {
+            "id": "caribbean",
+            "label": "Caribbean islands"
+          },
+          {
+            "id": "andes",
+            "label": "Andes · South America"
+          }
+        ],
+        "matches": {
+          "inca": "andes",
+          "taino": "caribbean"
+        }
+      }
+    ],
+    "evidence": [
+      {
+        "id": "first-contact",
+        "category": "Timeline",
+        "title": "A date on the shore",
+        "text": "Columbus’s first Caribbean voyage reached the islands in 1492. This date describes European arrival, not the beginning of Caribbean history.",
+        "sourceTitle": "Smithsonian · Mesoamerica / Caribbean",
+        "sourceUrl": "https://americanindian.si.edu/exhibitions/infinityofnations/mesoamerica-caribbean.html"
+      },
+      {
+        "id": "island-people",
+        "category": "People",
+        "title": "People of the Caribbean",
+        "text": "Taíno communities lived across much of the Caribbean, including Hispaniola. Inca communities belonged to the Andes of South America. Regional identity must be established with place and evidence, not appearance.",
+        "sourceTitle": "Smithsonian · Mesoamerica / Caribbean",
+        "sourceUrl": "https://americanindian.si.edu/exhibitions/infinityofnations/mesoamerica-caribbean.html"
+      },
+      {
+        "id": "andean-people",
+        "category": "People",
+        "title": "An Andean archive",
+        "text": "The Inca empire was centered in the Andes. Llamas were part of Andean life. A label calling an Andean Inca settlement a Taíno Caribbean island settlement misidentifies its people and place.",
+        "sourceTitle": "Smithsonian · Andes",
+        "sourceUrl": "https://americanindian.si.edu/exhibitions/infinityofnations/andes.html"
+      },
+      {
+        "id": "exchange-origins",
+        "category": "Exchange",
+        "title": "Where the cargo began",
+        "text": "Maize, potatoes, tomatoes and cacao originated in the Americas. Horses, cattle, wheat and sugarcane reached the Americas from the Old World after contact. A pre-contact island cannot already have established European horse herds.",
+        "sourceTitle": "National Park Service · Columbian Exchange",
+        "sourceUrl": "https://home.nps.gov/casa/learn/historyculture/columbian-exchange.htm"
+      },
+      {
+        "id": "navigation-tools",
+        "category": "Technology",
+        "title": "Tools across the centuries",
+        "text": "A magnetic compass and mariner’s astrolabe fit the navigation setting around 1500. The reflecting sextant belongs to the eighteenth century, so it cannot be on a navigator’s desk in 1500.",
+        "sourceTitle": "Royal Museums Greenwich · Navigation instruments",
+        "sourceUrl": "https://www.rmg.co.uk/collections/objects/rmgc-object-43438"
+      },
+      {
+        "id": "marine-clock",
+        "category": "Technology",
+        "title": "A clock that came later",
+        "text": "John Harrison developed his marine timekeepers in the eighteenth century; H1 went to sea in 1736. A Harrison-style marine timekeeper does not belong on a desk in 1500.",
+        "sourceTitle": "Royal Museums Greenwich · Harrison’s timekeepers",
+        "sourceUrl": "https://www.rmg.co.uk/stories/time/harrisons-clocks-longitude-problem"
+      },
+      {
+        "id": "port-voyage",
+        "category": "Routes",
+        "title": "From Lisbon to India",
+        "text": "Vasco da Gama’s Portuguese expedition departed Lisbon in 1497 and reached Calicut (Kozhikode), India, in 1498, sailing around Africa. The destination already had established communities and trade networks.",
+        "sourceTitle": "Portuguese Ports Association · Vasco da Gama’s voyage",
+        "sourceUrl": "https://www.portosdeportugal.pt/detail.php?nID=8235"
+      },
+      {
+        "id": "treaty-date",
+        "category": "Timeline",
+        "title": "The treaty on the table",
+        "text": "The Treaty of Tordesillas was signed on 7 June 1494 between the crowns of Spain and Portugal. Their claims did not erase the sovereignty or presence of Indigenous peoples.",
+        "sourceTitle": "UNESCO · Treaty of Tordesillas",
+        "sourceUrl": "https://www.unesco.org/fr/memory-world/treaty-tordesillas"
+      },
+      {
+        "id": "rotation-rule",
+        "category": "Mathematics",
+        "title": "A circle is 360 degrees",
+        "text": "A full turn is 360°. Multiply the fraction of a turn by 360 to find an angle. Compass bearings start at north and increase clockwise: east 90°, south 180°, west 270°.",
+        "sourceTitle": "OpenStax · Prealgebra 2e",
+        "sourceUrl": "https://openstax.org/details/books/prealgebra-2e"
+      },
+      {
+        "id": "scale-rule",
+        "category": "Mathematics",
+        "title": "From blueprint to passage",
+        "text": "For a map scale of 1 cm : 4 m, multiply the measured length in centimetres by 4 to determine the real distance in metres.",
+        "sourceTitle": "OpenStax · Prealgebra 2e",
+        "sourceUrl": "https://openstax.org/details/books/prealgebra-2e"
+      },
+      {
+        "id": "capacity-rule",
+        "category": "Mathematics",
+        "title": "When the cart is damaged",
+        "text": "A capacity reduced by 25% retains 75% of its original capacity. Multiply the original limit by 0.75; add the masses of everything you plan to carry and compare the sum with the new limit.",
+        "sourceTitle": "OpenStax · Prealgebra 2e",
+        "sourceUrl": "https://openstax.org/details/books/prealgebra-2e"
+      }
+    ],
+    "defensePrompts": [
+      "Which concrete clue was most useful for exposing a fraud? Explain the evidence.",
+      "Which historical mistake was easiest to miss, and how did you resolve it?",
+      "How can a convincing image or caption misrepresent history?"
+    ],
+    "encounters": [
+      {
+        "id": "coastal-encounter",
+        "type": "guided-scene",
+        "version": "1.0.0",
+        "chamberIds": [
+          "shore"
+        ],
+        "title": "A shore with a history",
+        "location": "Hispaniola · Caribbean",
+        "date": "The setting claimed by the frame: 1492",
+        "invitation": "Step through the frame. Look around, take a seat, and bring a better question back to the gallery.",
+        "image": "/projects/shadow-gallery/encounters/coastal-v1.png",
+        "imageAlt": "An illustrative Caribbean shore: a dugout canoe rests beside the water, maize grows near the landing, and a fictional host offers a seat in the shade.",
+        "entryViewId": "shoreline",
+        "host": {
+          "name": "Your coastal host",
+          "role": "Fictional character in a Taíno-associated reconstruction",
+          "greeting": "Welcome. There is a place to sit in the shade. You can look around first, or stay and listen."
+        },
+        "attribution": "This is a museum reconstruction, with generated artwork and original scripted dialogue. The host is fictional, not a recorded historical witness. The spoken account is a synthesized museum audio guide, not an Indigenous oral history. The source notes support the historical claims; scenery, clothing and conversation are illustrative. Taíno history and identity continue into the present. Explore the cited museum sources for their contributors’ perspectives.",
+        "views": [
+          {
+            "id": "shoreline",
+            "label": "Look around",
+            "mode": "observe",
+            "position": 25,
+            "zoom": 1,
+            "description": "Water, a landing, a place to work. Notice the setting before deciding what its labels mean."
+          },
+          {
+            "id": "listening-place",
+            "label": "Sit & listen",
+            "mode": "listen",
+            "position": 76,
+            "zoom": 1.18,
+            "description": "Take the offered seat. Listen to the museum account, or read it at your own pace."
+          },
+          {
+            "id": "conversation",
+            "label": "Ask a question",
+            "mode": "talk",
+            "position": 76,
+            "zoom": 1.28,
+            "description": "Start with something you noticed. Follow-up questions open as the conversation develops."
+          },
+          {
+            "id": "canoe-landing",
+            "label": "Explore the canoe",
+            "mode": "object",
+            "position": 22,
+            "zoom": 1.3,
+            "description": "Move closer to the landing. Examine the illustration, then consider what a picture can establish."
+          }
+        ],
+        "chapters": [
+          {
+            "id": "coast-story-place",
+            "title": "Before the date on the frame",
+            "speaker": "Museum audio guide",
+            "text": "Take a moment beside the water. The frame in the gallery gives this scene a date: 1492. That date refers to Columbus’s first Caribbean arrival. It does not mark the beginning of life or history here. Taíno communities already lived across much of the Caribbean, including Hispaniola. Our illustration places a canoe and a garden beside a landing. It invites you to imagine a setting; it is not a photograph of a particular morning.",
+            "evidenceIds": [
+              "first-contact",
+              "island-people"
+            ],
+            "audioSrc": "/projects/shadow-gallery/encounters/coast-story-place.m4a"
+          },
+          {
+            "id": "coast-story-travel",
+            "title": "Things move. Origins matter.",
+            "speaker": "Museum audio guide",
+            "text": "Look from the canoe toward the maize. The exchange reference places maize and potatoes in the Americas. It describes European horses and wheat reaching the Americas from the Old World after contact. A label can quietly reverse that story. Something familiar in a place today did not necessarily originate there. Back in the gallery, pay attention to words such as before, after, and already established. Those words can change a claim completely.",
+            "evidenceIds": [
+              "exchange-origins"
+            ],
+            "audioSrc": "/projects/shadow-gallery/encounters/coast-story-travel.m4a"
+          },
+          {
+            "id": "coast-story-record",
+            "title": "A picture and a claim",
+            "speaker": "Museum audio guide",
+            "text": "Now think about the name on the frame. The community reference places the Inca in the Andes of South America and Taíno communities in the Caribbean. That is a relationship to test with evidence, not a guess based on someone’s appearance. This host and this conversation are fictional. When you return, carry a question with you: which source supports or contradicts the exact claim? The scene may help you remember, but the source must do the proving.",
+            "evidenceIds": [
+              "island-people",
+              "andean-people"
+            ],
+            "audioSrc": "/projects/shadow-gallery/encounters/coast-story-record.m4a"
+          }
+        ],
+        "questions": [
+          {
+            "id": "coast-question-canoe",
+            "title": "May I look more closely at the canoe?",
+            "speaker": "Coastal host · fictional dialogue",
+            "text": "Of course. Come toward the landing and look along its hollowed shape. You can use the close view to notice details, then return here when you are ready.",
+            "evidenceIds": [
+              "island-people"
+            ],
+            "audioSrc": "/projects/shadow-gallery/encounters/coast-question-canoe.m4a"
+          },
+          {
+            "id": "coast-question-place",
+            "title": "The frame says Inca. How can I check that?",
+            "speaker": "Museum audio guide",
+            "text": "Open the community reference. It places the Inca in the Andes and Taíno communities in the Caribbean. Check the label against that place evidence. The appearance of our fictional host cannot identify a historical community.",
+            "evidenceIds": [
+              "island-people",
+              "andean-people"
+            ],
+            "audioSrc": "/projects/shadow-gallery/encounters/coast-question-place.m4a"
+          },
+          {
+            "id": "coast-question-horses",
+            "title": "What is wrong with horses already here before contact?",
+            "speaker": "Museum audio guide",
+            "text": "The claim is about established European horse herds before contact. The exchange reference describes European horses coming from the Old World after contact. Compare that timing with the words on the painting. This does not mean a horse in every later American scene would be impossible.",
+            "evidenceIds": [
+              "exchange-origins"
+            ],
+            "audioSrc": "/projects/shadow-gallery/encounters/coast-question-horses.m4a"
+          },
+          {
+            "id": "coast-question-proof",
+            "title": "Can the absence of horses in this scene prove the claim?",
+            "speaker": "Museum audio guide",
+            "text": "No. An illustrator can leave something out. Our scene is a reconstruction, so its empty spaces are not independent historical proof. Use the exchange reference to test the introduction and timing claim.",
+            "evidenceIds": [
+              "exchange-origins"
+            ],
+            "audioSrc": "/projects/shadow-gallery/encounters/coast-question-proof.m4a",
+            "requiresQuestionId": "coast-question-horses"
+          },
+          {
+            "id": "coast-question-date",
+            "title": "Did Caribbean history begin in 1492?",
+            "speaker": "Museum audio guide",
+            "text": "No. The date describes European arrival, not the beginning of Caribbean history. The community reference describes people already living in the region. A record of arrival should not erase that earlier history.",
+            "evidenceIds": [
+              "first-contact",
+              "island-people"
+            ],
+            "audioSrc": "/projects/shadow-gallery/encounters/coast-question-date.m4a"
+          }
+        ],
+        "object": {
+          "id": "dugout-study",
+          "title": "The canoe at the landing",
+          "position": 22,
+          "description": "Use the lens to look along the illustrated hull. Select a detail to record an observation. This is an illustrated study, not a scanned historical artifact.",
+          "features": [
+            {
+              "id": "hollowed-hull",
+              "label": "Look inside the hull",
+              "text": "The illustration shows a long hollowed interior. That is an observation about this depiction, not proof of an exact historical object’s age or owner."
+            },
+            {
+              "id": "landing",
+              "label": "Notice the landing",
+              "text": "The canoe rests beside the water in the reconstruction. The setting helps you understand the frame’s claim; the community and date references let you test it."
+            },
+            {
+              "id": "image-limits",
+              "label": "Ask what the image cannot prove",
+              "text": "This generated image cannot establish the identity of a particular person, the exact design of a historical canoe, or whether an absent object existed. Those claims need independent sources."
+            }
+          ],
+          "evidenceIds": [
+            "island-people",
+            "first-contact"
+          ]
+        },
+        "insight": {
+          "title": "A timing clue to take back",
+          "claim": "The painting claims European horse herds were already established on Hispaniola before European contact.",
+          "evidenceIds": [
+            "first-contact",
+            "exchange-origins",
+            "island-people"
+          ],
+          "answerEvidenceId": "exchange-origins",
+          "relationship": "contradicts",
+          "explanation": "Insight recorded: the exchange reference contradicts the claim of established European horse herds before contact. Return to the painting and inspect its specific detail to complete your fraud analysis.",
+          "hint": "Choose the reference about where goods and animals began. It describes introduction after contact; compare that with the claim’s words “already established” and “before.” The illustration alone cannot prove it."
+        }
+      }
+    ]
+  },
+  "works": [
+    {
+      "id": "shore-painting-0-restoration",
+      "type": "layered-painting",
+      "paintingId": "shore-painting-0",
+      "chamberId": "shore",
+      "encounterId": "coastal-encounter",
+      "title": "The horses on the shore",
+      "collection": "The first encounter",
+      "date": "1492 · before European arrival",
+      "location": "Hispaniola, Caribbean",
+      "commission": "Reconstruct this study for Hispaniola, Caribbean, 1492 · before European arrival. Check both marked details. Repair what the evidence contradicts and preserve what it supports. Keep the assigned time and place fixed.",
+      "attribution": "Illustrated classroom reconstruction with editable object and inscription layers. It is not a surviving historical painting or a record of a specific person. Community identity is established from sources and place, never inferred from appearance.",
+      "image": {
+        "src": "/projects/shadow-gallery/paintings-v1.webp",
+        "frame": 0,
+        "grid": 3
+      },
+      "imageAlt": "Illustrated study of Hispaniola, Caribbean, with two inspectable restoration layers.",
+      "regions": [
+        {
+          "id": "detail",
+          "title": "The added object",
+          "claim": "Established European horse herds before contact",
+          "instruction": "Could this object belong in the assigned time and place? Keep, remove, or replace it, then justify your choice.",
+          "x": 36,
+          "y": 44,
+          "width": 59,
+          "height": 43,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "tool": "keep",
+              "label": "Keep the added object",
+              "description": "Established European horse herds before contact",
+              "image": "/projects/shadow-gallery/restoration/horse-herd-v1.png"
+            },
+            {
+              "id": "remove",
+              "label": "Lift out the added object",
+              "tool": "remove",
+              "description": "Remove this object layer and reveal the underlying scene."
+            }
+          ],
+          "evidenceIds": [
+            "exchange-origins",
+            "first-contact",
+            "treaty-date"
+          ],
+          "hint": "Horses were introduced from the Old World after contact. Established pre-contact European horse herds cannot belong in this scene. Match your source and its relationship to the original claim, then explain the change in your own words.",
+          "answers": [
+            {
+              "optionId": "remove",
+              "evidenceId": "exchange-origins",
+              "relationship": "contradicts"
+            }
+          ]
+        },
+        {
+          "id": "context",
+          "title": "The supporting detail",
+          "claim": "A Caribbean island community",
+          "instruction": "A careful restorer does not change everything. Check this detail and decide whether to preserve it.",
+          "x": 5,
+          "y": 5,
+          "width": 78,
+          "height": 13,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "A Caribbean island community",
+              "description": "A Caribbean island community"
+            },
+            {
+              "id": "unknown",
+              "label": "Mark it as unknown",
+              "tool": "relabel",
+              "text": "Historical context unknown",
+              "description": "Historical context unknown"
+            }
+          ],
+          "evidenceIds": [
+            "island-people",
+            "first-contact",
+            "rotation-rule"
+          ],
+          "hint": "Check whether the reference supports the original statement. A supported detail can stay in your reconstruction.",
+          "answers": [
+            {
+              "optionId": "original",
+              "evidenceId": "island-people",
+              "relationship": "supports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "shore-painting-2-restoration",
+      "type": "layered-painting",
+      "paintingId": "shore-painting-2",
+      "chamberId": "shore",
+      "encounterId": "coastal-encounter",
+      "title": "Whose island story?",
+      "collection": "The first encounter",
+      "date": "1492",
+      "location": "Hispaniola, Caribbean",
+      "commission": "Reconstruct this study for Hispaniola, Caribbean, 1492. Check both marked details. Repair what the evidence contradicts and preserve what it supports. Keep the assigned time and place fixed.",
+      "attribution": "Illustrated classroom reconstruction with editable object and inscription layers. It is not a surviving historical painting or a record of a specific person. Community identity is established from sources and place, never inferred from appearance.",
+      "image": {
+        "src": "/projects/shadow-gallery/paintings-v1.webp",
+        "frame": 0,
+        "grid": 3
+      },
+      "imageAlt": "Illustrated study of Hispaniola, Caribbean, with two inspectable restoration layers.",
+      "regions": [
+        {
+          "id": "detail",
+          "title": "The disputed inscription",
+          "claim": "Inca settlement · Hispaniola",
+          "instruction": "Read the claim painted onto the label. Which wording fits the evidence? Change the label itself.",
+          "x": 8,
+          "y": 67,
+          "width": 84,
+          "height": 22,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "Inca settlement · Hispaniola",
+              "description": "Inca settlement · Hispaniola"
+            },
+            {
+              "id": "corrected",
+              "label": "Rewrite the inscription",
+              "tool": "relabel",
+              "text": "Taíno community · Hispaniola",
+              "description": "Taíno community · Hispaniola"
+            },
+            {
+              "id": "erase",
+              "label": "Leave an empty label",
+              "tool": "relabel",
+              "text": "Identity / date / origin unknown",
+              "description": "Identity / date / origin unknown"
+            }
+          ],
+          "evidenceIds": [
+            "island-people",
+            "first-contact",
+            "treaty-date"
+          ],
+          "hint": "The Inca belonged to the Andes; a label identifying Hispaniola’s community as an Inca settlement misplaces the group. Match your source and its relationship to the original claim, then explain the change in your own words.",
+          "answers": [
+            {
+              "optionId": "corrected",
+              "evidenceId": "island-people",
+              "relationship": "contradicts"
+            }
+          ]
+        },
+        {
+          "id": "context",
+          "title": "The supporting detail",
+          "claim": "Maize originated in the Americas",
+          "instruction": "A careful restorer does not change everything. Check this detail and decide whether to preserve it.",
+          "x": 5,
+          "y": 5,
+          "width": 78,
+          "height": 13,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "Maize originated in the Americas",
+              "description": "Maize originated in the Americas"
+            },
+            {
+              "id": "unknown",
+              "label": "Mark it as unknown",
+              "tool": "relabel",
+              "text": "Historical context unknown",
+              "description": "Historical context unknown"
+            }
+          ],
+          "evidenceIds": [
+            "exchange-origins",
+            "first-contact",
+            "rotation-rule"
+          ],
+          "hint": "Check whether the reference supports the original statement. A supported detail can stay in your reconstruction.",
+          "answers": [
+            {
+              "optionId": "original",
+              "evidenceId": "exchange-origins",
+              "relationship": "supports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "workshop-painting-0-restoration",
+      "type": "layered-painting",
+      "paintingId": "workshop-painting-0",
+      "chamberId": "workshop",
+      "title": "An instrument out of time",
+      "collection": "The navigator’s workshop",
+      "date": "1500",
+      "location": "Portugal",
+      "commission": "Reconstruct this study for Portugal, 1500. Check both marked details. Repair what the evidence contradicts and preserve what it supports. Keep the assigned time and place fixed.",
+      "attribution": "Illustrated classroom reconstruction with editable object and inscription layers. It is not a surviving historical painting or a record of a specific person. Community identity is established from sources and place, never inferred from appearance.",
+      "image": {
+        "src": "/projects/shadow-gallery/paintings-v1.webp",
+        "frame": 1,
+        "grid": 3
+      },
+      "imageAlt": "Illustrated study of Portugal, with two inspectable restoration layers.",
+      "regions": [
+        {
+          "id": "detail",
+          "title": "The added object",
+          "claim": "A reflecting sextant in a workshop in 1500",
+          "instruction": "Could this object belong in the assigned time and place? Keep, remove, or replace it, then justify your choice.",
+          "x": 36,
+          "y": 44,
+          "width": 59,
+          "height": 43,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "tool": "keep",
+              "label": "Keep the added object",
+              "description": "A reflecting sextant in a workshop in 1500",
+              "image": "/projects/shadow-gallery/restoration/sextant-v1.png"
+            },
+            {
+              "id": "remove",
+              "label": "Lift out the added object",
+              "tool": "remove",
+              "description": "Remove this object layer and reveal the underlying scene."
+            },
+            {
+              "id": "compass",
+              "label": "Paint in a magnetic compass",
+              "tool": "replace",
+              "image": "/projects/shadow-gallery/restoration/compass-v1.png",
+              "description": "Replace the added instrument with an illustrated magnetic compass."
+            }
+          ],
+          "evidenceIds": [
+            "navigation-tools",
+            "first-contact",
+            "treaty-date"
+          ],
+          "hint": "The reflecting sextant belongs to the eighteenth century, not a workshop in 1500. Match your source and its relationship to the original claim, then explain the change in your own words.",
+          "answers": [
+            {
+              "optionId": "remove",
+              "evidenceId": "navigation-tools",
+              "relationship": "contradicts"
+            },
+            {
+              "optionId": "compass",
+              "evidenceId": "navigation-tools",
+              "relationship": "contradicts"
+            }
+          ]
+        },
+        {
+          "id": "context",
+          "title": "The supporting detail",
+          "claim": "A magnetic compass fits this period",
+          "instruction": "A careful restorer does not change everything. Check this detail and decide whether to preserve it.",
+          "x": 5,
+          "y": 5,
+          "width": 78,
+          "height": 13,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "A magnetic compass fits this period",
+              "description": "A magnetic compass fits this period"
+            },
+            {
+              "id": "unknown",
+              "label": "Mark it as unknown",
+              "tool": "relabel",
+              "text": "Historical context unknown",
+              "description": "Historical context unknown"
+            }
+          ],
+          "evidenceIds": [
+            "navigation-tools",
+            "first-contact",
+            "rotation-rule"
+          ],
+          "hint": "Check whether the reference supports the original statement. A supported detail can stay in your reconstruction.",
+          "answers": [
+            {
+              "optionId": "original",
+              "evidenceId": "navigation-tools",
+              "relationship": "supports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "workshop-painting-1-restoration",
+      "type": "layered-painting",
+      "paintingId": "workshop-painting-1",
+      "chamberId": "workshop",
+      "title": "The clock that arrived early",
+      "collection": "The navigator’s workshop",
+      "date": "1500",
+      "location": "Portugal",
+      "commission": "Reconstruct this study for Portugal, 1500. Check both marked details. Repair what the evidence contradicts and preserve what it supports. Keep the assigned time and place fixed.",
+      "attribution": "Illustrated classroom reconstruction with editable object and inscription layers. It is not a surviving historical painting or a record of a specific person. Community identity is established from sources and place, never inferred from appearance.",
+      "image": {
+        "src": "/projects/shadow-gallery/paintings-v1.webp",
+        "frame": 1,
+        "grid": 3
+      },
+      "imageAlt": "Illustrated study of Portugal, with two inspectable restoration layers.",
+      "regions": [
+        {
+          "id": "detail",
+          "title": "The added object",
+          "claim": "A Harrison-style marine timekeeper in 1500",
+          "instruction": "Could this object belong in the assigned time and place? Keep, remove, or replace it, then justify your choice.",
+          "x": 36,
+          "y": 44,
+          "width": 59,
+          "height": 43,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "tool": "keep",
+              "label": "Keep the added object",
+              "description": "A Harrison-style marine timekeeper in 1500",
+              "image": "/projects/shadow-gallery/restoration/marine-clock-v1.png"
+            },
+            {
+              "id": "remove",
+              "label": "Lift out the added object",
+              "tool": "remove",
+              "description": "Remove this object layer and reveal the underlying scene."
+            },
+            {
+              "id": "compass",
+              "label": "Paint in a magnetic compass",
+              "tool": "replace",
+              "image": "/projects/shadow-gallery/restoration/compass-v1.png",
+              "description": "Replace the added instrument with an illustrated magnetic compass."
+            }
+          ],
+          "evidenceIds": [
+            "marine-clock",
+            "navigation-tools",
+            "first-contact",
+            "treaty-date"
+          ],
+          "hint": "Harrison’s marine timekeepers were eighteenth-century developments and cannot belong on this desk in 1500. Match your source and its relationship to the original claim, then explain the change in your own words.",
+          "answers": [
+            {
+              "optionId": "remove",
+              "evidenceId": "marine-clock",
+              "relationship": "contradicts"
+            },
+            {
+              "optionId": "compass",
+              "evidenceId": "marine-clock",
+              "relationship": "contradicts"
+            }
+          ]
+        },
+        {
+          "id": "context",
+          "title": "The supporting detail",
+          "claim": "A mariner’s astrolabe fits this period",
+          "instruction": "A careful restorer does not change everything. Check this detail and decide whether to preserve it.",
+          "x": 5,
+          "y": 5,
+          "width": 78,
+          "height": 13,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "A mariner’s astrolabe fits this period",
+              "description": "A mariner’s astrolabe fits this period"
+            },
+            {
+              "id": "unknown",
+              "label": "Mark it as unknown",
+              "tool": "relabel",
+              "text": "Historical context unknown",
+              "description": "Historical context unknown"
+            }
+          ],
+          "evidenceIds": [
+            "navigation-tools",
+            "first-contact",
+            "rotation-rule"
+          ],
+          "hint": "Check whether the reference supports the original statement. A supported detail can stay in your reconstruction.",
+          "answers": [
+            {
+              "optionId": "original",
+              "evidenceId": "navigation-tools",
+              "relationship": "supports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "port-painting-1-restoration",
+      "type": "layered-painting",
+      "paintingId": "port-painting-1",
+      "chamberId": "port",
+      "title": "The departure register",
+      "collection": "Departure from the port",
+      "date": "1497",
+      "location": "Lisbon, Portugal",
+      "commission": "Reconstruct this study for Lisbon, Portugal, 1497. Check both marked details. Repair what the evidence contradicts and preserve what it supports. Keep the assigned time and place fixed.",
+      "attribution": "Illustrated classroom reconstruction with editable object and inscription layers. It is not a surviving historical painting or a record of a specific person. Community identity is established from sources and place, never inferred from appearance.",
+      "image": {
+        "src": "/projects/shadow-gallery/paintings-v1.webp",
+        "frame": 2,
+        "grid": 3
+      },
+      "imageAlt": "Illustrated study of Lisbon, Portugal, with two inspectable restoration layers.",
+      "regions": [
+        {
+          "id": "detail",
+          "title": "The disputed inscription",
+          "claim": "Da Gama’s first India voyage\nDeparture: 1607",
+          "instruction": "Read the claim painted onto the label. Which wording fits the evidence? Change the label itself.",
+          "x": 8,
+          "y": 67,
+          "width": 84,
+          "height": 22,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "Da Gama’s first India voyage\nDeparture: 1607",
+              "description": "Da Gama’s first India voyage\nDeparture: 1607"
+            },
+            {
+              "id": "corrected",
+              "label": "Rewrite the inscription",
+              "tool": "relabel",
+              "text": "Da Gama’s first India voyage\nDeparture: 1497",
+              "description": "Da Gama’s first India voyage\nDeparture: 1497"
+            },
+            {
+              "id": "erase",
+              "label": "Leave an empty label",
+              "tool": "relabel",
+              "text": "Identity / date / origin unknown",
+              "description": "Identity / date / origin unknown"
+            }
+          ],
+          "evidenceIds": [
+            "port-voyage",
+            "first-contact",
+            "treaty-date"
+          ],
+          "hint": "Da Gama departed for his first voyage to India in 1497. A register dating that same departure to 1607 is false. Match your source and its relationship to the original claim, then explain the change in your own words.",
+          "answers": [
+            {
+              "optionId": "corrected",
+              "evidenceId": "port-voyage",
+              "relationship": "contradicts"
+            }
+          ]
+        },
+        {
+          "id": "context",
+          "title": "The supporting detail",
+          "claim": "Departure port: Lisbon",
+          "instruction": "A careful restorer does not change everything. Check this detail and decide whether to preserve it.",
+          "x": 5,
+          "y": 5,
+          "width": 78,
+          "height": 13,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "Departure port: Lisbon",
+              "description": "Departure port: Lisbon"
+            },
+            {
+              "id": "unknown",
+              "label": "Mark it as unknown",
+              "tool": "relabel",
+              "text": "Historical context unknown",
+              "description": "Historical context unknown"
+            }
+          ],
+          "evidenceIds": [
+            "port-voyage",
+            "first-contact",
+            "rotation-rule"
+          ],
+          "hint": "Check whether the reference supports the original statement. A supported detail can stay in your reconstruction.",
+          "answers": [
+            {
+              "optionId": "original",
+              "evidenceId": "port-voyage",
+              "relationship": "supports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "port-painting-2-restoration",
+      "type": "layered-painting",
+      "paintingId": "port-painting-2",
+      "chamberId": "port",
+      "title": "The sponsor’s seal",
+      "collection": "Departure from the port",
+      "date": "1497",
+      "location": "Lisbon, Portugal",
+      "commission": "Reconstruct this study for Lisbon, Portugal, 1497. Check both marked details. Repair what the evidence contradicts and preserve what it supports. Keep the assigned time and place fixed.",
+      "attribution": "Illustrated classroom reconstruction with editable object and inscription layers. It is not a surviving historical painting or a record of a specific person. Community identity is established from sources and place, never inferred from appearance.",
+      "image": {
+        "src": "/projects/shadow-gallery/paintings-v1.webp",
+        "frame": 2,
+        "grid": 3
+      },
+      "imageAlt": "Illustrated study of Lisbon, Portugal, with two inspectable restoration layers.",
+      "regions": [
+        {
+          "id": "detail",
+          "title": "The disputed inscription",
+          "claim": "Da Gama’s first India voyage\nSponsor: France",
+          "instruction": "Read the claim painted onto the label. Which wording fits the evidence? Change the label itself.",
+          "x": 8,
+          "y": 67,
+          "width": 84,
+          "height": 22,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "Da Gama’s first India voyage\nSponsor: France",
+              "description": "Da Gama’s first India voyage\nSponsor: France"
+            },
+            {
+              "id": "corrected",
+              "label": "Rewrite the inscription",
+              "tool": "relabel",
+              "text": "Da Gama’s first India voyage\nSponsor: Portugal",
+              "description": "Da Gama’s first India voyage\nSponsor: Portugal"
+            },
+            {
+              "id": "erase",
+              "label": "Leave an empty label",
+              "tool": "relabel",
+              "text": "Identity / date / origin unknown",
+              "description": "Identity / date / origin unknown"
+            }
+          ],
+          "evidenceIds": [
+            "port-voyage",
+            "first-contact",
+            "treaty-date"
+          ],
+          "hint": "Da Gama’s expedition was sponsored by Portugal, not France; the manifest identifies the wrong national group. Match your source and its relationship to the original claim, then explain the change in your own words.",
+          "answers": [
+            {
+              "optionId": "corrected",
+              "evidenceId": "port-voyage",
+              "relationship": "contradicts"
+            }
+          ]
+        },
+        {
+          "id": "context",
+          "title": "The supporting detail",
+          "claim": "First departure for India: 1497",
+          "instruction": "A careful restorer does not change everything. Check this detail and decide whether to preserve it.",
+          "x": 5,
+          "y": 5,
+          "width": 78,
+          "height": 13,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "First departure for India: 1497",
+              "description": "First departure for India: 1497"
+            },
+            {
+              "id": "unknown",
+              "label": "Mark it as unknown",
+              "tool": "relabel",
+              "text": "Historical context unknown",
+              "description": "Historical context unknown"
+            }
+          ],
+          "evidenceIds": [
+            "port-voyage",
+            "first-contact",
+            "rotation-rule"
+          ],
+          "hint": "Check whether the reference supports the original statement. A supported detail can stay in your reconstruction.",
+          "answers": [
+            {
+              "optionId": "original",
+              "evidenceId": "port-voyage",
+              "relationship": "supports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "market-painting-0-restoration",
+      "type": "layered-painting",
+      "paintingId": "market-painting-0",
+      "chamberId": "market",
+      "title": "The potato crate",
+      "collection": "Cargo across the Atlantic",
+      "date": "After 1492",
+      "location": "Atlantic exchange market",
+      "commission": "Reconstruct this study for Atlantic exchange market, After 1492. Check both marked details. Repair what the evidence contradicts and preserve what it supports. Keep the assigned time and place fixed.",
+      "attribution": "Illustrated classroom reconstruction with editable object and inscription layers. It is not a surviving historical painting or a record of a specific person. Community identity is established from sources and place, never inferred from appearance.",
+      "image": {
+        "src": "/projects/shadow-gallery/paintings-v1.webp",
+        "frame": 3,
+        "grid": 3
+      },
+      "imageAlt": "Illustrated study of Atlantic exchange market, with two inspectable restoration layers.",
+      "regions": [
+        {
+          "id": "detail",
+          "title": "The disputed inscription",
+          "claim": "Potatoes · origin: Europe",
+          "instruction": "Read the claim painted onto the label. Which wording fits the evidence? Change the label itself.",
+          "x": 8,
+          "y": 67,
+          "width": 84,
+          "height": 22,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "Potatoes · origin: Europe",
+              "description": "Potatoes · origin: Europe"
+            },
+            {
+              "id": "corrected",
+              "label": "Rewrite the inscription",
+              "tool": "relabel",
+              "text": "Potatoes · origin: Americas",
+              "description": "Potatoes · origin: Americas"
+            },
+            {
+              "id": "erase",
+              "label": "Leave an empty label",
+              "tool": "relabel",
+              "text": "Identity / date / origin unknown",
+              "description": "Identity / date / origin unknown"
+            }
+          ],
+          "evidenceIds": [
+            "exchange-origins",
+            "first-contact",
+            "treaty-date"
+          ],
+          "hint": "Potatoes originated in the Americas. This crate reverses their origin and exchange direction. Match your source and its relationship to the original claim, then explain the change in your own words.",
+          "answers": [
+            {
+              "optionId": "corrected",
+              "evidenceId": "exchange-origins",
+              "relationship": "contradicts"
+            }
+          ]
+        },
+        {
+          "id": "context",
+          "title": "The supporting detail",
+          "claim": "Wheat originated in the Old World",
+          "instruction": "A careful restorer does not change everything. Check this detail and decide whether to preserve it.",
+          "x": 5,
+          "y": 5,
+          "width": 78,
+          "height": 13,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "Wheat originated in the Old World",
+              "description": "Wheat originated in the Old World"
+            },
+            {
+              "id": "unknown",
+              "label": "Mark it as unknown",
+              "tool": "relabel",
+              "text": "Historical context unknown",
+              "description": "Historical context unknown"
+            }
+          ],
+          "evidenceIds": [
+            "exchange-origins",
+            "first-contact",
+            "rotation-rule"
+          ],
+          "hint": "Check whether the reference supports the original statement. A supported detail can stay in your reconstruction.",
+          "answers": [
+            {
+              "optionId": "original",
+              "evidenceId": "exchange-origins",
+              "relationship": "supports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "market-painting-2-restoration",
+      "type": "layered-painting",
+      "paintingId": "market-painting-2",
+      "chamberId": "market",
+      "title": "The livestock record",
+      "collection": "Cargo across the Atlantic",
+      "date": "After 1492",
+      "location": "Atlantic exchange market",
+      "commission": "Reconstruct this study for Atlantic exchange market, After 1492. Check both marked details. Repair what the evidence contradicts and preserve what it supports. Keep the assigned time and place fixed.",
+      "attribution": "Illustrated classroom reconstruction with editable object and inscription layers. It is not a surviving historical painting or a record of a specific person. Community identity is established from sources and place, never inferred from appearance.",
+      "image": {
+        "src": "/projects/shadow-gallery/paintings-v1.webp",
+        "frame": 3,
+        "grid": 3
+      },
+      "imageAlt": "Illustrated study of Atlantic exchange market, with two inspectable restoration layers.",
+      "regions": [
+        {
+          "id": "detail",
+          "title": "The disputed inscription",
+          "claim": "European horses · origin:\npre-contact Caribbean",
+          "instruction": "Read the claim painted onto the label. Which wording fits the evidence? Change the label itself.",
+          "x": 8,
+          "y": 67,
+          "width": 84,
+          "height": 22,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "European horses · origin:\npre-contact Caribbean",
+              "description": "European horses · origin:\npre-contact Caribbean"
+            },
+            {
+              "id": "corrected",
+              "label": "Rewrite the inscription",
+              "tool": "relabel",
+              "text": "European horses · from the Old World\nIntroduced after contact",
+              "description": "European horses · from the Old World\nIntroduced after contact"
+            },
+            {
+              "id": "erase",
+              "label": "Leave an empty label",
+              "tool": "relabel",
+              "text": "Identity / date / origin unknown",
+              "description": "Identity / date / origin unknown"
+            }
+          ],
+          "evidenceIds": [
+            "exchange-origins",
+            "first-contact",
+            "treaty-date"
+          ],
+          "hint": "The horse record is false: European horses reached the Americas from the Old World after contact. Match your source and its relationship to the original claim, then explain the change in your own words.",
+          "answers": [
+            {
+              "optionId": "corrected",
+              "evidenceId": "exchange-origins",
+              "relationship": "contradicts"
+            }
+          ]
+        },
+        {
+          "id": "context",
+          "title": "The supporting detail",
+          "claim": "Maize originated in the Americas",
+          "instruction": "A careful restorer does not change everything. Check this detail and decide whether to preserve it.",
+          "x": 5,
+          "y": 5,
+          "width": 78,
+          "height": 13,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "Maize originated in the Americas",
+              "description": "Maize originated in the Americas"
+            },
+            {
+              "id": "unknown",
+              "label": "Mark it as unknown",
+              "tool": "relabel",
+              "text": "Historical context unknown",
+              "description": "Historical context unknown"
+            }
+          ],
+          "evidenceIds": [
+            "exchange-origins",
+            "first-contact",
+            "rotation-rule"
+          ],
+          "hint": "Check whether the reference supports the original statement. A supported detail can stay in your reconstruction.",
+          "answers": [
+            {
+              "optionId": "original",
+              "evidenceId": "exchange-origins",
+              "relationship": "supports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "voyage-painting-0-restoration",
+      "type": "layered-painting",
+      "paintingId": "voyage-painting-0",
+      "chamberId": "voyage",
+      "title": "The arrival annotation",
+      "collection": "The explorer’s route hall",
+      "date": "1497–1498",
+      "location": "Voyage from Lisbon to India",
+      "commission": "Reconstruct this study for Voyage from Lisbon to India, 1497–1498. Check both marked details. Repair what the evidence contradicts and preserve what it supports. Keep the assigned time and place fixed.",
+      "attribution": "Illustrated classroom reconstruction with editable object and inscription layers. It is not a surviving historical painting or a record of a specific person. Community identity is established from sources and place, never inferred from appearance.",
+      "image": {
+        "src": "/projects/shadow-gallery/paintings-v1.webp",
+        "frame": 4,
+        "grid": 3
+      },
+      "imageAlt": "Illustrated study of Voyage from Lisbon to India, with two inspectable restoration layers.",
+      "regions": [
+        {
+          "id": "detail",
+          "title": "The disputed inscription",
+          "claim": "Da Gama’s first India arrival: 1492",
+          "instruction": "Read the claim painted onto the label. Which wording fits the evidence? Change the label itself.",
+          "x": 8,
+          "y": 67,
+          "width": 84,
+          "height": 22,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "Da Gama’s first India arrival: 1492",
+              "description": "Da Gama’s first India arrival: 1492"
+            },
+            {
+              "id": "corrected",
+              "label": "Rewrite the inscription",
+              "tool": "relabel",
+              "text": "Da Gama’s first India arrival: 1498",
+              "description": "Da Gama’s first India arrival: 1498"
+            },
+            {
+              "id": "erase",
+              "label": "Leave an empty label",
+              "tool": "relabel",
+              "text": "Identity / date / origin unknown",
+              "description": "Identity / date / origin unknown"
+            }
+          ],
+          "evidenceIds": [
+            "port-voyage",
+            "first-contact",
+            "treaty-date"
+          ],
+          "hint": "Da Gama’s first arrival in India was in 1498, so the 1492 annotation does not fit this voyage. Match your source and its relationship to the original claim, then explain the change in your own words.",
+          "answers": [
+            {
+              "optionId": "corrected",
+              "evidenceId": "port-voyage",
+              "relationship": "contradicts"
+            }
+          ]
+        },
+        {
+          "id": "context",
+          "title": "The supporting detail",
+          "claim": "Route: around southern Africa",
+          "instruction": "A careful restorer does not change everything. Check this detail and decide whether to preserve it.",
+          "x": 5,
+          "y": 5,
+          "width": 78,
+          "height": 13,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "Route: around southern Africa",
+              "description": "Route: around southern Africa"
+            },
+            {
+              "id": "unknown",
+              "label": "Mark it as unknown",
+              "tool": "relabel",
+              "text": "Historical context unknown",
+              "description": "Historical context unknown"
+            }
+          ],
+          "evidenceIds": [
+            "port-voyage",
+            "first-contact",
+            "rotation-rule"
+          ],
+          "hint": "Check whether the reference supports the original statement. A supported detail can stay in your reconstruction.",
+          "answers": [
+            {
+              "optionId": "original",
+              "evidenceId": "port-voyage",
+              "relationship": "supports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "voyage-painting-1-restoration",
+      "type": "layered-painting",
+      "paintingId": "voyage-painting-1",
+      "chamberId": "voyage",
+      "title": "The expedition’s identity",
+      "collection": "The explorer’s route hall",
+      "date": "1497–1498",
+      "location": "Voyage from Lisbon to India",
+      "commission": "Reconstruct this study for Voyage from Lisbon to India, 1497–1498. Check both marked details. Repair what the evidence contradicts and preserve what it supports. Keep the assigned time and place fixed.",
+      "attribution": "Illustrated classroom reconstruction with editable object and inscription layers. It is not a surviving historical painting or a record of a specific person. Community identity is established from sources and place, never inferred from appearance.",
+      "image": {
+        "src": "/projects/shadow-gallery/paintings-v1.webp",
+        "frame": 4,
+        "grid": 3
+      },
+      "imageAlt": "Illustrated study of Voyage from Lisbon to India, with two inspectable restoration layers.",
+      "regions": [
+        {
+          "id": "detail",
+          "title": "The disputed inscription",
+          "claim": "Da Gama’s expedition: English",
+          "instruction": "Read the claim painted onto the label. Which wording fits the evidence? Change the label itself.",
+          "x": 8,
+          "y": 67,
+          "width": 84,
+          "height": 22,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "Da Gama’s expedition: English",
+              "description": "Da Gama’s expedition: English"
+            },
+            {
+              "id": "corrected",
+              "label": "Rewrite the inscription",
+              "tool": "relabel",
+              "text": "Da Gama’s expedition: Portuguese",
+              "description": "Da Gama’s expedition: Portuguese"
+            },
+            {
+              "id": "erase",
+              "label": "Leave an empty label",
+              "tool": "relabel",
+              "text": "Identity / date / origin unknown",
+              "description": "Identity / date / origin unknown"
+            }
+          ],
+          "evidenceIds": [
+            "port-voyage",
+            "first-contact",
+            "treaty-date"
+          ],
+          "hint": "This was a Portuguese expedition; the national attribution is incorrect. Match your source and its relationship to the original claim, then explain the change in your own words.",
+          "answers": [
+            {
+              "optionId": "corrected",
+              "evidenceId": "port-voyage",
+              "relationship": "contradicts"
+            }
+          ]
+        },
+        {
+          "id": "context",
+          "title": "The supporting detail",
+          "claim": "Arrival: Calicut (Kozhikode), India",
+          "instruction": "A careful restorer does not change everything. Check this detail and decide whether to preserve it.",
+          "x": 5,
+          "y": 5,
+          "width": 78,
+          "height": 13,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "Arrival: Calicut (Kozhikode), India",
+              "description": "Arrival: Calicut (Kozhikode), India"
+            },
+            {
+              "id": "unknown",
+              "label": "Mark it as unknown",
+              "tool": "relabel",
+              "text": "Historical context unknown",
+              "description": "Historical context unknown"
+            }
+          ],
+          "evidenceIds": [
+            "port-voyage",
+            "first-contact",
+            "rotation-rule"
+          ],
+          "hint": "Check whether the reference supports the original statement. A supported detail can stay in your reconstruction.",
+          "answers": [
+            {
+              "optionId": "original",
+              "evidenceId": "port-voyage",
+              "relationship": "supports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "archive-painting-1-restoration",
+      "type": "layered-painting",
+      "paintingId": "archive-painting-1",
+      "chamberId": "archive",
+      "title": "A name in the wrong landscape",
+      "collection": "The Indigenous encounter archive",
+      "date": "Before European contact",
+      "location": "Andes, South America",
+      "commission": "Reconstruct this study for Andes, South America, Before European contact. Check both marked details. Repair what the evidence contradicts and preserve what it supports. Keep the assigned time and place fixed.",
+      "attribution": "Illustrated classroom reconstruction with editable object and inscription layers. It is not a surviving historical painting or a record of a specific person. Community identity is established from sources and place, never inferred from appearance.",
+      "image": {
+        "src": "/projects/shadow-gallery/paintings-v1.webp",
+        "frame": 5,
+        "grid": 3
+      },
+      "imageAlt": "Illustrated study of Andes, South America, with two inspectable restoration layers.",
+      "regions": [
+        {
+          "id": "detail",
+          "title": "The disputed inscription",
+          "claim": "Taíno community · Andes",
+          "instruction": "Read the claim painted onto the label. Which wording fits the evidence? Change the label itself.",
+          "x": 8,
+          "y": 67,
+          "width": 84,
+          "height": 22,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "Taíno community · Andes",
+              "description": "Taíno community · Andes"
+            },
+            {
+              "id": "corrected",
+              "label": "Rewrite the inscription",
+              "tool": "relabel",
+              "text": "Inca community · Andes",
+              "description": "Inca community · Andes"
+            },
+            {
+              "id": "erase",
+              "label": "Leave an empty label",
+              "tool": "relabel",
+              "text": "Identity / date / origin unknown",
+              "description": "Identity / date / origin unknown"
+            }
+          ],
+          "evidenceIds": [
+            "andean-people",
+            "first-contact",
+            "treaty-date"
+          ],
+          "hint": "The catalogue confuses an Andean Inca setting with a Caribbean Taíno community. Match your source and its relationship to the original claim, then explain the change in your own words.",
+          "answers": [
+            {
+              "optionId": "corrected",
+              "evidenceId": "andean-people",
+              "relationship": "contradicts"
+            }
+          ]
+        },
+        {
+          "id": "context",
+          "title": "The supporting detail",
+          "claim": "Inca homelands: the Andes",
+          "instruction": "A careful restorer does not change everything. Check this detail and decide whether to preserve it.",
+          "x": 5,
+          "y": 5,
+          "width": 78,
+          "height": 13,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "Inca homelands: the Andes",
+              "description": "Inca homelands: the Andes"
+            },
+            {
+              "id": "unknown",
+              "label": "Mark it as unknown",
+              "tool": "relabel",
+              "text": "Historical context unknown",
+              "description": "Historical context unknown"
+            }
+          ],
+          "evidenceIds": [
+            "andean-people",
+            "first-contact",
+            "rotation-rule"
+          ],
+          "hint": "Check whether the reference supports the original statement. A supported detail can stay in your reconstruction.",
+          "answers": [
+            {
+              "optionId": "original",
+              "evidenceId": "andean-people",
+              "relationship": "supports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "archive-painting-2-restoration",
+      "type": "layered-painting",
+      "paintingId": "archive-painting-2",
+      "chamberId": "archive",
+      "title": "The animals on the terrace",
+      "collection": "The Indigenous encounter archive",
+      "date": "Before European contact",
+      "location": "Andes, South America",
+      "commission": "Reconstruct this study for Andes, South America, Before European contact. Check both marked details. Repair what the evidence contradicts and preserve what it supports. Keep the assigned time and place fixed.",
+      "attribution": "Illustrated classroom reconstruction with editable object and inscription layers. It is not a surviving historical painting or a record of a specific person. Community identity is established from sources and place, never inferred from appearance.",
+      "image": {
+        "src": "/projects/shadow-gallery/paintings-v1.webp",
+        "frame": 5,
+        "grid": 3
+      },
+      "imageAlt": "Illustrated study of Andes, South America, with two inspectable restoration layers.",
+      "regions": [
+        {
+          "id": "detail",
+          "title": "The added object",
+          "claim": "Established European horse herds in the pre-contact Andes",
+          "instruction": "Could this object belong in the assigned time and place? Keep, remove, or replace it, then justify your choice.",
+          "x": 36,
+          "y": 44,
+          "width": 59,
+          "height": 43,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "tool": "keep",
+              "label": "Keep the added object",
+              "description": "Established European horse herds in the pre-contact Andes",
+              "image": "/projects/shadow-gallery/restoration/horse-herd-v1.png"
+            },
+            {
+              "id": "remove",
+              "label": "Lift out the added object",
+              "tool": "remove",
+              "description": "Remove this object layer and reveal the underlying scene."
+            }
+          ],
+          "evidenceIds": [
+            "exchange-origins",
+            "first-contact",
+            "treaty-date"
+          ],
+          "hint": "European horses were introduced after contact; they cannot already be established in this pre-contact setting. Match your source and its relationship to the original claim, then explain the change in your own words.",
+          "answers": [
+            {
+              "optionId": "remove",
+              "evidenceId": "exchange-origins",
+              "relationship": "contradicts"
+            }
+          ]
+        },
+        {
+          "id": "context",
+          "title": "The supporting detail",
+          "claim": "Inca homelands: the Andes",
+          "instruction": "A careful restorer does not change everything. Check this detail and decide whether to preserve it.",
+          "x": 5,
+          "y": 5,
+          "width": 78,
+          "height": 13,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "Inca homelands: the Andes",
+              "description": "Inca homelands: the Andes"
+            },
+            {
+              "id": "unknown",
+              "label": "Mark it as unknown",
+              "tool": "relabel",
+              "text": "Historical context unknown",
+              "description": "Historical context unknown"
+            }
+          ],
+          "evidenceIds": [
+            "andean-people",
+            "first-contact",
+            "rotation-rule"
+          ],
+          "hint": "Check whether the reference supports the original statement. A supported detail can stay in your reconstruction.",
+          "answers": [
+            {
+              "optionId": "original",
+              "evidenceId": "andean-people",
+              "relationship": "supports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "treaty-painting-0-restoration",
+      "type": "layered-painting",
+      "paintingId": "treaty-painting-0",
+      "chamberId": "treaty",
+      "title": "The treaty’s date",
+      "collection": "The treaty and empire room",
+      "date": "1494",
+      "location": "Treaty of Tordesillas",
+      "commission": "Reconstruct this study for Treaty of Tordesillas, 1494. Check both marked details. Repair what the evidence contradicts and preserve what it supports. Keep the assigned time and place fixed.",
+      "attribution": "Illustrated classroom reconstruction with editable object and inscription layers. It is not a surviving historical painting or a record of a specific person. Community identity is established from sources and place, never inferred from appearance.",
+      "image": {
+        "src": "/projects/shadow-gallery/paintings-v1.webp",
+        "frame": 6,
+        "grid": 3
+      },
+      "imageAlt": "Illustrated study of Treaty of Tordesillas, with two inspectable restoration layers.",
+      "regions": [
+        {
+          "id": "detail",
+          "title": "The disputed inscription",
+          "claim": "Treaty of Tordesillas\nSigned: 1607",
+          "instruction": "Read the claim painted onto the label. Which wording fits the evidence? Change the label itself.",
+          "x": 8,
+          "y": 67,
+          "width": 84,
+          "height": 22,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "Treaty of Tordesillas\nSigned: 1607",
+              "description": "Treaty of Tordesillas\nSigned: 1607"
+            },
+            {
+              "id": "corrected",
+              "label": "Rewrite the inscription",
+              "tool": "relabel",
+              "text": "Treaty of Tordesillas\nSigned: 7 June 1494",
+              "description": "Treaty of Tordesillas\nSigned: 7 June 1494"
+            },
+            {
+              "id": "erase",
+              "label": "Leave an empty label",
+              "tool": "relabel",
+              "text": "Identity / date / origin unknown",
+              "description": "Identity / date / origin unknown"
+            }
+          ],
+          "evidenceIds": [
+            "treaty-date",
+            "first-contact"
+          ],
+          "hint": "The Treaty of Tordesillas was signed in 1494, not 1607. Match your source and its relationship to the original claim, then explain the change in your own words.",
+          "answers": [
+            {
+              "optionId": "corrected",
+              "evidenceId": "treaty-date",
+              "relationship": "contradicts"
+            }
+          ]
+        },
+        {
+          "id": "context",
+          "title": "The supporting detail",
+          "claim": "The treaty did not erase Indigenous sovereignty",
+          "instruction": "A careful restorer does not change everything. Check this detail and decide whether to preserve it.",
+          "x": 5,
+          "y": 5,
+          "width": 78,
+          "height": 13,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "The treaty did not erase Indigenous sovereignty",
+              "description": "The treaty did not erase Indigenous sovereignty"
+            },
+            {
+              "id": "unknown",
+              "label": "Mark it as unknown",
+              "tool": "relabel",
+              "text": "Historical context unknown",
+              "description": "Historical context unknown"
+            }
+          ],
+          "evidenceIds": [
+            "treaty-date",
+            "first-contact",
+            "rotation-rule"
+          ],
+          "hint": "Check whether the reference supports the original statement. A supported detail can stay in your reconstruction.",
+          "answers": [
+            {
+              "optionId": "original",
+              "evidenceId": "treaty-date",
+              "relationship": "supports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "treaty-painting-2-restoration",
+      "type": "layered-painting",
+      "paintingId": "treaty-painting-2",
+      "chamberId": "treaty",
+      "title": "The names at the table",
+      "collection": "The treaty and empire room",
+      "date": "1494",
+      "location": "Treaty of Tordesillas",
+      "commission": "Reconstruct this study for Treaty of Tordesillas, 1494. Check both marked details. Repair what the evidence contradicts and preserve what it supports. Keep the assigned time and place fixed.",
+      "attribution": "Illustrated classroom reconstruction with editable object and inscription layers. It is not a surviving historical painting or a record of a specific person. Community identity is established from sources and place, never inferred from appearance.",
+      "image": {
+        "src": "/projects/shadow-gallery/paintings-v1.webp",
+        "frame": 6,
+        "grid": 3
+      },
+      "imageAlt": "Illustrated study of Treaty of Tordesillas, with two inspectable restoration layers.",
+      "regions": [
+        {
+          "id": "detail",
+          "title": "The disputed inscription",
+          "claim": "Signing crowns: Spain and France",
+          "instruction": "Read the claim painted onto the label. Which wording fits the evidence? Change the label itself.",
+          "x": 8,
+          "y": 67,
+          "width": 84,
+          "height": 22,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "Signing crowns: Spain and France",
+              "description": "Signing crowns: Spain and France"
+            },
+            {
+              "id": "corrected",
+              "label": "Rewrite the inscription",
+              "tool": "relabel",
+              "text": "Signing crowns: Spain and Portugal",
+              "description": "Signing crowns: Spain and Portugal"
+            },
+            {
+              "id": "erase",
+              "label": "Leave an empty label",
+              "tool": "relabel",
+              "text": "Identity / date / origin unknown",
+              "description": "Identity / date / origin unknown"
+            }
+          ],
+          "evidenceIds": [
+            "treaty-date",
+            "first-contact"
+          ],
+          "hint": "Portugal, not France, was the other party alongside Spain in the Treaty of Tordesillas. Match your source and its relationship to the original claim, then explain the change in your own words.",
+          "answers": [
+            {
+              "optionId": "corrected",
+              "evidenceId": "treaty-date",
+              "relationship": "contradicts"
+            }
+          ]
+        },
+        {
+          "id": "context",
+          "title": "The supporting detail",
+          "claim": "Indigenous peoples remained present",
+          "instruction": "A careful restorer does not change everything. Check this detail and decide whether to preserve it.",
+          "x": 5,
+          "y": 5,
+          "width": 78,
+          "height": 13,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "Indigenous peoples remained present",
+              "description": "Indigenous peoples remained present"
+            },
+            {
+              "id": "unknown",
+              "label": "Mark it as unknown",
+              "tool": "relabel",
+              "text": "Historical context unknown",
+              "description": "Historical context unknown"
+            }
+          ],
+          "evidenceIds": [
+            "treaty-date",
+            "first-contact",
+            "rotation-rule"
+          ],
+          "hint": "Check whether the reference supports the original statement. A supported detail can stay in your reconstruction.",
+          "answers": [
+            {
+              "optionId": "original",
+              "evidenceId": "treaty-date",
+              "relationship": "supports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vault-painting-0-restoration",
+      "type": "layered-painting",
+      "paintingId": "vault-painting-0",
+      "chamberId": "vault",
+      "title": "The clock beside the canoe",
+      "collection": "The cartographer’s vault",
+      "date": "1492",
+      "location": "Caribbean coast",
+      "commission": "Reconstruct this study for Caribbean coast, 1492. Check both marked details. Repair what the evidence contradicts and preserve what it supports. Keep the assigned time and place fixed.",
+      "attribution": "Illustrated classroom reconstruction with editable object and inscription layers. It is not a surviving historical painting or a record of a specific person. Community identity is established from sources and place, never inferred from appearance.",
+      "image": {
+        "src": "/projects/shadow-gallery/paintings-v1.webp",
+        "frame": 7,
+        "grid": 3
+      },
+      "imageAlt": "Illustrated study of Caribbean coast, with two inspectable restoration layers.",
+      "regions": [
+        {
+          "id": "detail",
+          "title": "The added object",
+          "claim": "A Harrison-style marine timekeeper on the coast in 1492",
+          "instruction": "Could this object belong in the assigned time and place? Keep, remove, or replace it, then justify your choice.",
+          "x": 36,
+          "y": 44,
+          "width": 59,
+          "height": 43,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "tool": "keep",
+              "label": "Keep the added object",
+              "description": "A Harrison-style marine timekeeper on the coast in 1492",
+              "image": "/projects/shadow-gallery/restoration/marine-clock-v1.png"
+            },
+            {
+              "id": "remove",
+              "label": "Lift out the added object",
+              "tool": "remove",
+              "description": "Remove this object layer and reveal the underlying scene."
+            },
+            {
+              "id": "compass",
+              "label": "Paint in a magnetic compass",
+              "tool": "replace",
+              "image": "/projects/shadow-gallery/restoration/compass-v1.png",
+              "description": "Replace the added instrument with an illustrated magnetic compass."
+            }
+          ],
+          "evidenceIds": [
+            "marine-clock",
+            "navigation-tools",
+            "first-contact",
+            "treaty-date"
+          ],
+          "hint": "A Harrison-style marine timekeeper is centuries too late for the scene’s 1492 date. Match your source and its relationship to the original claim, then explain the change in your own words.",
+          "answers": [
+            {
+              "optionId": "remove",
+              "evidenceId": "marine-clock",
+              "relationship": "contradicts"
+            },
+            {
+              "optionId": "compass",
+              "evidenceId": "marine-clock",
+              "relationship": "contradicts"
+            }
+          ]
+        },
+        {
+          "id": "context",
+          "title": "The supporting detail",
+          "claim": "Maize originated in the Americas",
+          "instruction": "A careful restorer does not change everything. Check this detail and decide whether to preserve it.",
+          "x": 5,
+          "y": 5,
+          "width": 78,
+          "height": 13,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "Maize originated in the Americas",
+              "description": "Maize originated in the Americas"
+            },
+            {
+              "id": "unknown",
+              "label": "Mark it as unknown",
+              "tool": "relabel",
+              "text": "Historical context unknown",
+              "description": "Historical context unknown"
+            }
+          ],
+          "evidenceIds": [
+            "exchange-origins",
+            "first-contact",
+            "rotation-rule"
+          ],
+          "hint": "Check whether the reference supports the original statement. A supported detail can stay in your reconstruction.",
+          "answers": [
+            {
+              "optionId": "original",
+              "evidenceId": "exchange-origins",
+              "relationship": "supports"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vault-painting-1-restoration",
+      "type": "layered-painting",
+      "paintingId": "vault-painting-1",
+      "chamberId": "vault",
+      "title": "The final coastal inscription",
+      "collection": "The cartographer’s vault",
+      "date": "1492",
+      "location": "Caribbean coast",
+      "commission": "Reconstruct this study for Caribbean coast, 1492. Check both marked details. Repair what the evidence contradicts and preserve what it supports. Keep the assigned time and place fixed.",
+      "attribution": "Illustrated classroom reconstruction with editable object and inscription layers. It is not a surviving historical painting or a record of a specific person. Community identity is established from sources and place, never inferred from appearance.",
+      "image": {
+        "src": "/projects/shadow-gallery/paintings-v1.webp",
+        "frame": 7,
+        "grid": 3
+      },
+      "imageAlt": "Illustrated study of Caribbean coast, with two inspectable restoration layers.",
+      "regions": [
+        {
+          "id": "detail",
+          "title": "The disputed inscription",
+          "claim": "Inca settlement · Caribbean",
+          "instruction": "Read the claim painted onto the label. Which wording fits the evidence? Change the label itself.",
+          "x": 8,
+          "y": 67,
+          "width": 84,
+          "height": 22,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "Inca settlement · Caribbean",
+              "description": "Inca settlement · Caribbean"
+            },
+            {
+              "id": "corrected",
+              "label": "Rewrite the inscription",
+              "tool": "relabel",
+              "text": "Taíno community · Caribbean",
+              "description": "Taíno community · Caribbean"
+            },
+            {
+              "id": "erase",
+              "label": "Leave an empty label",
+              "tool": "relabel",
+              "text": "Identity / date / origin unknown",
+              "description": "Identity / date / origin unknown"
+            }
+          ],
+          "evidenceIds": [
+            "island-people",
+            "first-contact",
+            "treaty-date"
+          ],
+          "hint": "This attribution moves the Inca from the Andes into a Caribbean island community. Match your source and its relationship to the original claim, then explain the change in your own words.",
+          "answers": [
+            {
+              "optionId": "corrected",
+              "evidenceId": "island-people",
+              "relationship": "contradicts"
+            }
+          ]
+        },
+        {
+          "id": "context",
+          "title": "The supporting detail",
+          "claim": "Inca homelands: the Andes",
+          "instruction": "A careful restorer does not change everything. Check this detail and decide whether to preserve it.",
+          "x": 5,
+          "y": 5,
+          "width": 78,
+          "height": 13,
+          "originalOptionId": "original",
+          "options": [
+            {
+              "id": "original",
+              "label": "Keep this detail",
+              "tool": "keep",
+              "text": "Inca homelands: the Andes",
+              "description": "Inca homelands: the Andes"
+            },
+            {
+              "id": "unknown",
+              "label": "Mark it as unknown",
+              "tool": "relabel",
+              "text": "Historical context unknown",
+              "description": "Historical context unknown"
+            }
+          ],
+          "evidenceIds": [
+            "andean-people",
+            "first-contact",
+            "rotation-rule"
+          ],
+          "hint": "Check whether the reference supports the original statement. A supported detail can stay in your reconstruction.",
+          "answers": [
+            {
+              "optionId": "original",
+              "evidenceId": "andean-people",
+              "relationship": "supports"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "finalLockIds": [
+    "vault-date",
+    "vault-compass",
+    "vault-exchange",
+    "vault-nation",
+    "market-capacity"
+  ],
+  "previewWeeks": {
+    "capability": "restoration.preview-weeks.v1",
+    "weeks": [
+      {
+        "week": 1,
+        "title": "Look inside the picture",
+        "setting": "A Caribbean shore. Separate what you can see from what the image claims.",
+        "sessions": [
+          {
+            "title": "Enter the painting: a morning on the shore",
+            "workId": "shore-painting-0-restoration",
+            "activity": "inspect",
+            "steps": [
+              "Look at the painting, then enter its historical world.",
+              "Look around for place markers. Visit the canoe workshop and harvest garden, explore each close-up panorama, and inspect sources.",
+              "Return to the painting. Investigate and repair three inconsistent details."
+            ],
+            "product": "A restored coastal picture with three independent repairs and sources gathered while exploring the 360° world.",
+            "film": {
+              "src": "/projects/shadow-gallery/weekly/scene-1.mp4",
+              "captions": "/projects/shadow-gallery/weekly/scene-1.vtt",
+              "cues": [
+                {
+                  "at": 0,
+                  "regionId": "detail",
+                  "label": "the disputed detail",
+                  "transcript": "Look at the added horse herd on the shore. The assigned scene is before European arrival. Can a picture establish when an animal arrived?"
+                },
+                {
+                  "at": 6,
+                  "regionId": "context",
+                  "label": "the surrounding context",
+                  "transcript": "Now look at the island-community caption. Investigate what belongs as well as what might need repair. Use the linked sources to check the claims."
+                }
+              ]
+            }
+          },
+          {
+            "title": "Whose island story?",
+            "workId": "shore-painting-2-restoration",
+            "activity": "inspect",
+            "steps": [
+              "Watch the island film and inspect its caption.",
+              "Use place evidence to choose an inscription.",
+              "Keep supported context and save your image."
+            ],
+            "product": "A relabeled island picture that preserves supported context.",
+            "film": {
+              "src": "/projects/shadow-gallery/weekly/scene-2.mp4",
+              "captions": "/projects/shadow-gallery/weekly/scene-2.vtt",
+              "cues": [
+                {
+                  "at": 0,
+                  "regionId": "detail",
+                  "label": "the disputed detail",
+                  "transcript": "Read the inscription naming a community and a place. The painting cannot establish identity from a person’s appearance."
+                },
+                {
+                  "at": 6,
+                  "regionId": "context",
+                  "label": "the surrounding context",
+                  "transcript": "Inspect the maize caption. A repair should preserve details that the evidence supports. Compare source claims before editing."
+                }
+              ]
+            }
+          }
+        ],
+        "questions": [
+          "What is directly visible, and what is only claimed by the inscription?",
+          "Which source establishes the time and place? What can it not establish?",
+          "Whose perspective is absent from this classroom reconstruction?"
+        ],
+        "evidence": [
+          "Inspected regions, removed or retained image layers, and pinned sources.",
+          "Before-and-after image versions and changes to the island inscription."
+        ],
+        "controls": [
+          "Select any commission, region, guide outlines, zoom, or film cue.",
+          "Choose evidence cards and available repair layers; change the comparison position."
+        ]
+      },
+      {
+        "week": 2,
+        "title": "The time detective’s workshop",
+        "setting": "A navigator’s desk in 1500. Test objects against the period, then rebuild the scene.",
+        "sessions": [
+          {
+            "title": "An instrument out of time",
+            "workId": "workshop-painting-0-restoration",
+            "activity": "compare",
+            "steps": [
+              "Inspect the instrument and its dated reference.",
+              "Try the compass layer; slide before / after.",
+              "Save two versions to compare your choices."
+            ],
+            "product": "An instrument comparison with two saved image trials.",
+            "film": {
+              "src": "/projects/shadow-gallery/weekly/scene-3.mp4",
+              "captions": "/projects/shadow-gallery/weekly/scene-3.vtt",
+              "cues": [
+                {
+                  "at": 0,
+                  "regionId": "detail",
+                  "label": "the disputed detail",
+                  "transcript": "The navigator’s desk contains an added reflecting sextant. The target year is 1500. Inspect the object, then check when this technology was available."
+                },
+                {
+                  "at": 6,
+                  "regionId": "context",
+                  "label": "the surrounding context",
+                  "transcript": "A magnetic-compass caption supplies another claim to check. Compare the source with both the object and the surrounding context."
+                }
+              ]
+            }
+          },
+          {
+            "title": "The clock that arrived early",
+            "workId": "workshop-painting-1-restoration",
+            "activity": "compare",
+            "steps": [
+              "Pause the film at the clock and inspect it.",
+              "Try removal or replacement; use Undo to compare.",
+              "Pin a useful source and save a picture version."
+            ],
+            "product": "A restored workshop scene and a replayable sequence of repair trials.",
+            "film": {
+              "src": "/projects/shadow-gallery/weekly/scene-4.mp4",
+              "captions": "/projects/shadow-gallery/weekly/scene-4.vtt",
+              "cues": [
+                {
+                  "at": 0,
+                  "regionId": "detail",
+                  "label": "the disputed detail",
+                  "transcript": "A marine timekeeper has been added to a workshop assigned to 1500. Its polished appearance is not evidence that it belongs in that century."
+                },
+                {
+                  "at": 6,
+                  "regionId": "context",
+                  "label": "the surrounding context",
+                  "transcript": "Inspect the surrounding navigation context. Use the date of a technology to evaluate the scene, keeping independently supported details."
+                }
+              ]
+            }
+          }
+        ],
+        "questions": [
+          "What makes an object an anachronism in this assigned setting?",
+          "Does removing a doubtful object establish what actually occupied that space?",
+          "Why keep one navigation detail while changing another?"
+        ],
+        "evidence": [
+          "Original and replacement objects, image wipe comparisons, and undo history.",
+          "Pinned dated sources and saved versions before and after revision."
+        ],
+        "controls": [
+          "Select object layers, keep/remove/replace tools, source cards, and hotspot visibility.",
+          "Control zoom, film inspection points, comparison wipe and saved-version replay."
+        ]
+      },
+      {
+        "week": 3,
+        "title": "Repair the historical record",
+        "setting": "Harbor registers and market cargo. Inspect the date, origin and destination inside each image.",
+        "sessions": [
+          {
+            "title": "Repair the departure register",
+            "workId": "port-painting-1-restoration",
+            "activity": "restore",
+            "steps": [
+              "Inspect the date written in the harbor picture.",
+              "Compare the voyage source; choose a new inscription.",
+              "Preserve the port context and save the record."
+            ],
+            "product": "A corrected departure-register image with its source pinned.",
+            "film": {
+              "src": "/projects/shadow-gallery/weekly/scene-5.mp4",
+              "captions": "/projects/shadow-gallery/weekly/scene-5.vtt",
+              "cues": [
+                {
+                  "at": 0,
+                  "regionId": "detail",
+                  "label": "the disputed detail",
+                  "transcript": "The harbor register labels the departure of a particular voyage. Read the date painted into the scene; separate departure from arrival."
+                },
+                {
+                  "at": 6,
+                  "regionId": "context",
+                  "label": "the surrounding context",
+                  "transcript": "Inspect the port caption. A useful source must match the voyage, event and location named by the picture."
+                }
+              ]
+            }
+          },
+          {
+            "title": "Where did the cargo begin?",
+            "workId": "market-painting-0-restoration",
+            "activity": "restore",
+            "steps": [
+              "Inspect the crate’s origin label in the market.",
+              "Use the exchange source to revise the inscription.",
+              "Compare the wheat detail; save the complete image."
+            ],
+            "product": "A revised cargo image distinguishing origin from later trade.",
+            "film": {
+              "src": "/projects/shadow-gallery/weekly/scene-6.mp4",
+              "captions": "/projects/shadow-gallery/weekly/scene-6.vtt",
+              "cues": [
+                {
+                  "at": 0,
+                  "regionId": "detail",
+                  "label": "the disputed detail",
+                  "transcript": "A potato crate carries an origin claim. A crop being sold in a place does not establish that it originated there."
+                },
+                {
+                  "at": 6,
+                  "regionId": "context",
+                  "label": "the surrounding context",
+                  "transcript": "Inspect the wheat caption beside it. Compare both crop origins using the reference before deciding what to keep."
+                }
+              ]
+            }
+          }
+        ],
+        "questions": [
+          "How do departure and arrival differ when authenticating a date?",
+          "How is a crop’s origin different from where it is later traded?",
+          "Which part of a source supports this exact inscription, and which remains uncertain?"
+        ],
+        "evidence": [
+          "Edited inscription layers, preserved context, and selected source cards.",
+          "Saved harbor and cargo versions showing which claims changed."
+        ],
+        "controls": [
+          "Select harbor, market or other commissions; switch evidence and inscription choices.",
+          "Set guide visibility, picture zoom, comparison position and film cue."
+        ]
+      },
+      {
+        "week": 4,
+        "title": "Curate the recovered gallery",
+        "setting": "One final picture, then a visitor-ready exhibition of your reconstructions.",
+        "sessions": [
+          {
+            "title": "Restore the final coastal picture",
+            "workId": "vault-painting-0-restoration",
+            "activity": "restore",
+            "steps": [
+              "Inspect the coastal clock against the target date.",
+              "Repair the image and pin a supporting source.",
+              "Save a version and add the picture to your exhibition."
+            ],
+            "product": "A final coastal reconstruction with a saved comparison image.",
+            "film": {
+              "src": "/projects/shadow-gallery/weekly/scene-7.mp4",
+              "captions": "/projects/shadow-gallery/weekly/scene-7.vtt",
+              "cues": [
+                {
+                  "at": 0,
+                  "regionId": "detail",
+                  "label": "the disputed detail",
+                  "transcript": "This coastal scene is assigned to 1492, but an added marine clock invites investigation. Transfer your workshop method to a new setting."
+                },
+                {
+                  "at": 6,
+                  "regionId": "context",
+                  "label": "the surrounding context",
+                  "transcript": "Look beyond the clock to the crop-origin caption. Do not change every detail simply because one layer is doubtful."
+                }
+              ]
+            }
+          },
+          {
+            "title": "Build the recovered gallery",
+            "workId": "vault-painting-1-restoration",
+            "activity": "exhibit",
+            "steps": [
+              "Inspect the sample gallery; add or remove pictures.",
+              "Arrange the images and edit their museum captions.",
+              "Preview the exhibition and download an illustrated copy."
+            ],
+            "product": "An illustrated before-and-after exhibition with editable captions and pinned references.",
+            "film": {
+              "src": "/projects/shadow-gallery/weekly/scene-8.mp4",
+              "captions": "/projects/shadow-gallery/weekly/scene-8.vtt",
+              "cues": [
+                {
+                  "at": 0,
+                  "regionId": "detail",
+                  "label": "the disputed detail",
+                  "transcript": "The final coastal inscription links a named community with a place. Your exhibition should make a visible repair understandable to a visitor."
+                },
+                {
+                  "at": 6,
+                  "regionId": "context",
+                  "label": "the surrounding context",
+                  "transcript": "Look at the second geographic claim. Keep the original and the student reconstruction together, so visitors can compare changes and uncertainties."
+                }
+              ]
+            }
+          }
+        ],
+        "questions": [
+          "How do your image changes and source choices support the museum caption?",
+          "Which supported detail did you preserve, and what uncertainty remains?",
+          "How will a visitor distinguish an illustrative reconstruction from historical evidence?"
+        ],
+        "evidence": [
+          "Exhibition image selection and order, captions, pinned sources and comparisons.",
+          "Final picture versions, revisions and preserved historical context."
+        ],
+        "controls": [
+          "Choose all sixteen paintings, image layers, evidence, zoom and comparison.",
+          "Control exhibition selection/order, captions, preview, film cues and saved-version replay."
+        ]
+      }
+    ],
+    "sampleExhibit": [
+      {
+        "workId": "shore-painting-0-restoration",
+        "choices": {
+          "detail": "remove"
+        },
+        "caption": "Sample caption — The added European horse herd has been removed from this pre-contact shore reconstruction. Compare the original with the revision and consult the exchange reference. The illustration is not a surviving record of this scene."
+      },
+      {
+        "workId": "workshop-painting-0-restoration",
+        "choices": {
+          "detail": "compass"
+        },
+        "caption": "Sample caption — A magnetic compass replaces the added reflecting sextant in this classroom reconstruction of a workshop in 1500. The original remains alongside the revision so visitors can inspect the change."
+      }
+    ],
+    "scenes": [
+      {
+        "capability": "panorama.encounter.v1",
+        "id": "coastal-morning",
+        "version": 1,
+        "workId": "shore-painting-0-restoration",
+        "title": "A morning on the shore",
+        "setting": "Hispaniola · early 1492 · before European arrival here",
+        "invitation": "Three details in this painting do not belong. Step inside the historical world, meet the people, and gather evidence before deciding what to repair.",
+        "panorama": "/projects/shadow-gallery/coastal-v1/panorama.png",
+        "forgery": "/projects/shadow-gallery/coastal-v1/forgery.png",
+        "imageAlt": "A coastal community with a canoe maker at the shore, a central clearing, and a food grower sorting a harvest.",
+        "attribution": "AI-generated teaching reconstruction. Fictional characters and English dialogue; clothing and scene layout are illustrative. Historical sources identify what is supported and uncertain. Taíno peoples and their descendants continue today.",
+        "sources": [
+          {
+            "id": "canoe-construction",
+            "title": "Inside a dugout canoe",
+            "text": "A dugout hull is shaped from one trunk. Historical research describes pre-1492 Caribbean canoe builders using stone axes, shell gouges and fire. Metal-fastened plank repairs should not be assumed for this setting.",
+            "provenance": "Historical synthesis: Past & Present, volume 271. The article also covers later centuries; its later techniques are not automatically evidence for 1492.",
+            "url": "https://academic.oup.com/past/article/271/1/52/8231030",
+            "rect": {
+              "x": 0,
+              "y": 47,
+              "width": 30,
+              "height": 48
+            }
+          },
+          {
+            "id": "canoe-tools",
+            "title": "A stone blade and a paddle",
+            "text": "Surviving Caribbean artifacts include woodworking tools and paddles. A stone or shell blade could be attached to a wooden handle; a paddle moved the canoe without being fixed to its side.",
+            "provenance": "Oxford SIBA artifact study. The examples are Lucayan/Bahamian comparative evidence, not objects excavated at this fictional Hispaniola location.",
+            "url": "https://siba.web.ox.ac.uk/material-culture-and-cultural-practices",
+            "rect": {
+              "x": 15,
+              "y": 43,
+              "width": 8,
+              "height": 18
+            }
+          },
+          {
+            "id": "local-harvest",
+            "title": "What grew in the gardens?",
+            "text": "Archaeologists at En Bas Saline in Haiti identified manioc, maize, peppers, beans and other plants. This evidence supports the manioc and maize shown in the reconstructed work area. A picture alone cannot establish every crop present or absent.",
+            "provenance": "Florida Museum of Natural History: archaeological plant remains from a Taíno site in Haiti, on Hispaniola.",
+            "url": "https://www.floridamuseum.ufl.edu/histarch/research/haiti/en-bas-saline/material-remains/",
+            "rect": {
+              "x": 63,
+              "y": 69,
+              "width": 30,
+              "height": 25
+            }
+          },
+          {
+            "id": "exchange-record",
+            "title": "Plants and animals across the Atlantic",
+            "text": "Horses and wheat came to the Americas from the Old World through the Columbian Exchange after contact. An established horse herd and a local wheat harvest do not fit this early-1492 setting. Sweet potatoes, however, were already grown in the Caribbean; they are not the same plant as wheat or Andean potatoes.",
+            "provenance": "OpenStax U.S. History: Columbian Exchange overview, cross-checked with the National Park Service’s Taíno Settlement guide. A later historical source, consulted from your notebook, not a record possessed by the characters.",
+            "url": "https://openstax.org/books/us-history/pages/2-4-new-worlds-in-the-americas-labor-commerce-and-the-columbian-exchange"
+          },
+          {
+            "id": "island-travel",
+            "title": "Travel between communities",
+            "text": "Taíno people traveled between islands in dugout canoes, carrying foods, tools and other goods. Canoes connected communities across water. A lack of horses in this illustration is an observation, not sufficient historical proof on its own.",
+            "provenance": "National Park Service, Taíno Settlement: modern educational account of travel and cultivated crops.",
+            "url": "https://www.nps.gov/places/taino-settlement.htm",
+            "rect": {
+              "x": 0,
+              "y": 32,
+              "width": 34,
+              "height": 61
+            }
+          },
+          {
+            "id": "sweet-potato-crop",
+            "title": "Taíno garden crops",
+            "text": "Maize and sweet potatoes were cultivated by Taíno communities. Sweet potatoes are a different crop from ordinary potatoes. The field model illustrates these crops; its layout and plant varieties are not archaeological measurements.",
+            "provenance": "National Park Service, Taíno Settlement at Salt River Bay, St. Croix. Regional comparative evidence, not an excavation record for this fictional Hispaniola field.",
+            "url": "https://www.nps.gov/places/taino-settlement.htm"
+          }
+        ],
+        "people": [
+          {
+            "id": "canoe-maker",
+            "name": "Canoe maker",
+            "activity": "Shaping the inside of a dugout canoe",
+            "rect": {
+              "x": 16,
+              "y": 25,
+              "width": 18,
+              "height": 62
+            },
+            "welcome": "Welcome. I am working on this canoe. What would you like to know?",
+            "topics": [
+              {
+                "id": "construction",
+                "question": "How did you make this canoe?",
+                "keywords": [
+                  "make",
+                  "made",
+                  "build",
+                  "built",
+                  "construction",
+                  "trunk",
+                  "tree",
+                  "hollow"
+                ],
+                "reply": "The hull begins as one tree trunk. We shape and hollow the wood with stone tools, shell tools and carefully controlled fire. Look along the inside: it is one shaped hull, not a row of joined planks.",
+                "sourceIds": [
+                  "canoe-construction",
+                  "canoe-tools"
+                ]
+              },
+              {
+                "id": "repair",
+                "question": "How do you repair the boat?",
+                "keywords": [
+                  "repair",
+                  "fix",
+                  "crack",
+                  "broken",
+                  "nail",
+                  "nails",
+                  "screw",
+                  "screws",
+                  "iron",
+                  "metal"
+                ],
+                "reply": "First I examine the wood and the damage. I work with a stone blade and a shell scraper, not iron nails or screws. This hull was shaped from one trunk. Come closer and look at the tools beside me.",
+                "sourceIds": [
+                  "canoe-construction",
+                  "canoe-tools"
+                ]
+              },
+              {
+                "id": "tools",
+                "question": "Can you show me your tools?",
+                "keywords": [
+                  "tool",
+                  "tools",
+                  "stone",
+                  "shell",
+                  "axe",
+                  "blade",
+                  "show"
+                ],
+                "reply": "Here is a shaped blade and its wooden handle. The material and the edge matter for the work. Open the object view to examine them, then compare with the surviving artifacts in the source.",
+                "sourceIds": [
+                  "canoe-tools"
+                ]
+              },
+              {
+                "id": "travel",
+                "question": "How do people and goods travel?",
+                "keywords": [
+                  "travel",
+                  "carry",
+                  "goods",
+                  "transport",
+                  "paddle",
+                  "horse",
+                  "horses",
+                  "ride",
+                  "animal",
+                  "animals"
+                ],
+                "reply": "We paddle canoes along the coast and between islands, carrying people and goods. Moving over water is part of our lives. I can tell you about our canoe, but I cannot know what people will bring here in the future.",
+                "sourceIds": [
+                  "island-travel"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "food-grower",
+            "name": "Food grower",
+            "activity": "Sorting manioc roots and maize from the harvest",
+            "rect": {
+              "x": 75,
+              "y": 28,
+              "width": 17,
+              "height": 54
+            },
+            "welcome": "Welcome. I am sorting the harvest. What would you like to ask?",
+            "topics": [
+              {
+                "id": "harvest",
+                "question": "What are you growing and gathering?",
+                "keywords": [
+                  "grow",
+                  "growing",
+                  "grown",
+                  "gather",
+                  "harvest",
+                  "crop",
+                  "crops",
+                  "food",
+                  "eat",
+                  "maize",
+                  "corn",
+                  "wheat",
+                  "potato",
+                  "potatoes"
+                ],
+                "reply": "Here are manioc roots and maize. Look closely: the long roots and the ears of maize are different parts of different plants. We also cultivate other foods. The archaeological source can help you compare this work area with evidence from Hispaniola.",
+                "sourceIds": [
+                  "local-harvest"
+                ]
+              },
+              {
+                "id": "basket",
+                "question": "May I look inside the basket?",
+                "keywords": [
+                  "basket",
+                  "look",
+                  "inside",
+                  "show",
+                  "root",
+                  "roots"
+                ],
+                "reply": "Come closer. Compare the maize in the basket with the manioc roots beside it. Save an observation if it helps you remember their shapes.",
+                "sourceIds": [
+                  "local-harvest"
+                ]
+              },
+              {
+                "id": "journeys",
+                "question": "How do you carry the harvest?",
+                "keywords": [
+                  "carry",
+                  "travel",
+                  "transport",
+                  "horse",
+                  "horses",
+                  "animal",
+                  "animals",
+                  "trade"
+                ],
+                "reply": "Baskets help us carry foods. Canoes carry people and goods over water. The canoe maker can explain that work better than I can.",
+                "sourceIds": [
+                  "island-travel"
+                ]
+              }
+            ]
+          }
+        ],
+        "repairs": [
+          {
+            "id": "herd",
+            "title": "The clearing",
+            "rect": {
+              "x": 45,
+              "y": 37,
+              "width": 12,
+              "height": 24
+            },
+            "action": "Restore the open clearing",
+            "sourceIds": [
+              "island-travel",
+              "exchange-record"
+            ]
+          },
+          {
+            "id": "fasteners",
+            "title": "The canoe repair",
+            "rect": {
+              "x": 3,
+              "y": 59,
+              "width": 14,
+              "height": 31
+            },
+            "action": "Restore the dugout hull",
+            "sourceIds": [
+              "canoe-construction",
+              "canoe-tools"
+            ]
+          },
+          {
+            "id": "harvest",
+            "title": "The harvest basket",
+            "rect": {
+              "x": 79,
+              "y": 65,
+              "width": 14,
+              "height": 24
+            },
+            "action": "Restore the maize harvest",
+            "sourceIds": [
+              "local-harvest",
+              "exchange-record"
+            ]
+          }
+        ],
+        "questionOwner": "tutor",
+        "viewpoints": [
+          {
+            "id": "village",
+            "title": "Village clearing",
+            "image": "/projects/shadow-gallery/coastal-360-v1/village.png",
+            "yaw": -75,
+            "pitch": -8,
+            "people": [
+              {
+                "personId": "canoe-maker",
+                "rect": {
+                  "x": 18,
+                  "y": 44,
+                  "width": 3,
+                  "height": 10
+                }
+              },
+              {
+                "personId": "food-grower",
+                "rect": {
+                  "x": 79,
+                  "y": 44,
+                  "width": 4,
+                  "height": 11
+                }
+              }
+            ],
+            "places": [
+              {
+                "targetId": "canoe",
+                "label": "Explore canoe workshop",
+                "yaw": -108,
+                "pitch": -9
+              },
+              {
+                "targetId": "harvest",
+                "label": "Explore harvest garden",
+                "yaw": 108,
+                "pitch": -9
+              }
+            ]
+          },
+          {
+            "id": "canoe",
+            "title": "Canoe workshop",
+            "image": "/projects/shadow-gallery/coastal-360-v1/canoe.png",
+            "yaw": -43,
+            "pitch": -8,
+            "people": [
+              {
+                "personId": "canoe-maker",
+                "rect": {
+                  "x": 32,
+                  "y": 38,
+                  "width": 10,
+                  "height": 33
+                }
+              }
+            ],
+            "places": [
+              {
+                "targetId": "village",
+                "label": "Back to village",
+                "yaw": 5,
+                "pitch": -12
+              }
+            ],
+            "inspection": {
+              "title": "Canoe workshop",
+              "overviewLabel": "Whole canoe",
+              "asset": {
+                "version": 1,
+                "src": "/projects/shadow-gallery/coastal-3d-v1/workshop.glb",
+                "nodes": [
+                  {
+                    "name": "INT_hull",
+                    "kind": "target"
+                  },
+                  {
+                    "name": "INT_rim",
+                    "kind": "target"
+                  },
+                  {
+                    "name": "INT_stone",
+                    "kind": "target"
+                  },
+                  {
+                    "name": "SOCKET_overview",
+                    "kind": "socket"
+                  },
+                  {
+                    "name": "ENV_ground",
+                    "kind": "environment"
+                  }
+                ],
+                "clips": []
+              },
+              "environment": {
+                "background": "/projects/shadow-gallery/coastal-3d-v1/workshop-background-v1.png",
+                "ground": "/projects/shadow-gallery/coastal-3d-v1/workshop-ground-v1.png",
+                "groundNode": "ENV_ground",
+                "tileSize": 3
+              },
+              "targets": [
+                {
+                  "name": "INT_hull",
+                  "label": "Hollowed interior",
+                  "focus": [
+                    0,
+                    0.6,
+                    0
+                  ],
+                  "distance": 2.9
+                },
+                {
+                  "name": "INT_rim",
+                  "label": "Wooden rim",
+                  "focus": [
+                    0.6,
+                    0.9,
+                    0
+                  ],
+                  "distance": 1.6
+                },
+                {
+                  "name": "INT_stone",
+                  "label": "Stone tool",
+                  "focus": [
+                    1.8,
+                    0.42,
+                    0.4
+                  ],
+                  "distance": 1.1
+                }
+              ]
+            }
+          },
+          {
+            "id": "harvest",
+            "title": "Harvest garden",
+            "image": "/projects/shadow-gallery/coastal-360-v1/harvest.png",
+            "yaw": 8,
+            "pitch": -16,
+            "people": [
+              {
+                "personId": "food-grower",
+                "rect": {
+                  "x": 46,
+                  "y": 46,
+                  "width": 10,
+                  "height": 24
+                }
+              }
+            ],
+            "places": [
+              {
+                "targetId": "village",
+                "label": "Back to village",
+                "yaw": -38,
+                "pitch": -12
+              }
+            ],
+            "inspection": {
+              "title": "Cultivated field",
+              "overviewLabel": "Whole field",
+              "asset": {
+                "version": 1,
+                "src": "/projects/shadow-gallery/coastal-3d-v1/field.glb",
+                "nodes": [
+                  {
+                    "name": "INT_maize",
+                    "kind": "target"
+                  },
+                  {
+                    "name": "INT_vines",
+                    "kind": "target"
+                  },
+                  {
+                    "name": "INT_roots",
+                    "kind": "target"
+                  },
+                  {
+                    "name": "INT_ear",
+                    "kind": "target"
+                  },
+                  {
+                    "name": "ENV_ground",
+                    "kind": "environment"
+                  }
+                ],
+                "clips": []
+              },
+              "environment": {
+                "background": "/projects/shadow-gallery/coastal-3d-v1/field-background-v1.png",
+                "ground": "/projects/shadow-gallery/coastal-3d-v1/field-soil-v1.png",
+                "groundNode": "ENV_ground",
+                "tileSize": 3
+              },
+              "targets": [
+                {
+                  "name": "INT_maize",
+                  "label": "Maize plants",
+                  "focus": [
+                    -1.35,
+                    1,
+                    -0.5
+                  ],
+                  "distance": 2.2
+                },
+                {
+                  "name": "INT_vines",
+                  "label": "Sweet potato vines",
+                  "focus": [
+                    1.2,
+                    0.25,
+                    -0.4
+                  ],
+                  "distance": 1.8
+                },
+                {
+                  "name": "INT_roots",
+                  "label": "Harvested roots",
+                  "focus": [
+                    0.05,
+                    0.22,
+                    2.2
+                  ],
+                  "distance": 1
+                },
+                {
+                  "name": "INT_ear",
+                  "label": "Ear of maize",
+                  "focus": [
+                    0.78,
+                    0.27,
+                    2.25
+                  ],
+                  "distance": 1
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+{"extends":"../../tsconfig.spec.json","include":["../../src/app/shared/spatial-inspection/*.spec.ts","../../src/app/shared/panorama/*.spec.ts","../../src/app/templates/heist/restoration/weekly/restoration-week-workspace.component.spec.ts","../../src/app/templates/heist/restoration/weekly/restoration-preview.validation.spec.ts"],"exclude":[],"compilerOptions":{"rootDir":"../.."}}

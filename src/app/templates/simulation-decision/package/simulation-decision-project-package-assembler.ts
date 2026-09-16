@@ -1,5 +1,6 @@
 import { ImmutableMap, ImmutableSet } from '../../../core/collections/immutable-collections';
 import { isTradeWorldShape } from '../domain/trade-world.validation';
+import { isExpeditionCourse } from '../domain/expedition-course.validation';
 import type { BaseEntity } from '../../../core/models/base-entity';
 import type {
   ProjectPackageAssembler,
@@ -208,6 +209,7 @@ function assembleConfig(
     routeForecastChallenge: simulation.routeForecastChallenge,
     transactionMath: simulation.transactionMath,
     tradeWorld: simulation.tradeWorld,
+    expeditionCourse: simulation.expeditionCourse,
     emblems: simulation.emblems,
     transports: simulation.transports,
     goods: simulation.goods,
@@ -385,6 +387,7 @@ function simulationEntity(
         !isChoiceProgressionShape(result.choiceProgression)) ||
       (result.routeForecastChallenge !== undefined &&
         !isRouteForecastChallengeShape(result.routeForecastChallenge)) ||
+      (result.expeditionCourse !== undefined && !isExpeditionCourse(result.expeditionCourse)) ||
       (result.tradeWorld !== undefined && !isTradeWorldShape(result.tradeWorld)) ||
       (result.transactionMath !== undefined && !isTransactionMathShape(result.transactionMath)))
   ) {

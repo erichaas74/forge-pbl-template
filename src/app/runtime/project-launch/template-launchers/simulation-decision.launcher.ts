@@ -1,4 +1,5 @@
 import type { SimulationDecisionConfig } from '../../../templates/simulation-decision/domain/simulation-decision.models';
+import { validateExpeditionCourse } from '../../../templates/simulation-decision/domain/expedition-course.validation';
 import { BrowserSimulationDecisionPersistenceAdapter } from '../../../templates/simulation-decision/runtime/simulation-decision.persistence';
 import { SimulationDecisionRuntimeService } from '../../../templates/simulation-decision/runtime/simulation-decision-runtime.service';
 import {
@@ -70,7 +71,10 @@ function requireSimulationConfig(value: unknown, projectId: string): SimulationD
   if (!isRecord(value) || value['projectId'] !== projectId || !Array.isArray(value['routes'])) {
     throw new Error(`Project "${projectId}" is not a valid simulation-decision definition.`);
   }
-  return value as unknown as SimulationDecisionConfig;
+  const config = value as unknown as SimulationDecisionConfig;
+  const errors = validateExpeditionCourse(config);
+  if (errors.length) throw new Error(`EXPEDITION_CONFIG_INVALID: ${errors.join(' ')}`);
+  return config;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

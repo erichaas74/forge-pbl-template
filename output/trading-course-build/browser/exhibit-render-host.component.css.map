@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/templates/exhibit-hall/ui/exhibit-render-host.component.ts"],
+  "sourcesContent": ["\n    :host {\n      display: block;\n      min-width: 0;\n    }\n    .missing-renderer {\n      border: 1px solid #b85c51;\n      padding: 1rem;\n      color: #742b22;\n      background: #ffe5df;\n    }\n  "],
+  "mappings": ";AACI;AACE,WAAA;AACA,aAAA;;AAEF,CAAA;AACE,UAAA,IAAA,MAAA;AACA,WAAA;AACA,SAAA;AACA,cAAA;;",
+  "names": []
+}

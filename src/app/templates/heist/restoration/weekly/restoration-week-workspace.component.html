@@ -10,7 +10,7 @@
     </ol>
     <nav class="tools" aria-label="Activity tools">
       <button [attr.aria-pressed]="mode() === 'picture'" (click)="showPicture()">⌕ Inspect & repair</button>
-      @if (!scene()) { <button [attr.aria-pressed]="mode() === 'film'" (click)="showFilm()">▶ Watch scene film</button> }
+      @if (!scene()) { <button [attr.aria-pressed]="mode() === 'film'" (click)="showFilm()">Inspect still-image study</button> }
       <button [attr.aria-pressed]="mode() === 'exhibit'" (click)="showExhibit()">▧ Build exhibition</button>
     </nav>
     @if (runtime.warning()) { <p class="warning" role="alert">{{ runtime.warning() }} <button (click)="downloadDraft()">Download draft</button></p> }

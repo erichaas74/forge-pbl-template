@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/templates/journey-replay/persistence/journey-path.persistence.ts"
+  ],
+  "sourcesContent": [
+    "import { InjectionToken } from '@angular/core';\nimport type {\n  JourneyPathPersistence,\n  JourneyPathScope,\n  JourneyPathState,\n} from '../domain/journey-path.models';\n\nconst key = (scope: JourneyPathScope) =>\n  `forge:journey-path:1:${JSON.stringify([scope.tenantId, scope.classId, scope.studentId, scope.projectId, scope.projectVersion])}`;\n\nexport class MemoryJourneyPathPersistence implements JourneyPathPersistence {\n  private readonly records = new Map<string, JourneyPathState>();\n  load(scope: JourneyPathScope): unknown {\n    const state = this.records.get(key(scope));\n    return state && structuredClone(state);\n  }\n  save(scope: JourneyPathScope, state: JourneyPathState): void {\n    this.records.set(key(scope), structuredClone(state));\n  }\n}\n\nexport class BrowserJourneyPathPersistence implements JourneyPathPersistence {\n  load(scope: JourneyPathScope): unknown {\n    const value = localStorage.getItem(key(scope));\n    return value ? JSON.parse(value) : undefined;\n  }\n  save(scope: JourneyPathScope, state: JourneyPathState): void {\n    localStorage.setItem(key(scope), JSON.stringify(state));\n  }\n}\n\nexport const JOURNEY_PATH_PERSISTENCE = new InjectionToken<JourneyPathPersistence>(\n  'JOURNEY_PATH_PERSISTENCE',\n  { providedIn: 'root', factory: () => new MemoryJourneyPathPersistence() },\n);\n"
+  ],
+  "mappings": ";;;;;AAOA,IAAM,MAAM,CAAC,UACX,wBAAwB,KAAK,UAAU,CAAC,MAAM,UAAU,MAAM,SAAS,MAAM,WAAW,MAAM,WAAW,MAAM,cAAc,CAAC,CAAC;AAE1H,IAAM,+BAAN,MAAqE;AAAA,EACzD,UAAU,oBAAI,IAA8B;AAAA,EAC7D,KAAK,OAAkC;AACrC,UAAM,QAAQ,KAAK,QAAQ,IAAI,IAAI,KAAK,CAAC;AACzC,WAAO,SAAS,gBAAgB,KAAK;AAAA,EACvC;AAAA,EACA,KAAK,OAAyB,OAA+B;AAC3D,SAAK,QAAQ,IAAI,IAAI,KAAK,GAAG,gBAAgB,KAAK,CAAC;AAAA,EACrD;AACF;AAEO,IAAM,gCAAN,MAAsE;AAAA,EAC3E,KAAK,OAAkC;AACrC,UAAM,QAAQ,aAAa,QAAQ,IAAI,KAAK,CAAC;AAC7C,WAAO,QAAQ,KAAK,MAAM,KAAK,IAAI;AAAA,EACrC;AAAA,EACA,KAAK,OAAyB,OAA+B;AAC3D,iBAAa,QAAQ,IAAI,KAAK,GAAG,KAAK,UAAU,KAAK,CAAC;AAAA,EACxD;AACF;AAEO,IAAM,2BAA2B,IAAI;AAAA,EAC1C;AAAA,EACA,EAAE,YAAY,QAAQ,SAAS,MAAM,IAAI,6BAA6B,EAAE;AAC1E;",
+  "names": [],
+  "debugId": "9879d853-9ec3-559f-b4f6-35b5f9e676c6"
+}

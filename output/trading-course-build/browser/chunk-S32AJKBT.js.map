@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/shared/inquiry/inquiry-example-page.component.ts"
+  ],
+  "sourcesContent": [
+    "import { Component, InjectionToken, inject } from '@angular/core';\nimport { InquiryExampleComponent } from './inquiry-example.component';\nimport type { InquiryExample } from './inquiry-example.models';\n\nexport const INQUIRY_EXAMPLE_PRESENTATION = new InjectionToken<{\n  readonly projectTitle: string;\n  readonly example: InquiryExample;\n  readonly sources: readonly { id: string; title: string; citation: string; sourceUrl?: string }[];\n}>('INQUIRY_EXAMPLE_PRESENTATION');\n\n/** Standalone presentation of configured model work, with no learner runtime or persistence. */\n@Component({\n  selector: 'app-inquiry-example-page',\n  imports: [InquiryExampleComponent],\n  template: `\n    <main>\n      <h1>{{ presentation.projectTitle }} · Final example</h1>\n      <app-inquiry-example [example]=\"presentation.example\" [sources]=\"presentation.sources\" />\n    </main>\n  `,\n  styles: `\n    :host {\n      display: block;\n      background: #f4f5ef;\n      min-height: 100vh;\n    }\n    main {\n      max-width: 1240px;\n      margin: 0 auto;\n      padding: clamp(16px, 3vw, 40px);\n    }\n    h1 {\n      color: #153b43;\n      font:\n        600 clamp(24px, 3vw, 36px)/1.3 Georgia,\n        serif;\n      margin: 0;\n    }\n  `,\n})\nexport class InquiryExamplePageComponent {\n  readonly presentation = inject(INQUIRY_EXAMPLE_PRESENTATION);\n}\n"
+  ],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;AAIO,IAAM,+BAA+B,IAAI,eAI7C,8BAA8B;AAgC3B,IAAO,8BAAP,MAAO,6BAA2B;EAC7B,eAAe,OAAO,4BAA4B;;qCADhD,8BAA2B;EAAA;yEAA3B,8BAA2B,WAAA,CAAA,CAAA,0BAAA,CAAA,GAAA,OAAA,GAAA,MAAA,GAAA,QAAA,CAAA,CAAA,GAAA,WAAA,SAAA,CAAA,GAAA,UAAA,SAAA,qCAAA,IAAA,KAAA;AAAA,QAAA,KAAA,GAAA;AAzBpC,MAAA,yBAAA,GAAA,MAAA,EAAM,GAAA,IAAA;AACA,MAAA,iBAAA,CAAA;AAA+C,MAAA,uBAAA;AACnD,MAAA,oBAAA,GAAA,uBAAA,CAAA;AACF,MAAA,uBAAA;;;AAFM,MAAA,oBAAA,CAAA;AAAA,MAAA,6BAAA,IAAA,IAAA,aAAA,cAAA,qBAAA;AACiB,MAAA,oBAAA;AAAA,MAAA,qBAAA,WAAA,IAAA,aAAA,OAAA,EAAgC,WAAA,IAAA,aAAA,OAAA;;oBAJ/C,uBAAuB,GAAA,QAAA,CAAA,0XAAA,EAAA,CAAA;;;sEA2BtB,6BAA2B,CAAA;UA7BvC;uBACW,4BAA0B,SAC3B,CAAC,uBAAuB,GAAC,UACxB;;;;;KAKT,QAAA,CAAA,0hBAAA,EAAA,CAAA;;;;6EAqBU,6BAA2B,EAAA,WAAA,+BAAA,UAAA,4DAAA,YAAA,GAAA,CAAA;AAAA,GAAA;",
+  "names": [],
+  "debugId": "dd615b51-ae07-547c-aef4-1d198546d2b5"
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/shared/inquiry/inquiry-example-page.component.ts"],
+  "sourcesContent": ["\n    :host {\n      display: block;\n      background: #f4f5ef;\n      min-height: 100vh;\n    }\n    main {\n      max-width: 1240px;\n      margin: 0 auto;\n      padding: clamp(16px, 3vw, 40px);\n    }\n    h1 {\n      color: #153b43;\n      font:\n        600 clamp(24px, 3vw, 36px)/1.3 Georgia,\n        serif;\n      margin: 0;\n    }\n  "],
+  "mappings": ";AACI;AACE,WAAA;AACA,cAAA;AACA,cAAA;;AAEF;AACE,aAAA;AACA,UAAA,EAAA;AACA,WAAA,MAAA,IAAA,EAAA,GAAA,EAAA;;AAEF;AACE,SAAA;AACA,QACE,IAAA,MAAA,IAAA,EAAA,GAAA,EAAA,KAAA,CAAA,IAAA,OAAA,EAAA;AAEF,UAAA;;",
+  "names": []
+}

@@ -29,6 +29,24 @@ async function setup(number = 1) {
 }
 describe('Restoration weekly preview', () => {
   afterEach(() => { TestBed.resetTestingModule(); localStorage.clear(); vi.restoreAllMocks(); });
+  it('opens lesson two on the unrepaired coastal painting without the old answer caption or camera-only film', async () => {
+    const { fixture, focus, component, runtime, root } = await setup(1);
+    const exploration = component.scene()!;
+    for (const repair of exploration.repairs) runtime.sceneAction(exploration.id, { type: 'repair', repairId: repair.id, applied: true });
+    focus.set(lesson(2)); fixture.detectChanges();
+    const restoration = component.scene()!;
+    expect(restoration.id).not.toBe(exploration.id);
+    expect(restoration.forgery).toBe(exploration.forgery);
+    expect(runtime.sceneState(restoration.id).repairs).toEqual({});
+    expect(root.querySelector('app-panorama-painting')).not.toBeNull();
+    expect(root.querySelector('app-restoration-canvas')).toBeNull();
+    expect(root.querySelector('video')).toBeNull();
+    expect(root.textContent).not.toContain('Watch scene film');
+    expect(root.textContent).not.toContain('Maize originated in the Americas');
+    runtime.sceneAction(restoration.id, { type: 'repair', repairId: restoration.repairs[0].id, applied: true });
+    focus.set(lesson(1)); fixture.detectChanges(); focus.set(lesson(2)); fixture.detectChanges();
+    expect(runtime.sceneState(restoration.id).repairs[restoration.repairs[0].id]).toBe(true);
+  });
   it('persists panorama interviews and three repairs independently of legacy drafts', async () => {
     const { fixture, runtime, focus } = await setup(1);
     const scene = mission.previewWeeks!.scenes![0];

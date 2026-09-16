@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
 import type { ForgeReviewStandard, ProjectStandardsReview, StandardCurriculumConnection } from './standards-review.models';
-import type { ProjectLessonPlan } from './project-lesson.models';
+import { lessonWeek, type ProjectLessonPlan } from './project-lesson.models';
 
 @Component({
   selector: 'app-standards-review',
@@ -18,13 +18,13 @@ export class StandardsReviewComponent {
   readonly connections = input<readonly StandardCurriculumConnection[]>([]);
   // Tester-only, in-memory state. No student state, storage, scoring, or progress mutations.
   private readonly checked = signal<ReadonlySet<string>>(new Set());
-  readonly week = computed(() => Math.ceil(this.selected() / 2));
+  readonly week = computed(() => lessonWeek(this.plan(), this.selected()));
   readonly weekConnections = computed(() => {
     const ids = new Set(this.lessons().flatMap(entry => entry.targets.map(target => target.standardId)));
     return this.connections().filter(connection => ids.has(connection.standardId) && connection.projectId !== this.review().projectId);
   });
   readonly lessons = computed(() => this.review().lessons
-    .filter((lesson) => Math.ceil(lesson.number / 2) === this.week())
+    .filter((lesson) => lessonWeek(this.plan(), lesson.number) === this.week())
     .map((lesson) => ({
       ...lesson,
       lesson: this.plan().lessons[lesson.number - 1],

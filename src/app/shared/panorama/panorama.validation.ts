@@ -22,6 +22,12 @@ export function requirePanorama(value: unknown): PanoramaDefinition {
     if (p.approach && (!asset(p.approach.src, 'mp4|webm') || !asset(p.approach.captions, 'vtt') || !text(p.approach.transcript))) fail('approach');
   }
   for (const r of d.repairs) if (![r.title, r.action].every(text) || !rect(r.rect) || !references(r.sourceIds)) fail('repair');
+  if (d.interviews !== undefined) {
+    if (!list(d.interviews, 8) || !unique(d.interviews)) fail('interviews');
+    for (const interview of d.interviews) {
+      if (!text(interview.title) || !asset(interview.poster) || (interview.video && (!asset(interview.video.src, 'mp4|webm') || !asset(interview.video.captions, 'vtt')))) fail('interview media');
+    }
+  }
   if (d.viewpoints !== undefined) {
     if (!list(d.viewpoints, 8) || !unique(d.viewpoints)) fail('viewpoints');
     for (const v of d.viewpoints) {

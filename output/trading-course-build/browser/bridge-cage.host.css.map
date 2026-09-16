@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/templates/heist/escape/locks/bridge-cage/bridge-cage.host.scss"],
+  "sourcesContent": [".workshop.bridge-diorama .stage-shell,\n:host(.week-preview) .workshop.bridge-diorama .stage-shell {\n  height: 720px;\n  min-height: 720px;\n}\n@media (max-width: 600px) {\n  :host(.week-preview) .workshop.bridge-diorama .stage-shell {\n    height: 740px;\n    min-height: 740px;\n  }\n}\n"],
+  "mappings": ";AAAA,CAAA,QAAA,CAAA,eAAA,CAAA;AAAA,MAAA,CAAA,cAAA,CAAA,QAAA,CAAA,eAAA,CAAA;AAEE,UAAA;AACA,cAAA;;AAEF,QAAA,WAAA;AACE,QAAA,CAAA,cAAA,CANF,QAME,CANF,eAME,CANF;AAOI,YAAA;AACA,gBAAA;;;",
+  "names": []
+}

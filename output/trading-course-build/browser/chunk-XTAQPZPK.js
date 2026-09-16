@@ -1,0 +1,593 @@
+import {
+  Injectable,
+  setClassMetadata,
+  signal,
+  ɵɵdefineInjectable
+} from "./chunk-E2VJWGUE.js";
+
+// src/app/projects/project-catalog.ts
+var projectCatalog = [
+  {
+    id: "expedition-news-network",
+    route: "/projects/expedition-news-network",
+    entryMode: "activity",
+    finalExampleMode: "template",
+    legacyRoutes: [],
+    projectVersion: "1.0.0",
+    template: { id: "history-live-broadcast", version: "1.1" },
+    packageReference: "projects/expedition-news-network",
+    capabilityIds: ["learning.inquiry-portfolio", "learning.worked-example", "history-live.field-studio", "media.recording"],
+    title: "Expedition News Network",
+    subtitle: "Read the evidence. Tell the story.",
+    grade: "Grade 5",
+    subject: "English Language Arts",
+    projectType: "News Broadcast",
+    description: "Report on the Endurance expedition through eight lessons of reading, research, writing, revision, and a team broadcast.",
+    learningGoals: ["Informational reading", "Research and informative writing", "Discussion and presentation"],
+    symbol: "ENN",
+    theme: "broadcast",
+    status: "Preview",
+    coverImage: "/history-live/expedition-newsroom-v1.png",
+    studentInvitation: "Enter the newsroom"
+  },
+  {
+    id: "hammurabi-on-trial",
+    route: "/projects/hammurabi-on-trial",
+    entryMode: "activity",
+    finalExampleMode: "template",
+    legacyRoutes: [],
+    projectVersion: "2.0.0",
+    template: { id: "debate-studio", version: "2.0" },
+    packageReference: "projects/hammurabi-on-trial",
+    capabilityIds: ["debate.exchange-cycle", "debate.rounds", "debate.inquiry-portfolio", "media.recording", "showcase.debate"],
+    title: "Hammurabi on Trial",
+    subtitle: "Order. Fairness. Your verdict.",
+    grade: "Grade 6",
+    subject: "Social Studies",
+    projectType: "Historical Debate",
+    description: "Enter an ancient Babylonian hearing, examine laws and civilization, and defend your own verdict over eight lessons.",
+    learningGoals: ["Source inquiry", "Evidence-based argument", "Mesopotamian civilization"],
+    symbol: "LAW",
+    theme: "senate",
+    status: "Preview",
+    coverImage: "/debate-studio/babylon-hearing-v1.png",
+    studentInvitation: "Make your case"
+  },
+  {
+    id: "exploration-time-repair",
+    route: "/projects/exploration-time-repair",
+    legacyRoutes: [],
+    entryMode: "activity",
+    finalExampleMode: "template",
+    projectVersion: "2.3.0",
+    template: { id: "time-repair", version: "1.1" },
+    packageReference: "projects/exploration-time-repair/versions/2.3.0",
+    capabilityIds: ["invention-repair.printing-press", "invention-knowledge.timeline", "invention-knowledge.newspaper", "invention-knowledge.interview", "invention-knowledge.assembly"],
+    title: "Time Repair: The Missing Reformation",
+    subtitle: "Find the gap \xB7 Trace the cause \xB7 Repair Gutenberg \xB7 See the record",
+    grade: "Grade 7",
+    subject: "Social Studies + ELA",
+    projectType: "Timeline Repair",
+    description: "Investigate a broken Luther timeline, trace the missing print network through alternate newspapers and interviews, repair Gutenberg\u2019s press in Week 3, then compare the repaired model with real history.",
+    learningGoals: ["Infer a missing event from historical clues", "Trace a fictional cause through alternate evidence", "Repair Gutenberg\u2019s press and compare it with documented history"],
+    symbol: "\u2301",
+    theme: "atlas",
+    status: "Pilot",
+    studentInvitation: "Rescue the printing press",
+    coverImage: "/projects/exploration-time-repair/versions/2.3.0/time-repair-cover.png"
+  },
+  {
+    id: "community-story-network",
+    route: "/projects/community-story-network",
+    legacyRoutes: [],
+    entryMode: "preview",
+    projectVersion: "1.0.0",
+    template: { id: "publication-preview", version: "1.0" },
+    packageReference: "projects/community-story-network",
+    capabilityIds: [],
+    title: "Community Story Network",
+    subtitle: "Project #13 \xB7 Real stories. A lasting publication.",
+    grade: "Grade 6",
+    subject: "Journalism + ELA + Community",
+    projectType: "Community Story Network",
+    description: "Become a community reporter. Research, interview, produce, and publish multimedia stories for an audience beyond school. Each class grows the same lasting digital archive.",
+    learningGoals: [
+      "Research and responsible interviewing",
+      "Multimedia storytelling and fact checking",
+      "Public publishing and editorial responsibility"
+    ],
+    symbol: "CSN",
+    theme: "community",
+    status: "Preview",
+    studentInvitation: "Tell a real story",
+    coverImage: "/projects/community-story-network/cover.svg"
+  },
+  {
+    id: "shadow-gallery",
+    route: "/projects/shadow-gallery",
+    legacyRoutes: [],
+    entryMode: "activity",
+    projectVersion: "2.0.0",
+    template: { id: "heist", version: "1.0" },
+    packageReference: "projects/shadow-gallery/versions/2.0.0",
+    capabilityIds: [
+      "heist.gallery",
+      "heist.academic-locks",
+      "heist.authentication",
+      "heist.replay",
+      "heist.encounters",
+      "heist.restoration"
+    ],
+    title: "The Cartographer\u2019s Vault",
+    subtitle: "Restore the paintings. Recover their stories.",
+    grade: "Grade 7",
+    subject: "History + Applied Mathematics",
+    projectType: "Academic Heist",
+    description: "Rebuild sixteen forged historical studies. Enter a coastal story portal, investigate sources, remove anachronisms, repair false inscriptions, and preserve supported details. Use your restoration ledger to complete the final vault recovery.",
+    learningGoals: [
+      "Historical source authentication",
+      "Angles, chronology and capacity",
+      "Evidence-based reasoning and defense"
+    ],
+    symbol: "\u2316",
+    theme: "archive",
+    status: "Preview",
+    studentInvitation: "Enter the shadow gallery",
+    coverImage: "/projects/shadow-gallery/gallery-v1.webp"
+  },
+  {
+    id: "castle-archive-rescue",
+    finalExampleMode: "template",
+    route: "/projects/castle-archive-rescue",
+    legacyRoutes: [],
+    entryMode: "activity",
+    projectVersion: "4.0.0",
+    template: { id: "heist", version: "1.0" },
+    packageReference: "projects/castle-archive-rescue",
+    capabilityIds: [
+      "heist.expedition",
+      "heist.escape",
+      "heist.escape.code",
+      "heist.escape.timing",
+      "heist.escape.balance",
+      "heist.escape.number",
+      "heist.escape.balance-lock",
+      "heist.escape.gear-lock",
+      "heist.escape.machine-lock"
+    ],
+    title: "The Midnight Menagerie",
+    subtitle: "Crack the locks. Free the animals.",
+    grade: "Grade 5",
+    subject: "Mathematics + Problem Solving",
+    projectType: "Animal Rescue Escape",
+    description: "Explore a painted moonlit castle in a Phaser adventure. Start with the grade 5 math pathway to solve nine physical machines at eight rescue locations and lead twelve animals to the rescue boat. Separate grade 6\u20138 pathways provide additional challenges.",
+    learningGoals: [
+      "Fraction equivalence, addition and multiplication; decimal calculations",
+      "First-quadrant coordinates, angle review and measurement conversions",
+      "Grade 6\u20138 extensions: ratios, rational-number operations and Pythagorean distance"
+    ],
+    symbol: "\u2316",
+    theme: "archive",
+    status: "Preview",
+    studentInvitation: "Free the animals",
+    coverImage: "/projects/castle-archive-rescue/art/v3/castle-world.webp"
+  },
+  {
+    id: "championship-show",
+    route: "/projects/championship-show",
+    legacyRoutes: [],
+    finalExampleMode: "template",
+    coverImage: "/projects/championship-show/art/final-opening-v1.webp",
+    entryMode: "activity",
+    projectVersion: "1.0.0",
+    template: { id: "competition-show", version: "1.0" },
+    packageReference: "projects/championship-show",
+    capabilityIds: ["competition.bracket", "competition.rounds", "competition.evidence"],
+    title: "The Championship Show",
+    subtitle: "One final. Every team has a story.",
+    grade: "Grade 6",
+    subject: "Mathematics + Reasoning",
+    projectType: "Tournament + Game Show",
+    description: "Set the seeds, run head-to-head matches, and bring the finalists into a championship game show. Rehearse the complete final with questions, buzzers, score reveals, and a final wager.",
+    learningGoals: ["Mathematical reasoning", "Defending answers with evidence", "Team strategy"],
+    symbol: "\u2605",
+    theme: "championship",
+    status: "Preview",
+    studentInvitation: "Set up the championship"
+  },
+  {
+    id: "live-strategy-league",
+    route: "/projects/live-strategy-league",
+    legacyRoutes: [],
+    finalExampleMode: "template",
+    coverImage: "/projects/live-strategy-league/strategy-arena-cover-v1.webp",
+    entryMode: "activity",
+    projectVersion: "1.0.0",
+    template: { id: "live-strategy-league", version: "1.0" },
+    packageReference: "projects/live-strategy-league",
+    capabilityIds: ["league.rounds", "league.decisions", "league.standings"],
+    title: "Live Strategy League",
+    subtitle: "Small moves. Big stakes.",
+    grade: "Grade 7",
+    subject: "Mathematics + Strategy",
+    projectType: "Live Strategy League",
+    description: "Lead a team through four changing markets. Set a strategy, lock your decisions, and watch the league standings change in a local practice competition.",
+    learningGoals: [
+      "Costs and profit",
+      "Interpreting changing conditions",
+      "Evidence-based decisions"
+    ],
+    symbol: "\u2197",
+    theme: "league",
+    status: "Preview",
+    studentInvitation: "Enter the league"
+  },
+  {
+    id: "cascade-bay-crisis",
+    route: "/projects/cascade-bay-crisis",
+    legacyRoutes: [],
+    entryMode: "opening",
+    projectVersion: "1.0.0",
+    template: { id: "crisis-operations", version: "1.0" },
+    packageReference: "projects/cascade-bay-crisis",
+    capabilityIds: [
+      "crisis.situation-map",
+      "crisis.evidence",
+      "crisis.decisions",
+      "crisis.analysis"
+    ],
+    title: "Cascade Bay Crisis Center",
+    subtitle: "Emergency Operations Center",
+    grade: "Grade 6",
+    subject: "Earth Science + Geography",
+    projectType: "Crisis Operations",
+    description: "Enter the operations room, verify incoming reports, read a changing situation map, and coordinate a response with limited resources.",
+    learningGoals: ["Interconnected Earth systems", "Source reliability", "Decisions from data"],
+    symbol: "\u25CE",
+    theme: "crisis",
+    status: "Preview",
+    coverImage: "/crisis-center/operations-room.webp",
+    studentInvitation: "Take command"
+  },
+  {
+    id: "robot-delivery-code-lab",
+    route: "/projects/robot-delivery-code-lab",
+    legacyRoutes: [],
+    projectVersion: "1.0.0",
+    template: { id: "programming-automation", version: "1.0" },
+    packageReference: "projects/robot-delivery-code-lab",
+    capabilityIds: [
+      "automation.robot-course",
+      "automation.program",
+      "automation.math-evidence",
+      "automation.replay"
+    ],
+    title: "Robot Delivery Code Lab",
+    subtitle: "Programming & Automation Challenge",
+    grade: "Grade 7",
+    subject: "Mathematics & Computing",
+    projectType: "Programming & Automation",
+    description: "Calibrate a delivery robot, turn calculations into code, test eight missions, and defend your final design in a Robot Command Championship.",
+    learningGoals: [
+      "Circumference, rotation distance & measurement",
+      "Variables & repeat loops",
+      "Testing & mathematical reasoning"
+    ],
+    symbol: "\u2318",
+    coverImage: "/robot-delivery/arena-launch-v2.webp",
+    studentInvitation: "Code a delivery robot",
+    theme: "robotics",
+    status: "Preview"
+  },
+  {
+    id: "mystery-substance",
+    coverImage: "/week1-incident-room-v1.webp",
+    studentInvitation: "Solve a mystery",
+    route: "/projects/mystery-substance",
+    legacyRoutes: ["/mystery-substance"],
+    projectVersion: "1.0.0",
+    template: { id: "investigation", version: "1.0" },
+    packageReference: "projects/mystery-substance",
+    capabilityIds: [
+      "activity.science-properties",
+      "activity.science-reaction",
+      "activity.conservation"
+    ],
+    title: "The Unlabeled Shelf",
+    subtitle: "Mystery Substance Investigation",
+    grade: "Grade 5",
+    subject: "Science",
+    projectType: "Evidence Investigation",
+    description: "Examine mystery substances, compare test results, build a working theory, and restore every label using scientific evidence.",
+    learningGoals: ["Properties of matter", "Evidence analysis", "Scientific argument"],
+    symbol: "\u232C",
+    theme: "laboratory",
+    status: "Preview"
+  },
+  {
+    id: "frontier-trading-company",
+    coverImage: "/frontier-trading/shop-scenes/town-street.webp",
+    studentInvitation: "Trade with a plan",
+    route: "/projects/frontier-trading-company",
+    builderRoute: "/projects/frontier-trading-company/builder-info",
+    legacyRoutes: ["/frontier-trading", "/frontier-trading/builder-info"],
+    projectVersion: "1.16.0",
+    template: { id: "simulation-decision", version: "1.6" },
+    packageReference: "projects/frontier-trading-company",
+    capabilityIds: ["simulation.market", "simulation.route", "simulation.cargo"],
+    title: "Frontier Trading Company",
+    subtitle: "Trading Season Simulation",
+    grade: "Grade 6",
+    subject: "Mathematics",
+    projectType: "Decision Simulation",
+    description: "Build a trading company and use money, unit price, cargo capacity, distance, and evidence to defend a profitable strategy.",
+    learningGoals: ["Decimal money", "Multiplicative reasoning", "Strategic decisions"],
+    symbol: "\u2725",
+    theme: "frontier",
+    status: "Pilot"
+  },
+  {
+    id: "objects-that-changed-us",
+    coverImage: "/exhibit-hall/afterlife-3d.webp",
+    studentInvitation: "Make a museum",
+    route: "/projects/objects-that-changed-us",
+    legacyRoutes: ["/class-exhibit-hall"],
+    projectVersion: "2.3.0",
+    template: { id: "exhibit-hall", version: "1.0" },
+    packageReference: "projects/objects-that-changed-us",
+    capabilityIds: ["artifact.museum-board", "assignedMuseumRooms", "gallery.immersive"],
+    title: "Objects That Changed Us: Ancient Egypt",
+    subtitle: "Interactive Egyptian Exhibit Hall",
+    grade: "Grade 6",
+    subject: "History",
+    projectType: "Museum Exhibition",
+    description: "Curate an assigned room in the class museum. Choose artifacts, write their labels, and submit the room for the final exhibition.",
+    learningGoals: ["Artifact research", "Digital curation", "Public presentation"],
+    symbol: "\u25C7",
+    theme: "museum",
+    status: "Preview"
+  },
+  {
+    id: "history-live-revolutionary-war",
+    coverImage: "/history-live/broadcast-studio.webp",
+    studentInvitation: "Report the story",
+    route: "/projects/history-live-revolutionary-war",
+    legacyRoutes: ["/history-live"],
+    projectVersion: "1.1.0",
+    template: { id: "history-live-broadcast", version: "1.1" },
+    packageReference: "projects/history-live-revolutionary-war",
+    capabilityIds: ["history.source-wall", "media.recording", "showcase.broadcast"],
+    title: "History Live: The Revolutionary War",
+    subtitle: "Two networks. One historical record.",
+    grade: "Grade 8",
+    subject: "History + ELA",
+    projectType: "History Live Broadcast",
+    description: "Choose a reporting side, claim a developing story, verify the evidence, and take a modern Revolutionary War news package live.",
+    learningGoals: ["Historical evidence", "Source perspective", "Broadcast writing"],
+    symbol: "LIVE",
+    theme: "broadcast",
+    status: "Pilot"
+  },
+  {
+    id: "the-fate-of-the-republic",
+    coverImage: "/debate-studio/roman-senate-chamber.webp",
+    studentInvitation: "Take the floor",
+    route: "/projects/the-fate-of-the-republic",
+    entryMode: "activity",
+    finalExampleMode: "template",
+    legacyRoutes: ["/debate-studio"],
+    projectVersion: "3.0.0",
+    template: { id: "debate-studio", version: "2.0" },
+    packageReference: "projects/the-fate-of-the-republic",
+    capabilityIds: ["debate.exchange-cycle", "debate.rounds", "media.recording", "showcase.debate"],
+    title: "The Fate of the Republic",
+    subtitle: "Roman Senate Debate Studio",
+    grade: "Grade 6",
+    subject: "History + ELA + Civics",
+    projectType: "Historical Debate",
+    description: "Enter the Roman Senate, answer an opposing case with historical evidence, record your address, and join a full class proceeding and verdict.",
+    learningGoals: ["Historical argument", "Evidence-based rebuttal", "Civic discourse"],
+    symbol: "SPQR",
+    theme: "senate",
+    status: "Pilot"
+  },
+  {
+    id: "race-around-the-world",
+    coverImage: "/journey-replay/world-atlas-v1.webp",
+    studentInvitation: "Chart a voyage",
+    route: "/projects/race-around-the-world",
+    legacyRoutes: ["/journey-replay"],
+    projectVersion: "1.4.0",
+    template: { id: "journey-replay", version: "1.0" },
+    packageReference: "projects/race-around-the-world",
+    capabilityIds: ["journey.route", "journey.logbook", "showcase.replay"],
+    title: "Race Around the World",
+    subtitle: "Age of Exploration Journey Replay",
+    grade: "Grade 7",
+    subject: "History + Geography + ELA",
+    projectType: "Expedition / Journey Replay",
+    description: "Choose a mission, provision a ship, navigate the Atlantic, defend each decision with evidence, and replay the voyage your team recorded.",
+    learningGoals: ["Geographic reasoning", "Source perspective", "Evidence-based decisions"],
+    symbol: "\u2726",
+    theme: "atlas",
+    status: "Updating"
+  },
+  {
+    id: "survival-island-story-lab",
+    coverImage: "/narrative-studio/survival-island-history-launch-v1.jpg",
+    studentInvitation: "Write an adventure",
+    route: "/projects/survival-island-story-lab",
+    legacyRoutes: [],
+    projectVersion: "1.2.0",
+    template: { id: "narrative-studio", version: "1.3" },
+    packageReference: "projects/survival-island-story-lab",
+    capabilityIds: [
+      "story.bible",
+      "story.graph",
+      "story.scene-editor",
+      "ai.writing-coach",
+      "story.playtest",
+      "showcase.playable-story"
+    ],
+    title: "Survival Island Story Lab",
+    subtitle: "Interactive Individual Narrative Studio",
+    grade: "Grade 5",
+    subject: "ELA",
+    projectType: "Branching Narrative Studio",
+    description: "Create an island survival story, test meaningful reader choices, revise every path, and publish a story someone can play.",
+    learningGoals: ["Narrative craft", "Character and consequence", "Revision through playtesting"],
+    symbol: "\u2726",
+    theme: "island-story",
+    status: "Preview"
+  },
+  {
+    id: "calendar-monument",
+    coverImage: "/simulations/solar-monument/jewel-circle-cover.webp",
+    studentInvitation: "Start with a sundial",
+    route: "/projects/calendar-monument",
+    legacyRoutes: [],
+    projectVersion: "1.0.0",
+    template: { id: "engineering-design", version: "1.0" },
+    packageReference: "projects/calendar-monument",
+    capabilityIds: [
+      "simulation.solar-monument",
+      "design.block-builder",
+      "engineering.trial-notebook",
+      "showcase.design-exhibit"
+    ],
+    title: "From Sundial to Sun Monument",
+    subtitle: "A Day, the Seasons & Earth\u2019s Tilt",
+    grade: "Grade 5",
+    subject: "Science + Mathematics + Engineering",
+    projectType: "Engineering Design",
+    description: "Build a sundial, follow a whole day, and investigate why its shadows change with the seasons. Mark the equinoxes and solstices, then create a monument to the Sun.",
+    learningGoals: [
+      "Earth\u2019s tilt and seasons",
+      "Sun and Moon patterns",
+      "Measured design and evidence"
+    ],
+    symbol: "\u2600",
+    theme: "observatory",
+    status: "Preview"
+  }
+];
+
+// src/app/runtime/project-launch/project-catalog.service.ts
+var ProjectCatalogService = class _ProjectCatalogService {
+  projects = signal(
+    projectCatalog,
+    ...ngDevMode ? [{ debugName: "projects" }] : (
+      /* istanbul ignore next */
+      []
+    )
+  );
+  loading;
+  load() {
+    this.loading ??= this.loadExternalCatalog();
+    return this.loading;
+  }
+  find(projectId) {
+    return this.projects().find((project) => project.id === projectId);
+  }
+  async loadExternalCatalog() {
+    try {
+      const response = await fetch("/project-catalog.json", {
+        headers: { accept: "application/json" }
+      });
+      if (!response.ok)
+        return;
+      const value = await response.json();
+      if (!Array.isArray(value))
+        throw new Error("The project catalog must be an array.");
+      const external = value.map(parseCatalogEntry);
+      if (new Set(external.map((entry) => entry.id)).size !== external.length) {
+        throw new Error("External project catalog IDs must be unique.");
+      }
+      const merged = new Map(projectCatalog.map((entry) => [entry.id, entry]));
+      for (const entry of external)
+        merged.set(entry.id, entry);
+      this.projects.set(Object.freeze([...merged.values()]));
+    } catch (error) {
+      console.warn("External project catalog could not be loaded; using built-in projects.", error);
+    }
+  }
+  static \u0275fac = function ProjectCatalogService_Factory(__ngFactoryType__) {
+    return new (__ngFactoryType__ || _ProjectCatalogService)();
+  };
+  static \u0275prov = /* @__PURE__ */ \u0275\u0275defineInjectable({ token: _ProjectCatalogService, factory: _ProjectCatalogService.\u0275fac, providedIn: "root" });
+};
+(() => {
+  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(ProjectCatalogService, [{
+    type: Injectable,
+    args: [{ providedIn: "root" }]
+  }], null, null);
+})();
+function parseCatalogEntry(value) {
+  if (!isRecord(value) || !isRecord(value["template"])) {
+    throw new Error("Every catalog entry must be an object with a template.");
+  }
+  const strings = [
+    "id",
+    "route",
+    "projectVersion",
+    "packageReference",
+    "title",
+    "subtitle",
+    "grade",
+    "subject",
+    "projectType",
+    "description",
+    "symbol",
+    "theme",
+    "status"
+  ];
+  if (strings.some((key) => typeof value[key] !== "string")) {
+    throw new Error("A project catalog entry is missing required string metadata.");
+  }
+  if (typeof value["template"]["id"] !== "string" || typeof value["template"]["version"] !== "string" || !Array.isArray(value["legacyRoutes"]) || !Array.isArray(value["capabilityIds"]) || !Array.isArray(value["learningGoals"])) {
+    throw new Error(`Project "${String(value["id"])}" has invalid template or list metadata.`);
+  }
+  if (!/^[a-z0-9][a-z0-9-]*$/.test(value["id"])) {
+    throw new Error("Project IDs must use lowercase letters, numbers, and hyphens.");
+  }
+  if (value["route"] !== `/projects/${value["id"]}`) {
+    throw new Error(`Project "${value["id"]}" must use its canonical project route.`);
+  }
+  if (!["Preview", "Pilot", "Classroom ready", "Updating"].includes(value["status"])) {
+    throw new Error(`Project "${value["id"]}" has an unsupported catalog status.`);
+  }
+  if (!/^(0|[1-9]\d*)\.(0|[1-9]\d*)(?:\.(0|[1-9]\d*))?$/.test(value["projectVersion"])) {
+    throw new Error(`Project "${value["id"]}" has an invalid semantic version.`);
+  }
+  if (!/^[a-z0-9][a-z0-9/_-]*$/.test(value["packageReference"])) {
+    throw new Error(`Project "${value["id"]}" has an unsafe package reference.`);
+  }
+  if (!/^[a-z0-9][a-z0-9.-]*$/.test(value["template"]["id"])) {
+    throw new Error(`Project "${value["id"]}" has an invalid template ID.`);
+  }
+  if (!/^(0|[1-9]\d*)\.(0|[1-9]\d*)(?:\.(0|[1-9]\d*))?$/.test(value["template"]["version"])) {
+    throw new Error(`Project "${value["id"]}" has an invalid template version.`);
+  }
+  if (value["builderRoute"] !== void 0 && typeof value["builderRoute"] !== "string") {
+    throw new Error(`Project "${value["id"]}" has an invalid builder route.`);
+  }
+  for (const key of ["legacyRoutes", "capabilityIds", "learningGoals"]) {
+    if (!value[key].every((item) => typeof item === "string" && item.trim().length > 0)) {
+      throw new Error(`Project "${value["id"]}" has a non-string value in ${key}.`);
+    }
+  }
+  if (!value["legacyRoutes"].every((route) => route.startsWith("/"))) {
+    throw new Error(`Project "${value["id"]}" has an invalid legacy route.`);
+  }
+  return value;
+}
+function isRecord(value) {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+export {
+  projectCatalog,
+  ProjectCatalogService
+};
+//# debugId=5eb9401c-c9e2-5312-b5df-363a4b2493b8
+//# sourceMappingURL=chunk-XTAQPZPK.js.map

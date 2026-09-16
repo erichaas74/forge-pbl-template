@@ -9,6 +9,7 @@ import type {
 } from '../../templates/simulation-decision/domain/simulation-decision.models';
 import { frontierNetworkRoutes } from './frontier-trade-network';
 import { frontierTradeWorld } from './frontier-trade-world';
+import { frontierExpeditions } from './frontier-expeditions';
 
 const goods = [
   good(
@@ -544,10 +545,11 @@ const events: readonly SimulationEventDefinition[] = [
 ];
 
 export const frontierTradingConfig: SimulationDecisionConfig = {
-  schemaVersion: '1.11',
+  schemaVersion: '1.12',
   template: { id: 'simulation-decision', version: '1.6' },
   projectId: 'frontier-trading-company',
-  projectVersion: '1.15.0',
+  projectVersion: '1.16.0',
+  expeditionCourse: frontierExpeditions,
   tradeWorld: frontierTradeWorld,
   visualTheme: {
     vehicleImageUrl: '/frontier-trading/vehicle-scenes/trade-wagon-realistic.webp',

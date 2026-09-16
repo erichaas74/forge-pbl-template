@@ -23,3 +23,13 @@ Soil:
 Optional environment validation restricts image paths to project assets and requires a declared environment-node binding. The loader uses sRGB color textures, equirectangular background mapping, repeat wrapping, and planar ground UVs with a three-metre repeat. Existing ground material maps/colors are restored on cleanup; both generated textures are disposed. Partial failures and late cancellation dispose completed loads.
 
 The isolated production preview build passed in 7.195 seconds (`output/spatial-foundation/field-images-build.log`). Relevant test results are recorded in `field-images-tests.log`. No full application build or classroom visual approval is claimed in this update.
+
+## Expanded crop beds
+
+The subsequent density update replaces the small patches with 80 maize plants and 80 sweet potato mounds, leaving the central path and front harvest samples accessible. Only this project's asset generator, GLB, provenance and isolated preview entry changed. The field reuses its existing background and soil images. Llamas were excluded following the user's clarification to keep the scene historical. Verification logs: `output/spatial-foundation/dense-field-tests.log` and `dense-field-build.log`. The preview starts in the field. Combined browser visual review remains pending.
+
+## Six-crop update
+
+The field now offers Cassava, Corn, Sweet Potato, Beans, Chili Peppers and Squash, in that control order, plus the existing two harvested samples. Corn and sweet potato beds retain 80 plants each; four new beds contain 16 plants each. All new crops are actual selectable geometry. Their semantic target bindings and close inspection camera locations are in the project configuration generator. Existing image environment assets and shared inspection runtime are unchanged.
+
+The exported GLB has 25 meshes and 130,784 triangles. Actual GLTFLoader parsing verified all eight target bindings and that inspection focus points fall within their geometry bounds (with a small margin). Thirty existing/updated panorama and spatial tests pass, and the isolated production preview build passes. Logs: `output/spatial-foundation/six-crop-tests.log` and `six-crop-build.log`. The computer-control tool was retried and still failed before initialization; combined visual acceptance and device performance remain unverified. Only shadow-gallery project data, generator, model, documentation and the related integration assertion changed.

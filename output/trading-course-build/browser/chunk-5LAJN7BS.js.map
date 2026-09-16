@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/shared/drafts/draft-autosave.ts"
+  ],
+  "sourcesContent": [
+    "export type DraftSaveStatus = 'saved' | 'saving' | 'pending' | 'error';\n\n/** Framework-neutral debounce/flush behavior shared by every project editor. */\nexport class DraftAutosaveController<TDraft> {\n  private timer?: ReturnType<typeof setTimeout>;\n  private pending?: TDraft;\n\n  constructor(\n    private readonly save: (draft: TDraft) => void | Promise<void>,\n    private readonly delayMs = 700,\n  ) {}\n\n  schedule(draft: TDraft): void {\n    this.pending = draft;\n    if (this.timer !== undefined) clearTimeout(this.timer);\n    this.timer = setTimeout(() => void this.flush(), this.delayMs);\n  }\n\n  async flush(): Promise<void> {\n    if (this.timer !== undefined) clearTimeout(this.timer);\n    this.timer = undefined;\n    const draft = this.pending;\n    this.pending = undefined;\n    if (draft !== undefined) await this.save(draft);\n  }\n\n  cancel(): void {\n    if (this.timer !== undefined) clearTimeout(this.timer);\n    this.timer = undefined;\n    this.pending = undefined;\n  }\n}\n"
+  ],
+  "mappings": ";AAGO,IAAM,0BAAN,MAAsC;AAAA,EAI3C,YACmB,MACA,UAAU,KAC3B;AAFiB;AACA;AAAA,EAChB;AAAA,EAFgB;AAAA,EACA;AAAA,EALX;AAAA,EACA;AAAA,EAOR,SAAS,OAAqB;AAC5B,SAAK,UAAU;AACf,QAAI,KAAK,UAAU,OAAW,cAAa,KAAK,KAAK;AACrD,SAAK,QAAQ,WAAW,MAAM,KAAK,KAAK,MAAM,GAAG,KAAK,OAAO;AAAA,EAC/D;AAAA,EAEA,MAAM,QAAuB;AAC3B,QAAI,KAAK,UAAU,OAAW,cAAa,KAAK,KAAK;AACrD,SAAK,QAAQ;AACb,UAAM,QAAQ,KAAK;AACnB,SAAK,UAAU;AACf,QAAI,UAAU,OAAW,OAAM,KAAK,KAAK,KAAK;AAAA,EAChD;AAAA,EAEA,SAAe;AACb,QAAI,KAAK,UAAU,OAAW,cAAa,KAAK,KAAK;AACrD,SAAK,QAAQ;AACb,SAAK,UAAU;AAAA,EACjB;AACF;",
+  "names": [],
+  "debugId": "4c4f56ac-3b5b-58a2-96c5-cbcc478ad7df"
+}

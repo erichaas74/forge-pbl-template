@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/templates/engineering-design/ui/engineering-learning-guide.component.ts"],
+  "sourcesContent": ["\n    :host { display:block; color:#393c30; }\n    .eyebrow { font-size:10px; letter-spacing:.1em; margin:4px 0; }\n    h2 { font:700 23px Georgia,serif; margin:4px 0; }\n    p,li { font-size:14px; line-height:1.55; }\n    ol { padding-left:20px; }\n    li { margin-bottom:8px; }\n    label { display:block; margin-top:12px; font-size:14px; font-weight:650; }\n    textarea { box-sizing:border-box; width:100%; font:inherit; font-size:14px; margin:6px 0 12px; padding:8px; border:1px solid #bdb49b; border-radius:6px; background:#fffdf7; resize:vertical; }\n    textarea:focus-visible { outline:3px solid #bc812c; outline-offset:2px; }\n  "],
+  "mappings": ";AACI;AAAQ,WAAA;AAAe,SAAA;;AACvB,CAAA;AAAW,aAAA;AAAgB,kBAAA;AAAqB,UAAA,IAAA;;AAChD;AAAK,QAAA,IAAA,KAAA,OAAA,EAAA;AAA6B,UAAA,IAAA;;AAClC;AAAA;AAAO,aAAA;AAAgB,eAAA;;AACvB;AAAK,gBAAA;;AACL;AAAK,iBAAA;;AACL;AAAQ,WAAA;AAAe,cAAA;AAAiB,aAAA;AAAgB,eAAA;;AACxD;AAAW,cAAA;AAAuB,SAAA;AAAY,QAAA;AAAc,aAAA;AAAgB,UAAA,IAAA,EAAA;AAAmB,WAAA;AAAa,UAAA,IAAA,MAAA;AAA0B,iBAAA;AAAmB,cAAA;AAAoB,UAAA;;AAC7K,QAAA;AAAyB,WAAA,IAAA,MAAA;AAA2B,kBAAA;;",
+  "names": []
+}

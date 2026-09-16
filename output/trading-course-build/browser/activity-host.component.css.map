@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/templates/investigation/ui/activity-host.component.ts"],
+  "sourcesContent": ["\n    .activity-unavailable {\n      padding: 1rem;\n      border: 1px solid #b26147;\n      border-radius: 0.65rem;\n      background: #fff7f2;\n    }\n    h3 { margin-top: 0; }\n  "],
+  "mappings": ";AACI,CAAA;AACE,WAAA;AACA,UAAA,IAAA,MAAA;AACA,iBAAA;AACA,cAAA;;AAEF;AAAK,cAAA;;",
+  "names": []
+}

@@ -1,4 +1,6 @@
-@if (runtime.state().status === 'not_started') {
+@if (runtime.config.expeditionCourse) {
+  <app-expedition-workspace />
+} @else if (runtime.state().status === 'not_started') {
   <div class="setup-shell">
 
     <app-simulation-company-setup />

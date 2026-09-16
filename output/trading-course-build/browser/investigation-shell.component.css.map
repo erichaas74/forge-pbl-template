@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/templates/investigation/ui/investigation-shell.component.scss"],
+  "sourcesContent": [".investigation-shell {\n  max-width: 88rem;\n  margin: 0 auto;\n  padding: 1.5rem;\n  color: #17212b;\n}\n.investigation-shell > header,\n.phase-list { display: flex; gap: 1rem; flex-wrap: wrap; }\n.investigation-shell > header { align-items: center; }\n.investigation-shell h1 { margin: 0.2rem 0; }\n.phase-list article,\n.issues {\n  flex: 1 1 16rem;\n  padding: 1rem;\n  border: 1px solid #cbc2b3;\n  border-radius: 0.75rem;\n  background: #fffdf8;\n}\n.investigation-shell > section { margin-top: 2rem; }\n"],
+  "mappings": ";AAAA,CAAA;AACE,aAAA;AACA,UAAA,EAAA;AACA,WAAA;AACA,SAAA;;AAEF,CANA,oBAMA,EAAA;AAAA,CAAA;AACc,WAAA;AAAe,OAAA;AAAW,aAAA;;AACxC,CARA,oBAQA,EAAA;AAAgC,eAAA;;AAChC,CATA,oBASA;AAA0B,UAAA,OAAA;;AAC1B,CAJA,WAIA;AAAA,CAAA;AAEE,QAAA,EAAA,EAAA;AACA,WAAA;AACA,UAAA,IAAA,MAAA;AACA,iBAAA;AACA,cAAA;;AAEF,CAlBA,oBAkBA,EAAA;AAAiC,cAAA;;",
+  "names": []
+}

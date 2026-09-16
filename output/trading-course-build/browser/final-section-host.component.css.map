@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/templates/investigation/ui/final-section-host.component.scss"],
+  "sourcesContent": [".final-section-host,\n.final-section { display: grid; gap: 1rem; }\n.final-section {\n  padding: 1rem;\n  border: 1px solid #cbc2b3;\n  border-radius: 0.75rem;\n  background: #fffdf8;\n}\n.final-section.missing { border-color: #a86148; }\n.final-section > header,\n.evidence-options label { display: flex; align-items: center; gap: 0.75rem; }\n.final-section h3 { margin: 0; }\ntextarea { width: 100%; box-sizing: border-box; }\n.evidence-options { display: grid; gap: 0.5rem; }\n"],
+  "mappings": ";AAAA,CAAA;AAAA,CAAA;AACiB,WAAA;AAAe,OAAA;;AAChC,CAFA;AAGE,WAAA;AACA,UAAA,IAAA,MAAA;AACA,iBAAA;AACA,cAAA;;AAEF,CARA,aAQA,CAAA;AAAyB,gBAAA;;AACzB,CATA,cASA,EAAA;AAAA,CAAA,iBAAA;AAC0B,WAAA;AAAe,eAAA;AAAqB,OAAA;;AAC9D,CAXA,cAWA;AAAoB,UAAA;;AACpB;AAAW,SAAA;AAAa,cAAA;;AACxB,CAJA;AAIoB,WAAA;AAAe,OAAA;;",
+  "names": []
+}

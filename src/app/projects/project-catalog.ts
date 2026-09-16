@@ -69,7 +69,7 @@ export const projectCatalog: readonly ProjectCatalogEntry[] = [
     theme: 'atlas',
     status: 'Pilot',
     studentInvitation: 'Rescue the printing press',
-    coverImage: '/projects/exploration-time-repair/versions/2.2.0/press-cover.svg',
+    coverImage: '/projects/exploration-time-repair/versions/2.3.0/time-repair-cover.png',
   },
   {
     id: 'community-story-network',
@@ -314,7 +314,7 @@ export const projectCatalog: readonly ProjectCatalogEntry[] = [
     route: '/projects/frontier-trading-company',
     builderRoute: '/projects/frontier-trading-company/builder-info',
     legacyRoutes: ['/frontier-trading', '/frontier-trading/builder-info'],
-    projectVersion: '1.15.0',
+    projectVersion: '1.16.0',
     template: { id: 'simulation-decision', version: '1.6' },
     packageReference: 'projects/frontier-trading-company',
     capabilityIds: ['simulation.market', 'simulation.route', 'simulation.cargo'],

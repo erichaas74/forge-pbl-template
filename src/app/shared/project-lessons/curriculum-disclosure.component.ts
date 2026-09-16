@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import type { ProjectLessonPlan } from './project-lesson.models';
+import { lessonWeek, type ProjectLessonPlan } from './project-lesson.models';
 
 @Component({
   selector: 'app-curriculum-disclosure',
@@ -116,8 +116,8 @@ import type { ProjectLessonPlan } from './project-lesson.models';
 export class CurriculumDisclosureComponent {
   readonly plan = input.required<ProjectLessonPlan>();
   readonly selected = input.required<number>();
-  readonly week = computed(() => Math.ceil(this.selected() / 2));
+  readonly week = computed(() => lessonWeek(this.plan(), this.selected()));
   readonly lessons = computed(() =>
-    this.plan().lessons.filter((l) => Math.ceil(l.number / 2) === this.week()),
+    this.plan().lessons.filter((l) => lessonWeek(this.plan(), l.number) === this.week()),
   );
 }

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/templates/heist/escape/locks/timing-cage/timing-cage.host.scss"],
+  "sourcesContent": ["/* Only the opted-in timing workshop owns its complete in-scene controls. */\n.workshop.timing-diorama {\n  height: auto;\n  overflow: visible;\n  > header,\n  > nav,\n  > .mission,\n  > .preview-action,\n  > footer,\n  .run-caption {\n    display: none;\n  }\n  .stage-shell {\n    height: 620px;\n    min-height: 620px;\n    flex: none;\n  }\n  .stage {\n    position: absolute;\n    inset: 0;\n    width: 100%;\n    height: 100%;\n  }\n}\n:host(.week-preview) .workshop.timing-diorama .stage-shell {\n  height: 620px;\n  min-height: 620px;\n}\n@media (max-width: 600px) {\n  :host(.week-preview) .workshop.timing-diorama .stage-shell {\n    height: 650px;\n    min-height: 650px;\n  }\n}\n"],
+  "mappings": ";AACA,CAAA,QAAA,CAAA;AACE,UAAA;AACA,YAAA;;AACA,CAHF,QAGE,CAHF,eAGE,EAAA;AAAA,CAHF,QAGE,CAHF,eAGE,EAAA;AAAA,CAHF,QAGE,CAHF,eAGE,EAAA,CAAA;AAAA,CAHF,QAGE,CAHF,eAGE,EAAA,CAAA;AAAA,CAHF,QAGE,CAHF,eAGE,EAAA;AAAA,CAHF,QAGE,CAHF,eAGE,CAAA;AAME,WAAA;;AAEF,CAXF,QAWE,CAXF,eAWE,CAAA;AACE,UAAA;AACA,cAAA;AACA,QAAA;;AAEF,CAhBF,QAgBE,CAhBF,eAgBE,CAAA;AACE,YAAA;AACA,SAAA;AACA,SAAA;AACA,UAAA;;AAGJ,MAAA,CAAA,cAAA,CAvBA,QAuBA,CAvBA,eAuBA,CAZE;AAaA,UAAA;AACA,cAAA;;AAEF,QAAA,WAAA;AACE,QAAA,CAAA,cAAA,CA5BF,QA4BE,CA5BF,eA4BE,CAjBA;AAkBE,YAAA;AACA,gBAAA;;;",
+  "names": []
+}

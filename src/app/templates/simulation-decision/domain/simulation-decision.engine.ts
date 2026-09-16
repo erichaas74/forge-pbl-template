@@ -1,4 +1,5 @@
 import { applyBasisPoints, sumCents } from './money';
+import { createExpedition, reduceExpedition } from './expedition-course.engine';
 import { deterministicSample } from './seeded-random';
 import { choiceProgression, goodIsUnlocked, routeIsUnlocked } from './choice-progression';
 import { advanceTradeWorld, initialTradeWorld, tradeWorldPriceBps } from './trade-world.engine';
@@ -87,6 +88,16 @@ export function reduceSimulationDecision(
   }
 
   switch (action.type) {
+    case 'expedition.action': {
+      const cycle = config.expeditionCourse?.cycles.find(c => c.id === action.cycleId);
+      if (!cycle) return failure(state, 'EXPEDITION_NOT_CONFIGURED');
+      const before = state.expeditions?.[cycle.id] ?? createExpedition(config, cycle);
+      if (action.expectedRevision !== before.revision) return failure(state, 'STATE_CONFLICT: This expedition action was already applied or is stale.');
+      const result = reduceExpedition(config, cycle, before, action.action);
+      return result.error ? failure(state, result.error) : success(state, {
+        expeditions: { ...state.expeditions, [cycle.id]: result.state },
+      });
+    }
     case 'world.pulsed': {
       if (
         !config.tradeWorld ||

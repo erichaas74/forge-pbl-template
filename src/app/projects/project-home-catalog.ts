@@ -15,10 +15,32 @@ export interface ProjectHomeCard {
 
 // Homepage presentation only; unbuilt concepts are not registered runtime packages.
 const homepageOverrides: Readonly<
-  Record<string, { typeId?: string; unavailable?: boolean } | undefined>
+  Record<string, { typeId?: string; demoTitle?: string; unavailable?: boolean } | undefined>
 > = {
-  'shadow-gallery': { typeId: 'historical-forgery' },
-  'calendar-monument': { typeId: 'astronomy-calendar-monument' },
+  'expedition-news-network': { demoTitle: 'Endurance Expedition: Survival Newsroom' },
+  'hammurabi-on-trial': { demoTitle: 'Hammurabi on Trial: Laws of Ancient Mesopotamia' },
+  'exploration-time-repair': { demoTitle: 'Time Repair: Gutenberg & the Reformation' },
+  'community-story-network': { demoTitle: 'Community Journalism: Real Stories, Real Voices' },
+  'shadow-gallery': {
+    typeId: 'historical-forgery',
+    demoTitle: 'Age of Exploration: The Art Forgery Hunt',
+  },
+  'castle-archive-rescue': { demoTitle: 'Castle Animal Rescue: Fractions & Decimals' },
+  'championship-show': { demoTitle: 'Math Championship: Decimals & Unit Prices' },
+  'live-strategy-league': { demoTitle: 'Market Strategy League: Costs, Demand & Profit' },
+  'cascade-bay-crisis': { demoTitle: 'Cascade Bay: Floods & Earth Systems' },
+  'robot-delivery-code-lab': { demoTitle: 'Robot Delivery: Geometry, Loops & Code' },
+  'mystery-substance': { demoTitle: 'Mystery Substances: Properties & Reactions' },
+  'frontier-trading-company': { demoTitle: 'Frontier Trading: Decimals, Costs & Profit' },
+  'objects-that-changed-us': { demoTitle: 'Ancient Egypt: Artifacts & Museum Discoveries' },
+  'history-live-revolutionary-war': { demoTitle: 'Revolutionary War: Live from the Newsroom' },
+  'the-fate-of-the-republic': { demoTitle: 'Rome on Trial: The Fall of the Republic' },
+  'race-around-the-world': { demoTitle: 'Age of Exploration: Chart an Atlantic Voyage' },
+  'survival-island-story-lab': { demoTitle: 'Survival Island: Choices, Characters & Consequences' },
+  'calendar-monument': {
+    typeId: 'astronomy-calendar-monument',
+    demoTitle: 'Sun Monuments: Shadows, Seasons & Earth’s Tilt',
+  },
 };
 
 const plannedTypes = [
@@ -37,7 +59,7 @@ export function createProjectHomeCards(
         id: project.id,
         projectType: overview?.title ?? project.projectType,
         description: overview?.description ?? project.description,
-        demoTitle: override?.unavailable ? undefined : project.title,
+        demoTitle: override?.unavailable ? undefined : (override?.demoTitle ?? project.title),
         grade: project.grade,
         coverImage: project.coverImage,
         symbol: project.symbol,

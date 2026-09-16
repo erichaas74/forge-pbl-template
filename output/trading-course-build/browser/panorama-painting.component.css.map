@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/shared/panorama/panorama-painting.component.ts"],
+  "sourcesContent": [":host{display:block}.painting{position:relative;aspect-ratio:3;overflow:hidden;background:#243b30}.painting img{display:block;width:100%;height:100%;object-fit:fill}.layer{position:absolute;inset:0}"],
+  "mappings": ";AAAA;AAAM,WAAA;;AAAc,CAAA;AAAU,YAAA;AAAkB,gBAAA;AAAe,YAAA;AAAgB,cAAA;;AAAmB,CAA9E,SAA8E;AAAc,WAAA;AAAc,SAAA;AAAW,UAAA;AAAY,cAAA;;AAAgB,CAAA;AAAO,YAAA;AAAkB,SAAA;;",
+  "names": []
+}

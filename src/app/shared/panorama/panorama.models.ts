@@ -17,6 +17,7 @@ export interface PanoramaRepair {
   readonly action: string; readonly sourceIds: readonly string[];
 }
 export interface PanoramaDefinition {
+  readonly interviews?: readonly import('./interview-screens.component').InterviewScreen[];
   readonly questionOwner?: 'scene' | 'tutor';
   readonly viewpoints?: readonly PanoramaViewpoint[];
   readonly capability: 'panorama.encounter.v1'; readonly id: string; readonly version: 1;

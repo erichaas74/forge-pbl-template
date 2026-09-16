@@ -9,7 +9,9 @@ describe('Spherical scene navigation', () => {
   it('opens separate canoe and crop inspections with a supported crop source', () => {
     const field = scene.viewpoints!.find(v => v.id === 'harvest')!.inspection!;
     expect(field.title).toBe('Cultivated field');
-    expect(field.targets.map(t => t.name)).toEqual(['INT_maize','INT_vines','INT_roots','INT_ear']);
+    expect(field.targets.map(t => t.name)).toEqual(['INT_cassava','INT_maize','INT_vines','INT_beans','INT_chili','INT_squash','INT_roots','INT_ear']);
+    expect(field.targets.slice(0,6).map(t => t.label)).toEqual(['Cassava','Corn','Sweet Potato','Beans','Chili Peppers','Squash']);
+    expect(scene.sources.some(s => s.id === 'garden-diversity')).toBe(true);
     expect(field.asset.src).toContain('/field.glb');
     expect(scene.viewpoints!.find(v => v.id === 'canoe')!.inspection!.asset.src).toContain('/workshop.glb');
     expect(scene.sources.some(s => s.id === 'sweet-potato-crop')).toBe(true);

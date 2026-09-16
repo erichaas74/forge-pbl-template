@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/shared/media/hosted-media.ts"
+  ],
+  "sourcesContent": [
+    "/**\n * Large media (video) is served from Firebase Storage rather than the App\n * Hosting source bundle: a bundled video is re-uploaded on every deploy and\n * counts against the bundle size limit. Files live under the `site-media/`\n * prefix, which Storage rules expose as world-readable and write-protected.\n *\n * The returned URL is a plain unauthenticated download URL, so `<video src>`\n * needs no `crossorigin` attribute and no bucket CORS configuration.\n */\nconst MEDIA_BUCKET = 'livelessondemogames.firebasestorage.app';\nconst MEDIA_PREFIX = 'site-media';\n\n/**\n * Builds the download URL for a hosted media file.\n *\n * @param path Bucket path relative to the `site-media/` prefix, without a\n *   leading slash — for example `project-intros/voyage/intro-launch-video.mp4`.\n *   Each segment is URL-encoded, so spaces and other literal characters in a\n *   filename must be passed raw rather than pre-encoded.\n */\nexport function hostedMediaUrl(path: string): string {\n  const clean = path.replace(/^\\/+/, '');\n  if (!clean) throw new Error('hostedMediaUrl requires a non-empty path');\n  const object = [MEDIA_PREFIX, ...clean.split('/')].map(encodeURIComponent).join('%2F');\n  return `https://firebasestorage.googleapis.com/v0/b/${MEDIA_BUCKET}/o/${object}?alt=media`;\n}\n\n/** The fixed URL prefix every hosted media file shares. */\nconst HOSTED_MEDIA_PREFIX = `https://firebasestorage.googleapis.com/v0/b/${MEDIA_BUCKET}/o/${MEDIA_PREFIX}%2F`;\n\n/**\n * True for a same-origin asset path (`/foo`, never `//host`) or a file in the\n * hosted media prefix. Media sources stay restricted to these two origins so a\n * malformed or injected config cannot point the player at an arbitrary host.\n */\nexport function isAllowedMediaSrc(value: string | undefined): boolean {\n  if (typeof value !== 'string') return false;\n  return /^\\/(?!\\/)/.test(value) || value.startsWith(HOSTED_MEDIA_PREFIX);\n}\n"
+  ],
+  "mappings": ";AASA,IAAM,eAAe;AACrB,IAAM,eAAe;AAUd,SAAS,eAAe,MAAsB;AACnD,QAAM,QAAQ,KAAK,QAAQ,QAAQ,EAAE;AACrC,MAAI,CAAC,MAAO,OAAM,IAAI,MAAM,0CAA0C;AACtE,QAAM,SAAS,CAAC,cAAc,GAAG,MAAM,MAAM,GAAG,CAAC,EAAE,IAAI,kBAAkB,EAAE,KAAK,KAAK;AACrF,SAAO,+CAA+C,YAAY,MAAM,MAAM;AAChF;AAGA,IAAM,sBAAsB,+CAA+C,YAAY,MAAM,YAAY;AAOlG,SAAS,kBAAkB,OAAoC;AACpE,MAAI,OAAO,UAAU,SAAU,QAAO;AACtC,SAAO,YAAY,KAAK,KAAK,KAAK,MAAM,WAAW,mBAAmB;AACxE;",
+  "names": [],
+  "debugId": "bb968ecd-a9c5-5fb8-98ad-855a857496e0"
+}

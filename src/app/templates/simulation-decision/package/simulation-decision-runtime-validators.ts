@@ -5,6 +5,7 @@ import type {
 } from '../../../core/validation/validation-contracts';
 import type { SimulationDecisionDefinitionGraph } from './simulation-decision-package-contracts';
 import { validateTradeWorld } from '../domain/trade-world.validation';
+import { validateExpeditionCourse } from '../domain/expedition-course.validation';
 
 const requiredSimulationCapabilities = [
   'simulationDecision',
@@ -90,7 +91,7 @@ export class SimulationDecisionReferenceValidator implements ProjectValidator<
 
   validate(graph: SimulationDecisionDefinitionGraph): ValidationIssue[] {
     const issues: ValidationIssue[] = [];
-    for (const message of validateTradeWorld(graph.config))
+    for (const message of [...validateTradeWorld(graph.config), ...validateExpeditionCourse(graph.config)])
       issues.push({
         code: 'INVALID_TRADE_WORLD',
         severity: 'error',

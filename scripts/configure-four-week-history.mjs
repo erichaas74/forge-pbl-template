@@ -72,10 +72,10 @@ session(0, {
   title: 'Find the missing event',
   location: 'Time archive · Wittenberg, 1517',
   date: '1517 · broken timeline',
-  task: 'The archive jumps from Luther’s manuscript to a quiet winter. Inspect each record, place a candidate in the gap, and test it against the clues. You are not told what disappeared; the timeline has to convince you.',
+  task: 'The archive opens on a wall of fictional newspaper headlines about Luther’s complaints. Inspect each clipping, place a candidate in the missing gap, and test it against the clues. You are not told what disappeared; the headlines and timeline evidence have to convince you.',
   goal: 'Infer that a printed debate is the missing event while separating the historical Ninety-five Theses from our fictional absence of circulation.',
   product: 'A tested candidate for the missing event and a clue-by-clue timeline record.',
-  historicalNote: 'Martin Luther wrote the Ninety-five Theses in 1517 as propositions for debate about indulgences. The Library of Congress record identifies surviving 1517 printings and describes how printing helped the text spread. This first scene asks students to infer that missing spread from a fictional broken archive; it does not claim the posting story or later Reformation had one automatic cause.',
+  historicalNote: 'Martin Luther wrote the Ninety-five Theses in 1517 as propositions for debate about indulgences. The Library of Congress record identifies surviving 1517 printings and describes how printing helped the text spread. The five opening headlines are fictional classroom clippings; this first scene asks students to infer the missing spread from them and the broken archive. It does not claim the posting story or later Reformation had one automatic cause.',
   question: 'Which event best explains the hole? What evidence shows the idea existed, and what evidence shows its wider printed circulation is the part missing?',
   sourceIds: ['theses', 'luther-guide', 'print-circulation'],
   knowledge: {
@@ -84,6 +84,13 @@ session(0, {
     timeline: {
       title: 'The hole in the record',
       era: 'Wittenberg · 1517–1518 · broken archive',
+      headlines: [
+        'Local Monk Reportedly Writes Dozens of Complaints About the Church — Exact Number Unclear',
+        'Martin Luther Releases Mysterious List of Church Complaints; Few Have Actually Seen It',
+        'Wittenberg Professor Claims to Have Written “Nearly 100” Arguments Against Indulgences',
+        'New Religious Debate Brewing? Luther’s Long List of Complaints Remains Mostly Unread',
+        'Monk Challenges Church With 90-Something Theses — Copies Extremely Hard to Find',
+      ],
       nodes: [
         { id: 'luther-writes', label: 'Luther writes', date: '1517', lane: 'before', detail: 'A Latin set of propositions is prepared for an academic debate about indulgences.', signal: 'The idea exists before any press run.' },
         { id: 'manuscript-travels', label: 'Manuscripts travel', date: 'autumn 1517', lane: 'before', detail: 'Handwritten pages can leave Wittenberg one at a time.', signal: 'Travel survives in the broken record.' },

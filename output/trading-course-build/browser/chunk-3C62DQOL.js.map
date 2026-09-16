@@ -1,0 +1,12 @@
+{
+  "version": 3,
+  "sources": [
+    "src/app/shared/project-lessons/project-lesson-focus.ts"
+  ],
+  "sourcesContent": [
+    "import { effect, inject, InjectionToken, untracked, type Signal } from '@angular/core';\nimport type { ProjectLesson } from './project-lesson.models';\n\n/** Presentation context only. Changing lessons never completes an activity or unlocks a gate. */\nexport const PROJECT_LESSON_FOCUS = new InjectionToken<Signal<ProjectLesson | undefined>>(\n  'PROJECT_LESSON_FOCUS',\n);\n\n/** Bind a native view to the lesson without subscribing to or advancing runtime state. */\nexport function bindLessonFocus(open: (lesson: ProjectLesson) => void): void {\n  const focus = inject(PROJECT_LESSON_FOCUS, { optional: true });\n  effect(() => {\n    const lesson = focus?.();\n    if (lesson?.focusTarget) untracked(() => open(lesson));\n  });\n}\n"
+  ],
+  "mappings": ";;;;;;;;AAIO,IAAM,uBAAuB,IAAI;AAAA,EACtC;AACF;AAGO,SAAS,gBAAgB,MAA6C;AAC3E,QAAM,QAAQ,OAAO,sBAAsB,EAAE,UAAU,KAAK,CAAC;AAC7D,SAAO,MAAM;AACX,UAAM,SAAS,QAAQ;AACvB,QAAI,QAAQ,YAAa,WAAU,MAAM,KAAK,MAAM,CAAC;AAAA,EACvD,CAAC;AACH;",
+  "names": [],
+  "debugId": "2618ffe5-07ac-56c2-b493-808ece244ff7"
+}

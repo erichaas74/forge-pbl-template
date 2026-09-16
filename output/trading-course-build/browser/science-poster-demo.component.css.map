@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/templates/exhibit-hall/ui/science-poster-demo.component.ts"],
+  "sourcesContent": ["\n    .poster {\n      border: 0.4rem solid #315e71;\n      padding: 1rem;\n      background: #f4fbfd;\n      color: #173743;\n    }\n    h2 {\n      margin: 0 0 0.7rem;\n      font-family: Georgia, serif;\n    }\n    dl {\n      display: grid;\n      grid-template-columns: repeat(2, 1fr);\n      gap: 0.6rem;\n      margin: 0;\n    }\n    div {\n      padding: 0.5rem;\n      background: white;\n    }\n    dt {\n      color: #2d7182;\n      font-weight: 800;\n    }\n    dd {\n      margin: 0.2rem 0 0;\n    }\n  "],
+  "mappings": ";AACI,CAAA;AACE,UAAA,OAAA,MAAA;AACA,WAAA;AACA,cAAA;AACA,SAAA;;AAEF;AACE,UAAA,EAAA,EAAA;AACA,eAAA,OAAA,EAAA;;AAEF;AACE,WAAA;AACA,yBAAA,OAAA,CAAA,EAAA;AACA,OAAA;AACA,UAAA;;AAEF;AACE,WAAA;AACA,cAAA;;AAEF;AACE,SAAA;AACA,eAAA;;AAEF;AACE,UAAA,OAAA,EAAA;;",
+  "names": []
+}

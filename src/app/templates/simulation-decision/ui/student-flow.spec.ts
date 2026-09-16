@@ -19,7 +19,8 @@ describe('simple student trading flow', () => {
     TestBed.configureTestingModule({
       providers: [
         SimulationDecisionRuntimeService,
-        { provide: SIMULATION_DECISION_CONFIG, useValue: frontierTradingConfig },
+        // Retain coverage of the original season workflow for packages without the optional course.
+        { provide: SIMULATION_DECISION_CONFIG, useValue: { ...frontierTradingConfig, expeditionCourse: undefined } },
         {
           provide: SIMULATION_DECISION_PERSISTENCE,
           useFactory: () => new MemorySimulationDecisionPersistenceAdapter(),

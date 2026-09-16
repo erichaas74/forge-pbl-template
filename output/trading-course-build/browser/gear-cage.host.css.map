@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/templates/heist/escape/gear-lock/gear-cage/gear-cage.host.scss"],
+  "sourcesContent": [".workshop.gear-diorama {\n  height: auto;\n  overflow: visible;\n  > header,\n  > .calibrations,\n  > .preview-action,\n  > footer,\n  .run-caption {\n    display: none;\n  }\n  .stage-shell {\n    height: 660px;\n    min-height: 660px;\n    flex: none;\n  }\n  .stage {\n    position: absolute;\n    inset: 0;\n    width: 100%;\n    height: 100%;\n  }\n}\n:host(.week-preview) .workshop.gear-diorama .stage-shell {\n  height: 660px;\n  min-height: 660px;\n}\n@media (max-width: 600px) {\n  :host(.week-preview) .workshop.gear-diorama .stage-shell {\n    height: 710px;\n    min-height: 710px;\n  }\n}\n"],
+  "mappings": ";AAAA,CAAA,QAAA,CAAA;AACE,UAAA;AACA,YAAA;;AACA,CAHF,QAGE,CAHF,aAGE,EAAA;AAAA,CAHF,QAGE,CAHF,aAGE,EAAA,CAAA;AAAA,CAHF,QAGE,CAHF,aAGE,EAAA,CAAA;AAAA,CAHF,QAGE,CAHF,aAGE,EAAA;AAAA,CAHF,QAGE,CAHF,aAGE,CAAA;AAKE,WAAA;;AAEF,CAVF,QAUE,CAVF,aAUE,CAAA;AACE,UAAA;AACA,cAAA;AACA,QAAA;;AAEF,CAfF,QAeE,CAfF,aAeE,CAAA;AACE,YAAA;AACA,SAAA;AACA,SAAA;AACA,UAAA;;AAGJ,MAAA,CAAA,cAAA,CAtBA,QAsBA,CAtBA,aAsBA,CAZE;AAaA,UAAA;AACA,cAAA;;AAEF,QAAA,WAAA;AACE,QAAA,CAAA,cAAA,CA3BF,QA2BE,CA3BF,aA2BE,CAjBA;AAkBE,YAAA;AACA,gBAAA;;;",
+  "names": []
+}

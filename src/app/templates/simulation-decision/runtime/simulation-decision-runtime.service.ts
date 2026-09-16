@@ -293,6 +293,10 @@ export class SimulationDecisionRuntimeService {
     return formatMoney(cents, showPlus);
   }
 
+  actOnExpedition(cycleId: string, expectedRevision: number, action: import('../domain/expedition-course.models').ExpeditionAction): boolean {
+    return this.apply({ type: 'expedition.action', cycleId, expectedRevision, action });
+  }
+
   private apply(action: SimulationDecisionAction, background = false): boolean {
     if (!background) this.errors.set([]);
     const result = reduceSimulationDecision(this.config, this.state(), action);

@@ -16,6 +16,8 @@ describe('ProjectHomeComponent', () => {
 
     const links = fixture.debugElement.queryAll(By.css('.project-card a[href]'));
     expect(links.map((link) => link.attributes['href'])).toEqual([
+      '/projects/expedition-news-network',
+      '/projects/hammurabi-on-trial',
       '/projects/exploration-time-repair',
       '/projects/community-story-network',
       '/projects/shadow-gallery',
@@ -57,19 +59,19 @@ describe('ProjectHomeComponent', () => {
       'Investigation / Mystery Lab',
     );
     expect(mystery.query(By.css('.project-art')).nativeElement.textContent).toContain(
-      'The Unlabeled Shelf',
+      'Mystery Substances: Properties & Reactions',
     );
     expect(mystery.query(By.css('.project-content p:not(.project-grade)')).nativeElement.textContent).toContain(
-      'developing competing explanations',
+      'compare properties, test reactions, and challenge their theories',
     );
 
     const forgery = fixture.debugElement.query(By.css('[data-project-id="shadow-gallery"]'));
     expect(forgery.nativeElement.textContent).toContain(
       'Historical Forgery Hunt / Living Artwork Restoration',
     );
-    expect(forgery.nativeElement.textContent).toContain('repair the forged artwork');
+    expect(forgery.nativeElement.textContent).toContain('restore the historical scene');
     expect(forgery.query(By.css('.project-art')).nativeElement.textContent).toContain(
-      'The Cartographer’s Vault',
+      'Age of Exploration: The Art Forgery Hunt',
     );
     expect(forgery.query(By.css('a')).attributes['href']).toBe('/projects/shadow-gallery');
     expect(forgery.nativeElement.textContent).not.toContain('Not built yet');
@@ -79,10 +81,10 @@ describe('ProjectHomeComponent', () => {
     expect(monument.query(By.css('h2')).nativeElement.textContent).toBe(
       'Astronomy / Calendar & Monument Building',
     );
-    expect(monument.nativeElement.textContent).toContain('Sun, Moon, and stars');
-    expect(monument.nativeElement.textContent).toContain('history developed calendars');
+    expect(monument.nativeElement.textContent).toContain('track shadows, test seasonal alignments');
+    expect(monument.nativeElement.textContent).toContain('Earth’s tilt shapes the year');
     expect(monument.query(By.css('.project-art')).nativeElement.textContent).toContain(
-      'From Sundial to Sun Monument',
+      'Sun Monuments: Shadows, Seasons & Earth’s Tilt',
     );
     expect(monument.query(By.css('a')).attributes['href']).toBe('/projects/calendar-monument');
     expect(monument.nativeElement.textContent).not.toContain('Not built yet');
@@ -90,7 +92,7 @@ describe('ProjectHomeComponent', () => {
     const engineering = fixture.debugElement.query(
       By.css('[data-project-id="engineering-design"]'),
     );
-    expect(engineering.nativeElement.textContent).toContain('designing and building a race car');
+    expect(engineering.nativeElement.textContent).toContain('measurement and data into a race car design');
     expect(engineering.query(By.css('a')).attributes['href']).toBeUndefined();
     expect(engineering.query(By.css('img')).attributes['src']).toBe(
       '/project-types/race-car-design-v1.png',

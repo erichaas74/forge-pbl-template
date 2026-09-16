@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/templates/simulation-decision/ui/map/phaser-route-canvas.component.ts"],
+  "sourcesContent": ["\n    :host {\n      position: absolute;\n      inset: 0;\n      display: block;\n      pointer-events: none;\n    }\n    .canvas-host {\n      width: 100%;\n      height: 100%;\n      overflow: hidden;\n    }\n  "],
+  "mappings": ";AACI;AACE,YAAA;AACA,SAAA;AACA,WAAA;AACA,kBAAA;;AAEF,CAAA;AACE,SAAA;AACA,UAAA;AACA,YAAA;;",
+  "names": []
+}

@@ -4163,15 +4163,15 @@
             }
           },
           {
-            "title": "Whose island story?",
+            "title": "Restore the shore painting",
             "workId": "shore-painting-2-restoration",
-            "activity": "inspect",
+            "activity": "restore",
             "steps": [
-              "Watch the island film and inspect its caption.",
-              "Use place evidence to choose an inscription.",
-              "Keep supported context and save your image."
+              "Inspect the original painting together.",
+              "Revisit the historical world and compare sources for each suspected detail.",
+              "Try your repairs, compare with the original, and revise your reconstruction."
             ],
-            "product": "A relabeled island picture that preserves supported context.",
+            "product": "A coastal reconstruction with three student-selected repairs and supporting sources.",
             "film": {
               "src": "/projects/shadow-gallery/weekly/scene-2.mp4",
               "captions": "/projects/shadow-gallery/weekly/scene-2.vtt",
@@ -4198,8 +4198,8 @@
           "Whose perspective is absent from this classroom reconstruction?"
         ],
         "evidence": [
-          "Inspected regions, removed or retained image layers, and pinned sources.",
-          "Before-and-after image versions and changes to the island inscription."
+          "Details observed in the field and canoe workshop, and sources saved to the notebook.",
+          "Student-selected repairs, retained details, and comparisons with the original painting."
         ],
         "controls": [
           "Select any commission, region, guide outlines, zoom, or film cue.",
@@ -4536,6 +4536,13 @@
             "text": "Maize and sweet potatoes were cultivated by Taíno communities. Sweet potatoes are a different crop from ordinary potatoes. The field model illustrates these crops; its layout and plant varieties are not archaeological measurements.",
             "provenance": "National Park Service, Taíno Settlement at Salt River Bay, St. Croix. Regional comparative evidence, not an excavation record for this fictional Hispaniola field.",
             "url": "https://www.nps.gov/places/taino-settlement.htm"
+          },
+          {
+            "id": "garden-diversity",
+            "title": "Six garden crops",
+            "text": "Cassava is also called manioc; corn is also called maize. The garden illustrates cassava, corn, sweet potato, beans, chili peppers and squash. Archaeological evidence from En Bas Saline supports manioc, maize, peppers and beans. Regional historical summaries also describe sweet potatoes and squash. The six separate beds, plant varieties and simultaneous harvest are illustrative choices.",
+            "provenance": "USDA Forest Service synthesis of Taíno cultivation, cross-checked with Florida Museum En Bas Saline material remains and the National Park Service Taíno Settlement guide. Regional synthesis does not establish all six crops at this fictional plot.",
+            "url": "https://www.govinfo.gov/content/pkg/GOVPUB-A13-PURL-gpo42485/pdf/GOVPUB-A13-PURL-gpo42485.pdf"
           }
         ],
         "people": [
@@ -4921,11 +4928,27 @@
                 "src": "/projects/shadow-gallery/coastal-3d-v1/field.glb",
                 "nodes": [
                   {
+                    "name": "INT_cassava",
+                    "kind": "target"
+                  },
+                  {
                     "name": "INT_maize",
                     "kind": "target"
                   },
                   {
                     "name": "INT_vines",
+                    "kind": "target"
+                  },
+                  {
+                    "name": "INT_beans",
+                    "kind": "target"
+                  },
+                  {
+                    "name": "INT_chili",
+                    "kind": "target"
+                  },
+                  {
+                    "name": "INT_squash",
                     "kind": "target"
                   },
                   {
@@ -4951,24 +4974,664 @@
               },
               "targets": [
                 {
-                  "name": "INT_maize",
-                  "label": "Maize plants",
+                  "name": "INT_cassava",
+                  "label": "Cassava",
                   "focus": [
-                    -1.35,
+                    -1.3,
+                    0.9,
+                    -0.05
+                  ],
+                  "distance": 2
+                },
+                {
+                  "name": "INT_maize",
+                  "label": "Corn",
+                  "focus": [
+                    -1.1,
                     1,
-                    -0.5
+                    -3.5
                   ],
                   "distance": 2.2
                 },
                 {
                   "name": "INT_vines",
-                  "label": "Sweet potato vines",
+                  "label": "Sweet Potato",
                   "focus": [
-                    1.2,
+                    1.1,
                     0.25,
-                    -0.4
+                    -3.5
                   ],
                   "distance": 1.8
+                },
+                {
+                  "name": "INT_beans",
+                  "label": "Beans",
+                  "focus": [
+                    -1.3,
+                    0.4,
+                    3.6
+                  ],
+                  "distance": 1.4
+                },
+                {
+                  "name": "INT_chili",
+                  "label": "Chili Peppers",
+                  "focus": [
+                    1.3,
+                    0.55,
+                    -0.05
+                  ],
+                  "distance": 1.4
+                },
+                {
+                  "name": "INT_squash",
+                  "label": "Squash",
+                  "focus": [
+                    1.3,
+                    0.25,
+                    3.6
+                  ],
+                  "distance": 1.5
+                },
+                {
+                  "name": "INT_roots",
+                  "label": "Harvested roots",
+                  "focus": [
+                    0.05,
+                    0.22,
+                    2.2
+                  ],
+                  "distance": 1
+                },
+                {
+                  "name": "INT_ear",
+                  "label": "Ear of maize",
+                  "focus": [
+                    0.78,
+                    0.27,
+                    2.25
+                  ],
+                  "distance": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "capability": "panorama.encounter.v1",
+        "id": "coastal-restoration",
+        "version": 1,
+        "workId": "shore-painting-2-restoration",
+        "title": "Restore the shore painting",
+        "setting": "Hispaniola · early 1492 · before European arrival here",
+        "invitation": "Compare this painting with your observations and sources. Decide which three details to change.",
+        "panorama": "/projects/shadow-gallery/coastal-v1/panorama.png",
+        "forgery": "/projects/shadow-gallery/coastal-v1/forgery.png",
+        "imageAlt": "A coastal community with a canoe maker at the shore, a central clearing, and a food grower sorting a harvest.",
+        "attribution": "AI-generated teaching reconstruction. Fictional characters and English dialogue; clothing and scene layout are illustrative. Historical sources identify what is supported and uncertain. Taíno peoples and their descendants continue today.",
+        "sources": [
+          {
+            "id": "canoe-construction",
+            "title": "Inside a dugout canoe",
+            "text": "A dugout hull is shaped from one trunk. Historical research describes pre-1492 Caribbean canoe builders using stone axes, shell gouges and fire. Metal-fastened plank repairs should not be assumed for this setting.",
+            "provenance": "Historical synthesis: Past & Present, volume 271. The article also covers later centuries; its later techniques are not automatically evidence for 1492.",
+            "url": "https://academic.oup.com/past/article/271/1/52/8231030",
+            "rect": {
+              "x": 0,
+              "y": 47,
+              "width": 30,
+              "height": 48
+            }
+          },
+          {
+            "id": "canoe-tools",
+            "title": "A stone blade and a paddle",
+            "text": "Surviving Caribbean artifacts include woodworking tools and paddles. A stone or shell blade could be attached to a wooden handle; a paddle moved the canoe without being fixed to its side.",
+            "provenance": "Oxford SIBA artifact study. The examples are Lucayan/Bahamian comparative evidence, not objects excavated at this fictional Hispaniola location.",
+            "url": "https://siba.web.ox.ac.uk/material-culture-and-cultural-practices",
+            "rect": {
+              "x": 15,
+              "y": 43,
+              "width": 8,
+              "height": 18
+            }
+          },
+          {
+            "id": "local-harvest",
+            "title": "What grew in the gardens?",
+            "text": "Archaeologists at En Bas Saline in Haiti identified manioc, maize, peppers, beans and other plants. This evidence supports the manioc and maize shown in the reconstructed work area. A picture alone cannot establish every crop present or absent.",
+            "provenance": "Florida Museum of Natural History: archaeological plant remains from a Taíno site in Haiti, on Hispaniola.",
+            "url": "https://www.floridamuseum.ufl.edu/histarch/research/haiti/en-bas-saline/material-remains/",
+            "rect": {
+              "x": 63,
+              "y": 69,
+              "width": 30,
+              "height": 25
+            }
+          },
+          {
+            "id": "exchange-record",
+            "title": "Plants and animals across the Atlantic",
+            "text": "Horses and wheat came to the Americas from the Old World through the Columbian Exchange after contact. An established horse herd and a local wheat harvest do not fit this early-1492 setting. Sweet potatoes, however, were already grown in the Caribbean; they are not the same plant as wheat or Andean potatoes.",
+            "provenance": "OpenStax U.S. History: Columbian Exchange overview, cross-checked with the National Park Service’s Taíno Settlement guide. A later historical source, consulted from your notebook, not a record possessed by the characters.",
+            "url": "https://openstax.org/books/us-history/pages/2-4-new-worlds-in-the-americas-labor-commerce-and-the-columbian-exchange"
+          },
+          {
+            "id": "island-travel",
+            "title": "Travel between communities",
+            "text": "Taíno people traveled between islands in dugout canoes, carrying foods, tools and other goods. Canoes connected communities across water. A lack of horses in this illustration is an observation, not sufficient historical proof on its own.",
+            "provenance": "National Park Service, Taíno Settlement: modern educational account of travel and cultivated crops.",
+            "url": "https://www.nps.gov/places/taino-settlement.htm",
+            "rect": {
+              "x": 0,
+              "y": 32,
+              "width": 34,
+              "height": 61
+            }
+          },
+          {
+            "id": "sweet-potato-crop",
+            "title": "Taíno garden crops",
+            "text": "Maize and sweet potatoes were cultivated by Taíno communities. Sweet potatoes are a different crop from ordinary potatoes. The field model illustrates these crops; its layout and plant varieties are not archaeological measurements.",
+            "provenance": "National Park Service, Taíno Settlement at Salt River Bay, St. Croix. Regional comparative evidence, not an excavation record for this fictional Hispaniola field.",
+            "url": "https://www.nps.gov/places/taino-settlement.htm"
+          },
+          {
+            "id": "garden-diversity",
+            "title": "Six garden crops",
+            "text": "Cassava is also called manioc; corn is also called maize. The garden illustrates cassava, corn, sweet potato, beans, chili peppers and squash. Archaeological evidence from En Bas Saline supports manioc, maize, peppers and beans. Regional historical summaries also describe sweet potatoes and squash. The six separate beds, plant varieties and simultaneous harvest are illustrative choices.",
+            "provenance": "USDA Forest Service synthesis of Taíno cultivation, cross-checked with Florida Museum En Bas Saline material remains and the National Park Service Taíno Settlement guide. Regional synthesis does not establish all six crops at this fictional plot.",
+            "url": "https://www.govinfo.gov/content/pkg/GOVPUB-A13-PURL-gpo42485/pdf/GOVPUB-A13-PURL-gpo42485.pdf"
+          }
+        ],
+        "people": [
+          {
+            "id": "canoe-maker",
+            "name": "Canoe maker",
+            "activity": "Shaping the inside of a dugout canoe",
+            "rect": {
+              "x": 16,
+              "y": 25,
+              "width": 18,
+              "height": 62
+            },
+            "welcome": "Welcome. I am working on this canoe. What would you like to know?",
+            "topics": [
+              {
+                "id": "construction",
+                "question": "How did you make this canoe?",
+                "keywords": [
+                  "make",
+                  "made",
+                  "build",
+                  "built",
+                  "construction",
+                  "trunk",
+                  "tree",
+                  "hollow"
+                ],
+                "reply": "The hull begins as one tree trunk. We shape and hollow the wood with stone tools, shell tools and carefully controlled fire. Look along the inside: it is one shaped hull, not a row of joined planks.",
+                "sourceIds": [
+                  "canoe-construction",
+                  "canoe-tools"
+                ]
+              },
+              {
+                "id": "repair",
+                "question": "How do you repair the boat?",
+                "keywords": [
+                  "repair",
+                  "fix",
+                  "crack",
+                  "broken",
+                  "nail",
+                  "nails",
+                  "screw",
+                  "screws",
+                  "iron",
+                  "metal"
+                ],
+                "reply": "First I examine the wood and the damage. I work with a stone blade and a shell scraper, not iron nails or screws. This hull was shaped from one trunk. Come closer and look at the tools beside me.",
+                "sourceIds": [
+                  "canoe-construction",
+                  "canoe-tools"
+                ]
+              },
+              {
+                "id": "tools",
+                "question": "Can you show me your tools?",
+                "keywords": [
+                  "tool",
+                  "tools",
+                  "stone",
+                  "shell",
+                  "axe",
+                  "blade",
+                  "show"
+                ],
+                "reply": "Here is a shaped blade and its wooden handle. The material and the edge matter for the work. Open the object view to examine them, then compare with the surviving artifacts in the source.",
+                "sourceIds": [
+                  "canoe-tools"
+                ]
+              },
+              {
+                "id": "travel",
+                "question": "How do people and goods travel?",
+                "keywords": [
+                  "travel",
+                  "carry",
+                  "goods",
+                  "transport",
+                  "paddle",
+                  "horse",
+                  "horses",
+                  "ride",
+                  "animal",
+                  "animals"
+                ],
+                "reply": "We paddle canoes along the coast and between islands, carrying people and goods. Moving over water is part of our lives. I can tell you about our canoe, but I cannot know what people will bring here in the future.",
+                "sourceIds": [
+                  "island-travel"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "food-grower",
+            "name": "Food grower",
+            "activity": "Sorting manioc roots and maize from the harvest",
+            "rect": {
+              "x": 75,
+              "y": 28,
+              "width": 17,
+              "height": 54
+            },
+            "welcome": "Welcome. I am sorting the harvest. What would you like to ask?",
+            "topics": [
+              {
+                "id": "harvest",
+                "question": "What are you growing and gathering?",
+                "keywords": [
+                  "grow",
+                  "growing",
+                  "grown",
+                  "gather",
+                  "harvest",
+                  "crop",
+                  "crops",
+                  "food",
+                  "eat",
+                  "maize",
+                  "corn",
+                  "wheat",
+                  "potato",
+                  "potatoes"
+                ],
+                "reply": "Here are manioc roots and maize. Look closely: the long roots and the ears of maize are different parts of different plants. We also cultivate other foods. The archaeological source can help you compare this work area with evidence from Hispaniola.",
+                "sourceIds": [
+                  "local-harvest"
+                ]
+              },
+              {
+                "id": "basket",
+                "question": "May I look inside the basket?",
+                "keywords": [
+                  "basket",
+                  "look",
+                  "inside",
+                  "show",
+                  "root",
+                  "roots"
+                ],
+                "reply": "Come closer. Compare the maize in the basket with the manioc roots beside it. Save an observation if it helps you remember their shapes.",
+                "sourceIds": [
+                  "local-harvest"
+                ]
+              },
+              {
+                "id": "journeys",
+                "question": "How do you carry the harvest?",
+                "keywords": [
+                  "carry",
+                  "travel",
+                  "transport",
+                  "horse",
+                  "horses",
+                  "animal",
+                  "animals",
+                  "trade"
+                ],
+                "reply": "Baskets help us carry foods. Canoes carry people and goods over water. The canoe maker can explain that work better than I can.",
+                "sourceIds": [
+                  "island-travel"
+                ]
+              }
+            ]
+          }
+        ],
+        "repairs": [
+          {
+            "id": "herd",
+            "title": "The clearing",
+            "rect": {
+              "x": 45,
+              "y": 37,
+              "width": 12,
+              "height": 24
+            },
+            "action": "Try a reconstruction",
+            "sourceIds": [
+              "island-travel",
+              "exchange-record"
+            ]
+          },
+          {
+            "id": "fasteners",
+            "title": "The canoe repair",
+            "rect": {
+              "x": 3,
+              "y": 59,
+              "width": 14,
+              "height": 31
+            },
+            "action": "Try a reconstruction",
+            "sourceIds": [
+              "canoe-construction",
+              "canoe-tools"
+            ]
+          },
+          {
+            "id": "harvest",
+            "title": "The harvest basket",
+            "rect": {
+              "x": 79,
+              "y": 65,
+              "width": 14,
+              "height": 24
+            },
+            "action": "Try a reconstruction",
+            "sourceIds": [
+              "local-harvest",
+              "exchange-record"
+            ]
+          }
+        ],
+        "questionOwner": "tutor",
+        "viewpoints": [
+          {
+            "id": "village",
+            "title": "Village clearing",
+            "image": "/projects/shadow-gallery/coastal-360-v1/village.png",
+            "yaw": -75,
+            "pitch": -8,
+            "people": [
+              {
+                "personId": "canoe-maker",
+                "rect": {
+                  "x": 18,
+                  "y": 44,
+                  "width": 3,
+                  "height": 10
+                }
+              },
+              {
+                "personId": "food-grower",
+                "rect": {
+                  "x": 79,
+                  "y": 44,
+                  "width": 4,
+                  "height": 11
+                }
+              }
+            ],
+            "places": [
+              {
+                "targetId": "canoe",
+                "label": "Explore canoe workshop",
+                "yaw": -108,
+                "pitch": -9
+              },
+              {
+                "targetId": "harvest",
+                "label": "Explore harvest garden",
+                "yaw": 108,
+                "pitch": -9
+              }
+            ]
+          },
+          {
+            "id": "canoe",
+            "title": "Canoe workshop",
+            "image": "/projects/shadow-gallery/coastal-360-v1/canoe.png",
+            "yaw": -43,
+            "pitch": -8,
+            "people": [
+              {
+                "personId": "canoe-maker",
+                "rect": {
+                  "x": 32,
+                  "y": 38,
+                  "width": 10,
+                  "height": 33
+                }
+              }
+            ],
+            "places": [
+              {
+                "targetId": "village",
+                "label": "Back to village",
+                "yaw": 5,
+                "pitch": -12
+              }
+            ],
+            "inspection": {
+              "title": "Canoe workshop",
+              "overviewLabel": "Whole canoe",
+              "asset": {
+                "version": 1,
+                "src": "/projects/shadow-gallery/coastal-3d-v1/workshop.glb",
+                "nodes": [
+                  {
+                    "name": "INT_hull",
+                    "kind": "target"
+                  },
+                  {
+                    "name": "INT_rim",
+                    "kind": "target"
+                  },
+                  {
+                    "name": "INT_stone",
+                    "kind": "target"
+                  },
+                  {
+                    "name": "SOCKET_overview",
+                    "kind": "socket"
+                  },
+                  {
+                    "name": "ENV_ground",
+                    "kind": "environment"
+                  }
+                ],
+                "clips": []
+              },
+              "environment": {
+                "background": "/projects/shadow-gallery/coastal-3d-v1/workshop-background-v1.png",
+                "ground": "/projects/shadow-gallery/coastal-3d-v1/workshop-ground-v1.png",
+                "groundNode": "ENV_ground",
+                "tileSize": 3
+              },
+              "targets": [
+                {
+                  "name": "INT_hull",
+                  "label": "Hollowed interior",
+                  "focus": [
+                    0,
+                    0.6,
+                    0
+                  ],
+                  "distance": 2.9
+                },
+                {
+                  "name": "INT_rim",
+                  "label": "Wooden rim",
+                  "focus": [
+                    0.6,
+                    0.9,
+                    0
+                  ],
+                  "distance": 1.6
+                },
+                {
+                  "name": "INT_stone",
+                  "label": "Stone tool",
+                  "focus": [
+                    1.8,
+                    0.42,
+                    0.4
+                  ],
+                  "distance": 1.1
+                }
+              ]
+            }
+          },
+          {
+            "id": "harvest",
+            "title": "Harvest garden",
+            "image": "/projects/shadow-gallery/coastal-360-v1/harvest.png",
+            "yaw": 8,
+            "pitch": -16,
+            "people": [
+              {
+                "personId": "food-grower",
+                "rect": {
+                  "x": 46,
+                  "y": 46,
+                  "width": 10,
+                  "height": 24
+                }
+              }
+            ],
+            "places": [
+              {
+                "targetId": "village",
+                "label": "Back to village",
+                "yaw": -38,
+                "pitch": -12
+              }
+            ],
+            "inspection": {
+              "title": "Cultivated field",
+              "overviewLabel": "Whole field",
+              "asset": {
+                "version": 1,
+                "src": "/projects/shadow-gallery/coastal-3d-v1/field.glb",
+                "nodes": [
+                  {
+                    "name": "INT_cassava",
+                    "kind": "target"
+                  },
+                  {
+                    "name": "INT_maize",
+                    "kind": "target"
+                  },
+                  {
+                    "name": "INT_vines",
+                    "kind": "target"
+                  },
+                  {
+                    "name": "INT_beans",
+                    "kind": "target"
+                  },
+                  {
+                    "name": "INT_chili",
+                    "kind": "target"
+                  },
+                  {
+                    "name": "INT_squash",
+                    "kind": "target"
+                  },
+                  {
+                    "name": "INT_roots",
+                    "kind": "target"
+                  },
+                  {
+                    "name": "INT_ear",
+                    "kind": "target"
+                  },
+                  {
+                    "name": "ENV_ground",
+                    "kind": "environment"
+                  }
+                ],
+                "clips": []
+              },
+              "environment": {
+                "background": "/projects/shadow-gallery/coastal-3d-v1/field-background-v1.png",
+                "ground": "/projects/shadow-gallery/coastal-3d-v1/field-soil-v1.png",
+                "groundNode": "ENV_ground",
+                "tileSize": 3
+              },
+              "targets": [
+                {
+                  "name": "INT_cassava",
+                  "label": "Cassava",
+                  "focus": [
+                    -1.3,
+                    0.9,
+                    -0.05
+                  ],
+                  "distance": 2
+                },
+                {
+                  "name": "INT_maize",
+                  "label": "Corn",
+                  "focus": [
+                    -1.1,
+                    1,
+                    -3.5
+                  ],
+                  "distance": 2.2
+                },
+                {
+                  "name": "INT_vines",
+                  "label": "Sweet Potato",
+                  "focus": [
+                    1.1,
+                    0.25,
+                    -3.5
+                  ],
+                  "distance": 1.8
+                },
+                {
+                  "name": "INT_beans",
+                  "label": "Beans",
+                  "focus": [
+                    -1.3,
+                    0.4,
+                    3.6
+                  ],
+                  "distance": 1.4
+                },
+                {
+                  "name": "INT_chili",
+                  "label": "Chili Peppers",
+                  "focus": [
+                    1.3,
+                    0.55,
+                    -0.05
+                  ],
+                  "distance": 1.4
+                },
+                {
+                  "name": "INT_squash",
+                  "label": "Squash",
+                  "focus": [
+                    1.3,
+                    0.25,
+                    3.6
+                  ],
+                  "distance": 1.5
                 },
                 {
                   "name": "INT_roots",

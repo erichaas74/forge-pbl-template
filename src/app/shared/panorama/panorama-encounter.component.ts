@@ -4,10 +4,11 @@ import { PanoramaPaintingComponent, clipRect } from './panorama-painting.compone
 import { renderPanoramaPainting } from './panorama-export';
 import { downloadFile } from '../restoration/restoration-export';
 import { SphericalViewComponent } from './spherical-view.component';
+import { InterviewScreensComponent } from './interview-screens.component';
 import type { PanoramaAction, PanoramaDefinition, PanoramaPerson, PanoramaState } from './panorama.models';
 
 @Component({
-  selector: 'app-panorama-encounter', imports: [PanoramaPaintingComponent, SphericalViewComponent],
+  selector: 'app-panorama-encounter', imports: [PanoramaPaintingComponent, SphericalViewComponent, InterviewScreensComponent],
   templateUrl: './panorama-encounter.component.html', styleUrl: './panorama-encounter.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

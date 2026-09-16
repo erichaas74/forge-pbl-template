@@ -8,6 +8,7 @@ export const simulationDecisionCapabilityIds = [
   'strategyReport',
   'choiceProgression',
   'transactionMath',
+  'roundTripTrading',
 ] as const;
 
 export function registerSimulationDecisionCapabilities(registry: CapabilityRegistry): void {

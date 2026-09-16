@@ -67,6 +67,7 @@
   class="atlas"
   [class.still]="!effectiveMotion()"
   [class.workspace-atlas]="workspace()"
+  [class.embedded-atlas]="embedded()"
   [class.phaser-active]="canvasStatus() === 'ready' && !basicMap()"
 >
   @if (!externalControls()) {
@@ -224,7 +225,7 @@
             role="button"
             tabindex="0"
             [attr.aria-expanded]="predictionRouteId() === trail.route.id"
-            aria-controls="route-prediction"
+            [attr.aria-controls]="embedded() ? 'expedition-route-action' : 'route-prediction'"
             [attr.aria-label]="trail.route.name + ', travel cost ' + trail.costLabel"
             (click)="routeSelected.emit(trail.route.id)"
             (keydown.enter)="routeSelected.emit(trail.route.id)"
