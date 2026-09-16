@@ -43,6 +43,12 @@ testem.log
 /typings
 __screenshots__/
 
+# Browser verification profiles contain caches, cookies, and service credentials.
+# Keep reports/screenshots in output, but never commit the browser's local state.
+/output/**/profile/
+/output/**/user-data/
+/output/**/browser-profile*/
+
 # System files
 .DS_Store
 Thumbs.db
